@@ -28,6 +28,9 @@ app_version = "Tested on Python 3.7 - KootNet Sensors Version 0.1.16"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
 
+def nogood():
+    print("what?!")
+
 
 def config_load_and_set():
     log_print_message("Loading Configuration File")
