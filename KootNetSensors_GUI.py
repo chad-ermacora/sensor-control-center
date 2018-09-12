@@ -18,11 +18,12 @@
 """
 import os
 import sys
-# DEBUG  - 	Detailed information, typically of interest only when diagnosing problems.
-# INFO	-  Confirmation that things are working as expected.
-# WARNING	-  An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected.
-# ERROR	-  Due to a more serious problem, the software has not been able to perform some function.
-# CRITICAL	-  A serious error, indicating that the program itself may be unable to continue running.
+# DEBUG - Detailed information, typically of interest only when diagnosing problems.
+# INFO - Confirmation that things are working as expected.
+# WARNING - An indication that something unexpected happened, or indicative of some problem in the near future
+#              (e.g. ‘disk space low’). The software is still working as expected.
+# ERROR - Due to a more serious problem, the software has not been able to perform some function.
+# CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 import logging
 import Sensor_commands
 import Sensor_app_imports
@@ -30,13 +31,15 @@ import Sensor_graphs
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar
 from tkinter import filedialog
 
+logging.basicConfig(filename='KootNet.txt', format='%(levelname)s:%(asctime)s:%(filename)s:%(funcName)s: %(message)s',
+                    level=logging.DEBUG)
 app_version = "Tested on Python 3.7 - KootNet Sensors Version 0.1.16"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
 
 
 def config_load_and_set():
-    log_print_message("Loading Configuration File")
+    logging.INFO("Loading Configuration File")
     config_options = Sensor_app_imports.config_load_file()
     config_set(config_options)
 
