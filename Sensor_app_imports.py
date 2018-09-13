@@ -1,10 +1,12 @@
 import webbrowser
 import sys
 import os
+import logging
 from urllib.request import urlopen
 from tkinter import filedialog
 from Sensor_commands import get
 from Sensor_config import load_file
+from logging.handlers import RotatingFileHandler
 
 var_app_about = '''
     KootNet Sensors is a collection of programs and scripts to deploy,
@@ -24,6 +26,19 @@ var_app_about = '''
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s')
+
+file_handler = RotatingFileHandler('logs/Sensor_app_imports_log.txt', maxBytes=1024000, backupCount=5)
+file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 html_template_1 = "additional_files/html_template_1.html"
 html_template_2 = "additional_files/html_template_2.html"
@@ -31,11 +46,12 @@ html_template_3 = "additional_files/html_template_3.html"
 
 
 def get_about_text():
+    logger.debug("Getting KootNet Sensors About Text")
     return var_app_about
 
 
 def html_replacement_codes():
-    print("sensor_values(sensor)")
+    logger.debug("Getting Sensor Details HTML replacement Codes")
 
     html_replacement_vars = ["{{sysHostName}}",
                              "{{sysIP}}",
@@ -52,21 +68,20 @@ def open_html(html_details_file):
     try:
         html_file_location = "file:///" + html_details_file
         webbrowser.open(html_file_location, new=2)
-        print("open_html OK")
+        logger.debug("open_html OK")
     except:
-        print("open_html Failed")
+        logger.error("open_html Failed")
 
 
 def sensor_detailed_status(ip_list):
-    log_print_text = ''
     final_file = ''
     replacement_codes = html_replacement_codes()
     temp_settings = load_file()
     sensor_html = ''
     replace_word = ''
     current_sensor_html = ''
+    net_timeout = int(temp_settings[7])
 
-    # Open the HTML Template file to use in variable replacement below.
     try:
         html_file_part = open(str(app_location_directory + html_template_1), 'r')
         final_file = html_file_part.read()
@@ -74,18 +89,17 @@ def sensor_detailed_status(ip_list):
         html_file_part = open(str(app_location_directory + html_template_2), 'r')
         sensor_html = html_file_part.read()
         html_file_part.close()
+        logger.info("Open html_template_1.html & html_template_2.html Template - OK")
     except:
-        log_print_text = log_print_text + \
-            "\nOpen html_template_1.html or " + \
-            "html_template_2.html Template Failed"
+        logger.error("Open html_template_1.html or html_template_2.html Template - Failed")
 
     # For each IP in the list, Get its sensor data
     # Inserting them into a final HTML file, based on a 3 part template
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
-            sensor_data = get(ip)
-    
+            sensor_data = get(ip, net_timeout)
+            sensor_data[4] = round(float(sensor_data[4]) + float(temp_settings[5]), 2)
             count2 = 0
             for code in replacement_codes:
                 if count2 == 0:
@@ -107,12 +121,12 @@ def sensor_detailed_status(ip_list):
                 elif count2 == 6:
                     replace_word = str(sensor_data[6])
                 else:
-                    log_print_text = log_print_text + "\nWrong format for Sensor Values\nTry Updating the Program"
+                    logger.error("Wrong format for Sensor Values - Try Updating the Program")
     
                 current_sensor_html = current_sensor_html.replace(code, replace_word)
                 count2 = count2 + 1
         except:
-                print("Sensor get probably failed")
+                logger.error("Sensor get probably failed")
 
         # Add's each sensor that checked Online, into the final HTML variable
         final_file = final_file + current_sensor_html
@@ -122,7 +136,7 @@ def sensor_detailed_status(ip_list):
         html_file_part.close()
         final_file = final_file + html_end
     except:
-        log_print_text = log_print_text + "\nOpen html_template_3.html Template Failed"
+        logger.error("Open html_template_3.html Template Failed")
 
     # Write the final html variable to file
     try:
@@ -131,16 +145,13 @@ def sensor_detailed_status(ip_list):
         fout.write(final_file)
         fout.close()
         open_html(save_to_folder)
-        log_print_text = log_print_text + \
-            "\nSensor Details - HTML Save File - OK"
+        logger.info("Sensor Details - HTML Save File - OK")
     except:
-        log_print_text = log_print_text + \
-            "\nSensor Details - HTML Save File - Failed"
+        logger.error("Sensor Details - HTML Save File - Failed")
 
 
 def download_interval_db(ip_list):
     j = filedialog.askdirectory()
-    log_message = "Downloading Interval Sensor DataBase(s)"
 
     for ip in ip_list:
         try:
@@ -150,16 +161,15 @@ def download_interval_db(ip_list):
             local_file.write(remote_database.read())
             remote_database.close()
             local_file.close()
-            log_message = log_message + "\nDownload from " + ip + " Complete"
+            logger.info("Download Interval DB from " + ip + " Complete")
         except:
-            log_message = log_message + "\nFailed on " + str(ip) + " "
+            logger.error("Download Interval DB from " + str(ip) + " Failed")
 
-    log_message = log_message + "\n\nSensor DataBase Download(s) Complete"
+    logger.info("Sensor DataBase Download(s) Complete")
 
 
 def download_trigger_db(ip_list):
     j = filedialog.askdirectory()
-    log_message = "Downloading Trigger Sensor DataBase(s)"
 
     for ip in ip_list:
         try:
@@ -169,9 +179,9 @@ def download_trigger_db(ip_list):
             local_file.write(remote_database.read())
             remote_database.close()
             local_file.close()
-            log_message = log_message + "\nDownload from " + ip + " Complete"
+            logger.info("Download Trigger DB from " + ip + " Complete")
         except:
-            log_message = log_message + "\nConnection Failed on " + ip
+            logger.error("Download Trigger DB from " + ip + " Failed")
 
-    log_message = log_message + "\n\nTrigger DataBase Download(s) Complete"
+    logger.info("Trigger DataBase Download(s) Complete")
 

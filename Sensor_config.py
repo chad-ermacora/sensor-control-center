@@ -19,12 +19,28 @@ import os
 """
 import os
 import sys
+import logging
+from logging.handlers import RotatingFileHandler
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s')
+
+file_handler = RotatingFileHandler('logs/Sensor_config_log.txt', maxBytes=1024000, backupCount=5)
+file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "config.txt"
 
 
 def get_defaults():
+    logger.debug("Getting Default Configuration Variables")
     save_to = str(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop\\'))
     save_to = save_to.replace('\\', '/')
     graph_start = "2018-08-21 00:00:01"
@@ -67,16 +83,17 @@ def load_file():
             count = count + 1
 
         local_file.close()
+        logger.info("Configuration File Load - OK")
         return config_settings
 
     except:
-        print("Configuration File Load - Failed\nUsing Configuration Defaults")
+        logger.warning("Configuration File Load Failed - Using Defaults")
         return get_defaults()
 
 
 def check_settings(config_settings):
+    logger.info("Checking Configuration Settings")
     checked_settings = []
-    log_message = ""
 
     save_to_default, \
         graph_start_default, \
@@ -103,91 +120,84 @@ def check_settings(config_settings):
     if os.path.isdir(save_to):
         checked_settings.append(str(save_to))
     else:
-        log_message = log_message + "Invalid Configuration Setting - " +\
-                      "Save to Folder - Using Default"
+        logger.error("Invalid Configuration Setting - Save to Folder - Using Default")
         checked_settings.append(str(save_to_default))
 
     if len(graph_start) == 19:
         checked_settings.append(str(graph_start))
     else:
-        log_message = log_message + "Invalid Configuration Setting - " +\
-                      "Graph Start Date Range - Using Default"
+        logger.error("Invalid Configuration Setting - Graph Start Date Range - Using Default")
         checked_settings.append(str(graph_start_default))
 
     if len(graph_end) == 19:
         checked_settings.append(str(graph_end))
     else:
-        log_message = log_message + "Invalid Configuration Setting - " +\
-                      "Graph End Date Range - Using Default"
+        logger.error("Invalid Configuration Setting - Graph End Date Range - Using Default")
         checked_settings.append(str(graph_end_default))
 
     try:
         float(time_offset)
         checked_settings.append(str(time_offset))
     except:
-        log_message = log_message + "Invalid Configuration Setting -" + \
-                      " DataBase Hours Offset - Using Default"
+        logger.error("Invalid Configuration Setting - DataBase Hours Offset - Using Default")
         checked_settings.append(str(time_offset_default))
 
     try:
         int(sql_queries_skip)
         checked_settings.append(str(sql_queries_skip))
     except:
-        log_message = log_message + "Invalid Configuration Setting - " +\
-                      "Skip SQL Queries - Using Default"
+        logger.error("Invalid Configuration Setting - Skip SQL Queries - Using Default")
         checked_settings.append(str(sql_queries_skip_default))
 
     try:
         float(temperature_offset)
         checked_settings.append(str(temperature_offset))
     except:
-        log_message = log_message + "Invalid Configuration Setting - " + \
-                      "Temperature Offset - Using Default"
+        logger.error("Invalid Configuration Setting - Temperature Offset - Using Default")
         checked_settings.append(str(temperature_offset_default))
 
     try:
         int(network_check_timeout)
         checked_settings.append(str(network_check_timeout))
     except:
-        log_message = log_message + "Invalid Configuration Setting - " + \
-                      "Sensor Check Timeout - Using Default"
+        logger.error("Invalid Configuration Setting - Sensor Check Timeout - Using Default")
         checked_settings.append(str(network_check_timeout_default))
 
     try:
         int(network_details_timeout)
         checked_settings.append(str(network_details_timeout))
     except:
-        log_message = log_message + "Invalid Configuration Setting - " + \
-                      "Get Details Timeout - Using Default"
+        logger.error("Invalid Configuration Setting - Get Details Timeout - Using Default")
         checked_settings.append(str(network_details_timeout_default))
 
     try:
+        allow_power_controls = str(allow_power_controls)
         int(allow_power_controls)
         checked_settings.append(int(allow_power_controls))
     except:
-        log_message = log_message + "Invalid Configuration Setting - " + \
-                      "Enable Sensor Shutdown/Reboot - Using Defaults"
+        logger.error("Invalid Configuration Setting - Enable Sensor Shutdown/Reboot - Using Defaults")
         checked_settings.append(int(allow_power_controls_default))
 
     try:
+        allow_reset_config = str(allow_reset_config)
         int(allow_reset_config)
-        checked_settings.append(int(str(allow_reset_config)))
+        checked_settings.append(int(allow_reset_config))
     except:
-        log_message = log_message + "Invalid Configuration Setting - " + \
-                      "Enable Config Reset - Using Default"
+        logger.error("Invalid Configuration Setting - Enable Config Reset - Using Default")
         checked_settings.append(int(allow_reset_config_default))
 
-    checked_settings.append(log_message)
     return checked_settings
 
 
 def save_file(var_settings):
+    var_settings[8] = str(var_settings[8])
+    var_settings[9] = str(var_settings[9])
     var_final_write = str(var_settings)[1:-1]
 
     try:
         local_file = open(config_file, 'w')
         local_file.write(var_final_write)
         local_file.close()
-        return_message = "Settings Save - OK"
+        logger.info("Settings Save - OK")
     except:
-        return_message = "Settings Save - Failed"
+        logger.error("Settings Save - Failed")

@@ -18,6 +18,8 @@
 """
 import os
 import sys
+import platform
+import subprocess
 import logging
 # DEBUG - Detailed information, typically of interest only when diagnosing problems.
 # INFO - Confirmation that things are working as expected.
@@ -33,27 +35,25 @@ from logging.handlers import RotatingFileHandler
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar
 from tkinter import filedialog
 
-log_file = 'logs/KootNet_GUI_log.txt'
-logger = logging.getLogger("Rotating Log")
-logging.basicConfig(filename=log_file,
-                    format='%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s',
-                    level=logging.DEBUG,
-                    datefmt="%Y-%m-%d %H:%M:%S")
-log_handler = RotatingFileHandler(log_file, maxBytes=1024000, backupCount=5)
-logger.addHandler(log_handler)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s')
+
+file_handler = RotatingFileHandler('logs/KootNet_GUI_log.txt', maxBytes=1024000, backupCount=5)
+file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 app_version = "Tested on Python 3.7 - KootNet Sensors Version 0.1.16"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
 
 
-def config_load_and_set():
-    logger.info('Loading Configuration File')
-    config_options = Sensor_config.load_file()
-    config_set(config_options)
-
-
-def config_save_button():
+def config_save_apply_button():
     logger.info("Saving Configuration to File")
 
     var_settings = [config_textbox_save_to.value,
@@ -64,61 +64,54 @@ def config_save_button():
                     config_textbox_temperature_offset.value,
                     config_textbox_network_check.value,
                     config_textbox_network_details.value,
-                    str(config_checkbox_power_controls.value),
-                    str(config_checkbox_reset.value)]
+                    config_checkbox_power_controls.value,
+                    config_checkbox_reset.value]
 
-    Sensor_config.save_file(var_settings)
-    config_set(var_settings)
+    final_config = Sensor_config.check_settings(var_settings)
+    Sensor_config.save_file(final_config)
+    config_set(final_config)
 
 
+# Config Settings should already have passed through Sensor_config.check_settings()
 def config_set(config_settings):
     logger.info("Applying Configuration Options")
 
-    save_to, \
-        graph_start, \
-        graph_end, \
-        time_offset, \
-        sql_queries_skip, \
-        temperature_offset, \
-        network_check_timeout, \
-        network_details_timeout, \
-        allow_power_controls, \
-        allow_reset_config, \
-        log_message = Sensor_config.check_settings(config_settings)
-
-    logger.info(log_message)
-
-    config_textbox_save_to.value = save_to
-    config_textbox_start.value = graph_start
-    config_textbox_end.value = graph_end
-    graph_textbox_start.value = graph_start
-    graph_textbox_end.value = graph_end
-    config_textbox_time_offset.value = time_offset
-    config_textbox_sql_skip.value = sql_queries_skip
-    graph_textbox_sql_skip.value = sql_queries_skip
-    config_textbox_temperature_offset.value = temperature_offset
-    graph_textbox_temperature_offset.value = temperature_offset
-    config_textbox_network_check.value = network_check_timeout
-    config_textbox_network_details.value = network_details_timeout
-    config_checkbox_power_controls.value = allow_power_controls
-    config_checkbox_reset.value = allow_reset_config
+    config_textbox_save_to.value = config_settings[0]
+    config_textbox_start.value = config_settings[1]
+    graph_textbox_start.value = config_settings[1]
+    config_textbox_end.value = config_settings[2]
+    graph_textbox_end.value = config_settings[2]
+    config_textbox_time_offset.value = config_settings[3]
+    config_textbox_sql_skip.value = config_settings[4]
+    graph_textbox_sql_skip.value = config_settings[4]
+    config_textbox_temperature_offset.value = config_settings[5]
+    graph_textbox_temperature_offset.value = config_settings[5]
+    config_textbox_network_check.value = config_settings[6]
+    config_textbox_network_details.value = config_settings[7]
+    config_checkbox_power_controls.value = config_settings[8]
+    config_checkbox_reset.value = config_settings[9]
 
     config_enable_reset()
     config_enable_shutdown()
 
 
 def graph_open():
-    logger.info("Open Graph Window")
     window_graph.show()
 
 
 def commands_open_window():
-    logger.info("Open Sensor Commands Window")
     window_sensor_commands.show()
 
 
 def log_open():
-    logger.info("Open Log Window")
+    logger.info("Open Log Window WIP")
+    log_path = app_location_directory + "logs/"
+    if platform.system() == "Windows":
+        os.startfile(log_path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", log_path])
+    else:
+        subprocess.Popen(["xdg-open", log_path])
 
 
 def check_all_ip(var_column):
@@ -163,11 +156,9 @@ def check_all_ip(var_column):
             app_checkbox_ip16.value = 0
 
 
-# Gets checked IP's and see's if they are online.
-# Returns online sensors in list
-def app_get_online_ip_list():
+# Returns selected IP's from Main App Window & Re-Sets unselected IP background to white
+def app_get_checked_ip():
     ip_list = []
-    ip_list_final = []
 
     if app_checkbox_ip1.value == 1:
         ip_list.append(app_textbox_ip1.value)
@@ -250,94 +241,104 @@ def app_get_online_ip_list():
         app_textbox_ip16.bg = 'white'
 
     logger.info("IP List Generated from Checked Boxes")
+    return ip_list
+
+
+def app_check_sensors():
+    ip_list = app_get_checked_ip()
+    ip_list_final = []
+    net_timeout = int(config_textbox_network_check.value)
 
     for ip in ip_list:
-        var_text, var_colour, var_mess, var_checkbox = \
-            Sensor_commands.check(ip)
+        sensor_status = Sensor_commands.check(ip, net_timeout)
 
-        logger.info(var_mess)
+        if sensor_status == "Online":
+            var_colour = "#7CFC00"
+            var_checkbox = 1
+        else:
+            var_colour = "red"
+            var_checkbox = 0
 
         if var_checkbox == 1:
             ip_list_final.append(ip)
 
         if ip == app_textbox_ip1.value:
-            app_checkbox_ip1.text = var_text
+            app_checkbox_ip1.text = sensor_status
             app_textbox_ip1.bg = var_colour
             app_checkbox_ip1.value = var_checkbox
         elif ip == app_textbox_ip2.value:
-            app_checkbox_ip2.text = var_text
+            app_checkbox_ip2.text = sensor_status
             app_textbox_ip2.bg = var_colour
             app_checkbox_ip2.value = var_checkbox
         elif ip == app_textbox_ip3.value:
-            app_checkbox_ip3.text = var_text
+            app_checkbox_ip3.text = sensor_status
             app_textbox_ip3.bg = var_colour
             app_checkbox_ip3.value = var_checkbox
         elif ip == app_textbox_ip4.value:
-            app_checkbox_ip4.text = var_text
+            app_checkbox_ip4.text = sensor_status
             app_textbox_ip4.bg = var_colour
             app_checkbox_ip4.value = var_checkbox
         elif ip == app_textbox_ip5.value:
-            app_checkbox_ip5.text = var_text
+            app_checkbox_ip5.text = sensor_status
             app_textbox_ip5.bg = var_colour
             app_checkbox_ip5.value = var_checkbox
         elif ip == app_textbox_ip6.value:
-            app_checkbox_ip6.text = var_text
+            app_checkbox_ip6.text = sensor_status
             app_textbox_ip6.bg = var_colour
             app_checkbox_ip6.value = var_checkbox
         elif ip == app_textbox_ip7.value:
-            app_checkbox_ip7.text = var_text
+            app_checkbox_ip7.text = sensor_status
             app_textbox_ip7.bg = var_colour
             app_checkbox_ip7.value = var_checkbox
         elif ip == app_textbox_ip8.value:
-            app_checkbox_ip8.text = var_text
+            app_checkbox_ip8.text = sensor_status
             app_textbox_ip8.bg = var_colour
             app_checkbox_ip8.value = var_checkbox
         elif ip == app_textbox_ip9.value:
-            app_checkbox_ip9.text = var_text
+            app_checkbox_ip9.text = sensor_status
             app_textbox_ip9.bg = var_colour
             app_checkbox_ip9.value = var_checkbox
         elif ip == app_textbox_ip10.value:
-            app_checkbox_ip10.text = var_text
+            app_checkbox_ip10.text = sensor_status
             app_textbox_ip10.bg = var_colour
             app_checkbox_ip10.value = var_checkbox
         elif ip == app_textbox_ip11.value:
-            app_checkbox_ip11.text = var_text
+            app_checkbox_ip11.text = sensor_status
             app_textbox_ip11.bg = var_colour
             app_checkbox_ip11.value = var_checkbox
         elif ip == app_textbox_ip12.value:
-            app_checkbox_ip12.text = var_text
+            app_checkbox_ip12.text = sensor_status
             app_textbox_ip12.bg = var_colour
             app_checkbox_ip12.value = var_checkbox
         elif ip == app_textbox_ip13.value:
-            app_checkbox_ip13.text = var_text
+            app_checkbox_ip13.text = sensor_status
             app_textbox_ip13.bg = var_colour
             app_checkbox_ip13.value = var_checkbox
         elif ip == app_textbox_ip14.value:
-            app_checkbox_ip14.text = var_text
+            app_checkbox_ip14.text = sensor_status
             app_textbox_ip14.bg = var_colour
             app_checkbox_ip14.value = var_checkbox
         elif ip == app_textbox_ip15.value:
-            app_checkbox_ip15.text = var_text
+            app_checkbox_ip15.text = sensor_status
             app_textbox_ip15.bg = var_colour
             app_checkbox_ip15.value = var_checkbox
         elif ip == app_textbox_ip16.value:
-            app_checkbox_ip16.text = var_text
+            app_checkbox_ip16.text = sensor_status
             app_textbox_ip16.bg = var_colour
             app_checkbox_ip16.value = var_checkbox
 
+    logger.info("Checked IP's Processed")
     return ip_list_final
 
 
 def relay_download_interval_db():
-    ip_list = app_get_online_ip_list()
-    log_message = Sensor_app_imports.download_interval_db(ip_list)
-    logger.info(log_message)
+    ip_list = app_check_sensors()
+    Sensor_app_imports.download_interval_db(ip_list)
 
 
 def relay_download_trigger_db():
-    ip_list = app_get_online_ip_list()
-    log_message = Sensor_app_imports.download_trigger_db(ip_list)
-    logger.info(log_message)
+    ip_list = app_check_sensors()
+    Sensor_app_imports.download_trigger_db(ip_list)
 
 
 def relay_graph_sensors():
@@ -367,16 +368,13 @@ def relay_graph_motion():
 
 
 def relay_sensor_details():
-    var_ip_list = app_get_online_ip_list()
-
-    mess = Sensor_app_imports.sensor_detailed_status(var_ip_list)
-
-    logger.info(str(mess))
+    var_ip_list = app_check_sensors()
+    Sensor_app_imports.sensor_detailed_status(var_ip_list)
 
 
 def commands_upgrade_nas():
     logger.info("Sensor Upgrade - NAS")
-    ip_list = app_get_online_ip_list()
+    ip_list = app_check_sensors()
 
     for ip in ip_list:
         logger.info(Sensor_commands.nas_upgrade(ip))
@@ -384,7 +382,7 @@ def commands_upgrade_nas():
 
 def commands_upgrade_online():
     logger.info("Sensor Upgrade - Online")
-    ip_list = app_get_online_ip_list()
+    ip_list = app_check_sensors()
 
     for ip in ip_list:
         logger.info(Sensor_commands.online_upgrade(ip))
@@ -392,7 +390,7 @@ def commands_upgrade_online():
 
 def commands_sensor_reboot():
     logger.info("Sensor Reboot")
-    ip_list = app_get_online_ip_list()
+    ip_list = app_check_sensors()
 
     for ip in ip_list:
         logger.info(Sensor_commands.reboot(ip))
@@ -400,7 +398,7 @@ def commands_sensor_reboot():
 
 def commands_sensor_shutdown():
     logger.info("Sensor Reboot")
-    ip_list = app_get_online_ip_list()
+    ip_list = app_check_sensors()
 
     for ip in ip_list:
         logger.info(Sensor_commands.shutdown(ip))
@@ -408,7 +406,7 @@ def commands_sensor_shutdown():
 
 def commands_kill_progs():
     logger.info("Terminate Sensor Programs")
-    ip_list = app_get_online_ip_list()
+    ip_list = app_check_sensors()
 
     for ip in ip_list:
         logger.info(Sensor_commands.kill_progs(ip))
@@ -416,7 +414,7 @@ def commands_kill_progs():
 
 def commands_hostname_change():
     logger.info("Change Sensor Hostname")
-    ip_list = app_get_online_ip_list()
+    ip_list = app_check_sensors()
 
     for ip in ip_list:
         logger.info(Sensor_commands.hostname_change(ip))
@@ -435,9 +433,9 @@ def config_save_dir():
 
     if len(j) > 1:
         config_textbox_save_to.value = j + "/"
-        logger.info("Changing Save File Directory")
+        logger.info("Changed Save to Directory")
     else:
-        logger.warning("Invalid Directory Chosen")
+        logger.warning("Invalid Directory Chosen for Save to Directory")
 
 
 def config_reset_defaults():
@@ -519,7 +517,7 @@ app_menubar = MenuBar(app,
 
 app_button_sensor_check = PushButton(app,
                                      text="Check Sensor\nStatus",
-                                     command=app_get_online_ip_list,
+                                     command=app_check_sensors,
                                      grid=[1, 15, 2, 1],
                                      align="left")
 
@@ -763,11 +761,11 @@ config_checkbox_reset = CheckBox(window_config,
                                  grid=[1, 1],
                                  align="bottom")
 
-config_button_save = PushButton(window_config,
-                                text="Save &\nApply",
-                                command=config_save_button,
-                                grid=[1, 1],
-                                align="left")
+config_button_save_apply = PushButton(window_config,
+                                      text="Save &\nApply",
+                                      command=config_save_apply_button,
+                                      grid=[1, 1],
+                                      align="left")
 
 config_text_database_time = Text(window_config,
                                  text="DataBase(s) in UTC 0",
@@ -1021,7 +1019,10 @@ check_all_ip(1)
 about_textbox.value = Sensor_app_imports.get_about_text()
 about_textbox.disable()
 config_textbox_save_to.disable()
-config_load_and_set()
+
+config = Sensor_config.load_file()
+final_config = Sensor_config.check_settings(config)
+config_set(final_config)
 
 # Start the App
 app.display()

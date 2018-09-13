@@ -37,7 +37,6 @@ def open_html(outfile):
 
 
 def check_sql_end(var_date_end, var_date_now, var_date_old):
-    var_do = ''
     now_year = str(var_date_now)[0:4]
     now_month = str(var_date_now)[5:7]
     now_day = str(var_date_now)[8:10]
