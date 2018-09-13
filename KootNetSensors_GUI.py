@@ -72,7 +72,7 @@ def config_save_apply_button():
     config_set(final_config)
 
 
-# Config Settings should already have passed Sensor_config.check_settings()
+# Config Settings should already have passed  Sensor_config.check_settings()
 def config_set(config_settings):
     logger.info("Applying Configuration Options")
 
