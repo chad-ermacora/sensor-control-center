@@ -28,16 +28,18 @@ import logging
 import Sensor_commands
 import Sensor_app_imports
 import Sensor_graphs
+from logging.handlers import RotatingFileHandler
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar
 from tkinter import filedialog
 
-log_path = 'logs/KootNet_GUI_log.txt'
-logging.basicConfig(filename=log_path,
-                    format='%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s:  %(message)s',
+log_file = 'logs/KootNet_GUI_log.txt'
+logger = logging.getLogger("Rotating Log")
+logging.basicConfig(filename=log_file,
+                    format='%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s',
                     level=logging.DEBUG,
                     datefmt="%Y-%m-%d %H:%M:%S")
-log_handler = logging.handlers.RotatingFileHandler(log_path, maxBytes=20, backupCount=5)
-logging.addHandler(log_handler)
+log_handler = RotatingFileHandler(log_file, maxBytes=1024000, backupCount=5)
+logger.addHandler(log_handler)
 
 app_version = "Tested on Python 3.7 - KootNet Sensors Version 0.1.16"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
@@ -45,13 +47,13 @@ config_file = app_location_directory + "/config.txt"
 
 
 def config_load_and_set():
-    logging.info('Loading Configuration File')
+    logger.info('Loading Configuration File')
     config_options = Sensor_app_imports.config_load_file()
     config_set(config_options)
 
 
 def config_save_button():
-    logging.info("Saving Configuration to File")
+    logger.info("Saving Configuration to File")
 
     var_settings = [config_textbox_save_to.value,
                     config_textbox_start.value,
@@ -64,13 +66,12 @@ def config_save_button():
                     str(config_checkbox_power_controls.value),
                     str(config_checkbox_reset.value)]
 
-    log_message = Sensor_app_imports.config_save(var_settings)
-    logging.info(log_message)
+    Sensor_app_imports.config_save(var_settings)
     config_set(var_settings)
 
 
 def config_set(config_settings):
-    logging.info("Applying Configuration Options")
+    logger.info("Applying Configuration Options")
 
     save_to, \
         graph_start, \
@@ -84,7 +85,7 @@ def config_set(config_settings):
         allow_reset_config, \
         log_message = Sensor_app_imports.config_check_settings(config_settings)
 
-    logging.info(log_message)
+    logger.info(log_message)
 
     config_textbox_save_to.value = save_to
     config_textbox_start.value = graph_start
@@ -105,53 +106,18 @@ def config_set(config_settings):
     config_enable_shutdown()
 
 
-# Message sent here goes to both log and terminal - OLD, remove if logging working OK
-# def logging.info(log_message):
-#     log_textbox.value = log_textbox.value.strip()
-#     log_message = log_message + "\n"
-#     print(log_message)
-#     log_textbox.value = log_message + log_textbox.value
-
-
 def graph_open():
-    logging.info("Open Graph Window")
+    logger.info("Open Graph Window")
     window_graph.show()
 
 
-
 def commands_open_window():
-    logging.info("Open Sensor Commands Window")
+    logger.info("Open Sensor Commands Window")
     window_sensor_commands.show()
 
 
-
 def log_open():
-    logging.info("Open Log Window")
-
-
-#  Remove once proper log is in place
-# def log_clear():
-#     log_textbox.value = ""
-#     logging.info("Log Cleared")
-#
-#
-# def log_save():
-#     try:
-#         save_location = \
-#             filedialog.asksaveasfilename(defaultextension=".txt",
-#                                          filetypes=(("Text File", "*.txt"),
-#                                                     ("All Files", "*.*")))
-#
-#         if len(save_location) > 1:
-#             local_file = open(save_location, 'w')
-#             local_file.write(log_textbox.value)
-#             local_file.close()
-#             logging.info("Log Saved Successfully")
-#         else:
-#             logging.info("Unable to Write Log to File")
-#
-#     except:
-#         logging.info("Log Save Failed")
+    logger.info("Open Log Window")
 
 
 def check_all_ip(var_column):
@@ -282,13 +248,13 @@ def app_get_online_ip_list():
     else:
         app_textbox_ip16.bg = 'white'
 
-    logging.info("IP List Generated from Checked Boxes")
+    logger.info("IP List Generated from Checked Boxes")
 
     for ip in ip_list:
         var_text, var_colour, var_mess, var_checkbox = \
             Sensor_commands.check(ip)
 
-        logging.info(var_mess)
+        logger.info(var_mess)
 
         if var_checkbox == 1:
             ip_list_final.append(ip)
@@ -364,13 +330,13 @@ def app_get_online_ip_list():
 def relay_download_interval_db():
     ip_list = app_get_online_ip_list()
     log_message = Sensor_app_imports.download_interval_db(ip_list)
-    logging.info(log_message)
+    logger.info(log_message)
 
 
 def relay_download_trigger_db():
     ip_list = app_get_online_ip_list()
     log_message = Sensor_app_imports.download_trigger_db(ip_list)
-    logging.info(log_message)
+    logger.info(log_message)
 
 
 def relay_graph_sensors():
@@ -385,7 +351,7 @@ def relay_graph_sensors():
                                        float(graph_textbox_temperature_offset.value),
                                        "graph_trace")
 
-    logging.info(str(mess))
+    logger.info(str(mess))
 
 
 def relay_graph_motion():
@@ -396,7 +362,7 @@ def relay_graph_motion():
                                       int(config_textbox_time_offset.value),
                                       "scatterT3")
 
-    logging.info(str(mess))
+    logger.info(str(mess))
 
 
 def relay_sensor_details():
@@ -404,55 +370,55 @@ def relay_sensor_details():
 
     mess = Sensor_app_imports.sensor_detailed_status(var_ip_list)
 
-    logging.info(str(mess))
+    logger.info(str(mess))
 
 
 def commands_upgrade_nas():
-    logging.info("Sensor Upgrade - NAS")
+    logger.info("Sensor Upgrade - NAS")
     ip_list = app_get_online_ip_list()
 
     for ip in ip_list:
-        logging.info(Sensor_commands.nas_upgrade(ip))
+        logger.info(Sensor_commands.nas_upgrade(ip))
 
 
 def commands_upgrade_online():
-    logging.info("Sensor Upgrade - Online")
+    logger.info("Sensor Upgrade - Online")
     ip_list = app_get_online_ip_list()
 
     for ip in ip_list:
-        logging.info(Sensor_commands.online_upgrade(ip))
+        logger.info(Sensor_commands.online_upgrade(ip))
 
 
 def commands_sensor_reboot():
-    logging.info("Sensor Reboot")
+    logger.info("Sensor Reboot")
     ip_list = app_get_online_ip_list()
 
     for ip in ip_list:
-        logging.info(Sensor_commands.reboot(ip))
+        logger.info(Sensor_commands.reboot(ip))
 
 
 def commands_sensor_shutdown():
-    logging.info("Sensor Reboot")
+    logger.info("Sensor Reboot")
     ip_list = app_get_online_ip_list()
 
     for ip in ip_list:
-        logging.info(Sensor_commands.shutdown(ip))
+        logger.info(Sensor_commands.shutdown(ip))
 
 
 def commands_kill_progs():
-    logging.info("Terminate Sensor Programs")
+    logger.info("Terminate Sensor Programs")
     ip_list = app_get_online_ip_list()
 
     for ip in ip_list:
-        logging.info(Sensor_commands.kill_progs(ip))
+        logger.info(Sensor_commands.kill_progs(ip))
 
 
 def commands_hostname_change():
-    logging.info("Change Sensor Hostname")
+    logger.info("Change Sensor Hostname")
     ip_list = app_get_online_ip_list()
 
     for ip in ip_list:
-        logging.info(Sensor_commands.hostname_change(ip))
+        logger.info(Sensor_commands.hostname_change(ip))
 
 
 def app_open_about():
@@ -468,13 +434,13 @@ def config_save_dir():
 
     if len(j) > 1:
         config_textbox_save_to.value = j + "/"
-        logging.info("Changing Save File Directory")
+        logger.info("Changing Save File Directory")
     else:
-        logging.warning("Invalid Directory Chosen")
+        logger.warning("Invalid Directory Chosen")
 
 
 def config_reset_defaults():
-    logging.info("Resetting Configuration to Defaults")
+    logger.info("Resetting Configuration to Defaults")
     config_set(Sensor_app_imports.config_get_defaults())
 
 
