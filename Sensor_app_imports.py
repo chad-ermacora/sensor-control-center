@@ -4,6 +4,7 @@ import sys
 import os
 from urllib.request import urlopen
 from tkinter import filedialog
+from Sensor_config import config_load_file
 
 var_app_about = '''
     KootNet Sensors is a collection of programs and scripts to deploy,

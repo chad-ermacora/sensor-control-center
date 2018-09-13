@@ -24,7 +24,7 @@ app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "config.txt"
 
 
-def config_get_defaults():
+def get_defaults():
     save_to = str(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop\\'))
     save_to = save_to.replace('\\', '/')
     graph_start = "2018-08-21 00:00:01"
@@ -51,7 +51,7 @@ def config_get_defaults():
     return default_settings
 
 
-def config_load_file():
+def load_file():
     try:
         os.path.isfile(config_file)
         local_file = open(config_file, 'r')
@@ -71,10 +71,10 @@ def config_load_file():
 
     except:
         print("Configuration File Load - Failed\nUsing Configuration Defaults")
-        return config_get_defaults()
+        return get_defaults()
 
 
-def config_check_settings(config_settings):
+def check_settings(config_settings):
     checked_settings = []
     log_message = ""
 
@@ -87,7 +87,7 @@ def config_check_settings(config_settings):
         network_check_timeout_default, \
         network_details_timeout_default, \
         allow_power_controls_default, \
-        allow_reset_config_default = config_get_defaults()
+        allow_reset_config_default = get_defaults()
 
     save_to, \
         graph_start, \
@@ -181,7 +181,7 @@ def config_check_settings(config_settings):
     return checked_settings
 
 
-def config_save(var_settings):
+def save_file(var_settings):
     var_final_write = str(var_settings)[1:-1]
 
     try:
