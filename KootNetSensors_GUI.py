@@ -21,7 +21,7 @@ import sys
 import platform
 import subprocess
 import logging
-# DEBUG - Detailed information, typically of interest only when diagnosing problems.
+# DEBUG - Detailed information, typically of interest only when diagnosing problems. test
 # INFO - Confirmation that things are working as expected.
 # WARNING - An indication that something unexpected happened, or indicative of some problem in the near future
 #              (e.g. ‘disk space low’). The software is still working as expected.
