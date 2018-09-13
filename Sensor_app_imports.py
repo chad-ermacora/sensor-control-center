@@ -1,10 +1,10 @@
 import webbrowser
-import Sensor_commands
 import sys
 import os
 from urllib.request import urlopen
 from tkinter import filedialog
-from Sensor_config import config_load_file
+from Sensor_commands import get
+from Sensor_config import load_file
 
 var_app_about = '''
     KootNet Sensors is a collection of programs and scripts to deploy,
@@ -61,7 +61,7 @@ def sensor_detailed_status(ip_list):
     log_print_text = ''
     final_file = ''
     replacement_codes = html_replacement_codes()
-    temp_settings = config_load_file()
+    temp_settings = load_file()
     sensor_html = ''
     replace_word = ''
     current_sensor_html = ''
@@ -84,7 +84,7 @@ def sensor_detailed_status(ip_list):
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
-            sensor_data = Sensor_commands.get(ip)
+            sensor_data = get(ip)
     
             count2 = 0
             for code in replacement_codes:
@@ -107,9 +107,7 @@ def sensor_detailed_status(ip_list):
                 elif count2 == 6:
                     replace_word = str(sensor_data[6])
                 else:
-                    log_print_text = log_print_text + \
-                        "\nWrong format for Sensor " + \
-                        "Values\nTry Updating the Program"
+                    log_print_text = log_print_text + "\nWrong format for Sensor Values\nTry Updating the Program"
     
                 current_sensor_html = current_sensor_html.replace(code, replace_word)
                 count2 = count2 + 1
@@ -139,8 +137,6 @@ def sensor_detailed_status(ip_list):
         log_print_text = log_print_text + \
             "\nSensor Details - HTML Save File - Failed"
 
-    return log_print_text
-
 
 def download_interval_db(ip_list):
     j = filedialog.askdirectory()
@@ -159,7 +155,6 @@ def download_interval_db(ip_list):
             log_message = log_message + "\nFailed on " + str(ip) + " "
 
     log_message = log_message + "\n\nSensor DataBase Download(s) Complete"
-    return log_message
 
 
 def download_trigger_db(ip_list):
@@ -179,4 +174,4 @@ def download_trigger_db(ip_list):
             log_message = log_message + "\nConnection Failed on " + ip
 
     log_message = log_message + "\n\nTrigger DataBase Download(s) Complete"
-    return log_message
+

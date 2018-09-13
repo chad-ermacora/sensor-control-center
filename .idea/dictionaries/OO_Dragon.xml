@@ -7,6 +7,8 @@
       <w>levelname</w>
       <w>menubar</w>
       <w>sqldb</w>
+      <w>uptime</w>
+      <w>userprofile</w>
     </words>
   </dictionary>
 </component>

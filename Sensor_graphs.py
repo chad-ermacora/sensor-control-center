@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     KootNet Sensors is a collection of programs and scripts to deploy,
     interact with, and collect readings from various Sensors.

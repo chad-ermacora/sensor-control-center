@@ -49,7 +49,7 @@ config_file = app_location_directory + "/config.txt"
 
 def config_load_and_set():
     logger.info('Loading Configuration File')
-    config_options = Sensor_app_imports.Sensor_config.load_file()
+    config_options = Sensor_config.load_file()
     config_set(config_options)
 
 
@@ -67,7 +67,7 @@ def config_save_button():
                     str(config_checkbox_power_controls.value),
                     str(config_checkbox_reset.value)]
 
-    Sensor_app_imports.config_save(var_settings)
+    Sensor_config.save_file(var_settings)
     config_set(var_settings)
 
 
@@ -84,7 +84,7 @@ def config_set(config_settings):
         network_details_timeout, \
         allow_power_controls, \
         allow_reset_config, \
-        log_message = Sensor_app_imports.config_check_settings(config_settings)
+        log_message = Sensor_config.check_settings(config_settings)
 
     logger.info(log_message)
 
@@ -442,7 +442,7 @@ def config_save_dir():
 
 def config_reset_defaults():
     logger.info("Resetting Configuration to Defaults")
-    config_set(Sensor_app_imports.config_get_defaults())
+    config_set(Sensor_config.get_defaults())
 
 
 def config_enable_reset():
