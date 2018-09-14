@@ -69,8 +69,8 @@ def open_html(html_details_file):
         html_file_location = "file:///" + html_details_file
         webbrowser.open(html_file_location, new=2)
         logger.debug("open_html OK")
-    except:
-        logger.error("open_html Failed")
+    except Exception as error:
+        logger.error("open_html Failed: " + str(error))
 
 
 def sensor_detailed_status(ip_list):
@@ -90,8 +90,8 @@ def sensor_detailed_status(ip_list):
         sensor_html = html_file_part.read()
         html_file_part.close()
         logger.info("Open html_template_1.html & html_template_2.html Template - OK")
-    except:
-        logger.error("Open html_template_1.html or html_template_2.html Template - Failed")
+    except Exception as error:
+        logger.error("Open Template - Failed: " + str(error))
 
     # For each IP in the list, Get its sensor data
     # Inserting them into a final HTML file, based on a 3 part template
@@ -125,8 +125,8 @@ def sensor_detailed_status(ip_list):
     
                 current_sensor_html = current_sensor_html.replace(code, replace_word)
                 count2 = count2 + 1
-        except:
-                logger.error("Sensor get probably failed")
+        except Exception as error:
+                logger.error("Sensor get probably failed: " + str(error))
 
         # Add's each sensor that checked Online, into the final HTML variable
         final_file = final_file + current_sensor_html
@@ -135,8 +135,8 @@ def sensor_detailed_status(ip_list):
         html_end = html_file_part.read()
         html_file_part.close()
         final_file = final_file + html_end
-    except:
-        logger.error("Open html_template_3.html Template Failed")
+    except Exception as error:
+        logger.error("Open html_template_3.html Template Failed: " + str(error))
 
     # Write the final html variable to file
     try:
@@ -146,8 +146,8 @@ def sensor_detailed_status(ip_list):
         fout.close()
         open_html(save_to_folder)
         logger.info("Sensor Details - HTML Save File - OK")
-    except:
-        logger.error("Sensor Details - HTML Save File - Failed")
+    except Exception as error:
+        logger.error("Sensor Details - HTML Save File - Failed: " + str(error))
 
 
 def download_interval_db(ip_list):
@@ -162,8 +162,8 @@ def download_interval_db(ip_list):
             remote_database.close()
             local_file.close()
             logger.info("Download Interval DB from " + ip + " Complete")
-        except:
-            logger.error("Download Interval DB from " + str(ip) + " Failed")
+        except Exception as error:
+            logger.error("Download Interval DB from " + str(ip) + " Failed: " + str(error))
 
     logger.info("Sensor DataBase Download(s) Complete")
 
@@ -180,8 +180,8 @@ def download_trigger_db(ip_list):
             remote_database.close()
             local_file.close()
             logger.info("Download Trigger DB from " + ip + " Complete")
-        except:
-            logger.error("Download Trigger DB from " + ip + " Failed")
+        except Exception as error:
+            logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
 
     logger.info("Trigger DataBase Download(s) Complete")
 

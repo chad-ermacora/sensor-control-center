@@ -86,8 +86,8 @@ def load_file():
         logger.info("Configuration File Load - OK")
         return config_settings
 
-    except:
-        logger.warning("Configuration File Load Failed - Using Defaults")
+    except Exception as error:
+        logger.warning("Configuration File Load Failed - Using Defaults: " + str(error))
         return get_defaults()
 
 
@@ -120,70 +120,70 @@ def check_settings(config_settings):
     if os.path.isdir(save_to):
         checked_settings.append(str(save_to))
     else:
-        logger.error("Invalid Configuration Setting - Save to Folder - Using Default")
+        logger.error("Bad Setting - Save to Folder - Using Default")
         checked_settings.append(str(save_to_default))
 
     if len(graph_start) == 19:
         checked_settings.append(str(graph_start))
     else:
-        logger.error("Invalid Configuration Setting - Graph Start Date Range - Using Default")
+        logger.error("Bad Setting - Graph Start Date Range - Using Default")
         checked_settings.append(str(graph_start_default))
 
     if len(graph_end) == 19:
         checked_settings.append(str(graph_end))
     else:
-        logger.error("Invalid Configuration Setting - Graph End Date Range - Using Default")
+        logger.error("Bad Setting - Graph End Date Range - Using Default")
         checked_settings.append(str(graph_end_default))
 
     try:
         float(time_offset)
         checked_settings.append(str(time_offset))
-    except:
-        logger.error("Invalid Configuration Setting - DataBase Hours Offset - Using Default")
+    except Exception as error:
+        logger.error("Bad Setting - DataBase Hours Offset - Using Default: " + str(error))
         checked_settings.append(str(time_offset_default))
 
     try:
         int(sql_queries_skip)
         checked_settings.append(str(sql_queries_skip))
-    except:
-        logger.error("Invalid Configuration Setting - Skip SQL Queries - Using Default")
+    except Exception as error:
+        logger.error("Bad Setting - Skip SQL Queries - Using Default: " + str(error))
         checked_settings.append(str(sql_queries_skip_default))
 
     try:
         float(temperature_offset)
         checked_settings.append(str(temperature_offset))
-    except:
-        logger.error("Invalid Configuration Setting - Temperature Offset - Using Default")
+    except Exception as error:
+        logger.error("Bad Setting - Temperature Offset - Using Default: " + str(error))
         checked_settings.append(str(temperature_offset_default))
 
     try:
         int(network_check_timeout)
         checked_settings.append(str(network_check_timeout))
-    except:
-        logger.error("Invalid Configuration Setting - Sensor Check Timeout - Using Default")
+    except Exception as error:
+        logger.error("Bad Setting - Sensor Check Timeout - Using Default: " + str(error))
         checked_settings.append(str(network_check_timeout_default))
 
     try:
         int(network_details_timeout)
         checked_settings.append(str(network_details_timeout))
-    except:
-        logger.error("Invalid Configuration Setting - Get Details Timeout - Using Default")
+    except Exception as error:
+        logger.error("Bad Setting - Get Details Timeout - Using Default: " + str(error))
         checked_settings.append(str(network_details_timeout_default))
 
     try:
         allow_power_controls = str(allow_power_controls)
         int(allow_power_controls)
         checked_settings.append(int(allow_power_controls))
-    except:
-        logger.error("Invalid Configuration Setting - Enable Sensor Shutdown/Reboot - Using Defaults")
+    except Exception as error:
+        logger.error("Bad Setting - Enable Sensor Shutdown/Reboot - Using Defaults: " + str(error))
         checked_settings.append(int(allow_power_controls_default))
 
     try:
         allow_reset_config = str(allow_reset_config)
         int(allow_reset_config)
         checked_settings.append(int(allow_reset_config))
-    except:
-        logger.error("Invalid Configuration Setting - Enable Config Reset - Using Default")
+    except Exception as error:
+        logger.error("Bad Setting - Enable Config Reset - Using Default: " + str(error))
         checked_settings.append(int(allow_reset_config_default))
 
     return checked_settings
@@ -199,5 +199,5 @@ def save_file(var_settings):
         local_file.write(var_final_write)
         local_file.close()
         logger.info("Settings Save - OK")
-    except:
-        logger.error("Settings Save - Failed")
+    except Exception as error:
+        logger.error("Settings Save - Failed: " + str(error))

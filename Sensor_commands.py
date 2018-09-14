@@ -50,8 +50,8 @@ def check(ip, net_timeout):
         sock_g.send(b'checks')
         sensor_status = "Online"
         logger.info("Check " + str(ip) + " Online")
-    except:
-        logger.info("Check " + str(ip) + " Offline")
+    except Exception as error:
+        logger.info("Check " + str(ip) + " Offline: " + str(error))
         sensor_status = "Offline"
 
     sock_g.close()
@@ -71,8 +71,8 @@ def get(ip, net_timeout):
         sock_g.close()
         logger.info("Getting Sensor Data from " + str(ip) + " - OK")
         return sensor_data
-    except:
-        logger.warning("Getting Sensor Data from " + ip + " - Failed")
+    except Exception as error:
+        logger.warning("Getting Sensor Data from " + ip + " - Failed: " + str(error))
         offline_sensor_values = ["N/A", ip, 0, 0, 0, 0, 0, 0, 0, 0, 0, "0000-00-00 00:00:00"]
         return offline_sensor_values
 
@@ -85,8 +85,8 @@ def nas_upgrade(ip):
         sock_g.connect((ip, 10065))
         sock_g.send(b'nasupg')
         logger.info("NAS Upgrade on " + ip + " - OK")
-    except:
-        logger.warning("NAS Upgrade on " + ip + " - Failed")
+    except Exception as error:
+        logger.warning("NAS Upgrade on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -98,8 +98,8 @@ def online_upgrade(ip):
         sock_g.connect((ip, 10065))
         sock_g.send(b'online')
         logger.info("Online Upgrade on " + ip + " - OK")
-    except:
-        logger.warning("Online Upgrade on " + ip + " - Failed")
+    except Exception as error:
+        logger.warning("Online Upgrade on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -111,8 +111,8 @@ def reboot(ip):
         sock_g.connect((ip, 10065))
         sock_g.send(b'reboot')
         logger.info("Reboot on " + ip + " - OK")
-    except:
-        logger.warning("Reboot on " + ip + " - Failed")
+    except Exception as error:
+        logger.warning("Reboot on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -124,8 +124,8 @@ def shutdown(ip):
         sock_g.connect((ip, 10065))
         sock_g.send(b'shutdn')
         logger.info("Shutdown on " + ip + " - OK")
-    except:
-        logger.warning("Shutdown on " + ip + " - Failed")
+    except Exception as error:
+        logger.warning("Shutdown on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -137,8 +137,8 @@ def kill_progs(ip):
         sock_g.connect((ip, 10065))
         sock_g.send(b'killpg')
         logger.info("Closing Programs on " + ip + " - OK")
-    except:
-        logger.warning("Closing Programs on " + ip + " - Failed")
+    except Exception as error:
+        logger.warning("Closing Programs on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -154,8 +154,8 @@ def hostname_change(ip):
                 sock_g.connect((ip, 10065))
                 sock_g.send(('hostch' + str(new_hostname)).encode())
                 logger.info("Hostname Change on " + ip + " - OK")
-            except:
-                logger.warning("Hostname Change on " + ip + " - Failed")
+            except Exception as error:
+                logger.warning("Hostname Change on " + ip + " - Failed: " + str(error))
             sock_g.close()
         else:
             logger.warning("Hostname Blank, Cancelling Name Change on " + ip)
