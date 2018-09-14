@@ -406,8 +406,7 @@ def sensors_graph(sql_start,
             
             try:
                 var_cpuTemp_final.append(str(float(var_cpuTemp[count])))
-                var_hatTemp_final.append(str(float(var_hatTemp[count]) +
-                                             float(temp_offset)))
+                var_hatTemp_final.append(str(float(var_hatTemp[count]) + temp_offset))
             except:
                 print("Graph CPU or HAT Temp to float Failed - Bad data entry")
 

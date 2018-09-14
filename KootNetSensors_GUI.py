@@ -344,13 +344,18 @@ def relay_download_trigger_db():
 def relay_graph_sensors():
     if int(graph_textbox_sql_skip.value) < 1:
         graph_textbox_sql_skip.value = "1"
+    try:
+        new_temp_value = float(graph_textbox_temperature_offset.value)
+    except Exception as error:
+        logger.error("Bad Temperature setting - Using 0: " + str(error))
+        new_temp_value = 0.0
 
     mess = Sensor_graphs.sensors_graph(graph_textbox_start.value,
                                        graph_textbox_end.value,
                                        int(graph_textbox_sql_skip.value),
                                        config_textbox_save_to.value,
                                        int(config_textbox_time_offset.value),
-                                       float(graph_textbox_temperature_offset.value),
+                                       new_temp_value,
                                        "graph_trace")
 
 
