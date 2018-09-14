@@ -1017,8 +1017,8 @@ about_textbox.disable()
 config_textbox_save_to.disable()
 
 config = Sensor_config.load_file()
-final_config = Sensor_config.check_settings(config)
-config_set(final_config)
+checked_config = Sensor_config.check_settings(config)
+config_set(checked_config)
 
 # Start the App
 app.display()

@@ -21,7 +21,6 @@ import pickle
 import os
 import sys
 from tkinter import simpledialog
-from Sensor_config import load_file
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -87,7 +86,7 @@ def nas_upgrade(ip):
         sock_g.send(b'nasupg')
         logger.info("NAS Upgrade on " + ip + " - OK")
     except:
-        logger.warning("Connection Failed to " + ip)
+        logger.warning("NAS Upgrade on " + ip + " - Failed")
     sock_g.close()
 
 
@@ -100,7 +99,7 @@ def online_upgrade(ip):
         sock_g.send(b'online')
         logger.info("Online Upgrade on " + ip + " - OK")
     except:
-        logger.warning("Connection Failed to " + ip)
+        logger.warning("Online Upgrade on " + ip + " - Failed")
     sock_g.close()
 
 
@@ -113,7 +112,7 @@ def reboot(ip):
         sock_g.send(b'reboot')
         logger.info("Reboot on " + ip + " - OK")
     except:
-        logger.warning("Reboot Failed on " + ip)
+        logger.warning("Reboot on " + ip + " - Failed")
     sock_g.close()
 
 
@@ -126,7 +125,7 @@ def shutdown(ip):
         sock_g.send(b'shutdn')
         logger.info("Shutdown on " + ip + " - OK")
     except:
-        logger.warning("Shutdown Failed on " + ip)
+        logger.warning("Shutdown on " + ip + " - Failed")
     sock_g.close()
 
 
@@ -137,21 +136,28 @@ def kill_progs(ip):
     try:
         sock_g.connect((ip, 10065))
         sock_g.send(b'killpg')
-        logger.info("Programs on " + ip + " - Terminated")
+        logger.info("Closing Programs on " + ip + " - OK")
     except:
-        logger.warning("Programs on " + ip + " - Not running?")
+        logger.warning("Closing Programs on " + ip + " - Failed")
     sock_g.close()
 
 
 def hostname_change(ip):
     logger.debug("Sensor_commands.hostname_change()")
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    new_hostname = simpledialog.askstring(str(ip), "New Hostname: ")
 
-    try:
-        sock_g.connect((ip, 10065))
-        sock_g.send(str("hostch" + simpledialog.askstring((str(ip)), "New Hostname: ")).encode())
-        logger.info("Hostname on " + ip + " - Updated")
-    except:
-        logger.warning("Programs on " + ip + " - Not running?")
-    sock_g.close()
-
+    if new_hostname is not None:
+        if new_hostname is not '':
+            print(new_hostname)
+            try:
+                sock_g.connect((ip, 10065))
+                sock_g.send(('hostch' + str(new_hostname)).encode())
+                logger.info("Hostname Change on " + ip + " - OK")
+            except:
+                logger.warning("Hostname Change on " + ip + " - Failed")
+            sock_g.close()
+        else:
+            logger.warning("Hostname Blank, Cancelling Name Change on " + ip)
+    else:
+        logger.warning("Hostname cancelled on " + ip)
