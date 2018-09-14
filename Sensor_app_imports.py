@@ -141,9 +141,9 @@ def sensor_detailed_status(ip_list):
     # Write the final html variable to file
     try:
         save_to_folder = str(temp_settings[0] + "SensorsDetails.html")
-        fout = open(save_to_folder, 'w')
-        fout.write(final_file)
-        fout.close()
+        file_out = open(save_to_folder, 'w')
+        file_out.write(final_file)
+        file_out.close()
         open_html(save_to_folder)
         logger.info("Sensor Details - HTML Save File - OK")
     except Exception as error:
@@ -184,4 +184,3 @@ def download_trigger_db(ip_list):
             logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
 
     logger.info("Trigger DataBase Download(s) Complete")
-
