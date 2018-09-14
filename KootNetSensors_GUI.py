@@ -353,8 +353,6 @@ def relay_graph_sensors():
                                        float(graph_textbox_temperature_offset.value),
                                        "graph_trace")
 
-    logger.info(str(mess))
-
 
 def relay_graph_motion():
     # Need to add variables from Graph window - graph_type
@@ -363,8 +361,6 @@ def relay_graph_motion():
                                       config_textbox_save_to.value,
                                       int(config_textbox_time_offset.value),
                                       "scatterT3")
-
-    logger.info(str(mess))
 
 
 def relay_sensor_details():
