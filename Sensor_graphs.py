@@ -418,7 +418,7 @@ def sensors_graph(sql_start,
             var_blue_final.append(str(var_blue[count]))
             
             try:
-                tmp_time = datetime.strptime(var_Time[count], \
+                tmp_time = datetime.strptime(var_Time[count],
                                              "%Y-%m-%d %H:%M:%S")
                 var_Time_new = tmp_time + timedelta(hours=time_offset)
                 var_Time_final.append(str(var_Time_new))
