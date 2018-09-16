@@ -39,165 +39,150 @@ app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "config.txt"
 
 
-def get_defaults():
-    logger.debug("Getting Default Configuration Variables")
-    save_to = str(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop\\'))
-    save_to = save_to.replace('\\', '/')
-    graph_start = "2018-08-21 00:00:01"
-    graph_end = "2200-01-01 00:00:01"
-    time_offset = "-7"
-    sql_queries_skip = "12"
-    temperature_offset = "-4"
-    network_check_timeout = "2"
-    network_details_timeout = "5"
-    allow_power_controls = "0"
-    allow_reset_config = "0"
+class ConfigSettings:
 
-    default_settings = [save_to,
-                        graph_start,
-                        graph_end,
-                        time_offset,
-                        sql_queries_skip,
-                        temperature_offset,
-                        network_check_timeout,
-                        network_details_timeout,
-                        allow_power_controls,
-                        allow_reset_config]
-
-    return default_settings
+    def __init__(self):
+        save_to = str(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop\\'))
+        self.save_to = save_to.replace('\\', '/')
+        self.graph_start = "2018-08-21 00:00:01"
+        self.graph_end = "2200-01-01 00:00:01"
+        self.time_offset = "-7"
+        self.sql_queries_skip = "12"
+        self.temperature_offset = "-4"
+        self.network_check_timeout = "2"
+        self.network_details_timeout = "5"
+        self.allow_power_controls = 0
+        self.allow_reset_config = 0
 
 
 def load_file():
+    config_settings = ConfigSettings()
+
     try:
         os.path.isfile(config_file)
         local_file = open(config_file, 'r')
-        config_settings = local_file.read().split(',')
-        count = 0
-
-        for config_option in config_settings:
-            # First Import doesn't have the extra space
-            if count == 0:
-                config_settings[count] = config_option[1:-1]
-            else:
-                config_settings[count] = config_option[2:-1]
-            count = count + 1
-
+        tmp_config_settings = local_file.read().split(',')
         local_file.close()
-        logger.info("Configuration File Load - OK")
+
+        config_settings.save_to = tmp_config_settings[0]
+        config_settings.graph_start = tmp_config_settings[1]
+        config_settings.graph_end = tmp_config_settings[2]
+        config_settings.time_offset = tmp_config_settings[3]
+        config_settings.sql_queries_skip = tmp_config_settings[4]
+        config_settings.temperature_offset = tmp_config_settings[5]
+        config_settings.network_check_timeout = tmp_config_settings[6]
+        config_settings.network_details_timeout = tmp_config_settings[7]
+
+        if int(tmp_config_settings[8]) >= 0:
+            config_settings.allow_power_controls = int(tmp_config_settings[8])
+        else:
+            logger.error("Setting Enable Sensor Shutdown/Reboot - BAD - Using Default")
+
+        if int(tmp_config_settings[9]) >= 0:
+            config_settings.allow_reset_config = int(tmp_config_settings[9])
+        else:
+            logger.error("Setting Enable Config Reset - BAD - Using Default")
+
+        logger.debug("Configuration File Load - OK")
         return config_settings
 
     except Exception as error:
-        logger.warning("Configuration File Load Failed - Using Defaults: " + str(error))
-        return get_defaults()
+        logger.warning("Configuration File Load Failed - Using All or Some Defaults: " + str(error) + " - ")
+        return config_settings
 
 
 def check_settings(config_settings):
-    logger.info("Checking Configuration Settings")
-    checked_settings = []
+    logger.debug("Checking Configuration Settings")
+    default_settings = ConfigSettings()
 
-    save_to_default, \
-        graph_start_default, \
-        graph_end_default, \
-        time_offset_default, \
-        sql_queries_skip_default, \
-        temperature_offset_default, \
-        network_check_timeout_default, \
-        network_details_timeout_default, \
-        allow_power_controls_default, \
-        allow_reset_config_default = get_defaults()
-
-    save_to, \
-        graph_start, \
-        graph_end, \
-        time_offset, \
-        sql_queries_skip, \
-        temperature_offset, \
-        network_check_timeout, \
-        network_details_timeout, \
-        allow_power_controls, \
-        allow_reset_config = config_settings
-
-    if os.path.isdir(save_to):
-        checked_settings.append(str(save_to))
+    if os.path.isdir(config_settings.save_to):
+        logger.debug("Setting Save to Folder - OK")
     else:
-        logger.error("Bad Setting - Save to Folder - Using Default")
-        checked_settings.append(str(save_to_default))
+        logger.error("Setting Save to Folder - BAD - Using Default")
+        config_settings.save_to = default_settings.save_to
 
-    if len(graph_start) == 19:
-        checked_settings.append(str(graph_start))
+    if len(config_settings.graph_start) == 19:
+        logger.debug("Setting Graph Start Date Range - OK")
     else:
-        logger.error("Bad Setting - Graph Start Date Range - Using Default")
-        checked_settings.append(str(graph_start_default))
+        logger.error("Setting Graph Start Date Range - BAD - Using Default")
+        config_settings = default_settings
 
-    if len(graph_end) == 19:
-        checked_settings.append(str(graph_end))
+    if len(config_settings.graph_end) == 19:
+        logger.debug("Setting Graph End Date Range - OK")
     else:
-        logger.error("Bad Setting - Graph End Date Range - Using Default")
-        checked_settings.append(str(graph_end_default))
+        logger.error("Setting Graph End Date Range - BAD - Using Default")
+        config_settings.graph_end = default_settings.graph_end
 
     try:
-        float(time_offset)
-        checked_settings.append(str(time_offset))
+        float(config_settings.time_offset)
+        logger.debug("Setting DataBase Hours Offset - OK")
     except Exception as error:
-        logger.error("Bad Setting - DataBase Hours Offset - Using Default: " + str(error))
-        checked_settings.append(str(time_offset_default))
+        logger.error("Setting DataBase Hours Offset - BAD - Using Default" + str(error) + " - ")
+        config_settings.time_offset = default_settings.time_offset
 
     try:
-        int(sql_queries_skip)
-        checked_settings.append(str(sql_queries_skip))
+        int(config_settings.sql_queries_skip)
+        logger.debug("Setting Skip SQL Queries - OK")
     except Exception as error:
-        logger.error("Bad Setting - Skip SQL Queries - Using Default: " + str(error))
-        checked_settings.append(str(sql_queries_skip_default))
+        logger.error("Setting Skip SQL Queries - BAD - Using Default" + str(error) + " - ")
+        config_settings.sql_queries_skip = default_settings.sql_queries_skip
 
     try:
-        float(temperature_offset)
-        checked_settings.append(str(temperature_offset))
+        float(config_settings.temperature_offset)
+        logger.debug("Setting Temperature Offset - OK")
     except Exception as error:
-        logger.error("Bad Setting - Temperature Offset - Using Default: " + str(error))
-        checked_settings.append(str(temperature_offset_default))
+        logger.error("Setting Temperature Offset - BAD - Using Default" + str(error) + " - ")
+        config_settings.temperature_offset = default_settings.temperature_offset
 
     try:
-        int(network_check_timeout)
-        checked_settings.append(str(network_check_timeout))
+        int(config_settings.network_check_timeout)
+        logger.debug("Setting Sensor Check Timeout - OK")
     except Exception as error:
-        logger.error("Bad Setting - Sensor Check Timeout - Using Default: " + str(error))
-        checked_settings.append(str(network_check_timeout_default))
+        logger.error("Setting Sensor Check Timeout - BAD - Using Default" + str(error) + " - ")
+        config_settings.network_check_timeout = default_settings.network_check_timeout
 
     try:
-        int(network_details_timeout)
-        checked_settings.append(str(network_details_timeout))
+        int(config_settings.network_details_timeout)
+        logger.debug("Setting Get Details Timeout - OK")
     except Exception as error:
-        logger.error("Bad Setting - Get Details Timeout - Using Default: " + str(error))
-        checked_settings.append(str(network_details_timeout_default))
+        logger.error("Setting Get Details Timeout - BAD - Using Default" + str(error) + " - ")
+        config_settings.network_details_timeout = default_settings.network_details_timeout
 
     try:
-        allow_power_controls = str(allow_power_controls)
-        int(allow_power_controls)
-        checked_settings.append(int(allow_power_controls))
+        if config_settings.allow_power_controls >= 0:
+            logger.debug("Setting Enable Sensor Shutdown/Reboot - OK")
     except Exception as error:
-        logger.error("Bad Setting - Enable Sensor Shutdown/Reboot - Using Defaults: " + str(error))
-        checked_settings.append(int(allow_power_controls_default))
+        logger.error("Setting Enable Sensor Shutdown/Reboot - BAD - Using Default" + str(error) + " - ")
+        config_settings.allow_power_controls = default_settings.allow_power_controls
 
     try:
-        allow_reset_config = str(allow_reset_config)
-        int(allow_reset_config)
-        checked_settings.append(int(allow_reset_config))
+        if config_settings.allow_reset_config >= 0:
+            logger.debug("Setting Enable Config Reset - OK")
     except Exception as error:
-        logger.error("Bad Setting - Enable Config Reset - Using Default: " + str(error))
-        checked_settings.append(int(allow_reset_config_default))
+        logger.error("Setting Enable Config Reset - BAD - Using Default" + str(error) + " - ")
+        config_settings.allow_reset_config = default_settings.allow_reset_config
 
-    return checked_settings
+    return config_settings
 
 
-def save_file(var_settings):
-    var_settings[8] = str(var_settings[8])
-    var_settings[9] = str(var_settings[9])
-    var_final_write = str(var_settings)[1:-1]
+def save_file(temp_config_settings):
+    config_settings = check_settings(temp_config_settings)
+
+    var_final_write = str(config_settings.save_to)
+    var_final_write = var_final_write + ',' + str(config_settings.graph_start)
+    var_final_write = var_final_write + ',' + str(config_settings.graph_end)
+    var_final_write = var_final_write + ',' + str(config_settings.time_offset)
+    var_final_write = var_final_write + ',' + str(config_settings.sql_queries_skip)
+    var_final_write = var_final_write + ',' + str(config_settings.temperature_offset)
+    var_final_write = var_final_write + ',' + str(config_settings.network_check_timeout)
+    var_final_write = var_final_write + ',' + str(config_settings.network_details_timeout)
+    var_final_write = var_final_write + ',' + str(config_settings.allow_power_controls)
+    var_final_write = var_final_write + ',' + str(config_settings.allow_reset_config)
 
     try:
         local_file = open(config_file, 'w')
         local_file.write(var_final_write)
         local_file.close()
-        logger.info("Settings Save - OK")
+        logger.debug("Configuration Settings Save to File - OK")
     except Exception as error:
-        logger.error("Settings Save - Failed: " + str(error))
+        logger.error("Configuration Settings Save to File - Failed: " + str(error) + " - ")

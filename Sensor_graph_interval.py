@@ -40,12 +40,11 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-get_sql_entries = 200000
-
 
 class GraphIntervalData:
 
     def __init__(self):
+        self.db_location = ""
         self.save_file_to = ""
         self.skip_sql = 0
         self.temperature_offset = 0
@@ -54,6 +53,7 @@ class GraphIntervalData:
         self.graph_end = ""
         self.graph_type = ""
         self.graph_columns = []
+        self.get_sql_entries = 200000
 
 
 def open_html(outfile):

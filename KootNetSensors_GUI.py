@@ -58,40 +58,41 @@ config_file = app_location_directory + "/config.txt"
 def config_save_apply_button():
     logger.info("Saving Configuration to File")
 
-    var_settings = [config_textbox_save_to.value,
-                    config_textbox_start.value,
-                    config_textbox_end.value,
-                    config_textbox_time_offset.value,
-                    config_textbox_sql_skip.value,
-                    config_textbox_temperature_offset.value,
-                    config_textbox_network_check.value,
-                    config_textbox_network_details.value,
-                    config_checkbox_power_controls.value,
-                    config_checkbox_reset.value]
+    config_settings = Sensor_config.ConfigSettings()
 
-    final_config = Sensor_config.check_settings(var_settings)
-    Sensor_config.save_file(final_config)
-    config_set(final_config)
+    config_settings.save_to = config_textbox_save_to.value
+    config_settings.graph_start = config_textbox_start.value
+    config_settings.graph_end = config_textbox_end.value
+    config_settings.time_offset = config_textbox_time_offset.value
+    config_settings.sql_queries_skip = config_textbox_sql_skip.value
+    config_settings.temperature_offset = config_textbox_temperature_offset.value
+    config_settings.network_check_timeout = config_textbox_network_check.value
+    config_settings.network_details_timeout = config_textbox_network_details.value
+    config_settings.allow_power_controls = config_checkbox_power_controls.value
+    config_settings.allow_reset_config = config_checkbox_reset.value
+
+    Sensor_config.save_file(config_settings)
+    config_set(config_settings)
 
 
-# Config Settings should already have passed Sensor_config.check_settings()
 def config_set(config_settings):
+    final_config_settings = Sensor_config.check_settings(config_settings)
     logger.info("Applying Configuration Options")
 
-    config_textbox_save_to.value = config_settings[0]
-    config_textbox_start.value = config_settings[1]
-    graph_textbox_start.value = config_settings[1]
-    config_textbox_end.value = config_settings[2]
-    graph_textbox_end.value = config_settings[2]
-    config_textbox_time_offset.value = config_settings[3]
-    config_textbox_sql_skip.value = config_settings[4]
-    graph_textbox_sql_skip.value = config_settings[4]
-    config_textbox_temperature_offset.value = config_settings[5]
-    graph_textbox_temperature_offset.value = config_settings[5]
-    config_textbox_network_check.value = config_settings[6]
-    config_textbox_network_details.value = config_settings[7]
-    config_checkbox_power_controls.value = config_settings[8]
-    config_checkbox_reset.value = config_settings[9]
+    config_textbox_save_to.value = final_config_settings.save_to
+    config_textbox_start.value = final_config_settings.graph_start
+    graph_textbox_start.value = final_config_settings.graph_start
+    config_textbox_end.value = final_config_settings.graph_end
+    graph_textbox_end.value = final_config_settings.graph_end
+    config_textbox_time_offset.value = final_config_settings.time_offset
+    config_textbox_sql_skip.value = final_config_settings.sql_queries_skip
+    graph_textbox_sql_skip.value = final_config_settings.sql_queries_skip
+    config_textbox_temperature_offset.value = final_config_settings.temperature_offset
+    graph_textbox_temperature_offset.value = final_config_settings.temperature_offset
+    config_textbox_network_check.value = final_config_settings.network_check_timeout
+    config_textbox_network_details.value = final_config_settings.network_details_timeout
+    config_checkbox_power_controls.value = final_config_settings.allow_power_controls
+    config_checkbox_reset.value = final_config_settings.allow_reset_config
 
     config_enable_reset()
     config_enable_shutdown()
@@ -344,8 +345,18 @@ def relay_download_trigger_db():
 
 
 def relay_graph_interval():
-    new_graph = Sensor_graph_interval.GraphIntervalData()
+    new_interval_graph = Sensor_graph_interval.GraphIntervalData()
+    new_interval_graph.db_location = filedialog.askopenfilename()
 
+    new_interval_graph.save_file_to = config_textbox_save_to.value
+    new_interval_graph.skip_sql = config_textbox_sql_skip.value
+    new_interval_graph.temperature_offset = config_textbox_temperature_offset.value
+    new_interval_graph.time_offset = config_textbox_time_offset.value
+    new_interval_graph.graph_start = config_textbox_start.value
+    new_interval_graph.graph_end = config_textbox_end.value
+    new_interval_graph.graph_type = ""
+    new_interval_graph.graph_columns = ""
+    new_interval_graph.get_sql_entries = 200000
 
     # if int(graph_textbox_sql_skip.value) < 1:
     #     graph_textbox_sql_skip.value = "1"
@@ -435,10 +446,10 @@ def app_open_config():
 
 
 def config_save_dir():
-    j = filedialog.askdirectory()
+    save_to = filedialog.askdirectory()
 
-    if len(j) > 1:
-        config_textbox_save_to.value = j + "/"
+    if len(save_to) > 1:
+        config_textbox_save_to.value = save_to + "/"
         logger.info("Changed Save to Directory")
     else:
         logger.warning("Invalid Directory Chosen for Save to Directory")
@@ -446,7 +457,8 @@ def config_save_dir():
 
 def config_reset_defaults():
     logger.info("Resetting Configuration to Defaults")
-    config_set(Sensor_config.get_defaults())
+    default_settings = Sensor_config.ConfigSettings()
+    config_set(default_settings)
 
 
 def config_enable_reset():
@@ -1026,9 +1038,8 @@ about_textbox.value = Sensor_app_imports.get_about_text()
 about_textbox.disable()
 config_textbox_save_to.disable()
 
-config = Sensor_config.load_file()
-checked_config = Sensor_config.check_settings(config)
-config_set(checked_config)
+loaded_config_settings = Sensor_config.load_file()
+config_set(loaded_config_settings)
 
 # Start the App
 app.display()
