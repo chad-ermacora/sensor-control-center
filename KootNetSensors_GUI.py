@@ -31,17 +31,19 @@ import Sensor_config
 import Sensor_commands
 import Sensor_app_imports
 import Sensor_graphs
+import Sensor_graph_interval
 from logging.handlers import RotatingFileHandler
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar
 from tkinter import filedialog
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
 file_handler = RotatingFileHandler('logs/KootNet_GUI_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
+
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
@@ -341,22 +343,25 @@ def relay_download_trigger_db():
     Sensor_app_imports.download_trigger_db(ip_list)
 
 
-def relay_graph_sensors():
-    if int(graph_textbox_sql_skip.value) < 1:
-        graph_textbox_sql_skip.value = "1"
-    try:
-        new_temp_value = float(graph_textbox_temperature_offset.value)
-    except Exception as error:
-        logger.error("Bad Temperature setting - Using 0: " + str(error))
-        new_temp_value = 0.0
+def relay_graph_interval():
+    new_graph = Sensor_graph_interval.GraphIntervalData()
 
-    mess = Sensor_graphs.sensors_graph(graph_textbox_start.value,
-                                       graph_textbox_end.value,
-                                       int(graph_textbox_sql_skip.value),
-                                       config_textbox_save_to.value,
-                                       int(config_textbox_time_offset.value),
-                                       new_temp_value,
-                                       "graph_trace")
+
+    # if int(graph_textbox_sql_skip.value) < 1:
+    #     graph_textbox_sql_skip.value = "1"
+    # try:
+    #     new_temp_value = float(graph_textbox_temperature_offset.value)
+    # except Exception as error:
+    #     logger.error("Bad Temperature setting - Using 0: " + str(error))
+    #     new_temp_value = 0.0
+    #
+    # mess = Sensor_graphs.sensors_graph(graph_textbox_start.value,
+    #                                    graph_textbox_end.value,
+    #                                    int(graph_textbox_sql_skip.value),
+    #                                    config_textbox_save_to.value,
+    #                                    int(config_textbox_time_offset.value),
+    #                                    new_temp_value,
+    #                                    "graph_trace")
 
 
 def relay_graph_motion():
@@ -931,7 +936,7 @@ graph_textbox_end = TextBox(window_graph,
 
 graph_button_sensors = PushButton(window_graph,
                                   text="Graph\nSensors",
-                                  command=relay_graph_sensors,
+                                  command=relay_graph_interval,
                                   grid=[2, 8],
                                   align="left")
 
