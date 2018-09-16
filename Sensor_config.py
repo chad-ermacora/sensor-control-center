@@ -39,7 +39,7 @@ app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "config.txt"
 
 
-class ConfigSettings:
+class CreateConfigSettings:
 
     def __init__(self):
         save_to = str(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop\\'))

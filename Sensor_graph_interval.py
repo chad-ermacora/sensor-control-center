@@ -41,7 +41,7 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 
-class GraphIntervalData:
+class CreateGraphIntervalData:
 
     def __init__(self):
         self.db_location = ""
@@ -52,8 +52,27 @@ class GraphIntervalData:
         self.graph_start = ""
         self.graph_end = ""
         self.graph_type = ""
+        self.graph_table = "Sensor_Data"
         self.graph_columns = []
-        self.get_sql_entries = 200000
+        self.max_sql_queries = 200000
+        # self.repeat_max_sql_query = 5
+
+        # Graph data holders for SQL DataBase
+        self.sql_data_time = []
+        self.sql_data_host_name = []
+        self.sql_data_up_time = []
+        self.sql_data_ip = []
+        self.sql_data_cpu_temp = []
+        self.sql_data_hat_temp = []
+        self.sql_data_pressure = []
+        self.sql_data_humidity = []
+        self.sql_data_lumen = []
+        self.sql_data_red = []
+        self.sql_data_green = []
+        self.sql_data_blue = []
+        self.sql_data_mg_x = []
+        self.sql_data_mg_y = []
+        self.sql_data_mg_z = []
 
 
 def open_html(outfile):
@@ -114,41 +133,88 @@ def check_sql_end(var_date_end, var_date_now, var_date_old):
     return var_do
 
 
-def get_sql_data(var_column, var_table, var_start, var_end, conn_db):
+def graph_database(graph_interval_data):
+    graph_interval_data = CreateGraphIntervalData()
     var_sql_data = []
-    logger.debug("\nvar_column " + str(var_column))
-    logger.debug("var_table " + str(var_table))
-    logger.debug("var_start " + str(var_start))
-    logger.debug("var_end " + str(var_end))
-    logger.debug("conn_db " + str(conn_db))
+    logger.debug("SQL Columns " + str(graph_interval_data.graph_columns))
+    logger.debug("SQL Table(s) " + str(graph_interval_data.graph_table))
+    logger.debug("SQL Start DateTime " + str(graph_interval_data.graph_start))
+    logger.debug("SQL End DateTime " + str(graph_interval_data.graph_end))
+    logger.debug("SQL DataBase Location " + str(graph_interval_data.db_location))
 
-    var_sql_query = "SELECT " + \
-        str(var_column) + \
-        " FROM " + \
-        str(var_table) + \
-        " WHERE Time BETWEEN date('" + \
-        str(var_start) + \
-        "') AND date('" + \
-        str(var_end) + \
-        "') LIMIT " + \
-        str(get_sql_entries)
+    for var_column in graph_interval_data.graph_columns:
+        var_sql_query = "SELECT " + \
+            str(var_column) + \
+            " FROM " + \
+            str(graph_interval_data.graph_table) + \
+            " WHERE Time BETWEEN date('" + \
+            str(graph_interval_data.graph_start) + \
+            "') AND date('" + \
+            str(graph_interval_data.graph_end) + \
+            "') LIMIT " + \
+            str(graph_interval_data.max_sql_queries)
 
+        sql_column_data = get_sql_data(graph_interval_data, var_sql_query)
+
+        if str(var_column) == "Time":
+            graph_interval_data.sql_data_time = sql_column_data
+        elif str(var_column) == "hostName":
+            graph_interval_data.sql_data_host_name = sql_column_data
+        elif str(var_column) == "uptime":
+            graph_interval_data.sql_data_up_time = sql_column_data
+        elif str(var_column) == "ip":
+            graph_interval_data.sql_data_ip = sql_column_data
+        elif str(var_column) == "cpuTemp":
+            graph_interval_data.sql_data_cpu_temp = sql_column_data
+        elif str(var_column) == "hatTemp":
+            graph_interval_data.sql_data_hat_temp = sql_column_data
+        elif str(var_column) == "pressure":
+            graph_interval_data.sql_data_pressure = sql_column_data
+        elif str(var_column) == "humidity":
+            graph_interval_data.sql_data_humidity = sql_column_data
+        elif str(var_column) == "lumens":
+            graph_interval_data.sql_data_lumen = sql_column_data
+        elif str(var_column) == "red":
+            graph_interval_data.sql_data_red = sql_column_data
+        elif str(var_column) == "green":
+            graph_interval_data.sql_data_green = sql_column_data
+        elif str(var_column) == "blue":
+            graph_interval_data.sql_data_blue = sql_column_data
+        elif str(var_column) == "mg_X":
+            graph_interval_data.sql_data_mg_x = sql_column_data
+        elif str(var_column) == "mg_Y":
+            graph_interval_data.sql_data_mg_y = sql_column_data
+        elif str(var_column) == "mg_Z":
+            graph_interval_data.sql_data_mg_z = sql_column_data
+        else:
+            logger.error(var_column + " - Does Not Exist")
+
+
+def get_sql_data(graph_interval_data, sql_command):
     try:
-        conn = sqlite3.connect(str(conn_db))
+        conn = sqlite3.connect(str(graph_interval_data.db_location))
         c = conn.cursor()
+
         try:
-            c.execute(var_sql_query)
-            var_sql_data = c.fetchall()
+            c.execute(sql_command)
+            sql_column_data = c.fetchall()
             count = 0
-            for i in var_sql_data:
-                var_sql_data[count] = str(i)[2:-3]
+            skip_count = 0
+            for data in sql_column_data:
+                if skip_count >= graph_interval_data.skip_sql:
+                    sql_column_data[count] = str(data)[2:-3]
+                    skip_count = 0
+
+                skip_count = skip_count + 1
                 count = count + 1
 
             c.close()
             conn.close()
+
         except Exception as error:
-            logger.error("Failed SQL Query Failed: " + str(error))
+                logger.error("Failed SQL Query Failed: " + str(error))
+
     except Exception as error:
         logger.error("Failed DB Connection: " + str(error))
 
-    return var_sql_data
+    return sql_column_data

@@ -58,7 +58,7 @@ config_file = app_location_directory + "/config.txt"
 def config_save_apply_button():
     logger.info("Saving Configuration to File")
 
-    config_settings = Sensor_config.ConfigSettings()
+    config_settings = Sensor_config.CreateConfigSettings()
 
     config_settings.save_to = config_textbox_save_to.value
     config_settings.graph_start = config_textbox_start.value
@@ -345,7 +345,7 @@ def relay_download_trigger_db():
 
 
 def relay_graph_interval():
-    new_interval_graph = Sensor_graph_interval.GraphIntervalData()
+    new_interval_graph = Sensor_graph_interval.CreateGraphIntervalData()
     new_interval_graph.db_location = filedialog.askopenfilename()
 
     new_interval_graph.save_file_to = config_textbox_save_to.value
@@ -356,7 +356,7 @@ def relay_graph_interval():
     new_interval_graph.graph_end = config_textbox_end.value
     new_interval_graph.graph_type = ""
     new_interval_graph.graph_columns = ""
-    new_interval_graph.get_sql_entries = 200000
+    # new_interval_graph.get_sql_entries = ReplaceMe
 
     # if int(graph_textbox_sql_skip.value) < 1:
     #     graph_textbox_sql_skip.value = "1"
@@ -457,7 +457,7 @@ def config_save_dir():
 
 def config_reset_defaults():
     logger.info("Resetting Configuration to Defaults")
-    default_settings = Sensor_config.ConfigSettings()
+    default_settings = Sensor_config.CreateConfigSettings()
     config_set(default_settings)
 
 
