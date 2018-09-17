@@ -491,7 +491,7 @@ def get_column_checkboxes():
 
 
 def graph_trigger_button():
-    # Need to re-work
+    # Need to re-work before pushing to master branch
     mess = Sensor_graphs.motion_graph(graph_textbox_start.value,
                                       graph_textbox_end.value,
                                       config_textbox_save_to.value,
