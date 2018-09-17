@@ -509,7 +509,7 @@ window_graph_interval = Window(app,
                                width=280,
                                height=325,
                                layout="grid",
-                               visible=True)
+                               visible=False)
 
 window_graph_trigger = Window(app,
                               title="Trigger DB Graphing",
