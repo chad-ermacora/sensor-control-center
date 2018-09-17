@@ -507,8 +507,8 @@ app = App(title="KootNet Sensors - PC Control Center",
 
 window_graph_interval = Window(app,
                                title="Interval DB Graphing",
-                               width=280,
-                               height=325,
+                               width=275,
+                               height=300,
                                layout="grid",
                                visible=False)
 
@@ -945,14 +945,8 @@ config_textbox_network_details = TextBox(window_config,
                                          align="right")
 
 # Graph Window Section
-graph_text_date = Text(window_graph_interval,
-                       text="Date Range",
-                       color='blue',
-                       grid=[2, 1],
-                       align="left")
-
 graph_text_start = Text(window_graph_interval,
-                        text="Start: ",
+                        text="Start DateTime: ",
                         color='green',
                         grid=[1, 2],
                         align="left")
@@ -964,7 +958,7 @@ graph_textbox_start = TextBox(window_graph_interval,
                               align="left")
 
 graph_text_end = Text(window_graph_interval,
-                      text="End: ",
+                      text="End DateTime: ",
                       color='green',
                       grid=[1, 3],
                       align="left")
@@ -1043,8 +1037,8 @@ graph_checkbox_magnetic = CheckBox(window_graph_interval,
 graph_button_sensors = PushButton(window_graph_interval,
                                   text="Graph\nSensors",
                                   command=graph_interval_button,
-                                  grid=[2, 12],
-                                  align="left")
+                                  grid=[1, 12, 2, 1],
+                                  align="bottom")
 
 # graph_button_motion = PushButton(window_graph_interval,
 #                                  text="Graph\nMotion",
