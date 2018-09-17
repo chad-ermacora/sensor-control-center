@@ -145,6 +145,7 @@ def start_graph(graph_interval_data):
             logger.error(var_column + " - Does Not Exist")
 
     trace_graph(graph_interval_data)
+    logger.debug("Interval DB Graph Complete")
 
 
 def adjust_datetime(var_datetime, time_offset):
@@ -160,6 +161,7 @@ def adjust_datetime(var_datetime, time_offset):
 
     new_time = var_datetime + timedelta(hours=time_offset)
 
+    logger.debug("Adjusted datetime: " + str(new_time))
     return str(new_time)
 
 
@@ -226,6 +228,7 @@ def trace_graph(graph_interval_data):
 
         graph_collection.append([trace_uptime, row_count, 1])
         sub_plots.append('Sensor Uptime')
+        logger.debug("Graph Sensor Uptime Added")
 
     if len(graph_interval_data.sql_data_cpu_temp) > 2:
         row_count = row_count + 1
@@ -241,6 +244,7 @@ def trace_graph(graph_interval_data):
         graph_collection.append([trace_cpu_temp, row_count, 1])
         graph_collection.append([trace_hat_temp, row_count, 1])
         sub_plots.append('CPU / HAT Temp')
+        logger.debug("Graph CPU / HAT Temp Added")
 
     if len(graph_interval_data.sql_data_pressure) > 2:
         row_count = row_count + 1
@@ -251,6 +255,7 @@ def trace_graph(graph_interval_data):
 
         graph_collection.append([trace_pressure, row_count, 1])
         sub_plots.append('Pressure hPa')
+        logger.debug("Graph Pressure hPa Added")
 
     if len(graph_interval_data.sql_data_humidity) > 2:
         row_count = row_count + 1
@@ -261,6 +266,7 @@ def trace_graph(graph_interval_data):
 
         graph_collection.append([trace_humidity, row_count, 1])
         sub_plots.append('Humidity')
+        logger.debug("Graph Humidity Added")
 
     if len(graph_interval_data.sql_data_lumen) > 2:
         row_count = row_count + 1
@@ -272,6 +278,7 @@ def trace_graph(graph_interval_data):
 
         graph_collection.append([trace_lumen, row_count, 1])
         sub_plots.append('Lumen')
+        logger.debug("Graph Lumen Added")
 
     if len(graph_interval_data.sql_data_red) > 2:
         row_count = row_count + 1
@@ -295,6 +302,7 @@ def trace_graph(graph_interval_data):
         graph_collection.append([trace_green, row_count, 1])
         graph_collection.append([trace_blue, row_count, 1])
         sub_plots.append('Colour RGB')
+        logger.debug("Graph Colour RGB Added")
 
     if len(graph_interval_data.sql_data_mg_x) > 2:
         row_count = row_count + 1
@@ -318,6 +326,7 @@ def trace_graph(graph_interval_data):
         graph_collection.append([trace_mg_y, row_count, 1])
         graph_collection.append([trace_mg_z, row_count, 1])
         sub_plots.append('Magnetic XYZ')
+        logger.debug("Graph Magnetic XYZ Added")
 
     fig = tools.make_subplots(rows=row_count,
                               cols=1,
@@ -332,4 +341,8 @@ def trace_graph(graph_interval_data):
                                str(graph_interval_data.sql_data_ip[0]),
                                height=2048)
 
-    plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
+    try:
+        plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
+        logger.info("Interval Graph Creation - OK")
+    except Exception as error:
+        logger.error("Interval Graph Creation - Failed - " + str(error))

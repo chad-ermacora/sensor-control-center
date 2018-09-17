@@ -64,7 +64,7 @@ def app_sensor_commands_menu():
 
 
 def app_log_open_menu():
-    logger.info("Open Log Window WIP")
+    logger.debug("Open Log Window WIP")
     log_path = app_location_directory + "logs/"
     if platform.system() == "Windows":
         os.startfile(log_path)
@@ -74,7 +74,7 @@ def app_log_open_menu():
         subprocess.Popen(["xdg-open", log_path])
 
 
-def app_check_all_ip_checkboxs(var_column):
+def app_check_all_ip_checkboxes(var_column):
     if var_column == 1:
         if app_checkbox_all_column1.value == 1:
             app_checkbox_ip1.value = 1
@@ -200,7 +200,7 @@ def get_checked_ip():
     else:
         app_textbox_ip16.bg = 'white'
 
-    logger.info("IP List Generated from Checked Boxes")
+    logger.debug("IP List Generated from Checked Boxes")
     return ip_list
 
 
@@ -287,7 +287,7 @@ def app_check_sensors_button():
             app_textbox_ip16.bg = var_colour
             app_checkbox_ip16.value = var_checkbox
 
-    logger.info("Checked IP's Processed")
+    logger.debug("Checked IP's Processed")
     return ip_list_final
 
 
@@ -315,7 +315,7 @@ def app_open_config():
 
 
 def config_save_apply_button():
-    logger.info("Saving Configuration to File")
+    logger.info("Applying Configuration & Saving to File")
 
     config_settings = Sensor_config.CreateConfigSettings()
 
@@ -362,7 +362,7 @@ def config_save_dir():
 
     if len(save_to) > 1:
         config_textbox_save_to.value = save_to + "/"
-        logger.info("Changed Save to Directory")
+        logger.debug("Changed Save to Directory")
     else:
         logger.warning("Invalid Directory Chosen for Save to Directory")
 
@@ -390,7 +390,7 @@ def config_enable_shutdown():
 
 
 def commands_upgrade_nas():
-    logger.info("Sensor Upgrade - NAS")
+    logger.debug("Sensor Upgrade - NAS")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -398,7 +398,7 @@ def commands_upgrade_nas():
 
 
 def commands_upgrade_online():
-    logger.info("Sensor Upgrade - Online")
+    logger.debug("Sensor Upgrade - Online")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -406,7 +406,7 @@ def commands_upgrade_online():
 
 
 def commands_sensor_reboot():
-    logger.info("Sensor Reboot")
+    logger.debug("Sensor Reboot")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -414,7 +414,7 @@ def commands_sensor_reboot():
 
 
 def commands_sensor_shutdown():
-    logger.info("Sensor Reboot")
+    logger.debug("Sensor Reboot")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -422,7 +422,7 @@ def commands_sensor_shutdown():
 
 
 def commands_kill_progs():
-    logger.info("Terminate Sensor Programs")
+    logger.debug("Terminate Sensor Programs")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -430,7 +430,7 @@ def commands_kill_progs():
 
 
 def commands_hostname_change():
-    logger.info("Change Sensor Hostname")
+    logger.debug("Change Sensor Hostname")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -486,6 +486,7 @@ def get_column_checkboxes():
         column_checkboxes.append("mg_Y")
         column_checkboxes.append("mg_Z")
 
+    logger.debug(str(column_checkboxes))
     return column_checkboxes
 
 
@@ -582,7 +583,7 @@ app_button_sensor_hostname = PushButton(app,
 # Sensor's Online / Offline IP List Selection 1
 app_checkbox_all_column1 = CheckBox(app,
                                     text="Check ALL Column 1",
-                                    command=app_check_all_ip_checkboxs,
+                                    command=app_check_all_ip_checkboxes,
                                     args=[1],
                                     grid=[1, 1, 3, 1],
                                     align="left")
@@ -679,7 +680,7 @@ app_textbox_ip8 = TextBox(app,
 # Sensor's Online / Offline IP List Selection 2
 app_checkbox_all_column2 = CheckBox(app,
                                     text="Check ALL Column 2",
-                                    command=app_check_all_ip_checkboxs,
+                                    command=app_check_all_ip_checkboxes,
                                     args=[2],
                                     grid=[3, 1, 3, 1],
                                     align="left")
@@ -1102,7 +1103,7 @@ commands_button_shutdown = PushButton(window_sensor_commands,
 
 # Change Window Configurations before loading app
 app_checkbox_all_column1.toggle()
-app_check_all_ip_checkboxs(1)
+app_check_all_ip_checkboxes(1)
 graph_checkbox_humidity.value = 1
 graph_checkbox_pressure.value = 1
 graph_checkbox_lumen.value = 1
