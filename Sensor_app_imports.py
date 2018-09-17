@@ -80,7 +80,7 @@ def sensor_detailed_status(ip_list):
     sensor_html = ''
     replace_word = ''
     current_sensor_html = ''
-    net_timeout = int(temp_settings[7])
+    net_timeout = int(temp_settings.network_details_timeout)
 
     try:
         html_file_part = open(str(app_location_directory + html_template_1), 'r')
@@ -99,7 +99,7 @@ def sensor_detailed_status(ip_list):
         try:
             current_sensor_html = sensor_html
             sensor_data = get(ip, net_timeout)
-            sensor_data[4] = round(float(sensor_data[4]) + float(temp_settings[5]), 2)
+            sensor_data[4] = round(float(sensor_data[4]) + float(temp_settings.temperature_offset), 2)
             count2 = 0
             for code in replacement_codes:
                 if count2 == 0:
@@ -140,7 +140,7 @@ def sensor_detailed_status(ip_list):
 
     # Write the final html variable to file
     try:
-        save_to_folder = str(temp_settings[0] + "SensorsDetails.html")
+        save_to_folder = str(temp_settings.save_to + "SensorsDetails.html")
         file_out = open(save_to_folder, 'w')
         file_out.write(final_file)
         file_out.close()
