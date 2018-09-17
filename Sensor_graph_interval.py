@@ -197,6 +197,10 @@ def get_sql_data(graph_interval_data, sql_command):
 
 
 def trace_graph(graph_interval_data):
+    sub_plots = []
+    row_count = 0
+    graph_collection = []
+
     mark_red = dict(size=10,
                     color='rgba(255, 0, 0, .9)',
                     line=dict(width=2, color='rgb(0, 0, 0)'))
@@ -213,58 +217,114 @@ def trace_graph(graph_interval_data):
                        color='rgba(255, 80, 80, .9)',
                        line=dict(width=2, color='rgb(0, 0, 0)'))
 
-    trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,
-                                y=graph_interval_data.sql_data_cpu_temp,
-                                name="CPU Temp")
+    if len(graph_interval_data.sql_data_up_time) > 2:
+        row_count = row_count + 1
 
-    trace_hat_temp = go.Scatter(x=graph_interval_data.sql_data_time,
-                                y=graph_interval_data.sql_data_hat_temp,
-                                name="HAT Temp")
+        trace_uptime = go.Scatter(x=graph_interval_data.sql_data_time,
+                                  y=graph_interval_data.sql_data_up_time,
+                                  name="Sensor Uptime")
 
-    trace_pressure = go.Scatter(x=graph_interval_data.sql_data_time,
+        graph_collection.append([trace_uptime, row_count, 1])
+        sub_plots.append('Sensor Uptime')
+
+    if len(graph_interval_data.sql_data_cpu_temp) > 2:
+        row_count = row_count + 1
+
+        trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,
+                                    y=graph_interval_data.sql_data_cpu_temp,
+                                    name="CPU Temp")
+
+        trace_hat_temp = go.Scatter(x=graph_interval_data.sql_data_time,
+                                    y=graph_interval_data.sql_data_hat_temp,
+                                    name="HAT Temp")
+
+        graph_collection.append([trace_cpu_temp, row_count, 1])
+        graph_collection.append([trace_hat_temp, row_count, 1])
+        sub_plots.append('CPU / HAT Temp')
+
+    if len(graph_interval_data.sql_data_pressure) > 2:
+        row_count = row_count + 1
+
+        trace_pressure = go.Scatter(x=graph_interval_data.sql_data_time,
                                 y=graph_interval_data.sql_data_pressure,
                                 name="Pressure hPa")
 
-    trace_lumen = go.Scatter(x=graph_interval_data.sql_data_time,
-                             y=graph_interval_data.sql_data_lumen,
-                             name="Lumen",
-                             marker=mark_yellow)
+        graph_collection.append([trace_pressure, row_count, 1])
+        sub_plots.append('Pressure hPa')
 
-    trace_red = go.Scatter(x=graph_interval_data.sql_data_time,
-                           y=graph_interval_data.sql_data_red,
-                           name="Red",
-                           marker=mark_red)
+    if len(graph_interval_data.sql_data_humidity) > 2:
+        row_count = row_count + 1
 
-    trace_green = go.Scatter(x=graph_interval_data.sql_data_time,
-                             y=graph_interval_data.sql_data_green,
-                             name="Green",
-                             marker=mark_green)
+        trace_humidity = go.Scatter(x=graph_interval_data.sql_data_time,
+                                    y=graph_interval_data.sql_data_humidity,
+                                    name="Humidity %")
 
-    trace_blue = go.Scatter(x=graph_interval_data.sql_data_time,
-                            y=graph_interval_data.sql_data_blue,
-                            name="Blue",
-                            marker=mark_blue)
+        graph_collection.append([trace_humidity, row_count, 1])
+        sub_plots.append('Humidity')
 
-    trace_uptime = go.Scatter(x=graph_interval_data.sql_data_time,
-                              y=graph_interval_data.sql_data_up_time,
-                              name="Sensor Uptime")
+    if len(graph_interval_data.sql_data_lumen) > 2:
+        row_count = row_count + 1
 
-    fig = tools.make_subplots(rows=5,
+        trace_lumen = go.Scatter(x=graph_interval_data.sql_data_time,
+                                 y=graph_interval_data.sql_data_lumen,
+                                 name="Lumen",
+                                 marker=mark_yellow)
+
+        graph_collection.append([trace_lumen, row_count, 1])
+        sub_plots.append('Lumen')
+
+    if len(graph_interval_data.sql_data_red) > 2:
+        row_count = row_count + 1
+
+        trace_red = go.Scatter(x=graph_interval_data.sql_data_time,
+                               y=graph_interval_data.sql_data_red,
+                               name="Red",
+                               marker=mark_red)
+
+        trace_green = go.Scatter(x=graph_interval_data.sql_data_time,
+                                 y=graph_interval_data.sql_data_green,
+                                 name="Green",
+                                 marker=mark_green)
+
+        trace_blue = go.Scatter(x=graph_interval_data.sql_data_time,
+                                y=graph_interval_data.sql_data_blue,
+                                name="Blue",
+                                marker=mark_blue)
+
+        graph_collection.append([trace_red, row_count, 1])
+        graph_collection.append([trace_green, row_count, 1])
+        graph_collection.append([trace_blue, row_count, 1])
+        sub_plots.append('Colour RGB')
+
+    if len(graph_interval_data.sql_data_mg_x) > 2:
+        row_count = row_count + 1
+
+        trace_mg_x = go.Scatter(x=graph_interval_data.sql_data_time,
+                                y=graph_interval_data.sql_data_mg_x,
+                                name="Magnetic X",
+                                marker=mark_red)
+
+        trace_mg_y = go.Scatter(x=graph_interval_data.sql_data_time,
+                                y=graph_interval_data.sql_data_mg_y,
+                                name="Magnetic Y",
+                                marker=mark_green)
+
+        trace_mg_z = go.Scatter(x=graph_interval_data.sql_data_time,
+                                y=graph_interval_data.sql_data_mg_z,
+                                name="Magnetic Z",
+                                marker=mark_blue)
+
+        graph_collection.append([trace_mg_x, row_count, 1])
+        graph_collection.append([trace_mg_y, row_count, 1])
+        graph_collection.append([trace_mg_z, row_count, 1])
+        sub_plots.append('Magnetic XYZ')
+
+    fig = tools.make_subplots(rows=row_count,
                               cols=1,
-                              subplot_titles=('CPU / HAT Temp',
-                                              'Pressure hPa',
-                                              'Lumen',
-                                              'RGB',
-                                              'Sensor Uptime Hours'))
+                              subplot_titles=sub_plots)
 
-    fig.append_trace(trace_cpu_temp, 1, 1)
-    fig.append_trace(trace_hat_temp, 1, 1)
-    fig.append_trace(trace_pressure, 2, 1)
-    fig.append_trace(trace_lumen, 3, 1)
-    fig.append_trace(trace_red, 4, 1)
-    fig.append_trace(trace_green, 4, 1)
-    fig.append_trace(trace_blue, 4, 1)
-    fig.append_trace(trace_uptime, 5, 1)
+    for graph in graph_collection:
+        fig.append_trace(graph[0], graph[1], graph[2])
 
     fig['layout'].update(title="Sensor Name on First/Last Data Point: " +
                                str(graph_interval_data.sql_data_host_name[0]) + " / " +
