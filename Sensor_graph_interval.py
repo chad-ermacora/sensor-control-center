@@ -46,11 +46,11 @@ class CreateGraphIntervalData:
     def __init__(self):
         self.db_location = ""
         self.save_file_to = ""
-        self.skip_sql = 0
-        self.temperature_offset = 0
+        self.skip_sql = 12
+        self.temperature_offset = -4.5
         self.time_offset = 0
-        self.graph_start = ""
-        self.graph_end = ""
+        self.graph_start = "1111-08-21 00:00:01"
+        self.graph_end = "9999-01-01 00:00:01"
         self.graph_type = ""
         self.graph_table = "Sensor_Data"
         self.graph_columns = ["Time", "hostName", "uptime", "ip", "cpuTemp", "hatTemp",
@@ -122,6 +122,13 @@ def start_graph(graph_interval_data):
         elif str(var_column) == "cpuTemp":
             graph_interval_data.sql_data_cpu_temp = sql_column_data
         elif str(var_column) == "hatTemp":
+            count = 0
+            for data in sql_column_data:
+                try:
+                    sql_column_data[count] = float(data) + graph_interval_data.temperature_offset
+                    count = count + 1
+                except Exception as error:
+                    logger.error("Unable to adjust Environmental Temperature" + str(error))
             graph_interval_data.sql_data_hat_temp = sql_column_data
         elif str(var_column) == "pressure":
             graph_interval_data.sql_data_pressure = sql_column_data
