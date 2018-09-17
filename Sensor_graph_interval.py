@@ -23,12 +23,11 @@ import plotly.graph_objs as go
 import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta
-from tkinter import filedialog
 from plotly import tools
 
 logger = logging.getLogger(__name__)
 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
 file_handler = RotatingFileHandler('logs/Sensor_graph_interval_log.txt', maxBytes=256000, backupCount=5)
@@ -42,6 +41,7 @@ logger.addHandler(stream_handler)
 
 
 class CreateGraphIntervalData:
+    logger.debug("CreateGraphIntervalData Instance Created")
 
     def __init__(self):
         self.db_location = ""
@@ -53,7 +53,10 @@ class CreateGraphIntervalData:
         self.graph_end = ""
         self.graph_type = ""
         self.graph_table = "Sensor_Data"
-        self.graph_columns = []
+        self.graph_columns = ["Time", "hostName", "uptime", "ip", "cpuTemp", "hatTemp",
+                              "pressure", "humidity", "lumens", "red", "green", "blue",
+                              "mg_X", "mg_Y", "mg_Z"]
+
         self.max_sql_queries = 200000
         # self.repeat_max_sql_query = 5
 
@@ -79,9 +82,9 @@ def open_html(outfile):
     try:
         file_var = "file:///" + outfile
         webbrowser.open(file_var, new=2)
-        logger.info("open_html OK")
+        logger.debug("Graph HTML File Opened - OK")
     except Exception as error:
-        logger.error("open_html Failed: " + str(error))
+        logger.error("Graph HTML File Opened - Failed - " + str(error))
 
 
 def check_sql_end(var_date_end, var_date_now, var_date_old):
@@ -133,14 +136,15 @@ def check_sql_end(var_date_end, var_date_now, var_date_old):
     return var_do
 
 
-def graph_database(graph_interval_data):
-    graph_interval_data = CreateGraphIntervalData()
-    var_sql_data = []
+def start_graph(graph_interval_data):
     logger.debug("SQL Columns " + str(graph_interval_data.graph_columns))
     logger.debug("SQL Table(s) " + str(graph_interval_data.graph_table))
     logger.debug("SQL Start DateTime " + str(graph_interval_data.graph_start))
     logger.debug("SQL End DateTime " + str(graph_interval_data.graph_end))
     logger.debug("SQL DataBase Location " + str(graph_interval_data.db_location))
+
+    graph_interval_data.graph_start = adjust_datetime(graph_interval_data.graph_start, graph_interval_data.time_offset)
+    graph_interval_data.graph_end = adjust_datetime(graph_interval_data.graph_end, graph_interval_data.time_offset)
 
     for var_column in graph_interval_data.graph_columns:
         var_sql_query = "SELECT " + \
@@ -189,8 +193,27 @@ def graph_database(graph_interval_data):
         else:
             logger.error(var_column + " - Does Not Exist")
 
+    trace_graph(graph_interval_data)
+
+
+def adjust_datetime(var_datetime, time_offset):
+    try:
+        var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
+    except Exception as error:
+        logger.error("datetime already converted from str - " + str(error))
+
+    try:
+        time_offset = int(time_offset)
+    except Exception as error:
+        logger.error("Hour Offset already converted from str - " + str(error))
+
+    new_time = var_datetime + timedelta(hours=time_offset)
+
+    return str(new_time)
+
 
 def get_sql_data(graph_interval_data, sql_command):
+    return_data = []
     try:
         conn = sqlite3.connect(str(graph_interval_data.db_location))
         c = conn.cursor()
@@ -201,8 +224,8 @@ def get_sql_data(graph_interval_data, sql_command):
             count = 0
             skip_count = 0
             for data in sql_column_data:
-                if skip_count >= graph_interval_data.skip_sql:
-                    sql_column_data[count] = str(data)[2:-3]
+                if skip_count > int(graph_interval_data.skip_sql):
+                    return_data.append(str(data)[2:-3])
                     skip_count = 0
 
                 skip_count = skip_count + 1
@@ -212,9 +235,91 @@ def get_sql_data(graph_interval_data, sql_command):
             conn.close()
 
         except Exception as error:
-                logger.error("Failed SQL Query Failed: " + str(error))
+            logger.error("Failed SQL Query Failed: " + str(error))
 
     except Exception as error:
         logger.error("Failed DB Connection: " + str(error))
 
-    return sql_column_data
+    logger.debug("SQL execute Command " + str(sql_command))
+    logger.debug("SQL Column Data Length: " + str(len(return_data)))
+    print(return_data[6])
+    return return_data
+
+
+def trace_graph(graph_interval_data):
+    mark_red = dict(size=10,
+                    color='rgba(255, 0, 0, .9)',
+                    line=dict(width=2, color='rgb(0, 0, 0)'))
+
+    mark_green = dict(size=10,
+                      color='rgba(0, 255, 0, .9)',
+                      line=dict(width=2, color='rgb(0, 0, 0)'))
+
+    mark_blue = dict(size=10,
+                     color='rgba(0, 0, 255, .9)',
+                     line=dict(width=2, color='rgb(0, 0, 0)'))
+
+    mark_yellow = dict(size=10,
+                       color='rgba(255, 80, 80, .9)',
+                       line=dict(width=2, color='rgb(0, 0, 0)'))
+
+    trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,
+                                y=graph_interval_data.sql_data_cpu_temp,
+                                name="CPU Temp")
+
+    trace_hat_temp = go.Scatter(x=graph_interval_data.sql_data_time,
+                                y=graph_interval_data.sql_data_hat_temp,
+                                name="HAT Temp")
+
+    trace_pressure = go.Scatter(x=graph_interval_data.sql_data_time,
+                                y=graph_interval_data.sql_data_pressure,
+                                name="Pressure hPa")
+
+    trace_lumen = go.Scatter(x=graph_interval_data.sql_data_time,
+                             y=graph_interval_data.sql_data_lumen,
+                             name="Lumen",
+                             marker=mark_yellow)
+
+    trace_red = go.Scatter(x=graph_interval_data.sql_data_time,
+                           y=graph_interval_data.sql_data_red,
+                           name="Red",
+                           marker=mark_red)
+
+    trace_green = go.Scatter(x=graph_interval_data.sql_data_time,
+                             y=graph_interval_data.sql_data_green,
+                             name="Green",
+                             marker=mark_green)
+
+    trace_blue = go.Scatter(x=graph_interval_data.sql_data_time,
+                            y=graph_interval_data.sql_data_blue,
+                            name="Blue",
+                            marker=mark_blue)
+
+    trace_uptime = go.Scatter(x=graph_interval_data.sql_data_time,
+                              y=graph_interval_data.sql_data_up_time,
+                              name="Sensor Uptime")
+
+    fig = tools.make_subplots(rows=5,
+                              cols=1,
+                              subplot_titles=('CPU / HAT Temp',
+                                              'Pressure hPa',
+                                              'Lumen',
+                                              'RGB',
+                                              'Sensor Uptime Hours'))
+
+    fig.append_trace(trace_cpu_temp, 1, 1)
+    fig.append_trace(trace_hat_temp, 1, 1)
+    fig.append_trace(trace_pressure, 2, 1)
+    fig.append_trace(trace_lumen, 3, 1)
+    fig.append_trace(trace_red, 4, 1)
+    fig.append_trace(trace_green, 4, 1)
+    fig.append_trace(trace_blue, 4, 1)
+    fig.append_trace(trace_uptime, 5, 1)
+
+    fig['layout'].update(title="Sensor Name on First/Last Data Point: " +
+                               "str(graph_interval_data.sql_data_host_name[0])" + " / " +
+                               "str(graph_interval_data.sql_data_host_name[-1])" + " - " +
+                               "str(graph_interval_data.sql_data_ip[0])",
+                               height=2048)
+
+    plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)

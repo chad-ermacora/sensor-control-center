@@ -349,14 +349,16 @@ def relay_graph_interval():
     new_interval_graph.db_location = filedialog.askopenfilename()
 
     new_interval_graph.save_file_to = config_textbox_save_to.value
-    new_interval_graph.skip_sql = config_textbox_sql_skip.value
-    new_interval_graph.temperature_offset = config_textbox_temperature_offset.value
+    new_interval_graph.skip_sql = graph_textbox_sql_skip.value
+    new_interval_graph.temperature_offset = graph_textbox_temperature_offset.value
     new_interval_graph.time_offset = config_textbox_time_offset.value
-    new_interval_graph.graph_start = config_textbox_start.value
-    new_interval_graph.graph_end = config_textbox_end.value
-    new_interval_graph.graph_type = ""
-    new_interval_graph.graph_columns = ""
+    new_interval_graph.graph_start = graph_textbox_start.value
+    new_interval_graph.graph_end = graph_textbox_end.value
+    # new_interval_graph.graph_type = ""
+    # new_interval_graph.graph_columns = ""
     # new_interval_graph.get_sql_entries = ReplaceMe
+    Sensor_graph_interval.start_graph(new_interval_graph)
+
 
     # if int(graph_textbox_sql_skip.value) < 1:
     #     graph_textbox_sql_skip.value = "1"

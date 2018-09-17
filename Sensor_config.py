@@ -56,7 +56,7 @@ class CreateConfigSettings:
 
 
 def load_file():
-    config_settings = ConfigSettings()
+    config_settings = CreateConfigSettings()
 
     try:
         os.path.isfile(config_file)
@@ -93,7 +93,7 @@ def load_file():
 
 def check_settings(config_settings):
     logger.debug("Checking Configuration Settings")
-    default_settings = ConfigSettings()
+    default_settings = CreateConfigSettings()
 
     if os.path.isdir(config_settings.save_to):
         logger.debug("Setting Save to Folder - OK")
