@@ -555,7 +555,7 @@ app_menubar = MenuBar(app,
                                  app_download_interval_db_menu],
                                 ["Download Trigger Database(s)",
                                  app_download_trigger_db_menu]],
-                               [["Graph Interval DataBase",
+                               [["Graph Interval Database",
                                  app_graph_open_menu]],
                                [["Making a Sensor Unit - WIP",
                                  app_open_about],
@@ -815,7 +815,7 @@ config_button_save_apply = PushButton(window_config,
                                       align="left")
 
 config_text_database_time = Text(window_config,
-                                 text="DataBase(s) in UTC 0",
+                                 text="Database(s) in UTC 0",
                                  grid=[2, 1],
                                  color='#CB0000',
                                  align="top")
@@ -855,7 +855,7 @@ config_text_info = Text(window_config,
                         align="top")
 
 config_text_start = Text(window_config,
-                         text="Start: ",
+                         text="         Start DateTime: ",
                          color='green',
                          grid=[1, 8],
                          align="left")
@@ -864,10 +864,10 @@ config_textbox_start = TextBox(window_config,
                                text="",
                                width=20,
                                grid=[1, 8],
-                               align="top")
+                               align="right")
 
 config_text_end = Text(window_config,
-                       text="End: ",
+                       text="         End DateTime: ",
                        color='green',
                        grid=[1, 9],
                        align="left")
@@ -876,10 +876,10 @@ config_textbox_end = TextBox(window_config,
                              text="",
                              width=20,
                              grid=[1, 9],
-                             align="top")
+                             align="right")
 
 config_text_time_offset2 = Text(window_config,
-                                text="DataBase Hour(s) Offset",
+                                text="Database Hour(s) Offset",
                                 color='blue',
                                 grid=[2, 1],
                                 align="bottom")
@@ -903,7 +903,7 @@ config_textbox_sql_skip = TextBox(window_config,
                                   align="top")
 
 config_text_temperature_offset = Text(window_config,
-                                      text="Temperature offset",
+                                      text="Temperature Offset",
                                       color='blue',
                                       grid=[2, 4],
                                       align="bottom")
@@ -921,7 +921,7 @@ config_text_network_timeouts = Text(window_config,
                                     align="top")
 
 config_text_network_timeouts1 = Text(window_config,
-                                     text="Sensor Check",
+                                     text="   Sensor Check: ",
                                      color='green',
                                      grid=[2, 7],
                                      align="left")
@@ -933,7 +933,7 @@ config_textbox_network_check = TextBox(window_config,
                                        align="right")
 
 config_text_network_timeouts2 = Text(window_config,
-                                     text="Sensor Details",
+                                     text="   Sensor Details: ",
                                      color='green',
                                      grid=[2, 8],
                                      align="left")
@@ -994,7 +994,7 @@ graph_textbox_temperature_offset = TextBox(window_graph_interval,
                                            align="left")
 
 graph_text_column_selection = Text(window_graph_interval,
-                                   text="Choose Columns to Graph",
+                                   text="Choose Sensors to Include",
                                    color='blue',
                                    grid=[1, 6, 2, 1],
                                    align="left")
