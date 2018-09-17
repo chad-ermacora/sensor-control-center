@@ -554,7 +554,7 @@ app_menubar = MenuBar(app,
                                  app_download_trigger_db_menu]],
                                [["Sensor Commands",
                                  app_sensor_commands_menu],
-                                ["Graph DataBase",
+                                ["Graph Interval DataBase",
                                  app_graph_open_menu]],
                                [["Making a Sensor Unit - WIP",
                                  app_open_about],
@@ -1020,7 +1020,7 @@ graph_checkbox_lumen = CheckBox(window_graph_interval,
                                 align="left")
 
 graph_checkbox_colour = CheckBox(window_graph_interval,
-                                 text="Colour",
+                                 text="Colour RGB",
                                  grid=[1, 10],
                                  align="left")
 
