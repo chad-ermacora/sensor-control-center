@@ -246,12 +246,12 @@ def trace_graph(graph_interval_data):
 
         trace_hat_temp = go.Scatter(x=graph_interval_data.sql_data_time,
                                     y=graph_interval_data.sql_data_hat_temp,
-                                    name="HAT Temp")
+                                    name="Environmental Temp")
 
         graph_collection.append([trace_cpu_temp, row_count, 1])
         graph_collection.append([trace_hat_temp, row_count, 1])
-        sub_plots.append('CPU / HAT Temp')
-        logger.debug("Graph CPU / HAT Temp Added")
+        sub_plots.append('CPU / Environmental Temp')
+        logger.debug("Graph CPU / Environmental Temp Added")
 
     if len(graph_interval_data.sql_data_pressure) > 2:
         row_count = row_count + 1

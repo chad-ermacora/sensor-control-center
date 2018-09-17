@@ -336,25 +336,27 @@ def config_save_apply_button():
 
 def set_config(config_settings):
     final_config_settings = Sensor_config.check_settings(config_settings)
-    logger.info("Applying Configuration Options")
 
-    config_textbox_save_to.value = final_config_settings.save_to
-    config_textbox_start.value = final_config_settings.graph_start
-    graph_textbox_start.value = final_config_settings.graph_start
-    config_textbox_end.value = final_config_settings.graph_end
-    graph_textbox_end.value = final_config_settings.graph_end
-    config_textbox_time_offset.value = final_config_settings.time_offset
-    config_textbox_sql_skip.value = final_config_settings.sql_queries_skip
-    graph_textbox_sql_skip.value = final_config_settings.sql_queries_skip
-    config_textbox_temperature_offset.value = final_config_settings.temperature_offset
-    graph_textbox_temperature_offset.value = final_config_settings.temperature_offset
-    config_textbox_network_check.value = final_config_settings.network_check_timeout
-    config_textbox_network_details.value = final_config_settings.network_details_timeout
-    config_checkbox_power_controls.value = final_config_settings.allow_power_controls
-    config_checkbox_reset.value = final_config_settings.allow_reset_config
-
-    config_enable_reset()
-    config_enable_shutdown()
+    try:
+        config_textbox_save_to.value = final_config_settings.save_to
+        config_textbox_start.value = final_config_settings.graph_start
+        graph_textbox_start.value = final_config_settings.graph_start
+        config_textbox_end.value = final_config_settings.graph_end
+        graph_textbox_end.value = final_config_settings.graph_end
+        config_textbox_time_offset.value = final_config_settings.time_offset
+        config_textbox_sql_skip.value = final_config_settings.sql_queries_skip
+        graph_textbox_sql_skip.value = final_config_settings.sql_queries_skip
+        config_textbox_temperature_offset.value = final_config_settings.temperature_offset
+        graph_textbox_temperature_offset.value = final_config_settings.temperature_offset
+        config_textbox_network_check.value = final_config_settings.network_check_timeout
+        config_textbox_network_details.value = final_config_settings.network_details_timeout
+        config_checkbox_power_controls.value = final_config_settings.allow_power_controls
+        config_checkbox_reset.value = final_config_settings.allow_reset_config
+        config_enable_reset()
+        config_enable_shutdown()
+        logger.info("Configuration Set - OK")
+    except Exception as error:
+        logger.error("Configuration Set - One or More Items Failed - " + str(error))
 
 
 def config_save_dir():
@@ -994,10 +996,10 @@ graph_textbox_temperature_offset = TextBox(window_graph_interval,
                                            align="left")
 
 graph_text_column_selection = Text(window_graph_interval,
-                                   text="Choose Sensors to Include",
+                                   text="Sensors to Include",
                                    color='blue',
                                    grid=[1, 6, 2, 1],
-                                   align="left")
+                                   align="top")
 
 graph_checkbox_humidity = CheckBox(window_graph_interval,
                                    text="Humidity",
