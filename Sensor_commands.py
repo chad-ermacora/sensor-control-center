@@ -73,7 +73,7 @@ def get(ip, net_timeout):
         return sensor_data
     except Exception as error:
         logger.warning("Getting Sensor Data from " + ip + " - Failed: " + str(error))
-        offline_sensor_values = ["N/A", ip, 0, 0, 0, 0, 0, 0, 0, 0, 0, "0000-00-00 00:00:00"]
+        offline_sensor_values = ["Network Timeout", ip, 0, 0, 0, 0, 0, 0, 0, 0, 0, "0000-00-00 00:00:00"]
         return offline_sensor_values
 
 
