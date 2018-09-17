@@ -369,7 +369,7 @@ def relay_graph_interval():
 
 
 def relay_graph_motion():
-    # Need to add variables from Graph window - graph_type
+    # Need to re-work
     mess = Sensor_graphs.motion_graph(graph_textbox_start.value,
                                       graph_textbox_end.value,
                                       config_textbox_save_to.value,
