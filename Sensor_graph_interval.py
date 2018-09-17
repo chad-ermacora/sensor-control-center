@@ -27,7 +27,7 @@ from plotly import tools
 
 logger = logging.getLogger(__name__)
 
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
 file_handler = RotatingFileHandler('logs/Sensor_graph_interval_log.txt', maxBytes=256000, backupCount=5)
@@ -242,7 +242,6 @@ def get_sql_data(graph_interval_data, sql_command):
 
     logger.debug("SQL execute Command " + str(sql_command))
     logger.debug("SQL Column Data Length: " + str(len(return_data)))
-    print(return_data[6])
     return return_data
 
 
@@ -317,9 +316,9 @@ def trace_graph(graph_interval_data):
     fig.append_trace(trace_uptime, 5, 1)
 
     fig['layout'].update(title="Sensor Name on First/Last Data Point: " +
-                               "str(graph_interval_data.sql_data_host_name[0])" + " / " +
-                               "str(graph_interval_data.sql_data_host_name[-1])" + " - " +
-                               "str(graph_interval_data.sql_data_ip[0])",
+                               str(graph_interval_data.sql_data_host_name[0]) + " / " +
+                               str(graph_interval_data.sql_data_host_name[-1]) + " - " +
+                               str(graph_interval_data.sql_data_ip[0]),
                                height=2048)
 
     plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)

@@ -350,7 +350,15 @@ def relay_graph_interval():
 
     new_interval_graph.save_file_to = config_textbox_save_to.value
     new_interval_graph.skip_sql = graph_textbox_sql_skip.value
-    new_interval_graph.temperature_offset = graph_textbox_temperature_offset.value
+
+    try:
+        new_temp_value = float(graph_textbox_temperature_offset.value)
+    except Exception as error:
+        logger.error("Bad Temperature setting - Using 0: " + str(error))
+        new_temp_value = 0.0
+
+    new_interval_graph.temperature_offset = new_temp_value
+
     new_interval_graph.time_offset = config_textbox_time_offset.value
     new_interval_graph.graph_start = graph_textbox_start.value
     new_interval_graph.graph_end = graph_textbox_end.value
@@ -358,23 +366,6 @@ def relay_graph_interval():
     # new_interval_graph.graph_columns = ""
     # new_interval_graph.get_sql_entries = ReplaceMe
     Sensor_graph_interval.start_graph(new_interval_graph)
-
-
-    # if int(graph_textbox_sql_skip.value) < 1:
-    #     graph_textbox_sql_skip.value = "1"
-    # try:
-    #     new_temp_value = float(graph_textbox_temperature_offset.value)
-    # except Exception as error:
-    #     logger.error("Bad Temperature setting - Using 0: " + str(error))
-    #     new_temp_value = 0.0
-    #
-    # mess = Sensor_graphs.sensors_graph(graph_textbox_start.value,
-    #                                    graph_textbox_end.value,
-    #                                    int(graph_textbox_sql_skip.value),
-    #                                    config_textbox_save_to.value,
-    #                                    int(config_textbox_time_offset.value),
-    #                                    new_temp_value,
-    #                                    "graph_trace")
 
 
 def relay_graph_motion():
