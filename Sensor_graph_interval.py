@@ -246,8 +246,8 @@ def trace_graph(graph_interval_data):
         row_count = row_count + 1
 
         trace_pressure = go.Scatter(x=graph_interval_data.sql_data_time,
-                                y=graph_interval_data.sql_data_pressure,
-                                name="Pressure hPa")
+                                    y=graph_interval_data.sql_data_pressure,
+                                    name="Pressure hPa")
 
         graph_collection.append([trace_pressure, row_count, 1])
         sub_plots.append('Pressure hPa')
