@@ -87,55 +87,6 @@ def open_html(outfile):
         logger.error("Graph HTML File Opened - Failed - " + str(error))
 
 
-def check_sql_end(var_date_end, var_date_now, var_date_old):
-    now_year = str(var_date_now)[0:4]
-    now_month = str(var_date_now)[5:7]
-    now_day = str(var_date_now)[8:10]
-    now_hour = str(var_date_now)[11:13]
-    now_min = str(var_date_now)[14:16]
-    now_sec = str(var_date_now)[17:19]
-    now_date = int(now_year + now_month + now_day
-                   + now_hour + now_min + now_sec)
-
-    end_year = str(var_date_end)[0:4]
-    end_month = str(var_date_end)[5:7]
-    end_day = str(var_date_end)[8:10]
-    end_hour = str(var_date_end)[11:13]
-    end_min = str(var_date_end)[14:16]
-    end_sec = str(var_date_end)[17:19]
-    end_date = int(end_year + end_month + end_day +
-                   end_hour + end_min + end_sec)
-
-    old_year = str(var_date_old)[0:4]
-    old_month = str(var_date_old)[5:7]
-    old_day = str(var_date_old)[8:10]
-    old_hour = str(var_date_old)[11:13]
-    old_min = str(var_date_old)[14:16]
-    old_sec = str(var_date_old)[17:19]
-    old_date = int(old_year + old_month + old_day +
-                   old_hour + old_min + old_sec)
-
-    if now_date > end_date:
-        var_do = "end"
-        logger.debug("now_date end")
-        logger.debug("now_date " + str(now_date))
-        logger.debug("old_date " + str(old_date))
-        logger.debug("end_date " + str(end_date))
-
-    else:
-        var_do = "proceed"
-
-    if var_do != "end":
-        if old_year > now_year:
-            var_do = "skip"
-            logger.debug("old_year is newer then now_year - skip")
-            logger.debug("now_date " + str(now_date))
-            logger.debug("old_date " + str(old_date))
-            logger.debug("end_date " + str(end_date))
-
-    return var_do
-
-
 def start_graph(graph_interval_data):
     logger.debug("SQL Columns " + str(graph_interval_data.graph_columns))
     logger.debug("SQL Table(s) " + str(graph_interval_data.graph_table))
