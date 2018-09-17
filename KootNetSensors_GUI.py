@@ -506,7 +506,7 @@ app = App(title="KootNet Sensors - PC Control Center",
           layout="grid")
 
 window_graph_interval = Window(app,
-                               title="Interval DB Graphing",
+                               title="Interval Graphing",
                                width=275,
                                height=300,
                                layout="grid",
