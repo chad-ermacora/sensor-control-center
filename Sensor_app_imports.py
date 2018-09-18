@@ -89,7 +89,7 @@ def sensor_detailed_status(ip_list):
         html_file_part = open(str(app_location_directory + html_template_2), 'r')
         sensor_html = html_file_part.read()
         html_file_part.close()
-        logger.info("Open html_template_1.html & html_template_2.html Template - OK")
+        logger.debug("Open html_template_1.html & html_template_2.html Template - OK")
     except Exception as error:
         logger.error("Open Template - Failed: " + str(error))
 
