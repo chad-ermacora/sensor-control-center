@@ -226,7 +226,21 @@ def trace_graph(graph_interval_data):
                        color='rgba(255, 80, 80, .9)',
                        line=dict(width=2, color='rgb(0, 0, 0)'))
 
-    if len(graph_interval_data.sql_data_up_time) > 2:
+    if len(graph_interval_data.sql_data_host_name) > 1:
+        row_count = row_count + 1
+        first_hostname = graph_interval_data.sql_data_host_name[0]
+        last_hostname = graph_interval_data.sql_data_host_name[-1]
+        tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
+
+        trace_sensor_name = go.Scatter(x=graph_interval_data.sql_data_time,
+                                       y=graph_interval_data.sql_data_host_name,
+                                       name="Sensor Name")
+
+        graph_collection.append([trace_sensor_name, row_count, 1])
+        sub_plots.append(tmp_sensor_name)
+        logger.debug("Graph Sensor Sensor Name Added")
+
+    if len(graph_interval_data.sql_data_up_time) > 1:
         row_count = row_count + 1
 
         trace_uptime = go.Scatter(x=graph_interval_data.sql_data_time,
@@ -237,7 +251,7 @@ def trace_graph(graph_interval_data):
         sub_plots.append('Sensor Uptime')
         logger.debug("Graph Sensor Uptime Added")
 
-    if len(graph_interval_data.sql_data_cpu_temp) > 2:
+    if len(graph_interval_data.sql_data_cpu_temp) > 1:
         row_count = row_count + 1
 
         trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,
@@ -342,11 +356,7 @@ def trace_graph(graph_interval_data):
     for graph in graph_collection:
         fig.append_trace(graph[0], graph[1], graph[2])
 
-    fig['layout'].update(title="Sensor Name on First/Last Data Point: " +
-                               str(graph_interval_data.sql_data_host_name[0]) + " / " +
-                               str(graph_interval_data.sql_data_host_name[-1]) + " - " +
-                               str(graph_interval_data.sql_data_ip[0]),
-                               height=2048)
+    fig['layout'].update(title="Sensor IP: " + str(graph_interval_data.sql_data_ip[0]), height=2048)
 
     try:
         plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)

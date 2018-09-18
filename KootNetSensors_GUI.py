@@ -1001,35 +1001,35 @@ graph_text_column_selection = Text(window_graph_interval,
                                    grid=[1, 6, 2, 1],
                                    align="top")
 
-graph_checkbox_humidity = CheckBox(window_graph_interval,
-                                   text="Humidity",
-                                   grid=[1, 7],
-                                   align="left")
-
-graph_checkbox_pressure = CheckBox(window_graph_interval,
-                                   text="Pressure",
-                                   grid=[1, 8],
-                                   align="left")
-
-graph_checkbox_lumen = CheckBox(window_graph_interval,
-                                text="Lumen",
-                                grid=[1, 9],
-                                align="left")
-
-graph_checkbox_colour = CheckBox(window_graph_interval,
-                                 text="Colour RGB",
-                                 grid=[1, 10],
-                                 align="left")
-
 graph_checkbox_up_time = CheckBox(window_graph_interval,
                                   text="System Uptime",
-                                  grid=[2, 7],
+                                  grid=[1, 7],
                                   align="left")
 
 graph_checkbox_temperature = CheckBox(window_graph_interval,
                                       text="Temperature",
-                                      grid=[2, 8],
+                                      grid=[1, 8],
                                       align="left")
+
+graph_checkbox_pressure = CheckBox(window_graph_interval,
+                                   text="Pressure",
+                                   grid=[1, 9],
+                                   align="left")
+
+graph_checkbox_humidity = CheckBox(window_graph_interval,
+                                   text="Humidity",
+                                   grid=[1, 10],
+                                   align="left")
+
+graph_checkbox_lumen = CheckBox(window_graph_interval,
+                                text="Lumen",
+                                grid=[2, 7],
+                                align="left")
+
+graph_checkbox_colour = CheckBox(window_graph_interval,
+                                 text="Colour RGB",
+                                 grid=[2, 8],
+                                 align="left")
 
 graph_checkbox_magnetic = CheckBox(window_graph_interval,
                                    text="Magnetic XYZ",
@@ -1056,7 +1056,7 @@ commands_text_select = Text(window_sensor_commands,
                             align="left")
 
 commands_text_upgrade = Text(window_sensor_commands,
-                             text="Upgrade Commands",
+                             text="Upgrade Selected Sensor",
                              grid=[1, 2, 2, 1],
                              color='blue',
                              align="left")
@@ -1074,7 +1074,7 @@ commands_button_onlineUpgrade = PushButton(window_sensor_commands,
                                            align="left")
 
 commands_text_other = Text(window_sensor_commands,
-                           text="Other Commands",
+                           text="Power Commands",
                            grid=[1, 4, 2, 1],
                            color='blue',
                            align="left")
