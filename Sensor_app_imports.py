@@ -99,7 +99,7 @@ def sensor_detailed_status(ip_list):
         try:
             current_sensor_html = sensor_html
             sensor_data = get(ip, net_timeout)
-            sensor_data[4] = round(float(sensor_data[4]) + float(temp_settings.temperature_offset), 2)
+            sensor_data[4] = round(float(sensor_data[4]), 2)
             count2 = 0
             for code in replacement_codes:
                 if count2 == 0:
