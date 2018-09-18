@@ -356,7 +356,10 @@ def trace_graph(graph_interval_data):
     for graph in graph_collection:
         fig.append_trace(graph[0], graph[1], graph[2])
 
-    fig['layout'].update(title="Sensor IP: " + str(graph_interval_data.sql_data_ip[0]), height=2048)
+    fig['layout'].update(title="Sensor IP: " + str(graph_interval_data.sql_data_ip[0]))
+
+    if row_count > 4:
+        fig['layout'].update(height=2048)
 
     try:
         plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
