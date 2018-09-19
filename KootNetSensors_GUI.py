@@ -50,7 +50,7 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_version = "Tested on Python 3.7 - KootNet Sensors Version 0.1.16"
+app_version = "Tested on Python 3.7 - KootNet Sensors Version Alpha.16.1"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
 
@@ -64,7 +64,7 @@ def app_sensor_commands_menu():
 
 
 def app_log_open_menu():
-    logger.debug("Open Log Window WIP")
+    logger.debug("Open Logs Folder")
     log_path = app_location_directory + "logs/"
     if platform.system() == "Windows":
         os.startfile(log_path)
@@ -308,6 +308,11 @@ def app_sensor_details():
 
 def app_open_about():
     window_app_about.show()
+
+
+def app_open_help():
+    help_file_location = app_location_directory + "additional_files/BuildSensors.html"
+    Sensor_app_imports.open_html(help_file_location)
 
 
 def app_open_config():
@@ -558,7 +563,7 @@ app_menubar = MenuBar(app,
                                [["Graph Interval Database",
                                  app_graph_open_menu]],
                                [["Making a Sensor Unit - WIP",
-                                 app_open_about],
+                                 app_open_help],
                                 ["About KootNet Sensors",
                                  app_open_about]]])
 

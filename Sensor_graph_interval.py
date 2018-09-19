@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import webbrowser
 import plotly
 import sqlite3
 import plotly.graph_objs as go
@@ -76,15 +75,6 @@ class CreateGraphIntervalData:
         self.sql_data_mg_x = []
         self.sql_data_mg_y = []
         self.sql_data_mg_z = []
-
-
-def open_html(outfile):
-    try:
-        file_var = "file:///" + outfile
-        webbrowser.open(file_var, new=2)
-        logger.debug("Graph HTML File Opened - OK")
-    except Exception as error:
-        logger.error("Graph HTML File Opened - Failed - " + str(error))
 
 
 def start_graph(graph_interval_data):

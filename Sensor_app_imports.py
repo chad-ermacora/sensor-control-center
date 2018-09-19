@@ -64,13 +64,13 @@ def html_replacement_codes():
     return html_replacement_vars
 
 
-def open_html(html_details_file):
+def open_html(outfile):
     try:
-        html_file_location = "file:///" + html_details_file
-        webbrowser.open(html_file_location, new=2)
-        logger.debug("open_html OK")
+        file_var = "file:///" + outfile
+        webbrowser.open(file_var, new=2)
+        logger.debug("Graph HTML File Opened - OK")
     except Exception as error:
-        logger.error("open_html Failed: " + str(error))
+        logger.error("Graph HTML File Opened - Failed - " + str(error))
 
 
 def sensor_detailed_status(ip_list):
@@ -140,11 +140,11 @@ def sensor_detailed_status(ip_list):
 
     # Write the final html variable to file
     try:
-        save_to_folder = str(temp_settings.save_to + "SensorsDetails.html")
-        file_out = open(save_to_folder, 'w')
+        save_to_location = str(temp_settings.save_to + "SensorsDetails.html")
+        file_out = open(save_to_location, 'w')
         file_out.write(final_file)
         file_out.close()
-        open_html(save_to_folder)
+        open_html(save_to_location)
         logger.info("Sensor Details - HTML Save File - OK")
     except Exception as error:
         logger.error("Sensor Details - HTML Save File - Failed: " + str(error))
