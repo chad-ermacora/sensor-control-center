@@ -78,11 +78,11 @@ class CreateGraphIntervalData:
 
 
 def start_graph(graph_interval_data):
-    logger.debug("SQL Columns " + str(graph_interval_data.graph_columns))
-    logger.debug("SQL Table(s) " + str(graph_interval_data.graph_table))
-    logger.debug("SQL Start DateTime " + str(graph_interval_data.graph_start))
-    logger.debug("SQL End DateTime " + str(graph_interval_data.graph_end))
-    logger.debug("SQL DataBase Location " + str(graph_interval_data.db_location))
+    logger.debug("SQL Columns: " + str(graph_interval_data.graph_columns))
+    logger.debug("SQL Table(s): " + str(graph_interval_data.graph_table))
+    logger.debug("SQL Start DateTime: " + str(graph_interval_data.graph_start))
+    logger.debug("SQL End DateTime: " + str(graph_interval_data.graph_end))
+    logger.debug("SQL DataBase Location: " + str(graph_interval_data.db_location))
 
     graph_interval_data.graph_start = adjust_datetime(graph_interval_data.graph_start, graph_interval_data.time_offset)
     graph_interval_data.graph_end = adjust_datetime(graph_interval_data.graph_end, graph_interval_data.time_offset)
@@ -118,7 +118,7 @@ def start_graph(graph_interval_data):
                     sql_column_data[count] = float(data) + graph_interval_data.temperature_offset
                     count = count + 1
                 except Exception as error:
-                    logger.error("Unable to adjust Environmental Temperature" + str(error))
+                    logger.error("Unable to adjust Environmental Temperature - " + str(error))
             graph_interval_data.sql_data_hat_temp = sql_column_data
         elif str(var_column) == "pressure":
             graph_interval_data.sql_data_pressure = sql_column_data
@@ -190,7 +190,7 @@ def get_sql_data(graph_interval_data, sql_command):
     except Exception as error:
         logger.error("Failed DB Connection: " + str(error))
 
-    logger.debug("SQL execute Command " + str(sql_command))
+    logger.debug("SQL execute Command: " + str(sql_command))
     logger.debug("SQL Column Data Length: " + str(len(return_data)))
     return return_data
 
