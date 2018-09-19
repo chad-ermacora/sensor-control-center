@@ -358,7 +358,7 @@ def trace_graph(graph_interval_data):
 
     fig['layout'].update(title="Sensor IP: " + str(graph_interval_data.sql_data_ip[0]))
 
-    if row_count > 4:
+    if row_count > 3:
         fig['layout'].update(height=2048)
 
     try:

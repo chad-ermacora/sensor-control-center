@@ -460,9 +460,7 @@ def graph_interval_button():
     # new_interval_graph.graph_type = ""
     new_interval_graph.graph_columns = get_column_checkboxes()
     # new_interval_graph.get_sql_entries = ReplaceMe
-    if len(new_interval_graph.graph_columns) > 3:
-        print(len(new_interval_graph.graph_columns))
-        Sensor_graph_interval.start_graph(new_interval_graph)
+    Sensor_graph_interval.start_graph(new_interval_graph)
 
 
 def get_column_checkboxes():
@@ -1100,12 +1098,12 @@ commands_button_shutdown = PushButton(window_sensor_commands,
 # Change Window Configurations before loading app
 app_checkbox_all_column1.toggle()
 app_check_all_ip_checkboxes(1)
-graph_checkbox_humidity.value = 1
-graph_checkbox_pressure.value = 1
-graph_checkbox_lumen.value = 1
-graph_checkbox_colour.value = 1
-graph_checkbox_up_time.value = 1
+graph_checkbox_up_time.value = 0
 graph_checkbox_temperature.value = 1
+graph_checkbox_pressure.value = 1
+graph_checkbox_humidity.value = 0
+graph_checkbox_lumen.value = 0
+graph_checkbox_colour.value = 1
 graph_checkbox_magnetic.value = 1
 
 about_textbox.value = Sensor_app_imports.get_about_text()
