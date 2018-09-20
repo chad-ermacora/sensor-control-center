@@ -89,7 +89,9 @@ def start_graph(graph_interval_data):
             str(var_column) + \
             " FROM " + \
             str(graph_interval_data.graph_table) + \
-            " WHERE Time BETWEEN date('" + \
+            " WHERE " + \
+            var_column + \
+            " IS NOT NULL AND Time BETWEEN date('" + \
             str(graph_interval_data.graph_start) + \
             "') AND date('" + \
             str(graph_interval_data.graph_end) + \
