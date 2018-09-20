@@ -105,7 +105,7 @@ def check_settings(config_settings):
         logger.debug("Setting Graph Start Date Range - OK")
     else:
         logger.error("Setting Graph Start Date Range - BAD - Using Default")
-        config_settings = default_settings
+        config_settings = default_settings.graph_start
 
     if len(config_settings.graph_end) == 19:
         logger.debug("Setting Graph End Date Range - OK")
