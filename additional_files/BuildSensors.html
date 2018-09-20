@@ -1,120 +1,27 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
-	<title></title>
-	<meta name="generator" content="LibreOffice 6.0.2.1 (Windows)"/>
-	<meta name="created" content="2018-09-19T09:31:31.834000000"/>
-	<meta name="changed" content="2018-09-19T12:20:54.703000000"/>
-	<style type="text/css">
-		@page { margin: 2cm }
-		p { margin-bottom: 0.25cm; line-height: 115% }
-		a:link { so-language: zxx }
-	</style>
-</head>
-<body lang="en-US" dir="ltr">
-<p align="center" style="margin-bottom: 0cm; line-height: 100%"><font size="4" style="font-size: 16pt"><u><b>Building a Sensor Unit to work with KootNet Sensors</b></u></font></p>
-<p align="center" style="margin-bottom: 0cm; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><i><b>** WIP: This will be updated with better instructions as time goes on **</b></i></font></p>
-<p align="center" style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Currently
-Supported Sensor&rsquo;s</b></u></font></p>
-<p align="center" style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><a href="https://www.raspberrypi.org/products/">Raspberry Pi products</a>: Sense HAT</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><a href="https://shop.pimoroni.com/">Pimoroni products</a>: BH1745, BME680, Enviro pHAT, LSM303D, VL53L1X</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><i>Note: Additional Sensors can be added fairly easily, so long as they support the Raspberry Pi and Python3</i></font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-style: normal; line-height: 100%">
-<font size="4" style="font-size: 14pt"><u><b>Setting up a new Sensor</b></u></font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 1. Purchase a <a href="https://www.raspberrypi.org/products/">Raspberry Pi</a> (Get either a 3B+ or Zero W, depending on your needs)</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 2. Purchase desired Sensors from the supported list above (or buy and program in your own sensor for the Raspberry Pi)</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 3. Physically Install your Sensor(s) on the Raspberry Pi</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 4. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install Raspbian OS</a> on your Raspberry Pi</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 5.  Make sure you are connected to the Internet, then run the following command in a terminal to start the Installer</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Please note, this will automatically reboot the Raspberry Pi after completion</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">wget http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/install_sensors.sh &amp;&amp; sudo chmod +x install_sensors.sh &amp;&amp; sudo bash install_sensors.sh &amp;&amp; sudo reboot</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Follow the onscreen Instructions.  Once Complete, your Sensor should be ready to go!</font></p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-<p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
-
-</p>
-</body>
-</html>
+<h2 style="text-align: center;"><u><strong>Building a Sensor Unit to work with KootNet Sensors</strong></u></h2>
+<p style="text-align: center;"><em>** WIP: This will be updated with better instructions as time goes on **</em></p>
+<p style="text-align: center;">&nbsp;</p>
+<h3 style="text-align: center;"><u><strong>Currently Supported Sensor&rsquo;s</strong></u></h3>
+<p style="text-align: center;"><a href="https://www.raspberrypi.org/products/">Raspberry Pi products</a>: Sense HAT</p>
+<p style="text-align: center;"><a href="https://shop.pimoroni.com/">Pimoroni products</a>: BH1745, BME680, Enviro pHAT, LSM303D, VL53L1X</p>
+<p style="text-align: center;"><em>Note: Additional Sensors can be added fairly easily, so long as they support the Raspberry Pi and Python3</em></p>
+<p style="text-align: center;">&nbsp;</p>
+<h4 style="text-align: center;"><span style="text-decoration: underline;"><strong>User Requirements</strong></span></h4>
+<p style="text-align: center;">The User must know the following</p>
+<p style="text-align: center;">1. Basic TCP/IP Version 4 concepts<br /> <em>IP Address, Gateway, DNS, etc.</em></p>
+<p style="text-align: center;">2. Basic operations of the terminal text editor "nano"<br /> <em>Use "Ctrl + x" to quite, entering 'y' to save changes</em></p>
+<p style="text-align: center;">3. How to accesses a terminal in Raspbian</p>
+<h4 style="text-align: center;">&nbsp;</h4>
+<h4 style="text-align: center;"><span style="text-decoration: underline;"><strong>Required Hardware</strong></span></h4>
+<p style="text-align: center;"><strong><a href="https://www.raspberrypi.org/products/">Raspberry Pi</a></strong> - I have tested the 3B+ &amp; Zero W (Should work with all?)</p>
+<p style="text-align: center;"><strong><em>Optional</em></strong>&nbsp;- additional Sensors (see above)</p>
+<p style="text-align: center;">&nbsp;</p>
+<h3 style="text-align: center;"><span style="text-decoration: underline;"><strong>Install Instructions</strong></span></h3>
+<p style="text-align: center;">Step 1. Physically Install your Sensor(s) onto the Raspberry Pi</p>
+<p style="text-align: center;">Step 2. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install Raspbian OS</a> on your Raspberry Pi</p>
+<p style="text-align: center;">Step 3. Make sure you are connected to the Internet, then run the following command in a terminal to start the Installer</p>
+<p style="text-align: center;"><em>** Note: This will automatically reboot the Raspberry Pi after completion **</em></p>
+<p style="text-align: center;">wget http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/install_sensors.sh &amp;&amp; sudo chmod +x install_sensors.sh &amp;&amp; sudo bash install_sensors.sh &amp;&amp; sudo reboot</p>
+<p style="text-align: center;">Follow the onscreen Instructions. Once Complete, your Sensor should be ready to go!</p>
+<p style="text-align: center;">&nbsp;</p>
+<p style="text-align: center;">&nbsp;</p>

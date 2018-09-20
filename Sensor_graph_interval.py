@@ -167,6 +167,7 @@ def adjust_datetime(var_datetime, time_offset):
 
 def get_sql_data(graph_interval_data, sql_command):
     return_data = []
+
     try:
         conn = sqlite3.connect(str(graph_interval_data.db_location))
         c = conn.cursor()
