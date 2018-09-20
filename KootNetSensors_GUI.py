@@ -448,23 +448,28 @@ def graph_interval_button():
     new_interval_graph = Sensor_graph_interval.CreateGraphIntervalData()
     new_interval_graph.db_location = filedialog.askopenfilename()
 
-    new_interval_graph.save_file_to = config_textbox_save_to.value
-    new_interval_graph.skip_sql = graph_textbox_sql_skip.value
-
     try:
         new_temp_value = float(graph_textbox_temperature_offset.value)
     except Exception as error:
         logger.error("Bad Temperature setting - Using 0: " + str(error))
         new_temp_value = 0.0
 
-    new_interval_graph.temperature_offset = new_temp_value
+    try:
+        new_time_offset_value = float(config_textbox_time_offset.value)
+    except Exception as error:
+        logger.error("Bad hour offset setting - Using 0: " + str(error))
+        new_time_offset_value = 0.0
 
-    new_interval_graph.time_offset = config_textbox_time_offset.value
+    new_interval_graph.save_file_to = config_textbox_save_to.value
+    new_interval_graph.skip_sql = graph_textbox_sql_skip.value
+    new_interval_graph.temperature_offset = new_temp_value
+    new_interval_graph.time_offset = new_time_offset_value
     new_interval_graph.graph_start = graph_textbox_start.value
     new_interval_graph.graph_end = graph_textbox_end.value
     # new_interval_graph.graph_type = ""
     new_interval_graph.graph_columns = get_column_checkboxes()
     # new_interval_graph.get_sql_entries = ReplaceMe
+
     Sensor_graph_interval.start_graph(new_interval_graph)
 
 

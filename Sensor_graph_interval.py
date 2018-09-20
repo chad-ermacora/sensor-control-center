@@ -47,7 +47,7 @@ class CreateGraphIntervalData:
         self.save_file_to = ""
         self.skip_sql = 12
         self.temperature_offset = -4.5
-        self.time_offset = 0
+        self.time_offset = 0.0
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
         self.graph_type = ""
@@ -84,9 +84,6 @@ def start_graph(graph_interval_data):
     logger.debug("SQL End DateTime: " + str(graph_interval_data.graph_end))
     logger.debug("SQL DataBase Location: " + str(graph_interval_data.db_location))
 
-    graph_interval_data.graph_start = adjust_datetime(graph_interval_data.graph_start, graph_interval_data.time_offset)
-    graph_interval_data.graph_end = adjust_datetime(graph_interval_data.graph_end, graph_interval_data.time_offset)
-
     for var_column in graph_interval_data.graph_columns:
         var_sql_query = "SELECT " + \
             str(var_column) + \
@@ -102,6 +99,13 @@ def start_graph(graph_interval_data):
         sql_column_data = get_sql_data(graph_interval_data, var_sql_query)
 
         if str(var_column) == "Time":
+            count = 0
+            for data in sql_column_data:
+                try:
+                    sql_column_data[count] = adjust_datetime(data, graph_interval_data.time_offset)
+                    count = count + 1
+                except Exception as error:
+                    logger.error("Unable to adjust datetime with provided offset - " + str(error))
             graph_interval_data.sql_data_time = sql_column_data
         elif str(var_column) == "hostName":
             graph_interval_data.sql_data_host_name = sql_column_data
