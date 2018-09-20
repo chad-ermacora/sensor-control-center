@@ -87,7 +87,7 @@ def load_file():
         return config_settings
 
     except Exception as error:
-        logger.warning("Configuration File Load Failed - Using All or Some Defaults: " + str(error) + " - ")
+        logger.warning("Configuration File Load Failed - Using All or Some Defaults: " + str(error))
         return config_settings
 
 
@@ -117,49 +117,49 @@ def check_settings(config_settings):
         float(config_settings.time_offset)
         logger.debug("Setting DataBase Hours Offset - OK")
     except Exception as error:
-        logger.error("Setting DataBase Hours Offset - BAD - Using Default" + str(error) + " - ")
+        logger.error("Setting DataBase Hours Offset - BAD - Using Default: " + str(error))
         config_settings.time_offset = default_settings.time_offset
 
     try:
         int(config_settings.sql_queries_skip)
         logger.debug("Setting Skip SQL Queries - OK")
     except Exception as error:
-        logger.error("Setting Skip SQL Queries - BAD - Using Default" + str(error) + " - ")
+        logger.error("Setting Skip SQL Queries - BAD - Using Default: " + str(error))
         config_settings.sql_queries_skip = default_settings.sql_queries_skip
 
     try:
         float(config_settings.temperature_offset)
         logger.debug("Setting Temperature Offset - OK")
     except Exception as error:
-        logger.error("Setting Temperature Offset - BAD - Using Default" + str(error) + " - ")
+        logger.error("Setting Temperature Offset - BAD - Using Default: " + str(error))
         config_settings.temperature_offset = default_settings.temperature_offset
 
     try:
         int(config_settings.network_check_timeout)
         logger.debug("Setting Sensor Check Timeout - OK")
     except Exception as error:
-        logger.error("Setting Sensor Check Timeout - BAD - Using Default" + str(error) + " - ")
+        logger.error("Setting Sensor Check Timeout - BAD - Using Default: " + str(error))
         config_settings.network_check_timeout = default_settings.network_check_timeout
 
     try:
         int(config_settings.network_details_timeout)
         logger.debug("Setting Get Details Timeout - OK")
     except Exception as error:
-        logger.error("Setting Get Details Timeout - BAD - Using Default" + str(error) + " - ")
+        logger.error("Setting Get Details Timeout - BAD - Using Default: " + str(error))
         config_settings.network_details_timeout = default_settings.network_details_timeout
 
     try:
         if config_settings.allow_power_controls >= 0:
             logger.debug("Setting Enable Sensor Shutdown/Reboot - OK")
     except Exception as error:
-        logger.error("Setting Enable Sensor Shutdown/Reboot - BAD - Using Default" + str(error) + " - ")
+        logger.error("Setting Enable Sensor Shutdown/Reboot - BAD - Using Default: " + str(error))
         config_settings.allow_power_controls = default_settings.allow_power_controls
 
     try:
         if config_settings.allow_reset_config >= 0:
             logger.debug("Setting Enable Config Reset - OK")
     except Exception as error:
-        logger.error("Setting Enable Config Reset - BAD - Using Default" + str(error) + " - ")
+        logger.error("Setting Enable Config Reset - BAD - Using Default: " + str(error))
         config_settings.allow_reset_config = default_settings.allow_reset_config
 
     return config_settings
@@ -185,4 +185,4 @@ def save_file(temp_config_settings):
         local_file.close()
         logger.debug("Configuration Settings Save to File - OK")
     except Exception as error:
-        logger.error("Configuration Settings Save to File - Failed: " + str(error) + " - ")
+        logger.error("Configuration Settings Save to File - Failed: " + str(error))

@@ -101,11 +101,8 @@ def start_graph(graph_interval_data):
         if str(var_column) == "Time":
             count = 0
             for data in sql_column_data:
-                try:
-                    sql_column_data[count] = adjust_datetime(data, graph_interval_data.time_offset)
-                    count = count + 1
-                except Exception as error:
-                    logger.error("Unable to adjust datetime with provided offset - " + str(error))
+                sql_column_data[count] = adjust_datetime(data, graph_interval_data.time_offset)
+                count = count + 1
             graph_interval_data.sql_data_time = sql_column_data
         elif str(var_column) == "hostName":
             graph_interval_data.sql_data_host_name = sql_column_data
@@ -122,7 +119,7 @@ def start_graph(graph_interval_data):
                     sql_column_data[count] = float(data) + graph_interval_data.temperature_offset
                     count = count + 1
                 except Exception as error:
-                    logger.error("Unable to adjust Environmental Temperature - " + str(error))
+                    logger.error("Bad SQL entry from Column 'hatTemp' - " + str(error))
             graph_interval_data.sql_data_hat_temp = sql_column_data
         elif str(var_column) == "pressure":
             graph_interval_data.sql_data_pressure = sql_column_data
@@ -153,12 +150,12 @@ def adjust_datetime(var_datetime, time_offset):
     try:
         var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
     except Exception as error:
-        logger.error("datetime already converted from str - " + str(error))
+        logger.error("Unable to Convert datetime string to datetime format - " + str(error))
 
     try:
         time_offset = int(time_offset)
     except Exception as error:
-        logger.error("Hour Offset already converted from str - " + str(error))
+        logger.error("Unable to convert Hour Offset to int - " + str(error))
 
     new_time = var_datetime + timedelta(hours=time_offset)
 
