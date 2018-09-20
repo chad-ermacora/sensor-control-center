@@ -396,52 +396,52 @@ def config_enable_shutdown():
         commands_button_shutdown.disable()
 
 
-def commands_upgrade_nas():
-    logger.debug("Sensor Upgrade - NAS")
+def commands_upgrade_smb():
+    logger.debug("Sensor Upgrade - SMB")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
-        logger.info(Sensor_commands.nas_upgrade(ip))
+        Sensor_commands.nas_upgrade(ip)
 
 
-def commands_upgrade_online():
-    logger.debug("Sensor Upgrade - Online")
+def commands_upgrade_http():
+    logger.info("Sensor Upgrade - HTTP")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
-        logger.info(Sensor_commands.online_upgrade(ip))
+        Sensor_commands.online_upgrade(ip)
 
 
 def commands_sensor_reboot():
-    logger.debug("Sensor Reboot")
+    logger.info("Sensor Reboot")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
-        logger.info(Sensor_commands.reboot(ip))
+        Sensor_commands.reboot(ip)
 
 
 def commands_sensor_shutdown():
-    logger.debug("Sensor Reboot")
+    logger.info("Sensor Reboot")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
-        logger.info(Sensor_commands.shutdown(ip))
+        Sensor_commands.shutdown(ip)
 
 
 def commands_kill_progs():
-    logger.debug("Terminate Sensor Programs")
+    logger.info("Terminate Sensor Programs")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
-        logger.info(Sensor_commands.kill_progs(ip))
+        Sensor_commands.kill_progs(ip)
 
 
 def commands_hostname_change():
-    logger.debug("Change Sensor Hostname")
+    logger.info("Change Sensor Hostname")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
-        logger.info(Sensor_commands.hostname_change(ip))
+        Sensor_commands.hostname_change(ip)
 
 
 def graph_interval_button():
@@ -1071,13 +1071,13 @@ commands_text_upgrade = Text(window_sensor_commands,
 
 commands_button_lanUpgrade = PushButton(window_sensor_commands,
                                         text="LAN SMB\nUpgrade",
-                                        command=commands_upgrade_nas,
+                                        command=commands_upgrade_smb,
                                         grid=[1, 3],
                                         align="left")
 
 commands_button_onlineUpgrade = PushButton(window_sensor_commands,
                                            text="Online HTTP\nUpgrade",
-                                           command=commands_upgrade_online,
+                                           command=commands_upgrade_http,
                                            grid=[2, 3],
                                            align="left")
 
