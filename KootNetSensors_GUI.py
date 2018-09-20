@@ -30,7 +30,6 @@ import logging
 import Sensor_config
 import Sensor_commands
 import Sensor_app_imports
-import Sensor_graphs
 import Sensor_graph_interval
 from logging.handlers import RotatingFileHandler
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar
@@ -429,7 +428,7 @@ def commands_sensor_shutdown():
 
 
 def commands_kill_progs():
-    logger.info("Terminate Sensor Programs")
+    logger.info("Terminate & Restarting Sensor programs - please allow up to 60 Seconds to restart")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -501,12 +500,13 @@ def get_column_checkboxes():
 
 
 def graph_trigger_button():
+    pass
     # Need to re-work before pushing to master branch
-    mess = Sensor_graphs.motion_graph(graph_textbox_start.value,
-                                      graph_textbox_end.value,
-                                      config_textbox_save_to.value,
-                                      int(config_textbox_time_offset.value),
-                                      "scatterT3")
+    # mess = Sensor_graphs.motion_graph(graph_textbox_start.value,
+    #                                   graph_textbox_end.value,
+    #                                   config_textbox_save_to.value,
+    #                                   int(config_textbox_time_offset.value),
+    #                                   "scatterT3")
 
 
 # App & Window Configurations

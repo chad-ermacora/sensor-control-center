@@ -13,11 +13,9 @@
 	</style>
 </head>
 <body lang="en-US" dir="ltr">
-<p align="center" style="margin-bottom: 0cm; line-height: 100%"><font size="4" style="font-size: 16pt"><u><b>Building
-a Sensor Unit to work with KootNet Sensors</b></u></font></p>
+<p align="center" style="margin-bottom: 0cm; line-height: 100%"><font size="4" style="font-size: 16pt"><u><b>Building a Sensor Unit to work with KootNet Sensors</b></u></font></p>
 <p align="center" style="margin-bottom: 0cm; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><i><b>** WIP: This will be
-updated with better instructions as time goes on **</b></i></font></p>
+<font size="3" style="font-size: 12pt"><i><b>** WIP: This will be updated with better instructions as time goes on **</b></i></font></p>
 <p align="center" style="margin-bottom: 0cm; line-height: 100%"><br/>
 
 </p>
@@ -27,23 +25,19 @@ Supported Sensor&rsquo;s</b></u></font></p>
 
 </p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><a href="https://www.raspberrypi.org/products/">Raspberry
-Pi products</a>: Sense HAT</font></p>
+<font size="3" style="font-size: 12pt"><a href="https://www.raspberrypi.org/products/">Raspberry Pi products</a>: Sense HAT</font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
 <br/>
 
 </p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><a href="https://shop.pimoroni.com/">Pimoroni
-products</a>: BH1745, BME680, Enviro pHAT, LSM303D, VL53L1X</font></p>
+<font size="3" style="font-size: 12pt"><a href="https://shop.pimoroni.com/">Pimoroni products</a>: BH1745, BME680, Enviro pHAT, LSM303D, VL53L1X</font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
 <br/>
 
 </p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><i>Note: Additional Sensors
-can be added fairly easily, so long as they support the Raspberry Pi
-and Python3</i></font></p>
+<font size="3" style="font-size: 12pt"><i>Note: Additional Sensors can be added fairly easily, so long as they support the Raspberry Pi and Python3</i></font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
 <br/>
 
@@ -59,41 +53,33 @@ and Python3</i></font></p>
 
 </p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 1. Purchase a <a href="https://www.raspberrypi.org/products/">Raspberry
-Pi</a> (Get either a 3B+ or Zero W, depending on your needs)</font></p>
+<font size="3" style="font-size: 12pt">Step 1. Purchase a <a href="https://www.raspberrypi.org/products/">Raspberry Pi</a> (Get either a 3B+ or Zero W, depending on your needs)</font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
 <br/>
 
 </p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 2. Purchase desired
-Sensors from the supported list above (or buy and program in your
-own sensor for the Raspberry Pi)</font></p>
+<font size="3" style="font-size: 12pt">Step 2. Purchase desired Sensors from the supported list above (or buy and program in your own sensor for the Raspberry Pi)</font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
 <br/>
 
 </p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 3. Physically Install your Sensor(s)
-on the Raspberry Pi</font></p>
+<font size="3" style="font-size: 12pt">Step 3. Physically Install your Sensor(s) on the Raspberry Pi</font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
 <br/>
 
 </p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 4. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install
-Raspbian OS</a> on your Raspberry Pi</font></p>
+<font size="3" style="font-size: 12pt">Step 4. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install Raspbian OS</a> on your Raspberry Pi</font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
 <br/>
 
 </p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Step 5.  Make sure you are
-connected to the Internet and run the following command in a terminal
-to download and start the installer</font></p>
+<font size="3" style="font-size: 12pt">Step 5.  Make sure you are connected to the Internet, then run the following command in a terminal to start the Installer</font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">Please note, this will
-automatically reboot the Raspberry Pi after completion</font></p>
+<font size="3" style="font-size: 12pt">Please note, this will automatically reboot the Raspberry Pi after completion</font></p>
 <p align="center" style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
 <br/>
 

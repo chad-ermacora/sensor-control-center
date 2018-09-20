@@ -59,7 +59,6 @@ def check(ip, net_timeout):
 
 
 def get(ip, net_timeout):
-    logger.debug("Sensor_commands.get()")
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -78,7 +77,6 @@ def get(ip, net_timeout):
 
 
 def nas_upgrade(ip):
-    logger.debug("Sensor_commands.nas_upgrade()")
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -91,7 +89,6 @@ def nas_upgrade(ip):
 
 
 def online_upgrade(ip):
-    logger.debug("Sensor_commands.online_upgrade()")
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -104,7 +101,6 @@ def online_upgrade(ip):
 
 
 def reboot(ip):
-    logger.debug("Sensor_commands.reboot()")
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -117,7 +113,6 @@ def reboot(ip):
 
 
 def shutdown(ip):
-    logger.debug("Sensor_commands.shutdown()")
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -130,7 +125,6 @@ def shutdown(ip):
 
 
 def kill_progs(ip):
-    logger.debug("Sensor_commands.kill_progs()")
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -143,7 +137,6 @@ def kill_progs(ip):
 
 
 def hostname_change(ip):
-    logger.debug("Sensor_commands.hostname_change()")
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     new_hostname = simpledialog.askstring(str(ip), "New Hostname: ")
 
