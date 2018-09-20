@@ -29,7 +29,7 @@ logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/Sensor_commands_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler('logs/Sensor_Commands_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)

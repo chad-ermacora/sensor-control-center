@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/Sensor_graph_interval_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -105,7 +105,9 @@ def start_graph(graph_interval_data):
             for data in sql_column_data:
                 sql_column_data[count] = adjust_datetime(data, graph_interval_data.time_offset)
                 count = count + 1
+
             graph_interval_data.sql_data_time = sql_column_data
+
         elif str(var_column) == "hostName":
             graph_interval_data.sql_data_host_name = sql_column_data
         elif str(var_column) == "uptime":
@@ -118,11 +120,14 @@ def start_graph(graph_interval_data):
             count = 0
             for data in sql_column_data:
                 try:
-                    sql_column_data[count] = float(data) + graph_interval_data.temperature_offset
+                    sql_column_data[count] = float(data) + float(graph_interval_data.temperature_offset)
                     count = count + 1
                 except Exception as error:
+                    count = count + 1
                     logger.error("Bad SQL entry from Column 'hatTemp' - " + str(error))
+
             graph_interval_data.sql_data_hat_temp = sql_column_data
+
         elif str(var_column) == "pressure":
             graph_interval_data.sql_data_pressure = sql_column_data
         elif str(var_column) == "humidity":

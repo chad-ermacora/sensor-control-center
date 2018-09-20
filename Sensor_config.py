@@ -27,7 +27,7 @@ logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/Sensor_config_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
@@ -44,11 +44,11 @@ class CreateConfigSettings:
     def __init__(self):
         save_to = str(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop\\'))
         self.save_to = save_to.replace('\\', '/')
-        self.graph_start = "2018-08-21 00:00:01"
+        self.graph_start = "2018-09-12 00:00:01"
         self.graph_end = "2200-01-01 00:00:01"
-        self.time_offset = "-7"
+        self.time_offset = "0"
         self.sql_queries_skip = "12"
-        self.temperature_offset = "-4"
+        self.temperature_offset = "0"
         self.network_check_timeout = "2"
         self.network_details_timeout = "5"
         self.allow_power_controls = 0
