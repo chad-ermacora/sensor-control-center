@@ -21,6 +21,7 @@ import os
 import sys
 import logging
 from logging.handlers import RotatingFileHandler
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -101,16 +102,18 @@ def check_settings(config_settings):
         logger.error("Setting Save to Folder - BAD - Using Default")
         config_settings.save_to = default_settings.save_to
 
-    if len(config_settings.graph_start) == 19:
+    try:
+        datetime.strptime(config_settings.graph_start, "%Y-%m-%d %H:%M:%S")
         logger.debug("Setting Graph Start Date Range - OK")
-    else:
-        logger.error("Setting Graph Start Date Range - BAD - Using Default")
+    except Exception as error:
+        logger.error("Setting Graph Start Date Range - BAD - Using Default - " + str(error))
         config_settings.graph_start = default_settings.graph_start
 
-    if len(config_settings.graph_end) == 19:
+    try:
+        datetime.strptime(config_settings.graph_end, "%Y-%m-%d %H:%M:%S")
         logger.debug("Setting Graph End Date Range - OK")
-    else:
-        logger.error("Setting Graph End Date Range - BAD - Using Default")
+    except Exception as error:
+        logger.error("Setting Graph End Date Range - BAD - Using Default - " + str(error))
         config_settings.graph_end = default_settings.graph_end
 
     try:
