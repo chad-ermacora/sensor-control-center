@@ -319,7 +319,7 @@ def app_open_config():
 
 
 def config_save_apply_button():
-    logger.info("Applying Configuration & Saving to File")
+    logger.debug("Applying Configuration & Saving to File")
 
     config_settings = Sensor_config.CreateConfigSettings()
 
@@ -404,7 +404,7 @@ def commands_upgrade_smb():
 
 
 def commands_upgrade_http():
-    logger.info("Sensor Upgrade - HTTP")
+    logger.debug("Sensor Upgrade - HTTP")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -412,7 +412,7 @@ def commands_upgrade_http():
 
 
 def commands_sensor_reboot():
-    logger.info("Sensor Reboot")
+    logger.debug("Sensor Reboot")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -420,7 +420,7 @@ def commands_sensor_reboot():
 
 
 def commands_sensor_shutdown():
-    logger.info("Sensor Reboot")
+    logger.debug("Sensor Reboot")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
@@ -436,7 +436,7 @@ def commands_kill_progs():
 
 
 def commands_hostname_change():
-    logger.info("Change Sensor Hostname")
+    logger.debug("Change Sensor Hostname")
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
