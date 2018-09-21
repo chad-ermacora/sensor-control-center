@@ -209,159 +209,162 @@ def trace_graph(graph_interval_data):
     row_count = 0
     graph_collection = []
 
-    mark_red = dict(size=10,
-                    color='rgba(255, 0, 0, .9)',
-                    line=dict(width=2, color='rgb(0, 0, 0)'))
+    if len(graph_interval_data.sql_data_time) > 1:
+        mark_red = dict(size=10,
+                        color='rgba(255, 0, 0, .9)',
+                        line=dict(width=2, color='rgb(0, 0, 0)'))
 
-    mark_green = dict(size=10,
-                      color='rgba(0, 255, 0, .9)',
-                      line=dict(width=2, color='rgb(0, 0, 0)'))
+        mark_green = dict(size=10,
+                          color='rgba(0, 255, 0, .9)',
+                          line=dict(width=2, color='rgb(0, 0, 0)'))
 
-    mark_blue = dict(size=10,
-                     color='rgba(0, 0, 255, .9)',
-                     line=dict(width=2, color='rgb(0, 0, 0)'))
+        mark_blue = dict(size=10,
+                         color='rgba(0, 0, 255, .9)',
+                         line=dict(width=2, color='rgb(0, 0, 0)'))
 
-    mark_yellow = dict(size=10,
-                       color='rgba(255, 80, 80, .9)',
-                       line=dict(width=2, color='rgb(0, 0, 0)'))
+        mark_yellow = dict(size=10,
+                           color='rgba(255, 80, 80, .9)',
+                           line=dict(width=2, color='rgb(0, 0, 0)'))
 
-    if len(graph_interval_data.sql_data_host_name) > 1:
-        row_count = row_count + 1
-        first_hostname = graph_interval_data.sql_data_host_name[0]
-        last_hostname = graph_interval_data.sql_data_host_name[-1]
-        tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
+        if len(graph_interval_data.sql_data_host_name) > 1:
+            row_count = row_count + 1
+            first_hostname = graph_interval_data.sql_data_host_name[0]
+            last_hostname = graph_interval_data.sql_data_host_name[-1]
+            tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
 
-        trace_sensor_name = go.Scatter(x=graph_interval_data.sql_data_time,
-                                       y=graph_interval_data.sql_data_host_name,
-                                       name="Sensor Name")
+            trace_sensor_name = go.Scatter(x=graph_interval_data.sql_data_time,
+                                           y=graph_interval_data.sql_data_host_name,
+                                           name="Sensor Name")
 
-        graph_collection.append([trace_sensor_name, row_count, 1])
-        sub_plots.append(tmp_sensor_name)
-        logger.debug("Graph Sensor Sensor Name Added")
+            graph_collection.append([trace_sensor_name, row_count, 1])
+            sub_plots.append(tmp_sensor_name)
+            logger.debug("Graph Sensor Sensor Name Added")
 
-    if len(graph_interval_data.sql_data_up_time) > 1:
-        row_count = row_count + 1
+        if len(graph_interval_data.sql_data_up_time) > 1:
+            row_count = row_count + 1
 
-        trace_uptime = go.Scatter(x=graph_interval_data.sql_data_time,
-                                  y=graph_interval_data.sql_data_up_time,
-                                  name="Sensor Uptime")
+            trace_uptime = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_up_time,
+                                      name="Sensor Uptime")
 
-        graph_collection.append([trace_uptime, row_count, 1])
-        sub_plots.append('Sensor Uptime')
-        logger.debug("Graph Sensor Uptime Added")
+            graph_collection.append([trace_uptime, row_count, 1])
+            sub_plots.append('Sensor Uptime')
+            logger.debug("Graph Sensor Uptime Added")
 
-    if len(graph_interval_data.sql_data_cpu_temp) > 1:
-        row_count = row_count + 1
+        if len(graph_interval_data.sql_data_cpu_temp) > 1:
+            row_count = row_count + 1
 
-        trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,
-                                    y=graph_interval_data.sql_data_cpu_temp,
-                                    name="CPU Temp")
+            trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,
+                                        y=graph_interval_data.sql_data_cpu_temp,
+                                        name="CPU Temp")
 
-        trace_hat_temp = go.Scatter(x=graph_interval_data.sql_data_time,
-                                    y=graph_interval_data.sql_data_hat_temp,
-                                    name="Environmental Temp")
+            trace_hat_temp = go.Scatter(x=graph_interval_data.sql_data_time,
+                                        y=graph_interval_data.sql_data_hat_temp,
+                                        name="Environmental Temp")
 
-        graph_collection.append([trace_cpu_temp, row_count, 1])
-        graph_collection.append([trace_hat_temp, row_count, 1])
-        sub_plots.append('CPU / Environmental Temp')
-        logger.debug("Graph CPU / Environmental Temp Added")
+            graph_collection.append([trace_cpu_temp, row_count, 1])
+            graph_collection.append([trace_hat_temp, row_count, 1])
+            sub_plots.append('CPU / Environmental Temp')
+            logger.debug("Graph CPU / Environmental Temp Added")
 
-    if len(graph_interval_data.sql_data_pressure) > 2:
-        row_count = row_count + 1
+        if len(graph_interval_data.sql_data_pressure) > 2:
+            row_count = row_count + 1
 
-        trace_pressure = go.Scatter(x=graph_interval_data.sql_data_time,
-                                    y=graph_interval_data.sql_data_pressure,
-                                    name="Pressure hPa")
+            trace_pressure = go.Scatter(x=graph_interval_data.sql_data_time,
+                                        y=graph_interval_data.sql_data_pressure,
+                                        name="Pressure hPa")
 
-        graph_collection.append([trace_pressure, row_count, 1])
-        sub_plots.append('Pressure hPa')
-        logger.debug("Graph Pressure hPa Added")
+            graph_collection.append([trace_pressure, row_count, 1])
+            sub_plots.append('Pressure hPa')
+            logger.debug("Graph Pressure hPa Added")
 
-    if len(graph_interval_data.sql_data_humidity) > 2:
-        row_count = row_count + 1
+        if len(graph_interval_data.sql_data_humidity) > 2:
+            row_count = row_count + 1
 
-        trace_humidity = go.Scatter(x=graph_interval_data.sql_data_time,
-                                    y=graph_interval_data.sql_data_humidity,
-                                    name="Humidity %")
+            trace_humidity = go.Scatter(x=graph_interval_data.sql_data_time,
+                                        y=graph_interval_data.sql_data_humidity,
+                                        name="Humidity %")
 
-        graph_collection.append([trace_humidity, row_count, 1])
-        sub_plots.append('Humidity')
-        logger.debug("Graph Humidity Added")
+            graph_collection.append([trace_humidity, row_count, 1])
+            sub_plots.append('Humidity')
+            logger.debug("Graph Humidity Added")
 
-    if len(graph_interval_data.sql_data_lumen) > 2:
-        row_count = row_count + 1
+        if len(graph_interval_data.sql_data_lumen) > 2:
+            row_count = row_count + 1
 
-        trace_lumen = go.Scatter(x=graph_interval_data.sql_data_time,
-                                 y=graph_interval_data.sql_data_lumen,
-                                 name="Lumen",
-                                 marker=mark_yellow)
+            trace_lumen = go.Scatter(x=graph_interval_data.sql_data_time,
+                                     y=graph_interval_data.sql_data_lumen,
+                                     name="Lumen",
+                                     marker=mark_yellow)
 
-        graph_collection.append([trace_lumen, row_count, 1])
-        sub_plots.append('Lumen')
-        logger.debug("Graph Lumen Added")
+            graph_collection.append([trace_lumen, row_count, 1])
+            sub_plots.append('Lumen')
+            logger.debug("Graph Lumen Added")
 
-    if len(graph_interval_data.sql_data_red) > 2:
-        row_count = row_count + 1
+        if len(graph_interval_data.sql_data_red) > 2:
+            row_count = row_count + 1
 
-        trace_red = go.Scatter(x=graph_interval_data.sql_data_time,
-                               y=graph_interval_data.sql_data_red,
-                               name="Red",
-                               marker=mark_red)
+            trace_red = go.Scatter(x=graph_interval_data.sql_data_time,
+                                   y=graph_interval_data.sql_data_red,
+                                   name="Red",
+                                   marker=mark_red)
 
-        trace_green = go.Scatter(x=graph_interval_data.sql_data_time,
-                                 y=graph_interval_data.sql_data_green,
-                                 name="Green",
-                                 marker=mark_green)
+            trace_green = go.Scatter(x=graph_interval_data.sql_data_time,
+                                     y=graph_interval_data.sql_data_green,
+                                     name="Green",
+                                     marker=mark_green)
 
-        trace_blue = go.Scatter(x=graph_interval_data.sql_data_time,
-                                y=graph_interval_data.sql_data_blue,
-                                name="Blue",
-                                marker=mark_blue)
+            trace_blue = go.Scatter(x=graph_interval_data.sql_data_time,
+                                    y=graph_interval_data.sql_data_blue,
+                                    name="Blue",
+                                    marker=mark_blue)
 
-        graph_collection.append([trace_red, row_count, 1])
-        graph_collection.append([trace_green, row_count, 1])
-        graph_collection.append([trace_blue, row_count, 1])
-        sub_plots.append('Colour RGB')
-        logger.debug("Graph Colour RGB Added")
+            graph_collection.append([trace_red, row_count, 1])
+            graph_collection.append([trace_green, row_count, 1])
+            graph_collection.append([trace_blue, row_count, 1])
+            sub_plots.append('Colour RGB')
+            logger.debug("Graph Colour RGB Added")
 
-    if len(graph_interval_data.sql_data_mg_x) > 2:
-        row_count = row_count + 1
+        if len(graph_interval_data.sql_data_mg_x) > 2:
+            row_count = row_count + 1
 
-        trace_mg_x = go.Scatter(x=graph_interval_data.sql_data_time,
-                                y=graph_interval_data.sql_data_mg_x,
-                                name="Magnetic X",
-                                marker=mark_red)
+            trace_mg_x = go.Scatter(x=graph_interval_data.sql_data_time,
+                                    y=graph_interval_data.sql_data_mg_x,
+                                    name="Magnetic X",
+                                    marker=mark_red)
 
-        trace_mg_y = go.Scatter(x=graph_interval_data.sql_data_time,
-                                y=graph_interval_data.sql_data_mg_y,
-                                name="Magnetic Y",
-                                marker=mark_green)
+            trace_mg_y = go.Scatter(x=graph_interval_data.sql_data_time,
+                                    y=graph_interval_data.sql_data_mg_y,
+                                    name="Magnetic Y",
+                                    marker=mark_green)
 
-        trace_mg_z = go.Scatter(x=graph_interval_data.sql_data_time,
-                                y=graph_interval_data.sql_data_mg_z,
-                                name="Magnetic Z",
-                                marker=mark_blue)
+            trace_mg_z = go.Scatter(x=graph_interval_data.sql_data_time,
+                                    y=graph_interval_data.sql_data_mg_z,
+                                    name="Magnetic Z",
+                                    marker=mark_blue)
 
-        graph_collection.append([trace_mg_x, row_count, 1])
-        graph_collection.append([trace_mg_y, row_count, 1])
-        graph_collection.append([trace_mg_z, row_count, 1])
-        sub_plots.append('Magnetic XYZ')
-        logger.debug("Graph Magnetic XYZ Added")
+            graph_collection.append([trace_mg_x, row_count, 1])
+            graph_collection.append([trace_mg_y, row_count, 1])
+            graph_collection.append([trace_mg_z, row_count, 1])
+            sub_plots.append('Magnetic XYZ')
+            logger.debug("Graph Magnetic XYZ Added")
 
-    fig = tools.make_subplots(rows=row_count,
-                              cols=1,
-                              subplot_titles=sub_plots)
+        fig = tools.make_subplots(rows=row_count,
+                                  cols=1,
+                                  subplot_titles=sub_plots)
 
-    for graph in graph_collection:
-        fig.append_trace(graph[0], graph[1], graph[2])
+        for graph in graph_collection:
+            fig.append_trace(graph[0], graph[1], graph[2])
 
-    fig['layout'].update(title="Sensor IP: " + str(graph_interval_data.sql_data_ip[0]))
+        fig['layout'].update(title="Sensor IP: " + str(graph_interval_data.sql_data_ip[0]))
 
-    if row_count > 3:
-        fig['layout'].update(height=2048)
+        if row_count > 3:
+            fig['layout'].update(height=2048)
 
-    try:
-        plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
-        logger.info("Interval Graph Creation - OK")
-    except Exception as error:
-        logger.error("Interval Graph Creation - Failed - " + str(error))
+        try:
+            plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
+            logger.info("Interval Graph Creation - OK")
+        except Exception as error:
+            logger.error("Interval Graph Creation - Failed - " + str(error))
+    else:
+        logger.error("Interval Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
