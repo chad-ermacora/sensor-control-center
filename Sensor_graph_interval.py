@@ -53,7 +53,7 @@ class CreateGraphIntervalData:
         self.graph_type = ""
         self.graph_table = "Sensor_Data"
         self.graph_columns = ["Time", "hostName", "uptime", "ip", "cpuTemp", "hatTemp",
-                              "pressure", "humidity", "lumens", "red", "green", "blue",
+                              "pressure", "humidity", "lumen", "red", "green", "blue",
                               "mg_X", "mg_Y", "mg_Z"]
 
         self.max_sql_queries = 200000
@@ -132,7 +132,7 @@ def start_graph(graph_interval_data):
             graph_interval_data.sql_data_pressure = sql_column_data
         elif str(var_column) == "humidity":
             graph_interval_data.sql_data_humidity = sql_column_data
-        elif str(var_column) == "lumens":
+        elif str(var_column) == "lumen":
             graph_interval_data.sql_data_lumen = sql_column_data
         elif str(var_column) == "red":
             graph_interval_data.sql_data_red = sql_column_data

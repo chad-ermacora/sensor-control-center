@@ -488,7 +488,7 @@ def get_column_checkboxes():
     if graph_checkbox_humidity.value == 1:
         column_checkboxes.append("humidity")
     if graph_checkbox_lumen.value == 1:
-        column_checkboxes.append("lumens")
+        column_checkboxes.append("lumen")
     if graph_checkbox_colour.value == 1:
         column_checkboxes.append("red")
         column_checkboxes.append("green")
