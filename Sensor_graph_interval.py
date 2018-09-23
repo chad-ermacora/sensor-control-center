@@ -51,10 +51,9 @@ class CreateGraphIntervalData:
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
         self.graph_type = ""
-        self.graph_table = "Sensor_Data"
-        self.graph_columns = ["DateTime", "SensorName", "uptime", "IP", "cpuTemp", "hatTemp",
-                              "pressure", "humidity", "lumen", "red", "green", "blue",
-                              "mg_X", "mg_Y", "mg_Z"]
+        self.graph_table = "IntervalData"
+        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
+                              "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
 
         self.max_sql_queries = 200000
         # self.repeat_max_sql_query = 5
@@ -110,13 +109,13 @@ def start_graph(graph_interval_data):
 
         elif str(var_column) == "SensorName":
             graph_interval_data.sql_data_host_name = sql_column_data
-        elif str(var_column) == "uptime":
+        elif str(var_column) == "SensorUpTime":
             graph_interval_data.sql_data_up_time = sql_column_data
         elif str(var_column) == "IP":
             graph_interval_data.sql_data_ip = sql_column_data
-        elif str(var_column) == "cpuTemp":
+        elif str(var_column) == "SystemTemp":
             graph_interval_data.sql_data_cpu_temp = sql_column_data
-        elif str(var_column) == "hatTemp":
+        elif str(var_column) == "EnvironmentTemp":
             count = 0
             for data in sql_column_data:
                 try:
@@ -124,28 +123,22 @@ def start_graph(graph_interval_data):
                     count = count + 1
                 except Exception as error:
                     count = count + 1
-                    logger.error("Bad SQL entry from Column 'hatTemp' - " + str(error))
+                    logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
 
             graph_interval_data.sql_data_hat_temp = sql_column_data
 
-        elif str(var_column) == "pressure":
+        elif str(var_column) == "Pressure":
             graph_interval_data.sql_data_pressure = sql_column_data
-        elif str(var_column) == "humidity":
+        elif str(var_column) == "Humidity":
             graph_interval_data.sql_data_humidity = sql_column_data
-        elif str(var_column) == "lumen":
+        elif str(var_column) == "Lumen":
             graph_interval_data.sql_data_lumen = sql_column_data
-        elif str(var_column) == "red":
+        elif str(var_column) == "Red":
             graph_interval_data.sql_data_red = sql_column_data
-        elif str(var_column) == "green":
+        elif str(var_column) == "Green":
             graph_interval_data.sql_data_green = sql_column_data
-        elif str(var_column) == "blue":
+        elif str(var_column) == "Blue":
             graph_interval_data.sql_data_blue = sql_column_data
-        elif str(var_column) == "mg_X":
-            graph_interval_data.sql_data_mg_x = sql_column_data
-        elif str(var_column) == "mg_Y":
-            graph_interval_data.sql_data_mg_y = sql_column_data
-        elif str(var_column) == "mg_Z":
-            graph_interval_data.sql_data_mg_z = sql_column_data
         else:
             logger.error(var_column + " - Does Not Exist")
 
