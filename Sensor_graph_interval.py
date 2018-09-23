@@ -52,7 +52,7 @@ class CreateGraphIntervalData:
         self.graph_end = "9999-01-01 00:00:01"
         self.graph_type = ""
         self.graph_table = "Sensor_Data"
-        self.graph_columns = ["Time", "hostName", "uptime", "ip", "cpuTemp", "hatTemp",
+        self.graph_columns = ["DateTime", "SensorName", "uptime", "IP", "cpuTemp", "hatTemp",
                               "pressure", "humidity", "lumen", "red", "green", "blue",
                               "mg_X", "mg_Y", "mg_Z"]
 
@@ -91,7 +91,7 @@ def start_graph(graph_interval_data):
             str(graph_interval_data.graph_table) + \
             " WHERE " + \
             var_column + \
-            " IS NOT NULL AND Time BETWEEN date('" + \
+            " IS NOT NULL AND DateTime BETWEEN date('" + \
             str(graph_interval_data.graph_start) + \
             "') AND date('" + \
             str(graph_interval_data.graph_end) + \
@@ -100,7 +100,7 @@ def start_graph(graph_interval_data):
 
         sql_column_data = get_sql_data(graph_interval_data, var_sql_query)
 
-        if str(var_column) == "Time":
+        if str(var_column) == "DateTime":
             count = 0
             for data in sql_column_data:
                 sql_column_data[count] = adjust_datetime(data, graph_interval_data.time_offset)
@@ -108,11 +108,11 @@ def start_graph(graph_interval_data):
 
             graph_interval_data.sql_data_time = sql_column_data
 
-        elif str(var_column) == "hostName":
+        elif str(var_column) == "SensorName":
             graph_interval_data.sql_data_host_name = sql_column_data
         elif str(var_column) == "uptime":
             graph_interval_data.sql_data_up_time = sql_column_data
-        elif str(var_column) == "ip":
+        elif str(var_column) == "IP":
             graph_interval_data.sql_data_ip = sql_column_data
         elif str(var_column) == "cpuTemp":
             graph_interval_data.sql_data_cpu_temp = sql_column_data

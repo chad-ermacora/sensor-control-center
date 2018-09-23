@@ -476,27 +476,23 @@ def graph_interval_button():
 
 
 def get_column_checkboxes():
-    column_checkboxes = ["Time", "hostName", "ip"]
+    column_checkboxes = ["DateTime", "SensorName", "IP"]
 
     if graph_checkbox_up_time.value == 1:
-        column_checkboxes.append("uptime")
+        column_checkboxes.append("SensorUpTime")
     if graph_checkbox_temperature.value == 1:
-        column_checkboxes.append("cpuTemp")
-        column_checkboxes.append("hatTemp")
+        column_checkboxes.append("SystemTemp")
+        column_checkboxes.append("EnvironmentTemp")
     if graph_checkbox_pressure.value == 1:
-        column_checkboxes.append("pressure")
+        column_checkboxes.append("Pressure")
     if graph_checkbox_humidity.value == 1:
-        column_checkboxes.append("humidity")
+        column_checkboxes.append("Humidity")
     if graph_checkbox_lumen.value == 1:
-        column_checkboxes.append("lumen")
+        column_checkboxes.append("Lumen")
     if graph_checkbox_colour.value == 1:
-        column_checkboxes.append("red")
-        column_checkboxes.append("green")
-        column_checkboxes.append("blue")
-    if graph_checkbox_magnetic.value == 1:
-        column_checkboxes.append("mg_X")
-        column_checkboxes.append("mg_Y")
-        column_checkboxes.append("mg_Z")
+        column_checkboxes.append("Red")
+        column_checkboxes.append("Green")
+        column_checkboxes.append("Blue")
 
     logger.debug(str(column_checkboxes))
     return column_checkboxes
@@ -1029,23 +1025,18 @@ graph_checkbox_pressure = CheckBox(window_graph_interval,
 
 graph_checkbox_humidity = CheckBox(window_graph_interval,
                                    text="Humidity",
-                                   grid=[1, 10],
+                                   grid=[2, 7],
                                    align="left")
 
 graph_checkbox_lumen = CheckBox(window_graph_interval,
                                 text="Lumen",
-                                grid=[2, 7],
+                                grid=[2, 8],
                                 align="left")
 
 graph_checkbox_colour = CheckBox(window_graph_interval,
                                  text="Colour RGB",
-                                 grid=[2, 8],
+                                 grid=[2, 9],
                                  align="left")
-
-graph_checkbox_magnetic = CheckBox(window_graph_interval,
-                                   text="Magnetic XYZ",
-                                   grid=[2, 9],
-                                   align="left")
 
 graph_button_sensors = PushButton(window_graph_interval,
                                   text="Graph\nSensors",
@@ -1117,7 +1108,6 @@ graph_checkbox_pressure.value = 1
 graph_checkbox_humidity.value = 0
 graph_checkbox_lumen.value = 0
 graph_checkbox_colour.value = 1
-graph_checkbox_magnetic.value = 1
 
 about_textbox.value = Sensor_app_imports.get_about_text()
 about_textbox.disable()
