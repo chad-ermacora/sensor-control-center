@@ -119,7 +119,7 @@ def start_graph(graph_interval_data):
             count = 0
             for data in sql_column_data:
                 try:
-                    sql_column_data[count] = float(data) + float(graph_interval_data.temperature_offset)
+                    sql_column_data[count] = str(float(data) + float(graph_interval_data.temperature_offset))
                     count = count + 1
                 except Exception as error:
                     count = count + 1
