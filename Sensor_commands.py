@@ -20,6 +20,7 @@ import socket
 import pickle
 import os
 import sys
+import re
 from tkinter import simpledialog
 import logging
 from logging.handlers import RotatingFileHandler
@@ -138,19 +139,19 @@ def kill_progs(ip):
 
 def hostname_change(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    new_hostname = simpledialog.askstring(str(ip), "New Hostname: ")
+    tmp_hostname = simpledialog.askstring(str(ip), "New Hostname: ")
 
-    if new_hostname is not None:
-        if new_hostname is not '':
-            print(new_hostname)
-            try:
-                sock_g.connect((ip, 10065))
-                sock_g.send(('hostch' + str(new_hostname)).encode())
-                logger.info("Hostname Change on " + ip + " - OK")
-            except Exception as error:
-                logger.warning("Hostname Change on " + ip + " - Failed: " + str(error))
-            sock_g.close()
-        else:
-            logger.warning("Hostname Blank, Cancelling Name Change on " + ip)
+    logger.debug(tmp_hostname)
+
+    if tmp_hostname is not None and not '':
+        new_hostname = re.sub('\W', '_', tmp_hostname)
+        logger.debug(new_hostname)
+        try:
+            sock_g.connect((ip, 10065))
+            sock_g.send(('hostch' + str(new_hostname)).encode())
+            logger.info("Hostname Change on " + ip + " - OK")
+        except Exception as error:
+            logger.warning("Hostname Change on " + ip + " - Failed: " + str(error))
+        sock_g.close()
     else:
-        logger.warning("Hostname cancelled on " + ip)
+        logger.warning("Hostname Cancelled or NULL on " + ip)

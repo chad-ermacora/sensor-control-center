@@ -112,7 +112,7 @@ def sensor_detailed_status(ip_list):
                     uptime_days = int(float(sensor_data[3]) // 1440)
                     uptime_hours = int((float(sensor_data[3]) % 1440) // 60)
                     uptime_min = int(float(sensor_data[3]) % 60)
-    
+
                     replace_word = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
                 elif count2 == 4:
                     replace_word = str(sensor_data[4])
@@ -122,7 +122,7 @@ def sensor_detailed_status(ip_list):
                     replace_word = str(sensor_data[6])
                 else:
                     logger.error("Wrong format for Sensor Values - Try Updating the Program")
-    
+
                 current_sensor_html = current_sensor_html.replace(code, replace_word)
                 count2 = count2 + 1
         except Exception as error:
@@ -155,8 +155,7 @@ def download_interval_db(ip_list):
 
     for ip in ip_list:
         try:
-            remote_database = urlopen("http://" + str(ip) +
-                                      ':8009/SensorIntervalDatabase.sqlite')
+            remote_database = urlopen("http://" + str(ip) + ":8009/SensorIntervalDatabase.sqlite")
             local_file = open(j + "/SensorIntervalDatabase" + ip[-3:] + ".sqlite", 'wb')
             local_file.write(remote_database.read())
             remote_database.close()
@@ -173,8 +172,7 @@ def download_trigger_db(ip_list):
 
     for ip in ip_list:
         try:
-            remote_database = urlopen("http://" + str(ip) +
-                                      ':8009/SensorTriggerDatabase.sqlite')
+            remote_database = urlopen("http://" + str(ip) + ":8009/SensorTriggerDatabase.sqlite")
             local_file = open(j + "/SensorTriggerDatabase" + ip[-3:] + ".sqlite", 'wb')
             local_file.write(remote_database.read())
             remote_database.close()
