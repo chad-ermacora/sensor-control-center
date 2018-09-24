@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-'''
+"""
     KootNet Sensors is a collection of programs and scripts to deploy,
     interact with, and collect readings from various Sensors.
     Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
@@ -16,143 +15,143 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-'''
+"""
 import socket
 import pickle
+import os
+import sys
+import re
 from tkinter import simpledialog
-from Sensor_app_imports import config_load_file
+import logging
+from logging.handlers import RotatingFileHandler
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
+
+file_handler = RotatingFileHandler('logs/Sensor_Commands_log.txt', maxBytes=256000, backupCount=5)
+file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
+app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
+config_file = app_location_directory + "config.txt"
 
 
-def check(ip):
-    temp_settings = config_load_file()
-    socket.setdefaulttimeout(int(temp_settings[6]))
-    sockG = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def check(ip, net_timeout):
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        sockG.connect((ip, 10065))
-        sockG.send(b'checks')
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'checks')
         sensor_status = "Online"
-        colour = "#7CFC00"
-        log_message = "Sensor " + ip + " " + sensor_status
-        checkbox_value = 1
-    except:
+        logger.info("Check " + str(ip) + " Online")
+    except Exception as error:
+        logger.info("Check " + str(ip) + " Offline: " + str(error))
         sensor_status = "Offline"
-        colour = "red"
-        log_message = "Sensor " + ip + " " + sensor_status
-        checkbox_value = 0
 
-    sockG.close()
-    return sensor_status, colour, log_message, checkbox_value
+    sock_g.close()
+    return sensor_status
 
 
-def get(ip):
-    log_print_text = "Sensor_commands.get()"
-    temperature_offset = config_load_file()[5]
-    socket.setdefaulttimeout(int(config_load_file()[7]))
-    sockG = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    offline_sensor_values = ["N/A", ip, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                             "0000-00-00 00:00:00"]
+def get(ip, net_timeout):
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        sockG.connect((ip, 10065))
-        sockG.send(b'datagt')
-        var_data = pickle.loads(sockG.recv(512))
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'datagt')
+        var_data = pickle.loads(sock_g.recv(512))
         sensor_data = var_data.split(",")
-        sensor_data[4] = round(float(sensor_data[4]) + \
-                         float(temperature_offset), 2)
-        log_print_text = log_print_text + "\nGetting Sensor Data from " + \
-                         str(ip) + " - OK"
+        sock_g.close()
+        logger.info("Getting Sensor Data from " + str(ip) + " - OK")
         return sensor_data
-    except:
-        print("\nGetting Sensor Data from " + ip + " - Failed")
+    except Exception as error:
+        logger.warning("Getting Sensor Data from " + ip + " - Failed: " + str(error))
+        offline_sensor_values = ["Network Timeout", ip, 0, 0, 0, 0, 0, 0, 0, 0, 0, "0000-00-00 00:00:00"]
         return offline_sensor_values
-    sockG.close()
 
 
 def nas_upgrade(ip):
-    log_print_text = "Sensor_commands.nas_upgrade()"
-    sockG = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        sockG.connect((ip, 10065))
-        sockG.send(b'nasupg')
-        log_print_text = log_print_text + "\nNAS Upgrade on " + ip + " - OK"
-    except:
-        log_print_text = log_print_text + "\nConnection Failed to " + ip
-    sockG.close()
-    return log_print_text
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'nasupg')
+        logger.info("NAS Upgrade on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("NAS Upgrade on " + ip + " - Failed: " + str(error))
+    sock_g.close()
 
 
 def online_upgrade(ip):
-    log_print_text = "Sensor_commands.online_upgrade()"
-    sockG = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        sockG.connect((ip, 10065))
-        sockG.send(b'online')
-        log_print_text = log_print_text + "\nOnline Upgrade on " + ip + " - OK"
-    except:
-        log_print_text = log_print_text + "\nConnection Failed to " + ip
-    sockG.close()
-    return log_print_text
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'online')
+        logger.info("Online Upgrade on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Online Upgrade on " + ip + " - Failed: " + str(error))
+    sock_g.close()
 
 
 def reboot(ip):
-    log_print_text = "Sensor_commands.reboot()"
-    sockG = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        sockG.connect((ip, 10065))
-        sockG.send(b'reboot')
-        log_print_text = log_print_text + "\nReboot on " + ip + " - OK"
-    except:
-        log_print_text = log_print_text + "\nReboot Failed on " + ip
-    sockG.close()
-    return log_print_text
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'reboot')
+        logger.info("Reboot on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Reboot on " + ip + " - Failed: " + str(error))
+    sock_g.close()
 
 
 def shutdown(ip):
-    log_print_text = "Sensor_commands.shutdown()"
-    sockG = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        sockG.connect((ip, 10065))
-        sockG.send(b'shutdn')
-        log_print_text = log_print_text + "\nShutdown on " + ip + " - OK"
-    except:
-        log_print_text = log_print_text + "\nShutdown Failed on " + ip
-    sockG.close()
-    return log_print_text
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'shutdn')
+        logger.info("Shutdown on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Shutdown on " + ip + " - Failed: " + str(error))
+    sock_g.close()
 
 
 def kill_progs(ip):
-    log_print_text = "Sensor_commands.kill_progs()"
-    sockG = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        sockG.connect((ip, 10065))
-        sockG.send(b'killpg')
-        log_print_text = log_print_text + "\nPrograms on " + ip + \
-                         " - Terminated"
-    except:
-        log_print_text = log_print_text + "\nPrograms on " + ip + \
-                         " - Not running?"
-    sockG.close()
-    return log_print_text
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'killpg')
+        logger.info("Closing Programs on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Closing Programs on " + ip + " - Failed: " + str(error))
+    sock_g.close()
 
 
 def hostname_change(ip):
-    log_print_text = "Sensor_commands.hostname_change()"
-    sockG = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    tmp_hostname = simpledialog.askstring(str(ip), "New Hostname: ")
 
-    try:
-        sockG.connect((ip, 10065))
-        sockG.send(str("hostch" + simpledialog.askstring((str(ip)),
-                       "New Hostname: ")).encode())
-        log_print_text = log_print_text + "\nHostname on " + ip + " - Updated"
-    except:
-        log_print_text = log_print_text + "\nPrograms on " + ip + \
-                         " - Not running?"
-    sockG.close()
-    return log_print_text
+    logger.debug(tmp_hostname)
+
+    if tmp_hostname is not None and not '':
+        new_hostname = re.sub('\W', '_', tmp_hostname)
+        logger.debug(new_hostname)
+        try:
+            sock_g.connect((ip, 10065))
+            sock_g.send(('hostch' + str(new_hostname)).encode())
+            logger.info("Hostname Change on " + ip + " - OK")
+        except Exception as error:
+            logger.warning("Hostname Change on " + ip + " - Failed: " + str(error))
+        sock_g.close()
+    else:
+        logger.warning("Hostname Cancelled or NULL on " + ip)

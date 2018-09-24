@@ -1,0 +1,28 @@
+<h2 style="text-align: center;"><u><strong>Building a Sensor Unit to work with KootNet Sensors</strong></u></h2>
+<p style="text-align: center;"><em>** WIP: This will be updated with better instructions as time goes on **</em></p>
+<p style="text-align: center;">&nbsp;</p>
+<h3 style="text-align: center;"><u><strong>Currently Supported Sensor&rsquo;s</strong></u></h3>
+<p style="text-align: center;"><a href="https://www.raspberrypi.org/products/">Raspberry Pi products</a>: Sense HAT</p>
+<p style="text-align: center;"><a href="https://shop.pimoroni.com/">Pimoroni products</a>: BH1745, BME680, Enviro pHAT, LSM303D, VL53L1X</p>
+<p style="text-align: center;"><em>Note: Additional Sensors can be added fairly easily, so long as they support the Raspberry Pi and Python3</em></p>
+<p style="text-align: center;">&nbsp;</p>
+<h4 style="text-align: center;"><span style="text-decoration: underline;"><strong>User Requirements</strong></span></h4>
+<p style="text-align: center;">The User must know the following</p>
+<p style="text-align: center;">1. Basic TCP/IP Version 4 concepts<br /> <em>IP Address, Gateway, DNS, etc.</em></p>
+<p style="text-align: center;">2. Basic operations of the terminal text editor "nano"<br /> <em>Use "Ctrl + x" to quite, entering "y" to save changes</em></p>
+<p style="text-align: center;">3. How to accesses a terminal in Raspbian<br /> <em>Raspberry Pi Menu -> Accessories -> Terminal</em></p>
+<h4 style="text-align: center;">&nbsp;</h4>
+<h4 style="text-align: center;"><span style="text-decoration: underline;"><strong>Required Hardware</strong></span></h4>
+<p style="text-align: center;"><strong><a href="https://www.raspberrypi.org/products/">Raspberry Pi</a></strong> - I have tested the 3B+ &amp; Zero W (Should work with all?)</p>
+<p style="text-align: center;"><strong><em>Optional</em></strong>&nbsp;- additional Sensors (see above)</p>
+<p style="text-align: center;">&nbsp;</p>
+<h3 style="text-align: center;"><span style="text-decoration: underline;"><strong>Install Instructions</strong></span></h3>
+<p style="text-align: center;">Step 1. Physically Install your Sensor(s) onto the Raspberry Pi</p>
+<p style="text-align: center;">Step 2. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install Raspbian OS</a> on your Raspberry Pi (Clean Installs are best, due to /etc/network/interfaces Changes)</p>
+<p style="text-align: center;">Step 3. Enable SPI and I2C in the Raspberry Pi Configuration window on the "Interfaces" tab</p>
+<p style="text-align: center;">Step 4. Make sure you are connected to the Internet, then run the following command in a terminal to start the Installer</p>
+<p style="text-align: center;"><em>** Note: This will automatically reboot the Raspberry Pi after completion **</em></p>
+<p style="text-align: center;">wget http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/install_kootnet_sensors.sh &amp;&amp; sudo chmod +x install_kootnet_sensors.sh &amp;&amp; sudo bash install_kootnet_sensors.sh &amp;&amp; sudo reboot</p>
+<p style="text-align: center;">Follow the onscreen Instructions. Once Complete, your Sensor should be ready to go!</p>
+<p style="text-align: center;">&nbsp;</p>
+<p style="text-align: center;">&nbsp;</p>
