@@ -1063,17 +1063,23 @@ commands_text_upgrade = Text(window_sensor_commands,
                              color='blue',
                              align="left")
 
-commands_button_lanUpgrade = PushButton(window_sensor_commands,
-                                        text="LAN SMB\nUpgrade",
-                                        command=commands_upgrade_smb,
-                                        grid=[1, 3],
-                                        align="left")
+commands_button_lan_Upgrade = PushButton(window_sensor_commands,
+                                         text="SMB\nSoftware\nUpgrade",
+                                         command=commands_upgrade_smb,
+                                         grid=[1, 3],
+                                         align="left")
 
-commands_button_onlineUpgrade = PushButton(window_sensor_commands,
-                                           text="Online HTTP\nUpgrade",
-                                           command=commands_upgrade_http,
-                                           grid=[2, 3],
-                                           align="left")
+commands_button_online_Upgrade = PushButton(window_sensor_commands,
+                                            text="HTTP\nSoftware\nUpgrade",
+                                            command=commands_upgrade_http,
+                                            grid=[2, 3],
+                                            align="left")
+
+commands_button_os_Upgrade = PushButton(window_sensor_commands,
+                                        text="OS\nUpgrade",
+                                        command=app_open_about,
+                                        grid=[3, 3],
+                                        align="left")
 
 commands_text_other = Text(window_sensor_commands,
                            text="Power Commands",
@@ -1082,22 +1088,22 @@ commands_text_other = Text(window_sensor_commands,
                            align="left")
 
 commands_button_terminate = PushButton(window_sensor_commands,
-                                       text="Restart\nSensor Unit\nPrograms",
+                                       text="Restart\nSensor\nSoftware",
                                        command=commands_kill_progs,
                                        grid=[1, 5],
                                        align="left")
 
-commands_button_reboot = PushButton(window_sensor_commands,
-                                    text="Reboot",
-                                    command=commands_sensor_reboot,
-                                    grid=[2, 5, 2, 1],
-                                    align="right")
-
 commands_button_shutdown = PushButton(window_sensor_commands,
                                       text="Shutdown",
                                       command=commands_sensor_shutdown,
-                                      grid=[2, 5],
-                                      align="left")
+                                      grid=[2, 5, 2, 1],
+                                      align="right")
+
+commands_button_reboot = PushButton(window_sensor_commands,
+                                    text="Reboot",
+                                    command=commands_sensor_reboot,
+                                    grid=[2, 5],
+                                    align="left")
 
 # Change Window Configurations before loading app
 app_checkbox_all_column1.toggle()
