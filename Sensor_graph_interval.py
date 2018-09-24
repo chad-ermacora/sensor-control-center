@@ -176,7 +176,7 @@ def get_sql_data(graph_interval_data, sql_command):
             count = 0
             skip_count = 0
             for data in sql_column_data:
-                if skip_count > int(graph_interval_data.skip_sql):
+                if skip_count >= int(graph_interval_data.skip_sql):
                     return_data.append(str(data)[2:-3])
                     skip_count = 0
 

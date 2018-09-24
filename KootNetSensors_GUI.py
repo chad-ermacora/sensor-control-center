@@ -333,6 +333,24 @@ def config_save_apply_button():
     config_settings.network_details_timeout = config_textbox_network_details.value
     config_settings.allow_power_controls = config_checkbox_power_controls.value
     config_settings.allow_reset_config = config_checkbox_reset.value
+    config_settings.ip_list[0] = app_textbox_ip1.value
+    config_settings.ip_list[1] = app_textbox_ip2.value
+    config_settings.ip_list[2] = app_textbox_ip3.value
+    config_settings.ip_list[3] = app_textbox_ip4.value
+    config_settings.ip_list[4] = app_textbox_ip5.value
+    config_settings.ip_list[5] = app_textbox_ip6.value
+    config_settings.ip_list[6] = app_textbox_ip7.value
+    config_settings.ip_list[7] = app_textbox_ip8.value
+    config_settings.ip_list[8] = app_textbox_ip9.value
+    config_settings.ip_list[9] = app_textbox_ip10.value
+    config_settings.ip_list[10] = app_textbox_ip11.value
+    config_settings.ip_list[11] = app_textbox_ip12.value
+    config_settings.ip_list[12] = app_textbox_ip13.value
+    config_settings.ip_list[13] = app_textbox_ip14.value
+    config_settings.ip_list[14] = app_textbox_ip15.value
+    config_settings.ip_list[15] = app_textbox_ip16.value
+
+    config_settings = Sensor_config.check_settings(config_settings)
 
     Sensor_config.save_file(config_settings)
     set_config(config_settings)
@@ -356,6 +374,22 @@ def set_config(config_settings):
         config_textbox_network_details.value = final_config_settings.network_details_timeout
         config_checkbox_power_controls.value = final_config_settings.allow_power_controls
         config_checkbox_reset.value = final_config_settings.allow_reset_config
+        app_textbox_ip1.value = config_settings.ip_list[0]
+        app_textbox_ip2.value = config_settings.ip_list[1]
+        app_textbox_ip3.value = config_settings.ip_list[2]
+        app_textbox_ip4.value = config_settings.ip_list[3]
+        app_textbox_ip5.value = config_settings.ip_list[4]
+        app_textbox_ip6.value = config_settings.ip_list[5]
+        app_textbox_ip7.value = config_settings.ip_list[6]
+        app_textbox_ip8.value = config_settings.ip_list[7]
+        app_textbox_ip9.value = config_settings.ip_list[8]
+        app_textbox_ip10.value = config_settings.ip_list[9]
+        app_textbox_ip11.value = config_settings.ip_list[10]
+        app_textbox_ip12.value = config_settings.ip_list[11]
+        app_textbox_ip13.value = config_settings.ip_list[12]
+        app_textbox_ip14.value = config_settings.ip_list[13]
+        app_textbox_ip15.value = config_settings.ip_list[14]
+        app_textbox_ip16.value = config_settings.ip_list[15]
         config_enable_reset()
         config_enable_shutdown()
         logger.info("Configuration Set - OK")
@@ -544,8 +578,8 @@ window_app_about = Window(app,
 
 window_config = Window(app,
                        title="Configuration",
-                       width=500,
-                       height=275,
+                       width=600,
+                       height=300,
                        layout="grid",
                        visible=False)
 
@@ -559,7 +593,9 @@ app_menubar = MenuBar(app,
                                 ["Configuration Settings",
                                  app_open_config],
                                ["Sensor Commands",
-                                app_sensor_commands_menu]],
+                                app_sensor_commands_menu],
+                               ["Save IP List",
+                                config_save_apply_button]],
                                [["Download Interval Database(s)",
                                  app_download_interval_db_menu],
                                 ["Download Trigger Database(s)",
@@ -598,7 +634,7 @@ app_checkbox_all_column1 = CheckBox(app,
                                     align="left")
 
 app_checkbox_ip1 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[1, 2],
                             align="left")
 
@@ -609,7 +645,7 @@ app_textbox_ip1 = TextBox(app,
                           align="left")
 
 app_checkbox_ip2 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[1, 3],
                             align="left")
 
@@ -620,7 +656,7 @@ app_textbox_ip2 = TextBox(app,
                           align="left")
 
 app_checkbox_ip3 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[1, 4],
                             align="left")
 
@@ -631,7 +667,7 @@ app_textbox_ip3 = TextBox(app,
                           align="left")
 
 app_checkbox_ip4 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[1, 5],
                             align="left")
 
@@ -642,7 +678,7 @@ app_textbox_ip4 = TextBox(app,
                           align="left")
 
 app_checkbox_ip5 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[1, 6],
                             align="left")
 
@@ -653,7 +689,7 @@ app_textbox_ip5 = TextBox(app,
                           align="left")
 
 app_checkbox_ip6 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[1, 7],
                             align="left")
 
@@ -664,7 +700,7 @@ app_textbox_ip6 = TextBox(app,
                           align="left")
 
 app_checkbox_ip7 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[1, 8],
                             align="left")
 
@@ -675,7 +711,7 @@ app_textbox_ip7 = TextBox(app,
                           align="left")
 
 app_checkbox_ip8 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[1, 9],
                             align="left")
 
@@ -695,7 +731,7 @@ app_checkbox_all_column2 = CheckBox(app,
                                     align="left")
 
 app_checkbox_ip9 = CheckBox(app,
-                            text="N/A",
+                            text="IP ",
                             grid=[3, 2],
                             align="left")
 
@@ -706,7 +742,7 @@ app_textbox_ip9 = TextBox(app,
                           align="left")
 
 app_checkbox_ip10 = CheckBox(app,
-                             text="N/A",
+                             text="IP ",
                              grid=[3, 3],
                              align="left")
 
@@ -717,7 +753,7 @@ app_textbox_ip10 = TextBox(app,
                            align="left")
 
 app_checkbox_ip11 = CheckBox(app,
-                             text="N/A",
+                             text="IP ",
                              grid=[3, 4],
                              align="left")
 
@@ -728,7 +764,7 @@ app_textbox_ip11 = TextBox(app,
                            align="left")
 
 app_checkbox_ip12 = CheckBox(app,
-                             text="N/A",
+                             text="IP ",
                              grid=[3, 5],
                              align="left")
 
@@ -739,7 +775,7 @@ app_textbox_ip12 = TextBox(app,
                            align="left")
 
 app_checkbox_ip13 = CheckBox(app,
-                             text="N/A",
+                             text="IP ",
                              grid=[3, 6],
                              align="left")
 
@@ -750,7 +786,7 @@ app_textbox_ip13 = TextBox(app,
                            align="left")
 
 app_checkbox_ip14 = CheckBox(app,
-                             text="N/A",
+                             text="IP ",
                              grid=[3, 7],
                              align="left")
 
@@ -761,7 +797,7 @@ app_textbox_ip14 = TextBox(app,
                            align="left")
 
 app_checkbox_ip15 = CheckBox(app,
-                             text="N/A",
+                             text="IP ",
                              grid=[3, 8],
                              align="left")
 
@@ -772,7 +808,7 @@ app_textbox_ip15 = TextBox(app,
                            align="left")
 
 app_checkbox_ip16 = CheckBox(app,
-                             text="N/A",
+                             text="IP ",
                              grid=[3, 9],
                              align="left")
 
@@ -888,7 +924,7 @@ config_textbox_end = TextBox(window_config,
                              align="right")
 
 config_text_time_offset2 = Text(window_config,
-                                text="Database Hour(s) Offset",
+                                text="Graph DateTime Offset in Hours",
                                 color='blue',
                                 grid=[2, 1],
                                 align="bottom")
@@ -900,7 +936,7 @@ config_textbox_time_offset = TextBox(window_config,
                                      align="bottom")
 
 config_text_sql_skip = Text(window_config,
-                            text="Skip SQL Queries",
+                            text="Add SQL row to Graph every 'X' rows",
                             color='blue',
                             grid=[2, 3],
                             align="top")
@@ -912,7 +948,7 @@ config_textbox_sql_skip = TextBox(window_config,
                                   align="top")
 
 config_text_temperature_offset = Text(window_config,
-                                      text="Temperature Offset",
+                                      text="Environment Temperature Offset in °C",
                                       color='blue',
                                       grid=[2, 4],
                                       align="bottom")
@@ -924,34 +960,34 @@ config_textbox_temperature_offset = TextBox(window_config,
                                             align="top")
 
 config_text_network_timeouts = Text(window_config,
-                                    text="Network Timeouts",
+                                    text="Network Timeouts in Sec",
                                     color='blue',
                                     grid=[2, 6],
                                     align="top")
 
 config_text_network_timeouts1 = Text(window_config,
-                                     text="   Sensor Check: ",
+                                     text="Check Sensor Status: ",
                                      color='green',
                                      grid=[2, 7],
-                                     align="left")
+                                     align="top")
 
 config_textbox_network_check = TextBox(window_config,
                                        text="",
                                        width="5",
-                                       grid=[2, 7],
-                                       align="right")
+                                       grid=[2, 8],
+                                       align="top")
 
 config_text_network_timeouts2 = Text(window_config,
-                                     text="   Sensor Details: ",
+                                     text="View Sensor Details: ",
                                      color='green',
-                                     grid=[2, 8],
-                                     align="left")
+                                     grid=[2, 9],
+                                     align="top")
 
 config_textbox_network_details = TextBox(window_config,
                                          text="",
                                          width="5",
-                                         grid=[2, 8],
-                                         align="right")
+                                         grid=[2, 10],
+                                         align="top")
 
 # Graph Window Section
 graph_text_start = Text(window_graph_interval,
@@ -979,7 +1015,7 @@ graph_textbox_end = TextBox(window_graph_interval,
                             align="left")
 
 graph_text_sql_skip = Text(window_graph_interval,
-                           text="SQL Skip: ",
+                           text="Add SQL row\nEvery 'X' rows:",
                            color='green',
                            grid=[1, 4],
                            align="left")
@@ -991,7 +1027,7 @@ graph_textbox_sql_skip = TextBox(window_graph_interval,
                                  align="left")
 
 graph_text_temperature_offset = Text(window_graph_interval,
-                                     text="Temp Offset: ",
+                                     text="Environment\nTemp Offset: ",
                                      color='green',
                                      grid=[1, 5],
                                      align="left")
@@ -1064,13 +1100,13 @@ commands_text_upgrade = Text(window_sensor_commands,
                              align="left")
 
 commands_button_lan_Upgrade = PushButton(window_sensor_commands,
-                                         text="SMB\nSoftware\nUpgrade",
+                                         text="Upgrade\nSoftware\nOver SMB",
                                          command=commands_upgrade_smb,
                                          grid=[1, 3],
                                          align="left")
 
 commands_button_online_Upgrade = PushButton(window_sensor_commands,
-                                            text="HTTP\nSoftware\nUpgrade",
+                                            text="Upgrade\nSoftware\nOver HTTP",
                                             command=commands_upgrade_http,
                                             grid=[2, 3],
                                             align="left")
