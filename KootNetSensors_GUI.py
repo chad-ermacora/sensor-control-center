@@ -1144,12 +1144,12 @@ commands_button_reboot = PushButton(window_sensor_commands,
 # Change Window Configurations before loading app
 app_checkbox_all_column1.toggle()
 app_check_all_ip_checkboxes(1)
-graph_checkbox_up_time.value = 0
+graph_checkbox_up_time.value = 1
 graph_checkbox_temperature.value = 1
-graph_checkbox_pressure.value = 1
+graph_checkbox_pressure.value = 0
 graph_checkbox_humidity.value = 0
 graph_checkbox_lumen.value = 0
-graph_checkbox_colour.value = 1
+graph_checkbox_colour.value = 0
 
 about_textbox.value = Sensor_app_imports.get_about_text()
 about_textbox.disable()

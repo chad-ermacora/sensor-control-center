@@ -54,9 +54,7 @@ class CreateGraphIntervalData:
         self.graph_table = "IntervalData"
         self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
                               "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
-
         self.max_sql_queries = 200000
-        # self.repeat_max_sql_query = 5
 
         # Graph data holders for SQL DataBase
         self.sql_data_time = []
@@ -84,10 +82,9 @@ def start_graph(graph_interval_data):
     logger.debug("SQL DataBase Location: " + str(graph_interval_data.db_location))
 
     new_time_offset = int(graph_interval_data.time_offset) * -1
-    new_graph_start = adjust_datetime(graph_interval_data.graph_start, new_time_offset)
-    new_graph_end = adjust_datetime(graph_interval_data.graph_end, new_time_offset)
-    print(new_graph_start)
-    print(new_graph_end)
+    get_sql_graph_start = adjust_datetime(graph_interval_data.graph_start, new_time_offset)
+    get_sql_graph_end = adjust_datetime(graph_interval_data.graph_end, new_time_offset)
+
     for var_column in graph_interval_data.graph_columns:
         var_sql_query = "SELECT " + \
             str(var_column) + \
@@ -96,9 +93,9 @@ def start_graph(graph_interval_data):
             " WHERE " + \
             var_column + \
             " IS NOT NULL AND DateTime BETWEEN datetime('" + \
-            str(new_graph_start) + \
+            str(get_sql_graph_start) + \
             "') AND datetime('" + \
-            str(new_graph_end) + \
+            str(get_sql_graph_end) + \
             "') LIMIT " + \
             str(graph_interval_data.max_sql_queries)
 
