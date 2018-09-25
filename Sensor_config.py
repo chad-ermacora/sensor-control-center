@@ -47,9 +47,9 @@ class CreateConfigSettings:
         self.save_to = save_to.replace('\\', '/')
         self.graph_start = "2018-09-12 00:00:01"
         self.graph_end = "2200-01-01 00:00:01"
-        self.time_offset = "0"
-        self.sql_queries_skip = "12"
-        self.temperature_offset = "0"
+        self.time_offset = "-7"
+        self.sql_queries_skip = "3"
+        self.temperature_offset = "-4"
         self.network_check_timeout = "2"
         self.network_details_timeout = "5"
         self.allow_power_controls = 0
