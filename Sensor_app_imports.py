@@ -135,6 +135,7 @@ def sensor_detailed_status(ip_list):
         html_end = html_file_part.read()
         html_file_part.close()
         final_file = final_file + html_end
+        logger.info("Created Sensor Details - HTML File - OK")
     except Exception as error:
         logger.error("Open html_template_3.html Template Failed: " + str(error))
 
@@ -145,7 +146,7 @@ def sensor_detailed_status(ip_list):
         file_out.write(final_file)
         file_out.close()
         open_html(save_to_location)
-        logger.info("Sensor Details - HTML Save File - OK")
+        logger.debug("Sensor Details - HTML Save File - OK")
     except Exception as error:
         logger.error("Sensor Details - HTML Save File - Failed: " + str(error))
 
