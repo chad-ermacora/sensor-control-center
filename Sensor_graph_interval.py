@@ -83,6 +83,11 @@ def start_graph(graph_interval_data):
     logger.debug("SQL End DateTime: " + str(graph_interval_data.graph_end))
     logger.debug("SQL DataBase Location: " + str(graph_interval_data.db_location))
 
+    new_time_offset = int(graph_interval_data.time_offset) * -1
+    new_graph_start = adjust_datetime(graph_interval_data.graph_start, new_time_offset)
+    new_graph_end = adjust_datetime(graph_interval_data.graph_end, new_time_offset)
+    print(new_graph_start)
+    print(new_graph_end)
     for var_column in graph_interval_data.graph_columns:
         var_sql_query = "SELECT " + \
             str(var_column) + \
@@ -90,10 +95,10 @@ def start_graph(graph_interval_data):
             str(graph_interval_data.graph_table) + \
             " WHERE " + \
             var_column + \
-            " IS NOT NULL AND DateTime BETWEEN date('" + \
-            str(graph_interval_data.graph_start) + \
-            "') AND date('" + \
-            str(graph_interval_data.graph_end) + \
+            " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+            str(new_graph_start) + \
+            "') AND datetime('" + \
+            str(new_graph_end) + \
             "') LIMIT " + \
             str(graph_interval_data.max_sql_queries)
 
@@ -102,7 +107,7 @@ def start_graph(graph_interval_data):
         if str(var_column) == "DateTime":
             count = 0
             for data in sql_column_data:
-                sql_column_data[count] = adjust_datetime(data, graph_interval_data.time_offset)
+                sql_column_data[count] = adjust_datetime(data, int(graph_interval_data.time_offset))
                 count = count + 1
 
             graph_interval_data.sql_data_time = sql_column_data
@@ -153,11 +158,10 @@ def adjust_datetime(var_datetime, time_offset):
         logger.error("Unable to Convert datetime string to datetime format - " + str(error))
 
     try:
-        time_offset = int(time_offset)
+        new_time = var_datetime + timedelta(hours=time_offset)
     except Exception as error:
         logger.error("Unable to convert Hour Offset to int - " + str(error))
-
-    new_time = var_datetime + timedelta(hours=time_offset)
+        new_time = var_datetime
 
     logger.debug("Adjusted datetime: " + str(new_time))
     return str(new_time)

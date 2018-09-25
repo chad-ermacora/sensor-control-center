@@ -480,8 +480,8 @@ def commands_hostname_change():
 def graph_interval_button():
     new_interval_graph = Sensor_graph_interval.CreateGraphIntervalData()
     new_interval_graph.db_location = filedialog.askopenfilename()
-    config_settings_check = Sensor_config.CreateConfigSettings()
 
+    config_settings_check = Sensor_config.CreateConfigSettings()
     config_settings_check.save_to = config_textbox_save_to.value
     config_settings_check.graph_start = graph_textbox_start.value
     config_settings_check.graph_end = graph_textbox_end.value
