@@ -50,7 +50,7 @@ def check(ip, net_timeout):
         sock_g.connect((ip, 10065))
         sock_g.send(b'checks')
         sensor_status = "Online"
-        logger.info("Check " + str(ip) + " Online")
+        logger.debug("Check " + str(ip) + " Online")
     except Exception as error:
         logger.info("Check " + str(ip) + " Offline: " + str(error))
         sensor_status = "Offline"
@@ -69,7 +69,7 @@ def get(ip, net_timeout):
         var_data = pickle.loads(sock_g.recv(512))
         sensor_data = var_data.split(",")
         sock_g.close()
-        logger.info("Getting Sensor Data from " + str(ip) + " - OK")
+        logger.debug("Getting Sensor Data from " + str(ip) + " - OK")
         return sensor_data
     except Exception as error:
         logger.warning("Getting Sensor Data from " + ip + " - Failed: " + str(error))
