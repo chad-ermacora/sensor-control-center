@@ -52,6 +52,7 @@ logger.addHandler(stream_handler)
 app_version = "Tested on Python 3.7 - KootNet Sensors Version Alpha.17.1"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
+logger.info('KootNet Sensors - PC Control Center - Started')
 
 
 def app_graph_open_menu():
