@@ -392,7 +392,7 @@ def set_config(config_settings):
         app_textbox_ip16.value = config_settings.ip_list[15]
         config_enable_reset()
         config_enable_shutdown()
-        logger.info("Configuration Set - OK")
+        logger.debug("Configuration Set - OK")
     except Exception as error:
         logger.error("Configuration Set - One or More Items Failed - " + str(error))
 

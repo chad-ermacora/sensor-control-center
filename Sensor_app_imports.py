@@ -135,7 +135,7 @@ def sensor_detailed_status(ip_list):
         html_end = html_file_part.read()
         html_file_part.close()
         final_file = final_file + html_end
-        logger.info("Created Sensor Details - HTML File - OK")
+        logger.debug("Created Sensor Details - HTML File - OK")
     except Exception as error:
         logger.error("Open html_template_3.html Template Failed: " + str(error))
 
@@ -165,7 +165,7 @@ def download_interval_db(ip_list):
         except Exception as error:
             logger.error("Download Interval DB from " + str(ip) + " Failed: " + str(error))
 
-    logger.info("Sensor DataBase Download(s) Complete")
+    logger.debug("Sensor DataBase Download(s) Complete")
 
 
 def download_trigger_db(ip_list):
@@ -182,4 +182,4 @@ def download_trigger_db(ip_list):
         except Exception as error:
             logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
 
-    logger.info("Trigger DataBase Download(s) Complete")
+    logger.debug("Trigger DataBase Download(s) Complete")

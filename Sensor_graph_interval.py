@@ -357,7 +357,7 @@ def trace_graph(graph_interval_data):
 
         try:
             plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
-            logger.info("Interval Graph Creation - OK")
+            logger.debug("Interval Graph Creation - OK")
         except Exception as error:
             logger.error("Interval Graph Creation - Failed - " + str(error))
     else:
