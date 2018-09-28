@@ -49,7 +49,7 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_version = "Tested on Python 3.7 - KootNet Sensors Version Alpha.16.1"
+app_version = "Tested on Python 3.7 - KootNet Sensors Version Alpha.17.1"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
 
@@ -424,9 +424,11 @@ def config_enable_shutdown():
     if config_checkbox_power_controls.value == 1:
         commands_button_reboot.enable()
         commands_button_shutdown.enable()
+        commands_button_os_Upgrade.enable()
     else:
         commands_button_reboot.disable()
         commands_button_shutdown.disable()
+        commands_button_os_Upgrade.disable()
 
 
 def commands_upgrade_smb():
@@ -443,6 +445,14 @@ def commands_upgrade_http():
 
     for ip in ip_list:
         Sensor_commands.online_upgrade(ip)
+
+
+def commands_os_upgrade():
+    logger.debug("Sensor OS Upgrade")
+    ip_list = app_check_sensors_button()
+
+    for ip in ip_list:
+        Sensor_commands.os_upgrade(ip)
 
 
 def commands_sensor_reboot():
@@ -466,7 +476,7 @@ def commands_kill_progs():
     ip_list = app_check_sensors_button()
 
     for ip in ip_list:
-        Sensor_commands.kill_progs(ip)
+        Sensor_commands.terminate_sensor_programs(ip)
 
 
 def commands_hostname_change():
@@ -842,7 +852,7 @@ config_button_reset = PushButton(window_config,
 
 config_checkbox_power_controls = \
     CheckBox(window_config,
-             text="Enable Sensor\nShutdown/Reboot",
+             text="Enable Sensor\nShutdown/Reboot\nOS Upgrade",
              command=config_enable_shutdown,
              grid=[1, 1],
              align="top")
@@ -850,8 +860,8 @@ config_checkbox_power_controls = \
 config_checkbox_reset = CheckBox(window_config,
                                  text="Enable Config Reset",
                                  command=config_enable_reset,
-                                 grid=[1, 1],
-                                 align="bottom")
+                                 grid=[1, 2],
+                                 align="top")
 
 config_button_save_apply = PushButton(window_config,
                                       text="Save &\nApply",
@@ -1113,7 +1123,7 @@ commands_button_online_Upgrade = PushButton(window_sensor_commands,
 
 commands_button_os_Upgrade = PushButton(window_sensor_commands,
                                         text="OS\nUpgrade",
-                                        command=app_open_about,
+                                        command=commands_os_upgrade,
                                         grid=[3, 3],
                                         align="left")
 
@@ -1153,6 +1163,7 @@ graph_checkbox_colour.value = 0
 
 about_textbox.value = Sensor_app_imports.get_about_text()
 about_textbox.disable()
+commands_button_os_Upgrade.disable()
 config_textbox_save_to.disable()
 
 loaded_config_settings = Sensor_config.load_file()

@@ -48,7 +48,7 @@ def check(ip, net_timeout):
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'checks')
+        sock_g.send(b'CheckOnlineStatus')
         sensor_status = "Online"
         logger.debug("Check " + str(ip) + " Online")
     except Exception as error:
@@ -65,7 +65,7 @@ def get(ip, net_timeout):
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'datagt')
+        sock_g.send(b'GetSystemData')
         var_data = pickle.loads(sock_g.recv(512))
         sensor_data = var_data.split(",")
         sock_g.close()
@@ -82,7 +82,7 @@ def nas_upgrade(ip):
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'nasupg')
+        sock_g.send(b'UpgradeSMB')
         logger.info("NAS Upgrade on " + ip + " - OK")
     except Exception as error:
         logger.warning("NAS Upgrade on " + ip + " - Failed: " + str(error))
@@ -94,7 +94,19 @@ def online_upgrade(ip):
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'online')
+        sock_g.send(b'UpgradeOnline')
+        logger.info("Online Upgrade on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Online Upgrade on " + ip + " - Failed: " + str(error))
+    sock_g.close()
+
+
+def os_upgrade(ip):
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'UpgradeSystemOS')
         logger.info("Online Upgrade on " + ip + " - OK")
     except Exception as error:
         logger.warning("Online Upgrade on " + ip + " - Failed: " + str(error))
@@ -106,7 +118,7 @@ def reboot(ip):
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'reboot')
+        sock_g.send(b'RebootSystem')
         logger.info("Reboot on " + ip + " - OK")
     except Exception as error:
         logger.warning("Reboot on " + ip + " - Failed: " + str(error))
@@ -118,19 +130,19 @@ def shutdown(ip):
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'shutdn')
+        sock_g.send(b'ShutdownSystem')
         logger.info("Shutdown on " + ip + " - OK")
     except Exception as error:
         logger.warning("Shutdown on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
-def kill_progs(ip):
+def terminate_sensor_programs(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'killpg')
+        sock_g.send(b'TerminatePrograms')
         logger.info("Closing Programs on " + ip + " - OK")
     except Exception as error:
         logger.warning("Closing Programs on " + ip + " - Failed: " + str(error))
@@ -148,7 +160,7 @@ def hostname_change(ip):
         logger.debug(new_hostname)
         try:
             sock_g.connect((ip, 10065))
-            sock_g.send(('hostch' + str(new_hostname)).encode())
+            sock_g.send(('ChangeHostName' + str(new_hostname)).encode())
             logger.info("Hostname Change on " + ip + " - OK")
         except Exception as error:
             logger.warning("Hostname Change on " + ip + " - Failed: " + str(error))
