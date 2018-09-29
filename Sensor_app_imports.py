@@ -4,6 +4,7 @@ import os
 import logging
 from urllib.request import urlopen
 from tkinter import filedialog
+from guizero import info
 from Sensor_commands import get_system_info
 from Sensor_config import load_file
 from logging.handlers import RotatingFileHandler
@@ -169,7 +170,8 @@ def download_interval_db(ip_list):
         except Exception as error:
             logger.error("Download Interval DB from " + str(ip) + " Failed: " + str(error))
 
-    logger.debug("Sensor DataBase Download(s) Complete")
+    info("Information", "Interval DataBase Download(s) Complete")
+    logger.debug("Interval DataBase Download(s) Complete")
 
 
 def download_trigger_db(ip_list):
@@ -186,4 +188,5 @@ def download_trigger_db(ip_list):
         except Exception as error:
             logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
 
+    info("Information", "Trigger DataBase Download(s) Complete")
     logger.debug("Trigger DataBase Download(s) Complete")

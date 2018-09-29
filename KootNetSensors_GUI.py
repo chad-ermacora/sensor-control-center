@@ -24,7 +24,7 @@ import os
 import sys
 import platform
 import subprocess
-from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar
+from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info
 from tkinter import filedialog
 # DEBUG - Detailed information, typically of interest only when diagnosing problems. test
 # INFO - Confirmation that things are working as expected.
@@ -451,6 +451,10 @@ def commands_upgrade_smb():
     for ip in ip_list:
         Sensor_commands.upgrade_program_smb(ip)
 
+    info("Information", "Sensor Unit(s) Upgrading\n"
+                        "After 30 seconds please 'Restart Sensor Software' to activate the new version, "
+                        "located in the 'Sensor Commands' window")
+
 
 def commands_upgrade_http():
     logger.debug("Sensor Upgrade - HTTP")
@@ -458,6 +462,10 @@ def commands_upgrade_http():
 
     for ip in ip_list:
         Sensor_commands.upgrade_program_online(ip)
+
+    info("Information", "Sensor Unit(s) Upgrading\n"
+                        "After 30 seconds please 'Restart Sensor Software' to activate the new version, "
+                        "located in the 'Sensor Commands' window")
 
 
 def commands_os_upgrade():
@@ -467,6 +475,9 @@ def commands_os_upgrade():
     for ip in ip_list:
         Sensor_commands.upgrade_os_linux(ip)
 
+    info("Information", "Sensor OS Upgrade Started on Selected Sensor Units.\n"
+                        "Once complete, the Sensor Unit(s) will Reboot automatically")
+
 
 def commands_sensor_reboot():
     logger.debug("Sensor Reboot")
@@ -474,6 +485,8 @@ def commands_sensor_reboot():
 
     for ip in ip_list:
         Sensor_commands.reboot_sensor(ip)
+
+    info("Information", "Sensors Rebooting")
 
 
 def commands_sensor_shutdown():
@@ -483,6 +496,8 @@ def commands_sensor_shutdown():
     for ip in ip_list:
         Sensor_commands.shutdown_sensor(ip)
 
+    info("Information", "Sensors Shutting Down")
+
 
 def commands_kill_progs():
     logger.info("Terminate & Restarting Sensor programs - please allow up to 60 Seconds to restart")
@@ -490,6 +505,8 @@ def commands_kill_progs():
 
     for ip in ip_list:
         Sensor_commands.terminate_programs(ip)
+
+    info("Information", "Sensors Programs Restarting - This may take up to 60 Seconds")
 
 
 def graph_button_interval():
