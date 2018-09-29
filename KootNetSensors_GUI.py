@@ -486,7 +486,7 @@ def commands_sensor_reboot():
     for ip in ip_list:
         Sensor_commands.reboot_sensor(ip)
 
-    info("Information", "Sensors Rebooting")
+    info("Information", "Sensor(s) Rebooting")
 
 
 def commands_sensor_shutdown():
@@ -496,17 +496,17 @@ def commands_sensor_shutdown():
     for ip in ip_list:
         Sensor_commands.shutdown_sensor(ip)
 
-    info("Information", "Sensors Shutting Down")
+    info("Information", "Sensor(s) Shutting Down")
 
 
 def commands_kill_progs():
-    logger.info("Terminate & Restarting Sensor programs - please allow up to 60 Seconds to restart")
+    logger.info("Terminate & Restarting Sensor(s) programs - Please allow up to 60 Seconds to restart")
     ip_list = app_button_check_sensors()
 
     for ip in ip_list:
         Sensor_commands.terminate_programs(ip)
 
-    info("Information", "Sensors Programs Restarting - This may take up to 60 Seconds")
+    info("Information", "Sensor(s) Programs Restarting\nPlease allow up to 60 Seconds to restart")
 
 
 def graph_button_interval():
