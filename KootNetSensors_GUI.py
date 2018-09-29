@@ -598,6 +598,14 @@ window_config = Window(app,
                        layout="grid",
                        visible=False)
 
+# Add extra tk options to windows
+app.tk.resizable(False, False)
+window_graph_interval.tk.resizable(False, False)
+window_graph_trigger.tk.resizable(False, False)
+window_sensor_commands.tk.resizable(False, False)
+window_app_about.tk.resizable(False, False)
+window_config.tk.resizable(False, False)
+
 app_menubar = MenuBar(app,
                       toplevel=[["File"],
                                 ["Download"],
