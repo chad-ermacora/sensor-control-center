@@ -21,9 +21,9 @@ import pickle
 import os
 import sys
 import re
-from tkinter import simpledialog
 import logging
 from logging.handlers import RotatingFileHandler
+from tkinter import simpledialog
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -42,7 +42,7 @@ app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "config.txt"
 
 
-def check(ip, net_timeout):
+def check_online_status(ip, net_timeout):
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -59,7 +59,7 @@ def check(ip, net_timeout):
     return sensor_status
 
 
-def get(ip, net_timeout):
+def get_system_info(ip, net_timeout):
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -77,7 +77,7 @@ def get(ip, net_timeout):
         return offline_sensor_values
 
 
-def nas_upgrade(ip):
+def upgrade_program_smb(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -89,7 +89,7 @@ def nas_upgrade(ip):
     sock_g.close()
 
 
-def online_upgrade(ip):
+def upgrade_program_online(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -101,7 +101,7 @@ def online_upgrade(ip):
     sock_g.close()
 
 
-def os_upgrade(ip):
+def upgrade_os_linux(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -113,7 +113,7 @@ def os_upgrade(ip):
     sock_g.close()
 
 
-def reboot(ip):
+def reboot_sensor(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -125,7 +125,7 @@ def reboot(ip):
     sock_g.close()
 
 
-def shutdown(ip):
+def shutdown_sensor(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -137,7 +137,7 @@ def shutdown(ip):
     sock_g.close()
 
 
-def terminate_sensor_programs(ip):
+def terminate_programs(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -149,7 +149,7 @@ def terminate_sensor_programs(ip):
     sock_g.close()
 
 
-def hostname_change(ip):
+def set_hostname(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tmp_hostname = simpledialog.askstring(str(ip), "New Hostname: ")
 

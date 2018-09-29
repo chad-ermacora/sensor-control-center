@@ -4,7 +4,7 @@ import os
 import logging
 from urllib.request import urlopen
 from tkinter import filedialog
-from Sensor_commands import get
+from Sensor_commands import get_system_info
 from Sensor_config import load_file
 from logging.handlers import RotatingFileHandler
 
@@ -73,6 +73,10 @@ def open_html(outfile):
         logger.error("Graph HTML File Opened - Failed - " + str(error))
 
 
+def open_url(url):
+    webbrowser.open(url)
+
+
 def sensor_detailed_status(ip_list):
     final_file = ''
     replacement_codes = html_replacement_codes()
@@ -98,7 +102,7 @@ def sensor_detailed_status(ip_list):
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
-            sensor_data = get(ip, net_timeout)
+            sensor_data = get_system_info(ip, net_timeout)
             sensor_data[4] = round(float(sensor_data[4]), 2)
             count2 = 0
             for code in replacement_codes:

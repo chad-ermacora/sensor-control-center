@@ -106,7 +106,7 @@ def load_file():
         return config_settings
 
 
-def check_settings(config_settings):
+def check_config(config_settings):
     logger.debug("Checking Configuration Settings")
     default_settings = CreateConfigSettings()
 
@@ -191,8 +191,8 @@ def check_settings(config_settings):
     return config_settings
 
 
-def save_file(temp_config_settings):
-    config_settings = check_settings(temp_config_settings)
+def save_config_to_file(temp_config_settings):
+    config_settings = check_config(temp_config_settings)
 
     var_final_write = str(config_settings.save_to)
     var_final_write = var_final_write + ',' + str(config_settings.graph_start)
