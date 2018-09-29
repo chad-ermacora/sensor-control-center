@@ -557,10 +557,10 @@ def graph_trigger_button():
     #                                   "scatterT3")
 
 
-# App & Window Configurations
+# GUI Window Configurations
 app = App(title="KootNet Sensors - PC Control Center",
           width=400,
-          height=300,
+          height=325,
           layout="grid")
 
 window_graph_interval = Window(app,
@@ -750,7 +750,6 @@ app_textbox_ip8 = TextBox(app,
                           grid=[2, 9],
                           align="left")
 
-
 # Sensor's Online / Offline IP List Selection 2
 app_checkbox_all_column2 = CheckBox(app,
                                     text="Check ALL Column 2",
@@ -859,8 +858,7 @@ about_textbox = TextBox(window_app_about,
                         width=75,
                         height=18,
                         multiline=True,
-                        align="left")
-
+                        align="right")
 
 # Configuration Window Section
 config_button_reset = PushButton(window_config,
