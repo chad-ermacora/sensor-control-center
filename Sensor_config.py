@@ -47,13 +47,17 @@ class CreateConfigSettings:
         self.save_to = save_to.replace('\\', '/')
         self.graph_start = "2018-09-12 00:00:01"
         self.graph_end = "2200-01-01 00:00:01"
-        self.time_offset = "0"
-        self.sql_queries_skip = "12"
-        self.temperature_offset = "0"
+        self.time_offset = "-7"
+        self.sql_queries_skip = "3"
+        self.temperature_offset = "-4"
         self.network_check_timeout = "2"
         self.network_details_timeout = "5"
         self.allow_power_controls = 0
         self.allow_reset_config = 0
+        self.ip_list = ["192.168.10.11", "192.168.10.12", "192.168.10.13", "192.168.10.14",
+                        "192.168.10.15", "192.168.10.16", "192.168.10.17", "192.168.10.18",
+                        "192.168.10.19", "192.168.10.20", "192.168.10.21", "192.168.10.22",
+                        "192.168.10.23", "192.168.10.24", "192.168.10.25", "192.168.10.26"]
 
 
 def load_file():
@@ -84,6 +88,16 @@ def load_file():
         else:
             logger.error("Setting Enable Config Reset - BAD - Using Default")
 
+        count = 0
+        while count < 16:
+            try:
+                tmp_setting_location = 10 + count
+                config_settings.ip_list[count] = tmp_config_settings[tmp_setting_location]
+                count = count + 1
+            except Exception as error:
+                logger.error("Unable to Load IP # - " + str(count) + " - " + str(error))
+                count = count + 1
+
         logger.debug("Configuration File Load - OK")
         return config_settings
 
@@ -92,7 +106,7 @@ def load_file():
         return config_settings
 
 
-def check_settings(config_settings):
+def check_config(config_settings):
     logger.debug("Checking Configuration Settings")
     default_settings = CreateConfigSettings()
 
@@ -165,11 +179,20 @@ def check_settings(config_settings):
         logger.error("Setting Enable Config Reset - BAD - Using Default: " + str(error))
         config_settings.allow_reset_config = default_settings.allow_reset_config
 
+    count = 0
+    while count < 16:
+        if 6 < len(config_settings.ip_list[count]) < 16:
+                count = count + 1
+        else:
+            logger.error("Setting IP List - BAD - Using Default: Bad IP #" + str(count))
+            config_settings.ip_list[count] = default_settings.ip_list[count]
+            count = count + 1
+
     return config_settings
 
 
-def save_file(temp_config_settings):
-    config_settings = check_settings(temp_config_settings)
+def save_config_to_file(temp_config_settings):
+    config_settings = check_config(temp_config_settings)
 
     var_final_write = str(config_settings.save_to)
     var_final_write = var_final_write + ',' + str(config_settings.graph_start)
@@ -181,6 +204,8 @@ def save_file(temp_config_settings):
     var_final_write = var_final_write + ',' + str(config_settings.network_details_timeout)
     var_final_write = var_final_write + ',' + str(config_settings.allow_power_controls)
     var_final_write = var_final_write + ',' + str(config_settings.allow_reset_config)
+    for ip in config_settings.ip_list:
+        var_final_write = var_final_write + ',' + str(ip)
 
     try:
         local_file = open(config_file, 'w')

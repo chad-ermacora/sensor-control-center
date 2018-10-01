@@ -54,9 +54,7 @@ class CreateGraphIntervalData:
         self.graph_table = "IntervalData"
         self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
                               "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
-
         self.max_sql_queries = 200000
-        # self.repeat_max_sql_query = 5
 
         # Graph data holders for SQL DataBase
         self.sql_data_time = []
@@ -83,6 +81,10 @@ def start_graph(graph_interval_data):
     logger.debug("SQL End DateTime: " + str(graph_interval_data.graph_end))
     logger.debug("SQL DataBase Location: " + str(graph_interval_data.db_location))
 
+    new_time_offset = int(graph_interval_data.time_offset) * -1
+    get_sql_graph_start = adjust_datetime(graph_interval_data.graph_start, new_time_offset)
+    get_sql_graph_end = adjust_datetime(graph_interval_data.graph_end, new_time_offset)
+
     for var_column in graph_interval_data.graph_columns:
         var_sql_query = "SELECT " + \
             str(var_column) + \
@@ -90,10 +92,10 @@ def start_graph(graph_interval_data):
             str(graph_interval_data.graph_table) + \
             " WHERE " + \
             var_column + \
-            " IS NOT NULL AND DateTime BETWEEN date('" + \
-            str(graph_interval_data.graph_start) + \
-            "') AND date('" + \
-            str(graph_interval_data.graph_end) + \
+            " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+            str(get_sql_graph_start) + \
+            "') AND datetime('" + \
+            str(get_sql_graph_end) + \
             "') LIMIT " + \
             str(graph_interval_data.max_sql_queries)
 
@@ -102,7 +104,7 @@ def start_graph(graph_interval_data):
         if str(var_column) == "DateTime":
             count = 0
             for data in sql_column_data:
-                sql_column_data[count] = adjust_datetime(data, graph_interval_data.time_offset)
+                sql_column_data[count] = adjust_datetime(data, int(graph_interval_data.time_offset))
                 count = count + 1
 
             graph_interval_data.sql_data_time = sql_column_data
@@ -153,11 +155,10 @@ def adjust_datetime(var_datetime, time_offset):
         logger.error("Unable to Convert datetime string to datetime format - " + str(error))
 
     try:
-        time_offset = int(time_offset)
+        new_time = var_datetime + timedelta(hours=time_offset)
     except Exception as error:
         logger.error("Unable to convert Hour Offset to int - " + str(error))
-
-    new_time = var_datetime + timedelta(hours=time_offset)
+        new_time = var_datetime
 
     logger.debug("Adjusted datetime: " + str(new_time))
     return str(new_time)
@@ -176,7 +177,7 @@ def get_sql_data(graph_interval_data, sql_command):
             count = 0
             skip_count = 0
             for data in sql_column_data:
-                if skip_count > int(graph_interval_data.skip_sql):
+                if skip_count >= int(graph_interval_data.skip_sql):
                     return_data.append(str(data)[2:-3])
                     skip_count = 0
 
@@ -356,7 +357,7 @@ def trace_graph(graph_interval_data):
 
         try:
             plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
-            logger.info("Interval Graph Creation - OK")
+            logger.debug("Interval Graph Creation - OK")
         except Exception as error:
             logger.error("Interval Graph Creation - Failed - " + str(error))
     else:

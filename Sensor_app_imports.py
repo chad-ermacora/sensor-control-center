@@ -4,7 +4,8 @@ import os
 import logging
 from urllib.request import urlopen
 from tkinter import filedialog
-from Sensor_commands import get
+from guizero import info
+from Sensor_commands import get_system_info
 from Sensor_config import load_file
 from logging.handlers import RotatingFileHandler
 
@@ -73,6 +74,10 @@ def open_html(outfile):
         logger.error("Graph HTML File Opened - Failed - " + str(error))
 
 
+def open_url(url):
+    webbrowser.open(url)
+
+
 def sensor_detailed_status(ip_list):
     final_file = ''
     replacement_codes = html_replacement_codes()
@@ -98,7 +103,7 @@ def sensor_detailed_status(ip_list):
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
-            sensor_data = get(ip, net_timeout)
+            sensor_data = get_system_info(ip, net_timeout)
             sensor_data[4] = round(float(sensor_data[4]), 2)
             count2 = 0
             for code in replacement_codes:
@@ -135,6 +140,7 @@ def sensor_detailed_status(ip_list):
         html_end = html_file_part.read()
         html_file_part.close()
         final_file = final_file + html_end
+        logger.debug("Created Sensor Details - HTML File - OK")
     except Exception as error:
         logger.error("Open html_template_3.html Template Failed: " + str(error))
 
@@ -145,7 +151,7 @@ def sensor_detailed_status(ip_list):
         file_out.write(final_file)
         file_out.close()
         open_html(save_to_location)
-        logger.info("Sensor Details - HTML Save File - OK")
+        logger.debug("Sensor Details - HTML Save File - OK")
     except Exception as error:
         logger.error("Sensor Details - HTML Save File - Failed: " + str(error))
 
@@ -164,7 +170,8 @@ def download_interval_db(ip_list):
         except Exception as error:
             logger.error("Download Interval DB from " + str(ip) + " Failed: " + str(error))
 
-    logger.info("Sensor DataBase Download(s) Complete")
+    info("Information", "Interval DataBase Download(s) Complete")
+    logger.debug("Interval DataBase Download(s) Complete")
 
 
 def download_trigger_db(ip_list):
@@ -181,4 +188,5 @@ def download_trigger_db(ip_list):
         except Exception as error:
             logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
 
-    logger.info("Trigger DataBase Download(s) Complete")
+    info("Information", "Trigger DataBase Download(s) Complete")
+    logger.debug("Trigger DataBase Download(s) Complete")
