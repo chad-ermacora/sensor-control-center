@@ -49,7 +49,7 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_version = "Tested on Python 3.7 - KootNet Sensors Version Alpha.17.1"
+app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.17.1"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
 logger.info('KootNet Sensors - PC Control Center - Started')
@@ -614,7 +614,7 @@ window_graph_trigger = Window(app,
                               visible=False)
 
 window_app_about = Window(app,
-                          title="About KootNet Sensors",
+                          title="About KootNet Sensors - PC Control Center",
                           width=610,
                           height=325,
                           layout="grid",
