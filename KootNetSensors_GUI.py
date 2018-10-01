@@ -101,6 +101,11 @@ def app_menu_open_build_sensor():
     Sensor_app_imports.open_html(help_file_location)
 
 
+def app_menu_open_sensor_help():
+    help_file_location = app_location_directory + "additional_files/SensorUnit_Help.html"
+    Sensor_app_imports.open_html(help_file_location)
+
+
 def app_check_all_ip_checkboxes(var_column):
     if var_column == 1:
         if app_checkbox_all_column1.value == 1:
@@ -232,90 +237,90 @@ def app_button_check_sensors():
 
 # Returns selected IP's from Main App Window & Re-Sets unselected IP background to white
 def get_checked_ip():
-    ip_list = []
+    checkbox_ip_list = []
 
     if app_checkbox_ip1.value == 1:
-        ip_list.append(app_textbox_ip1.value)
+        checkbox_ip_list.append(app_textbox_ip1.value)
     else:
         app_textbox_ip1.bg = 'white'
 
     if app_checkbox_ip2.value == 1:
-        ip_list.append(app_textbox_ip2.value)
+        checkbox_ip_list.append(app_textbox_ip2.value)
     else:
         app_textbox_ip2.bg = 'white'
 
     if app_checkbox_ip3.value == 1:
-        ip_list.append(app_textbox_ip3.value)
+        checkbox_ip_list.append(app_textbox_ip3.value)
     else:
         app_textbox_ip3.bg = 'white'
 
     if app_checkbox_ip4.value == 1:
-        ip_list.append(app_textbox_ip4.value)
+        checkbox_ip_list.append(app_textbox_ip4.value)
     else:
         app_textbox_ip4.bg = 'white'
 
     if app_checkbox_ip5.value == 1:
-        ip_list.append(app_textbox_ip5.value)
+        checkbox_ip_list.append(app_textbox_ip5.value)
     else:
         app_textbox_ip5.bg = 'white'
 
     if app_checkbox_ip6.value == 1:
-        ip_list.append(app_textbox_ip6.value)
+        checkbox_ip_list.append(app_textbox_ip6.value)
     else:
         app_textbox_ip6.bg = 'white'
 
     if app_checkbox_ip7.value == 1:
-        ip_list.append(app_textbox_ip7.value)
+        checkbox_ip_list.append(app_textbox_ip7.value)
     else:
         app_textbox_ip7.bg = 'white'
 
     if app_checkbox_ip8.value == 1:
-        ip_list.append(app_textbox_ip8.value)
+        checkbox_ip_list.append(app_textbox_ip8.value)
     else:
         app_textbox_ip8.bg = 'white'
 
     if app_checkbox_ip9.value == 1:
-        ip_list.append(app_textbox_ip9.value)
+        checkbox_ip_list.append(app_textbox_ip9.value)
     else:
         app_textbox_ip9.bg = 'white'
 
     if app_checkbox_ip10.value == 1:
-        ip_list.append(app_textbox_ip10.value)
+        checkbox_ip_list.append(app_textbox_ip10.value)
     else:
         app_textbox_ip10.bg = 'white'
 
     if app_checkbox_ip11.value == 1:
-        ip_list.append(app_textbox_ip11.value)
+        checkbox_ip_list.append(app_textbox_ip11.value)
     else:
         app_textbox_ip11.bg = 'white'
 
     if app_checkbox_ip12.value == 1:
-        ip_list.append(app_textbox_ip12.value)
+        checkbox_ip_list.append(app_textbox_ip12.value)
     else:
         app_textbox_ip12.bg = 'white'
 
     if app_checkbox_ip13.value == 1:
-        ip_list.append(app_textbox_ip13.value)
+        checkbox_ip_list.append(app_textbox_ip13.value)
     else:
         app_textbox_ip13.bg = 'white'
 
     if app_checkbox_ip14.value == 1:
-        ip_list.append(app_textbox_ip14.value)
+        checkbox_ip_list.append(app_textbox_ip14.value)
     else:
         app_textbox_ip14.bg = 'white'
 
     if app_checkbox_ip15.value == 1:
-        ip_list.append(app_textbox_ip15.value)
+        checkbox_ip_list.append(app_textbox_ip15.value)
     else:
         app_textbox_ip15.bg = 'white'
 
     if app_checkbox_ip16.value == 1:
-        ip_list.append(app_textbox_ip16.value)
+        checkbox_ip_list.append(app_textbox_ip16.value)
     else:
         app_textbox_ip16.bg = 'white'
 
     logger.debug("IP List Generated from Checked Boxes")
-    return ip_list
+    return checkbox_ip_list
 
 
 def app_button_sensor_details():
@@ -500,7 +505,7 @@ def commands_sensor_shutdown():
 
 
 def commands_kill_progs():
-    logger.info("Terminate & Restarting Sensor(s) programs - Please allow up to 60 Seconds to restart")
+    logger.info("Sensor(s) Programs Restarting - Please allow up to 60 Seconds to restart")
     ip_list = app_button_check_sensors()
 
     for ip in ip_list:
@@ -644,12 +649,12 @@ app_menubar = MenuBar(app,
                                  app_menu_open_graph]],
                                [["KootNet Sensors Website",
                                  app_menu_open_website],
-                                ["DIY Sensor Unit",
-                                 app_menu_open_build_sensor],
-                                ["Sensor Unit Help - WIP",
-                                 app_menu_open_build_sensor],
                                 ["PC Control Center Help - WIP",
                                  app_menu_open_about],
+                                ["DIY Sensor Unit",
+                                 app_menu_open_build_sensor],
+                                ["Sensor Unit Help",
+                                 app_menu_open_sensor_help],
                                 ["About KootNet Sensors",
                                  app_menu_open_about]]])
 

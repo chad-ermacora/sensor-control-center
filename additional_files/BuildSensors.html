@@ -9,20 +9,30 @@
 <h4 style="text-align: center;"><span style="text-decoration: underline;"><strong>User Requirements</strong></span></h4>
 <p style="text-align: center;">The User must know the following</p>
 <p style="text-align: center;">1. Basic TCP/IP Version 4 concepts<br /> <em>IP Address, Gateway, DNS, etc.</em></p>
-<p style="text-align: center;">2. Basic operations of the terminal text editor "nano"<br /> <em>Use "Ctrl + x" to quite, entering "y" to save changes</em></p>
-<p style="text-align: center;">3. How to accesses a terminal in Raspbian<br /> <em>Raspberry Pi Menu -> Accessories -> Terminal</em></p>
+<p style="text-align: center;">2. Basic operations of the terminal text editor "nano"<br /> <em>Use "Ctrl + x" to quit, entering "y" to save changes</em></p>
+<p style="text-align: center;">3. How to accesses a terminal in Raspbian<br /> <em>Raspberry Pi Menu -&gt; Accessories -&gt; Terminal</em></p>
 <h4 style="text-align: center;">&nbsp;</h4>
 <h4 style="text-align: center;"><span style="text-decoration: underline;"><strong>Required Hardware</strong></span></h4>
 <p style="text-align: center;"><strong><a href="https://www.raspberrypi.org/products/">Raspberry Pi</a></strong> - I have tested the 3B+ &amp; Zero W (Should work with all?)</p>
 <p style="text-align: center;"><strong><em>Optional</em></strong>&nbsp;- additional Sensors (see above)</p>
 <p style="text-align: center;">&nbsp;</p>
 <h3 style="text-align: center;"><span style="text-decoration: underline;"><strong>Install Instructions</strong></span></h3>
-<p style="text-align: center;">Step 1. Physically Install your Sensor(s) onto the Raspberry Pi</p>
-<p style="text-align: center;">Step 2. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install Raspbian OS</a> on your Raspberry Pi (Clean Installs are best, due to /etc/network/interfaces Changes)</p>
-<p style="text-align: center;">Step 3. Enable SPI and I2C in the Raspberry Pi Configuration window on the "Interfaces" tab</p>
-<p style="text-align: center;">Step 4. Make sure you are connected to the Internet, then run the following command in a terminal to start the Installer</p>
-<p style="text-align: center;"><em>** Note: This will automatically reboot the Raspberry Pi after completion **</em></p>
+<p style="text-align: center;"><strong>Step 1</strong>. Physically Install your Sensor(s) onto the Raspberry Pi</p>
+<p style="text-align: center;"><strong>Step 2</strong>. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install Raspbian OS</a> on your Raspberry Pi</p>
+<p style="text-align: center;"><em>This will modify /etc/network/interfaces &amp; replace the root users crontab</em></p>
+<p style="text-align: center;">&nbsp;</p>
+<p style="text-align: center;"><strong>Step 3</strong>. Enable SPI and I2C in the Raspberry Pi Configuration window on the "Interfaces" tab</p>
+<p style="text-align: center;">&nbsp;</p>
+<p style="text-align: center;"><strong>Step 4</strong>. Make sure you are connected to the Internet, then run the following command in a terminal to start the Installer</p>
+<p style="text-align: center;">&nbsp;</p>
 <p style="text-align: center;">wget http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/install_kootnet_sensors.sh &amp;&amp; sudo chmod +x install_kootnet_sensors.sh &amp;&amp; sudo bash install_kootnet_sensors.sh &amp;&amp; sudo reboot</p>
-<p style="text-align: center;">Follow the onscreen Instructions. Once Complete, your Sensor should be ready to go!</p>
+<p style="text-align: center;"><em>** Note: This will automatically reboot the Raspberry Pi after completion **</em></p>
+<p style="text-align: center;">&nbsp;</p>
+<p style="text-align: center;">The installer will open default configuration files to be configured, after which it will continue to download program files, install nessisary Python libraries, update Raspbian itself, and finally reboot the sensor.&nbsp; Once the Raspberry Pi comes back up, your Sensor should be ready to go</p>
+<p style="text-align: center;">Three apps auto start with the Pi, using crontab checks every 1 min.&nbsp; If a program is NOT running, crontab starts it</p>
+<p style="text-align: center;">1.&nbsp; Sensor Commands - Allows KootNet Sensors - PC Control Center to interact with the Sensor over a network</p>
+<p style="text-align: center;">2.&nbsp; Interval Database Recording - Starts recording sensor readings to a sqlite3 database at the specified interval, found in the configuration file</p>
+<p style="text-align: center;">3.&nbsp; Triggered Database Recording -&nbsp;Starts recording sensor readings to a sqlite3 database according to specified variances in the configuration file</p>
+<p style="text-align: center;">&nbsp;</p>
 <p style="text-align: center;">&nbsp;</p>
 <p style="text-align: center;">&nbsp;</p>

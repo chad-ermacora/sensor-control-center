@@ -50,9 +50,9 @@ def check_online_status(ip, net_timeout):
         sock_g.connect((ip, 10065))
         sock_g.send(b'CheckOnlineStatus')
         sensor_status = "Online"
-        logger.debug("Check " + str(ip) + " Online")
+        logger.debug("IP: " + str(ip) + " Online")
     except Exception as error:
-        logger.info("Check " + str(ip) + " Offline: " + str(error))
+        logger.info("IP: " + str(ip) + " Offline: " + str(error))
         sensor_status = "Offline"
 
     sock_g.close()
@@ -83,9 +83,9 @@ def upgrade_program_smb(ip):
     try:
         sock_g.connect((ip, 10065))
         sock_g.send(b'UpgradeSMB')
-        logger.info("NAS Upgrade on " + ip + " - OK")
+        logger.info("SMB Upgrade on " + ip + " - OK")
     except Exception as error:
-        logger.warning("NAS Upgrade on " + ip + " - Failed: " + str(error))
+        logger.warning("SMB Upgrade on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -95,9 +95,9 @@ def upgrade_program_online(ip):
     try:
         sock_g.connect((ip, 10065))
         sock_g.send(b'UpgradeOnline')
-        logger.info("Online Upgrade on " + ip + " - OK")
+        logger.info("HTTP Upgrade on " + ip + " - OK")
     except Exception as error:
-        logger.warning("Online Upgrade on " + ip + " - Failed: " + str(error))
+        logger.warning("HTTP Upgrade on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -107,9 +107,9 @@ def upgrade_os_linux(ip):
     try:
         sock_g.connect((ip, 10065))
         sock_g.send(b'UpgradeSystemOS')
-        logger.info("Online Upgrade on " + ip + " - OK")
+        logger.info("Linux OS Upgrade on " + ip + " - OK")
     except Exception as error:
-        logger.warning("Online Upgrade on " + ip + " - Failed: " + str(error))
+        logger.warning("Linux OS Upgrade on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -143,9 +143,9 @@ def terminate_programs(ip):
     try:
         sock_g.connect((ip, 10065))
         sock_g.send(b'TerminatePrograms')
-        logger.info("Closing Programs on " + ip + " - OK")
+        logger.info("Restarting Programs on " + ip + " - OK")
     except Exception as error:
-        logger.warning("Closing Programs on " + ip + " - Failed: " + str(error))
+        logger.warning("Restarting Programs on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -161,9 +161,9 @@ def set_hostname(ip):
         try:
             sock_g.connect((ip, 10065))
             sock_g.send(('ChangeHostName' + str(new_hostname)).encode())
-            logger.info("Hostname Change on " + ip + " - OK")
+            logger.info("Sensor Name Change " + str(new_hostname) + " on " + ip + " - OK")
         except Exception as error:
-            logger.warning("Hostname Change on " + ip + " - Failed: " + str(error))
+            logger.warning("Sensor Name Change " + str(new_hostname) + " on " + ip + " - Failed: " + str(error))
         sock_g.close()
     else:
         logger.warning("Hostname Cancelled or NULL on " + ip)
