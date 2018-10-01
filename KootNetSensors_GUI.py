@@ -585,10 +585,24 @@ app = App(title="KootNet Sensors - PC Control Center",
           height=325,
           layout="grid")
 
+window_config = Window(app,
+                       title="Configuration",
+                       width=600,
+                       height=300,
+                       layout="grid",
+                       visible=False)
+
+window_sensor_commands = Window(app,
+                                title="Sensor Commands",
+                                width=275,
+                                height=225,
+                                layout="grid",
+                                visible=False)
+
 window_graph_interval = Window(app,
                                title="Interval Graphing",
-                               width=275,
-                               height=300,
+                               width=265,
+                               height=275,
                                layout="grid",
                                visible=False)
 
@@ -599,13 +613,6 @@ window_graph_trigger = Window(app,
                               layout="grid",
                               visible=False)
 
-window_sensor_commands = Window(app,
-                                title="Sensor Commands",
-                                width=275,
-                                height=225,
-                                layout="grid",
-                                visible=False)
-
 window_app_about = Window(app,
                           title="About KootNet Sensors",
                           width=610,
@@ -613,15 +620,9 @@ window_app_about = Window(app,
                           layout="grid",
                           visible=False)
 
-window_config = Window(app,
-                       title="Configuration",
-                       width=600,
-                       height=300,
-                       layout="grid",
-                       visible=False)
-
 # Add extra tk options to windows
 app.tk.resizable(False, False)
+app.tk.iconbitmap(default="additional_files/icon.ico")
 window_graph_interval.tk.resizable(False, False)
 window_graph_trigger.tk.resizable(False, False)
 window_sensor_commands.tk.resizable(False, False)
@@ -655,23 +656,23 @@ app_menubar = MenuBar(app,
                                  app_menu_open_build_sensor],
                                 ["Sensor Unit Help",
                                  app_menu_open_sensor_help],
-                                ["About KootNet Sensors",
+                                ["About KootNet Sensors - PCCC",
                                  app_menu_open_about]]])
 
 app_button_check_sensor = PushButton(app,
-                                     text="Check Sensor\nStatus",
+                                     text="Check Sensors\nStatus",
                                      command=app_button_check_sensors,
                                      grid=[1, 15, 2, 1],
                                      align="left")
 
 app_button_sensor_detail = PushButton(app,
-                                      text="View Sensor\nDetails",
+                                      text="View Sensors\nSystem Details",
                                       command=app_button_sensor_details,
                                       grid=[2, 15, 2, 1],
                                       align="right")
 
 app_button_sensor_hostname = PushButton(app,
-                                        text="Update Sensor(s)\nName",
+                                        text="Update Sensors\nNames",
                                         command=app_button_hostname_change,
                                         grid=[4, 15],
                                         align="right")
@@ -685,7 +686,7 @@ app_checkbox_all_column1 = CheckBox(app,
                                     align="left")
 
 app_checkbox_ip1 = CheckBox(app,
-                            text="IP ",
+                            text="IP        ",
                             grid=[1, 2],
                             align="left")
 
@@ -781,7 +782,7 @@ app_checkbox_all_column2 = CheckBox(app,
                                     align="left")
 
 app_checkbox_ip9 = CheckBox(app,
-                            text="IP ",
+                            text="IP        ",
                             grid=[3, 2],
                             align="left")
 
@@ -891,13 +892,13 @@ config_button_reset = PushButton(window_config,
 
 config_checkbox_power_controls = \
     CheckBox(window_config,
-             text="Enable Sensor\nShutdown/Reboot\nOS Upgrade",
+             text="Enable Sensor\nShutdown, Reboot\nand OS Upgrade",
              command=config_checkbox_enable_shutdown,
              grid=[1, 1],
              align="top")
 
 config_checkbox_reset = CheckBox(window_config,
-                                 text="Enable Config Reset",
+                                 text="Enable Configuration Reset button",
                                  command=config_checkbox_enable_reset,
                                  grid=[1, 2],
                                  align="top")
@@ -909,7 +910,8 @@ config_button_save_apply = PushButton(window_config,
                                       align="left")
 
 config_text_database_time = Text(window_config,
-                                 text="Database(s) in UTC 0",
+                                 text="Sensor Databases\nSaved in UTC 0",
+                                 size=10,
                                  grid=[2, 1],
                                  color='#CB0000',
                                  align="top")
@@ -1009,7 +1011,7 @@ config_textbox_temperature_offset = TextBox(window_config,
                                             align="bottom")
 
 config_text_network_timeouts = Text(window_config,
-                                    text="Network Timeouts in Sec",
+                                    text="Network Timeouts in Seconds",
                                     color='blue',
                                     grid=[2, 6],
                                     align="top")
@@ -1027,7 +1029,7 @@ config_textbox_network_check = TextBox(window_config,
                                        align="top")
 
 config_text_network_timeouts2 = Text(window_config,
-                                     text="View Sensor Details: ",
+                                     text="View Sensor System Details: ",
                                      color='green',
                                      grid=[2, 9],
                                      align="top")
@@ -1052,7 +1054,7 @@ graph_textbox_start = TextBox(window_graph_interval,
                               align="left")
 
 graph_text_end = Text(window_graph_interval,
-                      text="End DateTime: ",
+                      text="End DateTime:",
                       color='green',
                       grid=[1, 3],
                       align="left")
@@ -1064,7 +1066,7 @@ graph_textbox_end = TextBox(window_graph_interval,
                             align="left")
 
 graph_text_sql_skip = Text(window_graph_interval,
-                           text="Add SQL row\nEvery 'X' rows:",
+                           text="Add row every:",
                            color='green',
                            grid=[1, 4],
                            align="left")
@@ -1075,23 +1077,35 @@ graph_textbox_sql_skip = TextBox(window_graph_interval,
                                  grid=[2, 4],
                                  align="left")
 
+graph_text_sql_skip2 = Text(window_graph_interval,
+                            text="rows    ",
+                            color='green',
+                            grid=[2, 4],
+                            align="right")
+
 graph_text_temperature_offset = Text(window_graph_interval,
-                                     text="Environment\nTemp Offset: ",
+                                     text="Environmental:",
                                      color='green',
                                      grid=[1, 5],
                                      align="left")
 
 graph_textbox_temperature_offset = TextBox(window_graph_interval,
                                            text="",
-                                           width=10,
+                                           width=4,
                                            grid=[2, 5],
                                            align="left")
+
+graph_text_temperature_offset2 = Text(window_graph_interval,
+                                      text="Temp Offset",
+                                      color='green',
+                                      grid=[2, 5],
+                                      align="right")
 
 graph_text_column_selection = Text(window_graph_interval,
                                    text="Sensors to Include",
                                    color='blue',
                                    grid=[1, 6, 2, 1],
-                                   align="top")
+                                   align="bottom")
 
 graph_checkbox_up_time = CheckBox(window_graph_interval,
                                   text="System Uptime",
@@ -1161,14 +1175,14 @@ commands_button_online_Upgrade = PushButton(window_sensor_commands,
                                             align="left")
 
 commands_button_os_Upgrade = PushButton(window_sensor_commands,
-                                        text="OS\nUpgrade",
+                                        text="Upgrade\nOperating\nSystem",
                                         command=commands_os_upgrade,
                                         grid=[3, 3],
                                         align="left")
 
 commands_text_other = Text(window_sensor_commands,
-                           text="Power Commands",
-                           grid=[1, 4, 2, 1],
+                           text="Send Command to Selected Sensors",
+                           grid=[1, 4, 3, 1],
                            color='blue',
                            align="left")
 
