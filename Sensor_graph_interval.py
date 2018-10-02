@@ -23,6 +23,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta
 from plotly import tools
+from guizero import warn
 
 logger = logging.getLogger(__name__)
 
@@ -360,5 +361,7 @@ def trace_graph(graph_interval_data):
             logger.debug("Interval Graph Creation - OK")
         except Exception as error:
             logger.error("Interval Graph Creation - Failed - " + str(error))
+            warn("Error", "Graph Failed - " + str(error))
     else:
         logger.error("Interval Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
+        warn("Error", "No SQL Data to Graph")
