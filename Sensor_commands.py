@@ -66,7 +66,7 @@ def get_system_info(ip, net_timeout):
     try:
         sock_g.connect((ip, 10065))
         sock_g.send(b'GetSystemData')
-        var_data = pickle.loads(sock_g.recv(512))
+        var_data = pickle.loads(sock_g.recv(4096))
         sensor_data = var_data.split(",")
         sock_g.close()
         logger.debug("Getting Sensor Data from " + str(ip) + " - OK")
