@@ -167,3 +167,27 @@ def set_hostname(ip):
         sock_g.close()
     else:
         logger.warning("Hostname Cancelled or NULL on " + ip)
+
+
+def get_sensor_config(ip):
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetConfiguration')
+        logger.info("Configuration Received from " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
+    sock_g.close()
+
+
+def set_sensor_config(ip):
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'SetConfiguration')
+        logger.info("Set Configuration on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Set Configuration on " + ip + " - Failed: " + str(error))
+    sock_g.close()
