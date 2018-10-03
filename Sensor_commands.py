@@ -158,9 +158,11 @@ def set_hostname(ip):
     if tmp_hostname is not None and not '':
         new_hostname = re.sub('\W', '_', tmp_hostname)
         logger.debug(new_hostname)
+
+        command_str = 'ChangeHostName' + str(new_hostname)
         try:
             sock_g.connect((ip, 10065))
-            sock_g.send(('ChangeHostName' + str(new_hostname)).encode())
+            sock_g.send(command_str.encode())
             logger.info("Sensor Name Change " + str(new_hostname) + " on " + ip + " - OK")
         except Exception as error:
             logger.warning("Sensor Name Change " + str(new_hostname) + " on " + ip + " - Failed: " + str(error))
@@ -181,12 +183,13 @@ def get_sensor_config(ip):
     sock_g.close()
 
 
-def set_sensor_config(ip):
+def set_sensor_config(ip, str_config):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    str_config = "SetConfiguration" + str_config
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'SetConfiguration')
+        sock_g.send(str_config.encode())
         logger.info("Set Configuration on " + ip + " - OK")
     except Exception as error:
         logger.warning("Set Configuration on " + ip + " - Failed: " + str(error))

@@ -538,22 +538,19 @@ def sensor_config_enable_custom():
         sensor_config_textbox_custom_gyro.disable()
 
 
-def sensor_config_get():
-    logger.debug("Getting Sensor Config")
-    ip_list = app_button_check_sensors()
-
-    if len(ip_list) == 1:
-        Sensor_commands.get_sensor_config(ip_list[0])
-    else:
-        info("Sensor Selection", "Please Select 1 Sensor Only")
-
-
 def sensor_config_set():
     logger.debug("Setting Sensor Config")
     ip_list = app_button_check_sensors()
+    config_settings_str = "," + str(sensor_config_checkbox_db_record.value) + "," + \
+        str(sensor_config_textbox_interval.value) + "," + \
+        str(sensor_config_textbox_trigger.value) + "," + \
+        str(sensor_config_checkbox_custom.value) + "," + \
+        str(sensor_config_textbox_custom_acc.value) + "," + \
+        str(sensor_config_textbox_custom_mag.value) + "," + \
+        str(sensor_config_textbox_custom_gyro.value)
 
     for ip in ip_list:
-        Sensor_commands.set_sensor_config(ip)
+        Sensor_commands.set_sensor_config(ip, config_settings_str)
 
     info("Information", "Sensor(s) Configuration Set")
 
@@ -688,14 +685,14 @@ app_menubar = MenuBar(app,
                                 ["Help"]],
                       options=[[["Open Logs",
                                  app_menu_open_log],
-                                ["Configuration Settings",
-                                 app_menu_open_config],
-                                ["Sensor Commands",
-                                app_menu_open_commands],
-                                ["Sensor Config",
-                                app_menu_open_sensor_config],
                                 ["Save IP List",
-                                 config_button_save]],
+                                 config_button_save],
+                                ["Control Center Settings",
+                                 app_menu_open_config],
+                                ["Configure Sensors",
+                                app_menu_open_sensor_config],
+                                ["Send Sensor Commands",
+                                app_menu_open_commands]],
                                [["Download Interval Database(s)",
                                  app_menu_download_interval_db],
                                 ["Download Trigger Database(s)",
@@ -1269,7 +1266,6 @@ sensor_config_checkbox_db_record = CheckBox(window_update_sensor_config,
                                             text="Enable Database Recording",
                                             command=sensor_config_enable_recording,
                                             grid=[1, 2, 2, 1],
-                                            enabled=True,
                                             align="left")
 
 sensor_config_textbox_interval = TextBox(window_update_sensor_config,
@@ -1298,7 +1294,6 @@ sensor_config_checkbox_custom = CheckBox(window_update_sensor_config,
                                          text="Enable Custom Settings",
                                          command=sensor_config_enable_custom,
                                          grid=[1, 5, 2, 1],
-                                         enabled=True,
                                          align="left")
 
 sensor_config_textbox_custom_acc = TextBox(window_update_sensor_config,
@@ -1334,21 +1329,17 @@ sensor_config_text_custom_gyro = Text(window_update_sensor_config,
                                       grid=[2, 8],
                                       align="left")
 
-sensor_config_button_get_config = PushButton(window_update_sensor_config,
-                                             text="Get Sensor\nConfiguration",
-                                             command=sensor_config_get,
-                                             grid=[1, 14, 2, 1],
-                                             align="left")
-
 sensor_config_button_set_config = PushButton(window_update_sensor_config,
-                                             text="Set Sensor\nConfiguration",
+                                             text="Apply Sensor\nConfiguration",
                                              command=sensor_config_set,
                                              grid=[2, 14],
                                              align="right")
 
 # Change Window Configurations before loading app
-app_checkbox_all_column1.toggle()
+app_checkbox_all_column1.value = 0
+app_checkbox_all_column2.value = 0
 app_check_all_ip_checkboxes(1)
+app_check_all_ip_checkboxes(2)
 graph_checkbox_up_time.value = 1
 graph_checkbox_temperature.value = 1
 graph_checkbox_pressure.value = 0
@@ -1356,7 +1347,9 @@ graph_checkbox_humidity.value = 0
 graph_checkbox_lumen.value = 0
 graph_checkbox_colour.value = 0
 sensor_config_checkbox_db_record.value = 1
-sensor_config_checkbox_custom.value = 1
+sensor_config_checkbox_custom.value = 0
+sensor_config_enable_recording()
+sensor_config_enable_custom()
 
 about_textbox.value = Sensor_app_imports.get_about_text()
 about_textbox.disable()
