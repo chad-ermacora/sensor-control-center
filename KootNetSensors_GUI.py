@@ -38,7 +38,7 @@ from logging.handlers import RotatingFileHandler
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', '%Y-%m-%d %H:%M:%S')
 
 file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
@@ -689,9 +689,9 @@ app_menubar = MenuBar(app,
                                  config_button_save],
                                 ["Control Center Settings",
                                  app_menu_open_config],
-                                ["Configure Sensors",
+                                ["Sensors Configuration",
                                 app_menu_open_sensor_config],
-                                ["Send Sensor Commands",
+                                ["Sensor Commands",
                                 app_menu_open_commands]],
                                [["Download Interval Database(s)",
                                  app_menu_download_interval_db],
@@ -707,7 +707,7 @@ app_menubar = MenuBar(app,
                                  app_menu_open_build_sensor],
                                 ["Sensor Unit Help",
                                  app_menu_open_sensor_help],
-                                ["About KootNet Sensors - PCCC",
+                                ["About KootNet Sensors",
                                  app_menu_open_about]]])
 
 app_button_check_sensor = PushButton(app,
@@ -1276,6 +1276,7 @@ sensor_config_textbox_interval = TextBox(window_update_sensor_config,
 
 sensor_config_text_interval = Text(window_update_sensor_config,
                                    text="Seconds Between Interval Recording",
+                                   color='green',
                                    grid=[2, 3],
                                    align="left")
 
@@ -1287,6 +1288,7 @@ sensor_config_textbox_trigger = TextBox(window_update_sensor_config,
 
 sensor_config_text_trigger = Text(window_update_sensor_config,
                                   text="Seconds Between Trigger Readings",
+                                  color='green',
                                   grid=[2, 4],
                                   align="left")
 
@@ -1304,6 +1306,7 @@ sensor_config_textbox_custom_acc = TextBox(window_update_sensor_config,
 
 sensor_config_text_custom_acc = Text(window_update_sensor_config,
                                      text="Accelerometer Variance",
+                                     color='green',
                                      grid=[2, 6],
                                      align="left")
 
@@ -1315,6 +1318,7 @@ sensor_config_textbox_custom_mag = TextBox(window_update_sensor_config,
 
 sensor_config_text_custom_mag = Text(window_update_sensor_config,
                                      text="Magnetometer Variance",
+                                     color='green',
                                      grid=[2, 7],
                                      align="left")
 
@@ -1326,6 +1330,7 @@ sensor_config_textbox_custom_gyro = TextBox(window_update_sensor_config,
 
 sensor_config_text_custom_gyro = Text(window_update_sensor_config,
                                       text="Gyroscopic Variance",
+                                      color='green',
                                       grid=[2, 8],
                                       align="left")
 
