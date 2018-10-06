@@ -6,7 +6,7 @@ from urllib.request import urlopen
 from tkinter import filedialog
 from guizero import info
 from Sensor_commands import get_system_info
-from Sensor_config import load_file
+from Sensor_config import load_file as load_config
 from logging.handlers import RotatingFileHandler
 
 var_app_about = '''
@@ -51,7 +51,7 @@ def get_about_text():
     return var_app_about
 
 
-def html_replacement_codes():
+def html_system_codes():
     logger.debug("Getting Sensor Details HTML replacement Codes")
 
     html_replacement_vars = ["{{sysHostName}}",
@@ -81,12 +81,12 @@ def open_url(url):
 
 def sensor_detailed_status(ip_list):
     final_file = ''
-    replacement_codes = html_replacement_codes()
-    temp_settings = load_file()
+    replacement_codes = html_system_codes()
+    temp_config = load_config()
     sensor_html = ''
     replace_word = ''
     current_sensor_html = ''
-    net_timeout = int(temp_settings.network_details_timeout)
+    net_timeout = int(temp_config.network_details_timeout)
 
     try:
         html_file_part = open(str(app_location_directory + html_template_1), 'r')
@@ -105,7 +105,7 @@ def sensor_detailed_status(ip_list):
         try:
             current_sensor_html = sensor_html
             sensor_data = get_system_info(ip, net_timeout)
-            sensor_data[4] = round(float(sensor_data[4]), 2)
+
             count2 = 0
             for code in replacement_codes:
                 if count2 == 0:
@@ -121,6 +121,8 @@ def sensor_detailed_status(ip_list):
 
                     replace_word = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
                 elif count2 == 4:
+                    sensor_data[4] = round(float(sensor_data[4]), 2)
+
                     replace_word = str(sensor_data[4])
                 elif count2 == 5:
                     replace_word = str(sensor_data[5])
@@ -149,7 +151,7 @@ def sensor_detailed_status(ip_list):
 
     # Write the final html variable to file
     try:
-        save_to_location = str(temp_settings.save_to + "SensorsDetails.html")
+        save_to_location = str(temp_config.save_to + "SensorsDetails.html")
         file_out = open(save_to_location, 'w')
         file_out.write(final_file)
         file_out.close()

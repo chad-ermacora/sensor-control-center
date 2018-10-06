@@ -461,8 +461,7 @@ def commands_upgrade_smb():
         Sensor_commands.upgrade_program_smb(ip)
 
     info("Information", "Sensor Unit(s) Upgrading\n"
-                        "After 30 seconds please 'Restart Sensor Software' to activate the new version, "
-                        "located in the 'Sensor Commands' window")
+                        "Please Wait up to 30 seconds for the Services to restart")
 
 
 def commands_upgrade_http():
@@ -473,8 +472,7 @@ def commands_upgrade_http():
         Sensor_commands.upgrade_program_online(ip)
 
     info("Information", "Sensor Unit(s) Upgrading\n"
-                        "After 30 seconds please 'Restart Sensor Software' to activate the new version, "
-                        "located in the 'Sensor Commands' window")
+                        "Please Wait up to 30 seconds for the Services to restart")
 
 
 def commands_os_upgrade():
@@ -509,13 +507,13 @@ def commands_sensor_shutdown():
 
 
 def commands_kill_progs():
-    logger.info("Sensor(s) Programs Restarting - Please allow up to 60 Seconds to restart")
+    logger.info("Sensor(s) Programs Restarting - Please allow up to 30 Seconds to restart")
     ip_list = app_button_check_sensors()
 
     for ip in ip_list:
         Sensor_commands.terminate_programs(ip)
 
-    info("Information", "Sensor(s) Programs Restarting\nPlease allow up to 60 Seconds to restart")
+    info("Information", "Sensor(s) Programs Restarting\nPlease allow up to 30 Seconds to restart")
 
 
 def sensor_config_enable_recording():
