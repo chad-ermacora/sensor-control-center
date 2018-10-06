@@ -60,7 +60,8 @@ def html_replacement_codes():
                              "{{sysUpTime}}",
                              "{{sysCPUTemp}}",
                              "{{sqldb1}}",
-                             "{{sqldb2}}"]
+                             "{{sqldb2}}",
+                             "{{SensorConfig}}"]
 
     return html_replacement_vars
 
@@ -125,6 +126,8 @@ def sensor_detailed_status(ip_list):
                     replace_word = str(sensor_data[5])
                 elif count2 == 6:
                     replace_word = str(sensor_data[6])
+                elif count2 == 7:
+                    replace_word = str(sensor_data[7])
                 else:
                     logger.error("Wrong format for Sensor Values - Try Updating the Program")
 
