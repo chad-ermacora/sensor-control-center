@@ -5,7 +5,7 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="2018-10-01T11:14:17.608000000"/>
-	<meta name="changed" content="2018-10-01T13:16:12.007000000"/>
+	<meta name="changed" content="2018-10-07T13:52:13.241000000"/>
 	<style type="text/css">
 		@page { size: 21.59cm 27.94cm; margin: 2cm }
 		p { margin-bottom: 0.25cm; line-height: 115%; background: transparent }
@@ -33,12 +33,84 @@ own sensor support.  </font>
 <p align="left" style="margin-bottom: 0cm; line-height: 100%"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="text-decoration: none"><span style="font-weight: normal">To
 make your own Sensor, </span></span></span></font><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="text-decoration: none"><span style="font-weight: normal">
 find the in</span></span></span></font><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="text-decoration: none"><span style="font-weight: normal">structions
-on the <a href="http://kootenay-networks.com/?page_id=236">Programs
-Website</a> </span></span></span></font><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="text-decoration: none"><span style="font-weight: normal">or
+on the </span></span></span></font><a href="http://kootenay-networks.com/?page_id=236">Programs
+Website</a><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="text-decoration: none"><span style="font-weight: normal">
+</span></span></span></font><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="text-decoration: none"><span style="font-weight: normal">or
 in the Help menu of Kootnet Sensors &ndash; PC Control Center</span></span></span></font><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="text-decoration: none"><span style="font-weight: normal">.
  </span></span></span></font>
 </p>
-<p align="left" style="margin-bottom: 0cm; line-height: 100%"><br/>
+<p align="left" style="margin-bottom: 0cm; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
+<br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><u><b>Re-Configure
+the Sensor</b></u></p>
+<p style="margin-bottom: 0cm; line-height: 100%">This will open and
+allow you to edit all the configuration files, one after another,
+then restart the sensor programs and print to screen the current
+configuration and run sensor tests. 
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><font size="2" style="font-size: 11pt"><i>Note:
+You can type in </i><i>part of a command, then hit the &lsquo;tab&rsquo;
+key on your keyboard to auto complete the command.  For example, </i><i>type
+</i><i>sudo ./con </i><i>then </i><i>hit the &lsquo;tab&rsquo; key to
+complete the line. </i></font>
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd">sudo
+./edit_sensor_config.sh</span></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><u><b>Test the
+Sensor</b></u></p>
+<p style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
+This will test the currently selected sensors in your configuration. 
+If all is working well, it will grab the readings off the sensors and
+print them on the screen.  If somethings wrong, it will either print
+an error and or all 0 for the data readings.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd">python3
+test_sensors.py</span></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><u><b><span style="background: transparent">Program
+Auto Start</span></b></u></p>
+<p style="margin-bottom: 0cm; line-height: 100%">The Sensor programs
+will automatically start and restart them selves through systemd
+Services. 
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Run one or more of
+the following commands.  Each line disables the corresponding program
+and stops it.  To re-enable run the command under the <span style="background: transparent">&ldquo;Re-Configure
+Sensor&rdquo;. </span>
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd">sudo
+systemctl disable SensorCommands &amp;&amp; sudo systemctl stop
+SensorCommands</span></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd">sudo
+systemctl disable SensorInterval &amp;&amp; sudo systemctl stop
+SensorInterval</span></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd">sudo
+systemctl disable SensorTrigger &amp;&amp; sudo systemctl stop
+SensorTrigger</span></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
 
 </p>
 <p align="left" style="margin-bottom: 0cm; line-height: 100%"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="text-decoration: none"><span style="font-weight: normal">Once
@@ -108,73 +180,6 @@ Contains Configuration and Database operations and errors</p>
 Contains Sensor reading errors</p>
 <p style="margin-bottom: 0cm; line-height: 100%"><br/>
 
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><u><b>Re-Configure
-the Sensor</b></u></p>
-<p style="margin-bottom: 0cm; line-height: 100%">This will open and
-allow you to edit all the configuration files, one after another,
-then restart the sensor programs and print to screen the current
-configuration and run sensor tests. Each configuration file should
-have sections to describe whats its for.  
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><font size="2" style="font-size: 11pt"><i>Note:
-You can type in </i><i>part of a command, then hit the &lsquo;tab&rsquo;
-key on your keyboard to auto complete the command.  For example, </i><i>type
-</i><i>sudo ./con </i><i>then </i><i>hit the &lsquo;tab&rsquo; key to
-complete the line. </i></font>
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd">sudo
-./config_edit.sh</span></p>
-<p style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><u><b>Test the
-Sensor</b></u></p>
-<p style="margin-bottom: 0cm; font-weight: normal; line-height: 100%; text-decoration: none">
-This will test the currently selected sensors in your configuration. 
-If all is working well, it will grab the readings off the sensors and
-print them on the screen.  If somethings wrong, it will either print
-an error and or all 0 for the data readings.  
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd">python3
-test_sensors.py</span></p>
-<p style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><u><b><span style="background: transparent">Program
-Auto Start</span></b></u></p>
-<p style="margin-bottom: 0cm; line-height: 100%">The Sensor programs
-will automatically restart them selves every Min (If not running)
-through a script run in the roots crontab.  This crontab is updated
-every time you re-configure the sensors or run an update.  
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%">If at any time you
-want the programs to NOT auto start, run the following command in the
-terminal.</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd">sudo
-crontab -r</span></p>
-<p style="margin-bottom: 0cm; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0cm; line-height: 100%"><span style="background: transparent">If
-you change your mind, and want to re-enable the auto start, simply
-run the command shown in the &ldquo;Re-Configure Sensor&rdquo;
-section, it will auto adds or replaces the crontab entries.  </span>
 </p>
 <p style="margin-bottom: 0cm; line-height: 100%"><br/>
 
