@@ -460,7 +460,7 @@ def commands_upgrade_smb():
     for ip in ip_list:
         Sensor_commands.upgrade_program_smb(ip)
 
-    info("Information", "Sensor Unit(s) Upgrading\n"
+    info("Information", "Sensor(s) Upgrading\n"
                         "Please Wait up to 30 seconds for the Services to restart")
 
 
@@ -471,7 +471,7 @@ def commands_upgrade_http():
     for ip in ip_list:
         Sensor_commands.upgrade_program_online(ip)
 
-    info("Information", "Sensor Unit(s) Upgrading\n"
+    info("Information", "Sensor(s) Upgrading\n"
                         "Please Wait up to 30 seconds for the Services to restart")
 
 
@@ -482,8 +482,9 @@ def commands_os_upgrade():
     for ip in ip_list:
         Sensor_commands.upgrade_os_linux(ip)
 
-    info("Information", "Sensor OS Upgrade Started on Selected Sensor Units.\n"
-                        "Once complete, the Sensor Unit(s) will Reboot automatically")
+    info("Information", "Sensor Operating System Upgrade Started\n"
+                        "Once complete, the Sensor(s) will automatically reboot\n"
+                        "This may take awhile ...")
 
 
 def commands_sensor_reboot():

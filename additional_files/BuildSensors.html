@@ -25,11 +25,11 @@
 <p style="text-align: center;">&nbsp;</p>
 <p style="text-align: center;"><strong>Step 4</strong>. Make sure you are connected to the Internet, then run the following command in a terminal to start the Installer</p>
 <p style="text-align: center;">&nbsp;</p>
-<p style="text-align: center;">wget http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/install_kootnet_sensors.sh &amp;&amp; sudo chmod +x install_kootnet_sensors.sh &amp;&amp; sudo bash install_kootnet_sensors.sh &amp;&amp; sudo reboot</p>
+<p style="text-align: center;">wget http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/update_programs_online.sh &amp;&amp; sudo chmod +x update_programs_online.sh &amp;&amp; sudo bash update_programs_online.sh &amp;&amp; sudo reboot</p>
 <p style="text-align: center;"><em>** Note: This will automatically reboot the Raspberry Pi after completion **</em></p>
 <p style="text-align: center;">&nbsp;</p>
 <p style="text-align: center;">The installer will open default configuration files to be configured, after which it will continue to download program files, install nessisary Python libraries, update Raspbian itself, and finally reboot the sensor.&nbsp; Once the Raspberry Pi comes back up, your Sensor should be ready to go</p>
-<p style="text-align: center;">Three apps auto start with the Pi, using crontab checks every 1 min.&nbsp; If a program is NOT running, crontab starts it</p>
+<p style="text-align: center;">Three apps auto start with the Pi Services.&nbsp; If a Service is no longer running for any reason, it will start up again</p>
 <p style="text-align: center;">1.&nbsp; Sensor Commands - Allows KootNet Sensors - PC Control Center to interact with the Sensor over a network</p>
 <p style="text-align: center;">2.&nbsp; Interval Database Recording - Starts recording sensor readings to a sqlite3 database at the specified interval, found in the configuration file</p>
 <p style="text-align: center;">3.&nbsp; Triggered Database Recording -&nbsp;Starts recording sensor readings to a sqlite3 database according to specified variances in the configuration file</p>
