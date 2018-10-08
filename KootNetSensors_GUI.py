@@ -329,7 +329,7 @@ def get_checked_ip():
 
 def app_button_sensor_details():
     var_ip_list = app_button_check_sensors()
-    Sensor_app_imports.sensor_detailed_status(var_ip_list)
+    Sensor_app_imports.sensor_html_report(var_ip_list, "SystemDetails")
 
 
 def app_button_hostname_change():
@@ -447,10 +447,12 @@ def config_checkbox_enable_shutdown():
         commands_button_reboot.enable()
         commands_button_shutdown.enable()
         commands_button_os_Upgrade.enable()
+        sensor_config_button_set_config.enable()
     else:
         commands_button_reboot.disable()
         commands_button_shutdown.disable()
         commands_button_os_Upgrade.disable()
+        sensor_config_button_set_config.disable()
 
 
 def commands_upgrade_smb():
@@ -512,7 +514,7 @@ def commands_kill_progs():
     ip_list = app_button_check_sensors()
 
     for ip in ip_list:
-        Sensor_commands.terminate_programs(ip)
+        Sensor_commands.restart_services(ip)
 
     info("Information", "Sensor(s) Programs Restarting\nPlease allow up to 30 Seconds to restart")
 
@@ -535,6 +537,11 @@ def sensor_config_enable_custom():
         sensor_config_textbox_custom_acc.disable()
         sensor_config_textbox_custom_mag.disable()
         sensor_config_textbox_custom_gyro.disable()
+
+
+def sensor_config_report():
+    var_ip_list = app_button_check_sensors()
+    Sensor_app_imports.sensor_html_report(var_ip_list, "ConfigurationDetails")
 
 
 def sensor_config_set():
@@ -662,10 +669,10 @@ window_sensor_commands = Window(app,
 
 window_update_sensor_config = Window(app,
                                      title="Update Sensors Configuration",
-                                     width=350,
+                                     width=375,
                                      height=275,
                                      layout="grid",
-                                     visible=False)
+                                     visible=True)
 
 # Add extra tk options to windows
 app.tk.iconbitmap(default="additional_files/icon.ico")
@@ -942,7 +949,7 @@ config_button_reset = PushButton(window_config,
 
 config_checkbox_power_controls = \
     CheckBox(window_config,
-             text="Enable Sensor\nShutdown, Reboot\nand OS Upgrade",
+             text="Enable Advanced\nSensor Commands &\nConfiguration Options",
              command=config_checkbox_enable_shutdown,
              grid=[1, 1],
              align="top")
@@ -1333,6 +1340,12 @@ sensor_config_text_custom_gyro = Text(window_update_sensor_config,
                                       grid=[2, 8],
                                       align="left")
 
+sensor_config_button_get_config = PushButton(window_update_sensor_config,
+                                             text="Get Sensor\nConfiguration",
+                                             command=sensor_config_report,
+                                             grid=[1, 14],
+                                             align="left")
+
 sensor_config_button_set_config = PushButton(window_update_sensor_config,
                                              text="Apply Sensor\nConfiguration",
                                              command=sensor_config_set,
@@ -1354,6 +1367,7 @@ sensor_config_checkbox_db_record.value = 1
 sensor_config_checkbox_custom.value = 0
 sensor_config_enable_recording()
 sensor_config_enable_custom()
+sensor_config_button_set_config.disable()
 
 about_textbox.value = Sensor_app_imports.get_about_text()
 about_textbox.disable()

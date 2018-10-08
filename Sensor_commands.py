@@ -137,15 +137,15 @@ def shutdown_sensor(ip):
     sock_g.close()
 
 
-def terminate_programs(ip):
+def restart_services(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'TerminatePrograms')
-        logger.info("Restarting Programs on " + ip + " - OK")
+        sock_g.send(b'RestartServices')
+        logger.info("Restarting Services on " + ip + " - OK")
     except Exception as error:
-        logger.warning("Restarting Programs on " + ip + " - Failed: " + str(error))
+        logger.warning("Restarting Services on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -171,16 +171,44 @@ def set_hostname(ip):
         logger.warning("Hostname Cancelled or NULL on " + ip)
 
 
-def get_sensor_config(ip):
+def get_sensor_config(ip, net_timeout):
+    socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock_g2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
         sock_g.connect((ip, 10065))
         sock_g.send(b'GetConfiguration')
+        var_data_config = pickle.loads(sock_g.recv(4096))
+        sensor_config = var_data_config.split(",")
         logger.info("Configuration Received from " + ip + " - OK")
     except Exception as error:
+        sensor_config = ["0", "0", "0", "0", "0", "0", "0"]
         logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
     sock_g.close()
+
+    try:
+        sock_g2.connect((ip, 10065))
+        sock_g2.send(b'GetSystemData')
+        var_data_system = pickle.loads(sock_g2.recv(4096))
+        sensor_system = var_data_system.split(",")
+    except Exception as error:
+        sensor_system = ["TimeOut", "0.0.0.0", "N/A"]
+        logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
+    sock_g2.close()
+
+    final_sensor_config = [str(sensor_system[0]),
+                           str(sensor_system[1]),
+                           str(sensor_system[2]),
+                           str(sensor_config[0]),
+                           str(sensor_config[1]),
+                           str(sensor_config[2]),
+                           str(sensor_config[3]),
+                           str(sensor_config[4]),
+                           str(sensor_config[5]),
+                           str(sensor_config[6])]
+
+    return final_sensor_config
 
 
 def set_sensor_config(ip, str_config):
