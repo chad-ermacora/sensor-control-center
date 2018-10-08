@@ -669,7 +669,7 @@ window_sensor_commands = Window(app,
 
 window_update_sensor_config = Window(app,
                                      title="Update Sensors Configuration",
-                                     width=375,
+                                     width=350,
                                      height=275,
                                      layout="grid",
                                      visible=False)
@@ -689,12 +689,12 @@ app_menubar = MenuBar(app,
                                 ["Download"],
                                 ["Graphing"],
                                 ["Help"]],
-                      options=[[["Open Logs",
+                      options=[[["Control Center Configuration",
+                                 app_menu_open_config],
+                                ["Open Logs",
                                  app_menu_open_log],
                                 ["Save IP List",
                                  config_button_save],
-                                ["Control Center Settings",
-                                 app_menu_open_config],
                                 ["Sensors Configuration",
                                 app_menu_open_sensor_config],
                                 ["Sensor Commands",
@@ -723,7 +723,7 @@ app_button_check_sensor = PushButton(app,
                                      align="left")
 
 app_button_sensor_detail = PushButton(app,
-                                      text="View Sensors\nSystem Details",
+                                      text="View Sensors\nSystem Report",
                                       command=app_button_sensor_details,
                                       grid=[2, 15, 2, 1],
                                       align="right")
@@ -1086,7 +1086,7 @@ config_textbox_network_check = TextBox(window_config,
                                        align="top")
 
 config_text_network_timeouts2 = Text(window_config,
-                                     text="View Sensor System Details: ",
+                                     text="HTML Reports - Get Data: ",
                                      color='green',
                                      grid=[2, 9],
                                      align="top")
@@ -1341,9 +1341,9 @@ sensor_config_text_custom_gyro = Text(window_update_sensor_config,
                                       align="left")
 
 sensor_config_button_get_config = PushButton(window_update_sensor_config,
-                                             text="Get Sensor\nConfiguration",
+                                             text="View Sensors\nConfiguration Report",
                                              command=sensor_config_report,
-                                             grid=[1, 14],
+                                             grid=[1, 14, 2, 1],
                                              align="left")
 
 sensor_config_button_set_config = PushButton(window_update_sensor_config,
