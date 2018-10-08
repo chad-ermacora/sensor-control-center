@@ -672,7 +672,7 @@ window_update_sensor_config = Window(app,
                                      width=375,
                                      height=275,
                                      layout="grid",
-                                     visible=True)
+                                     visible=False)
 
 # Add extra tk options to windows
 app.tk.iconbitmap(default="additional_files/icon.ico")
@@ -1357,6 +1357,7 @@ app_checkbox_all_column1.value = 0
 app_checkbox_all_column2.value = 0
 app_check_all_ip_checkboxes(1)
 app_check_all_ip_checkboxes(2)
+commands_button_os_Upgrade.disable()
 graph_checkbox_up_time.value = 1
 graph_checkbox_temperature.value = 1
 graph_checkbox_pressure.value = 0
@@ -1371,7 +1372,6 @@ sensor_config_button_set_config.disable()
 
 about_textbox.value = Sensor_app_imports.get_about_text()
 about_textbox.disable()
-commands_button_os_Upgrade.disable()
 config_textbox_save_to.disable()
 
 loaded_config_settings = Sensor_config.load_file()
