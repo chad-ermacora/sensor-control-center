@@ -653,9 +653,9 @@ window_graph_trigger = Window(app,
 window_sensor_commands = Window(app,
                                 title="Sensor Commands",
                                 width=275,
-                                height=225,
+                                height=305,
                                 layout="grid",
-                                visible=False)
+                                visible=True)
 
 window_update_sensor_config = Window(app,
                                      title="Update Sensors Configuration",
@@ -1204,7 +1204,7 @@ commands_text_select = Text(window_sensor_commands,
                             align="left")
 
 commands_text_upgrade = Text(window_sensor_commands,
-                             text="Upgrade Selected Sensor",
+                             text="Upgrade Commands",
                              grid=[1, 2, 2, 1],
                              color='blue',
                              align="left")
@@ -1227,29 +1227,41 @@ commands_button_os_Upgrade = PushButton(window_sensor_commands,
                                         grid=[3, 3],
                                         align="left")
 
-commands_text_other = Text(window_sensor_commands,
-                           text="Send Command to Selected Sensors",
+commands_text_power = Text(window_sensor_commands,
+                           text="Power Commands",
                            grid=[1, 4, 3, 1],
                            color='blue',
                            align="left")
 
-commands_button_terminate = PushButton(window_sensor_commands,
-                                       text="Restart\nSensor\nSoftware",
-                                       command=commands_kill_progs,
-                                       grid=[1, 5],
-                                       align="left")
+commands_button_reboot = PushButton(window_sensor_commands,
+                                    text="Reboot",
+                                    command=commands_sensor_reboot,
+                                    grid=[1, 5],
+                                    align="left")
 
 commands_button_shutdown = PushButton(window_sensor_commands,
                                       text="Shutdown",
                                       command=commands_sensor_shutdown,
-                                      grid=[2, 5, 2, 1],
-                                      align="right")
+                                      grid=[2, 5],
+                                      align="left")
 
-commands_button_reboot = PushButton(window_sensor_commands,
-                                    text="Reboot",
-                                    command=commands_sensor_reboot,
-                                    grid=[2, 5],
-                                    align="left")
+commands_text_other = Text(window_sensor_commands,
+                           text="Other Commands",
+                           grid=[1, 6, 3, 1],
+                           color='blue',
+                           align="left")
+
+commands_button_terminate = PushButton(window_sensor_commands,
+                                       text="Restart\nServices",
+                                       command=commands_kill_progs,
+                                       grid=[1, 7],
+                                       align="left")
+
+sensor_config_button_get_config = PushButton(window_sensor_commands,
+                                             text="Change\nNames",
+                                             command=app_button_hostname_change,
+                                             grid=[2, 7],
+                                             align="left")
 
 # Update Sensor Configuration Section
 sensor_config_text_select = Text(window_update_sensor_config,
@@ -1329,12 +1341,6 @@ sensor_config_text_custom_gyro = Text(window_update_sensor_config,
                                       color='green',
                                       grid=[2, 8],
                                       align="left")
-
-sensor_config_button_get_config = PushButton(window_update_sensor_config,
-                                             text="Change Sensors\nNames",
-                                             command=app_button_hostname_change,
-                                             grid=[1, 14, 2, 1],
-                                             align="left")
 
 sensor_config_button_set_config = PushButton(window_update_sensor_config,
                                              text="Apply Sensor\nConfiguration",

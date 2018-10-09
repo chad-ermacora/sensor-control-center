@@ -155,7 +155,7 @@ def set_hostname(ip):
 
     logger.debug(tmp_hostname)
 
-    if tmp_hostname is not None and not '':
+    if tmp_hostname is not None and tmp_hostname is not "":
         new_hostname = re.sub('\W', '_', tmp_hostname)
         logger.debug(new_hostname)
 
@@ -168,7 +168,7 @@ def set_hostname(ip):
             logger.warning("Sensor Name Change " + str(new_hostname) + " on " + ip + " - Failed: " + str(error))
         sock_g.close()
     else:
-        logger.warning("Hostname Cancelled or NULL on " + ip)
+        logger.warning("Hostname Cancelled or blank on " + ip)
 
 
 def get_sensor_config(ip, net_timeout):
