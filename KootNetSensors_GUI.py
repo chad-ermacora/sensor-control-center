@@ -616,16 +616,6 @@ def get_graph_column_checkboxes():
     return column_checkboxes
 
 
-def graph_trigger_button():
-    pass
-    # Need to re-work before pushing to master branch
-    # mess = Sensor_graphs.motion_graph(graph_textbox_start.value,
-    #                                   graph_textbox_end.value,
-    #                                   config_textbox_save_to.value,
-    #                                   int(config_textbox_time_offset.value),
-    #                                   "scatterT3")
-
-
 # GUI Window Configurations
 app = App(title="KootNet Sensors - PC Control Center",
           width=400,
@@ -729,8 +719,8 @@ app_button_sensor_detail = PushButton(app,
                                       align="right")
 
 app_button_sensor_hostname = PushButton(app,
-                                        text="Update Sensors\nNames",
-                                        command=app_button_hostname_change,
+                                        text="View Sensors\nConfiguration Report",
+                                        command=sensor_config_report,
                                         grid=[4, 15],
                                         align="right")
 
@@ -1341,8 +1331,8 @@ sensor_config_text_custom_gyro = Text(window_update_sensor_config,
                                       align="left")
 
 sensor_config_button_get_config = PushButton(window_update_sensor_config,
-                                             text="View Sensors\nConfiguration Report",
-                                             command=sensor_config_report,
+                                             text="Change Sensors\nNames",
+                                             command=app_button_hostname_change,
                                              grid=[1, 14, 2, 1],
                                              align="left")
 
