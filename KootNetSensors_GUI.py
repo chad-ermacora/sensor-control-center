@@ -19,12 +19,12 @@
 import Sensor_config
 import Sensor_commands
 import Sensor_app_imports
-import Sensor_graph_interval
+import Sensor_graph
 import os
 import sys
 import platform
 import subprocess
-from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info
+from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, ButtonGroup
 from tkinter import filedialog
 # DEBUG - Detailed information, typically of interest only when diagnosing problems. test
 # INFO - Confirmation that things are working as expected.
@@ -49,7 +49,7 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.18.1"
+app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.1"
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
 logger.info('KootNet Sensors - PC Control Center - Started')
@@ -571,9 +571,37 @@ def sensor_config_set():
     info("Information", "Sensor(s) Configuration Set")
 
 
+def graph_radio_selection():
+    if graph_radio_sensor_type.get() == "Interval":
+        graph_checkbox_acc.disable()
+        graph_checkbox_mag.disable()
+        graph_checkbox_gyro.disable()
+
+        graph_checkbox_temperature.enable()
+        graph_checkbox_pressure.enable()
+        graph_checkbox_humidity.enable()
+        graph_checkbox_lumen.enable()
+        graph_checkbox_colour.enable()
+        graph_checkbox_up_time.enable()
+
+    if graph_radio_sensor_type.get() == "Trigger":
+        graph_checkbox_temperature.disable()
+        graph_checkbox_pressure.disable()
+        graph_checkbox_humidity.disable()
+        graph_checkbox_lumen.disable()
+        graph_checkbox_colour.disable()
+        graph_checkbox_up_time.disable()
+
+        graph_checkbox_acc.enable()
+        graph_checkbox_mag.enable()
+        graph_checkbox_gyro.enable()
+
+
 def graph_button_interval():
-    new_interval_graph = Sensor_graph_interval.CreateGraphIntervalData()
+    new_interval_graph = Sensor_graph.CreateGraphData()
     new_interval_graph.db_location = filedialog.askopenfilename()
+    if graph_radio_sensor_type.get() == "Trigger":
+        new_interval_graph.graph_table = "TriggerData"
 
     config_settings_check = Sensor_config.CreateConfigSettings()
     config_settings_check.save_to = config_textbox_save_to.value
@@ -600,27 +628,40 @@ def graph_button_interval():
     new_interval_graph.graph_columns = get_graph_column_checkboxes()
     # new_interval_graph.get_sql_entries = ReplaceMe
 
-    Sensor_graph_interval.start_graph(new_interval_graph)
+    Sensor_graph.start_graph(new_interval_graph)
 
 
 def get_graph_column_checkboxes():
     column_checkboxes = ["DateTime", "SensorName", "IP"]
-
-    if graph_checkbox_up_time.value == 1:
-        column_checkboxes.append("SensorUpTime")
-    if graph_checkbox_temperature.value == 1:
-        column_checkboxes.append("SystemTemp")
-        column_checkboxes.append("EnvironmentTemp")
-    if graph_checkbox_pressure.value == 1:
-        column_checkboxes.append("Pressure")
-    if graph_checkbox_humidity.value == 1:
-        column_checkboxes.append("Humidity")
-    if graph_checkbox_lumen.value == 1:
-        column_checkboxes.append("Lumen")
-    if graph_checkbox_colour.value == 1:
-        column_checkboxes.append("Red")
-        column_checkboxes.append("Green")
-        column_checkboxes.append("Blue")
+    if graph_radio_sensor_type.get() == "Interval":
+        if graph_checkbox_up_time.value:
+            column_checkboxes.append("SensorUpTime")
+        if graph_checkbox_temperature.value:
+            column_checkboxes.append("SystemTemp")
+            column_checkboxes.append("EnvironmentTemp")
+        if graph_checkbox_pressure.value:
+            column_checkboxes.append("Pressure")
+        if graph_checkbox_humidity.value:
+            column_checkboxes.append("Humidity")
+        if graph_checkbox_lumen.value:
+            column_checkboxes.append("Lumen")
+        if graph_checkbox_colour.value:
+            column_checkboxes.append("Red")
+            column_checkboxes.append("Green")
+            column_checkboxes.append("Blue")
+    elif graph_radio_sensor_type.get() == "Trigger":
+        if graph_checkbox_acc.value:
+            column_checkboxes.append("Acc_X")
+            column_checkboxes.append("Acc_Y")
+            column_checkboxes.append("Acc_Z")
+        if graph_checkbox_mag.value:
+            column_checkboxes.append("Mag_X")
+            column_checkboxes.append("Mag_Y")
+            column_checkboxes.append("Mag_Z")
+        if graph_checkbox_gyro.value:
+            column_checkboxes.append("Gyro_X")
+            column_checkboxes.append("Gyro_Y")
+            column_checkboxes.append("Gyro_Z")
 
     logger.debug(str(column_checkboxes))
     return column_checkboxes
@@ -647,9 +688,9 @@ window_config = Window(app,
                        visible=False)
 
 window_graph_interval = Window(app,
-                               title="Interval Graphing",
-                               width=255,
-                               height=265,
+                               title="Plotly Graphing",
+                               width=270,
+                               height=410,
                                layout="grid",
                                visible=False)
 
@@ -686,17 +727,17 @@ app_menubar = MenuBar(app,
                                  app_menu_download_interval_db],
                                 ["Download Trigger Database(s)",
                                  app_menu_download_trigger_db]],
-                               [["Graph Interval Database",
+                               [["Plotly Offline Graphing",
                                  app_menu_open_graph]],
-                               [["KootNet Sensors Website",
-                                 app_menu_open_website],
-                                ["PC Control Center Help - WIP",
+                               [["KootNet Sensors - About",
                                  app_menu_open_about],
-                                ["DIY Sensor Unit",
+                                ["KootNet Sensors - Website",
+                                 app_menu_open_website],
+                                ["Sensor Units - DIY",
                                  app_menu_open_build_sensor],
-                                ["Sensor Unit Help",
+                                ["Sensor Units - Help",
                                  app_menu_open_sensor_help],
-                                ["About KootNet Sensors",
+                                ["PC Control Center - Help *WIP",
                                  app_menu_open_about]]])
 
 app_button_check_sensor = PushButton(app,
@@ -1069,7 +1110,7 @@ config_textbox_network_check = TextBox(window_config,
                                        align="top")
 
 config_text_network_timeouts2 = Text(window_config,
-                                     text="HTML Reports",
+                                     text="Sensor Reports",
                                      color='green',
                                      grid=[2, 9],
                                      align="top")
@@ -1141,46 +1182,85 @@ graph_text_temperature_offset2 = Text(window_graph_interval,
                                       grid=[2, 5],
                                       align="right")
 
-graph_text_column_selection = Text(window_graph_interval,
-                                   text="Sensors to Include",
+graph_text_sensor_type_space = Text(window_graph_interval,
+                                    text=" ",
+                                    grid=[1, 6],
+                                    align="right")
+
+graph_text_sensor_type_name = Text(window_graph_interval,
+                                   text="Database Type",
                                    color='blue',
-                                   grid=[1, 6, 2, 1],
-                                   align="bottom")
+                                   grid=[1, 7, 2, 1],
+                                   align="top")
+
+graph_radio_sensor_type = ButtonGroup(window_graph_interval,
+                                      options=["Interval", "Trigger"],
+                                      horizontal="True",
+                                      command=graph_radio_selection,
+                                      grid=[1, 8, 2, 1],
+                                      align="top")
+
+graph_text_column_selection = Text(window_graph_interval,
+                                   text="Interval Sensors",
+                                   color='blue',
+                                   grid=[1, 10, 2, 1],
+                                   align="top")
 
 graph_checkbox_up_time = CheckBox(window_graph_interval,
                                   text="System Uptime",
-                                  grid=[1, 7],
+                                  grid=[1, 11],
                                   align="left")
 
 graph_checkbox_temperature = CheckBox(window_graph_interval,
                                       text="Temperature",
-                                      grid=[1, 8],
+                                      grid=[1, 12],
                                       align="left")
 
 graph_checkbox_pressure = CheckBox(window_graph_interval,
                                    text="Pressure",
-                                   grid=[1, 9],
+                                   grid=[1, 13],
                                    align="left")
 
 graph_checkbox_humidity = CheckBox(window_graph_interval,
                                    text="Humidity",
-                                   grid=[2, 7],
+                                   grid=[2, 11],
                                    align="left")
 
 graph_checkbox_lumen = CheckBox(window_graph_interval,
                                 text="Lumen",
-                                grid=[2, 8],
+                                grid=[2, 12],
                                 align="left")
 
 graph_checkbox_colour = CheckBox(window_graph_interval,
                                  text="Colour RGB",
-                                 grid=[2, 9],
+                                 grid=[2, 13],
                                  align="left")
+
+graph_text_column_selection2 = Text(window_graph_interval,
+                                    text="Trigger Sensors",
+                                    color='blue',
+                                    grid=[1, 14, 2, 1],
+                                    align="bottom")
+
+graph_checkbox_acc = CheckBox(window_graph_interval,
+                              text="Accelerometer XYZ",
+                              grid=[1, 15],
+                              align="left")
+
+graph_checkbox_mag = CheckBox(window_graph_interval,
+                              text="Magnetometer XYZ",
+                              grid=[2, 15],
+                              align="left")
+
+graph_checkbox_gyro = CheckBox(window_graph_interval,
+                               text="Gyroscopic XYZ",
+                               grid=[1, 16],
+                               align="left")
 
 graph_button_sensors = PushButton(window_graph_interval,
                                   text="Graph\nSensors",
                                   command=graph_button_interval,
-                                  grid=[1, 12, 2, 1],
+                                  grid=[1, 18, 2, 1],
                                   align="bottom")
 
 commands_text_select = Text(window_sensor_commands,
@@ -1361,6 +1441,7 @@ graph_checkbox_pressure.value = 0
 graph_checkbox_humidity.value = 0
 graph_checkbox_lumen.value = 0
 graph_checkbox_colour.value = 0
+graph_radio_selection()
 sensor_config_checkbox_db_record.value = 1
 sensor_config_checkbox_custom.value = 0
 sensor_config_enable_recording()
