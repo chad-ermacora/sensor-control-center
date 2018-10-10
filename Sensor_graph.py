@@ -40,8 +40,8 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 
-class CreateGraphIntervalData:
-    logger.debug("CreateGraphIntervalData Instance Created")
+class CreateGraphData:
+    logger.debug("CreateGraphData Instance Created")
 
     def __init__(self):
         self.db_location = ""
@@ -63,6 +63,7 @@ class CreateGraphIntervalData:
         self.sql_data_up_time = []
         self.sql_data_ip = []
         self.sql_data_cpu_temp = []
+
         self.sql_data_hat_temp = []
         self.sql_data_pressure = []
         self.sql_data_humidity = []
@@ -70,86 +71,142 @@ class CreateGraphIntervalData:
         self.sql_data_red = []
         self.sql_data_green = []
         self.sql_data_blue = []
+
+        self.sql_data_acc_x = []
+        self.sql_data_acc_y = []
+        self.sql_data_acc_z = []
         self.sql_data_mg_x = []
         self.sql_data_mg_y = []
         self.sql_data_mg_z = []
+        self.sql_data_gyro_x = []
+        self.sql_data_gyro_y = []
+        self.sql_data_gyro_z = []
 
 
-def start_graph(graph_interval_data):
-    logger.debug("SQL Columns: " + str(graph_interval_data.graph_columns))
-    logger.debug("SQL Table(s): " + str(graph_interval_data.graph_table))
-    logger.debug("SQL Start DateTime: " + str(graph_interval_data.graph_start))
-    logger.debug("SQL End DateTime: " + str(graph_interval_data.graph_end))
-    logger.debug("SQL DataBase Location: " + str(graph_interval_data.db_location))
+def start_graph(graph_data):
+    logger.debug("SQL Columns: " + str(graph_data.graph_columns))
+    logger.debug("SQL Table(s): " + str(graph_data.graph_table))
+    logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
+    logger.debug("SQL End DateTime: " + str(graph_data.graph_end))
+    logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
 
-    new_time_offset = int(graph_interval_data.time_offset) * -1
-    get_sql_graph_start = adjust_datetime(graph_interval_data.graph_start, new_time_offset)
-    get_sql_graph_end = adjust_datetime(graph_interval_data.graph_end, new_time_offset)
+    new_time_offset = int(graph_data.time_offset) * -1
+    get_sql_graph_start = adjust_interval_datetime(graph_data.graph_start, new_time_offset)
+    get_sql_graph_end = adjust_interval_datetime(graph_data.graph_end, new_time_offset)
+    if graph_data.graph_table == "IntervalData":
+        for var_column in graph_data.graph_columns:
+            var_sql_query = "SELECT " + \
+                            str(var_column) + \
+                " FROM " + \
+                            str(graph_data.graph_table) + \
+                " WHERE " + \
+                            var_column + \
+                " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                            str(get_sql_graph_start) + \
+                "') AND datetime('" + \
+                            str(get_sql_graph_end) + \
+                "') LIMIT " + \
+                            str(graph_data.max_sql_queries)
 
-    for var_column in graph_interval_data.graph_columns:
-        var_sql_query = "SELECT " + \
-            str(var_column) + \
-            " FROM " + \
-            str(graph_interval_data.graph_table) + \
-            " WHERE " + \
-            var_column + \
-            " IS NOT NULL AND DateTime BETWEEN datetime('" + \
-            str(get_sql_graph_start) + \
-            "') AND datetime('" + \
-            str(get_sql_graph_end) + \
-            "') LIMIT " + \
-            str(graph_interval_data.max_sql_queries)
+            sql_column_data = get_sql_data(graph_data, var_sql_query)
 
-        sql_column_data = get_sql_data(graph_interval_data, var_sql_query)
-
-        if str(var_column) == "DateTime":
-            count = 0
-            for data in sql_column_data:
-                sql_column_data[count] = adjust_datetime(data, int(graph_interval_data.time_offset))
-                count = count + 1
-
-            graph_interval_data.sql_data_time = sql_column_data
-
-        elif str(var_column) == "SensorName":
-            graph_interval_data.sql_data_host_name = sql_column_data
-        elif str(var_column) == "SensorUpTime":
-            graph_interval_data.sql_data_up_time = sql_column_data
-        elif str(var_column) == "IP":
-            graph_interval_data.sql_data_ip = sql_column_data
-        elif str(var_column) == "SystemTemp":
-            graph_interval_data.sql_data_cpu_temp = sql_column_data
-        elif str(var_column) == "EnvironmentTemp":
-            count = 0
-            for data in sql_column_data:
-                try:
-                    sql_column_data[count] = str(float(data) + float(graph_interval_data.temperature_offset))
+            if str(var_column) == "DateTime":
+                count = 0
+                for data in sql_column_data:
+                    sql_column_data[count] = adjust_interval_datetime(data, int(graph_data.time_offset))
                     count = count + 1
-                except Exception as error:
+
+                graph_data.sql_data_time = sql_column_data
+
+            elif str(var_column) == "SensorName":
+                graph_data.sql_data_host_name = sql_column_data
+            elif str(var_column) == "SensorUpTime":
+                graph_data.sql_data_up_time = sql_column_data
+            elif str(var_column) == "IP":
+                graph_data.sql_data_ip = sql_column_data
+            elif str(var_column) == "SystemTemp":
+                graph_data.sql_data_cpu_temp = sql_column_data
+            elif str(var_column) == "EnvironmentTemp":
+                count = 0
+                for data in sql_column_data:
+                    try:
+                        sql_column_data[count] = str(float(data) + float(graph_data.temperature_offset))
+                        count = count + 1
+                    except Exception as error:
+                        count = count + 1
+                        logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
+
+                graph_data.sql_data_hat_temp = sql_column_data
+
+            elif str(var_column) == "Pressure":
+                graph_data.sql_data_pressure = sql_column_data
+            elif str(var_column) == "Humidity":
+                graph_data.sql_data_humidity = sql_column_data
+            elif str(var_column) == "Lumen":
+                graph_data.sql_data_lumen = sql_column_data
+            elif str(var_column) == "Red":
+                graph_data.sql_data_red = sql_column_data
+            elif str(var_column) == "Green":
+                graph_data.sql_data_green = sql_column_data
+            elif str(var_column) == "Blue":
+                graph_data.sql_data_blue = sql_column_data
+            else:
+                logger.error(var_column + " - Does Not Exist")
+    elif graph_data.graph_table == "TriggerData":
+        for var_column in graph_data.graph_columns:
+            var_sql_query = "SELECT " + \
+                            str(var_column) + \
+                " FROM " + \
+                            str(graph_data.graph_table) + \
+                " WHERE " + \
+                            var_column + \
+                " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                            str(get_sql_graph_start) + \
+                ".000') AND datetime('" + \
+                            str(get_sql_graph_end) + \
+                ".000') LIMIT " + \
+                            str(graph_data.max_sql_queries)
+
+            sql_column_data = get_sql_data(graph_data, var_sql_query)
+
+            if str(var_column) == "DateTime":
+                count = 0
+                for data in sql_column_data:
+                    sql_column_data[count] = adjust_trigger_datetime(data, int(graph_data.time_offset))
                     count = count + 1
-                    logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
 
-            graph_interval_data.sql_data_hat_temp = sql_column_data
+                graph_data.sql_data_time = sql_column_data
 
-        elif str(var_column) == "Pressure":
-            graph_interval_data.sql_data_pressure = sql_column_data
-        elif str(var_column) == "Humidity":
-            graph_interval_data.sql_data_humidity = sql_column_data
-        elif str(var_column) == "Lumen":
-            graph_interval_data.sql_data_lumen = sql_column_data
-        elif str(var_column) == "Red":
-            graph_interval_data.sql_data_red = sql_column_data
-        elif str(var_column) == "Green":
-            graph_interval_data.sql_data_green = sql_column_data
-        elif str(var_column) == "Blue":
-            graph_interval_data.sql_data_blue = sql_column_data
-        else:
-            logger.error(var_column + " - Does Not Exist")
+            elif str(var_column) == "SensorName":
+                graph_data.sql_data_host_name = sql_column_data
+            elif str(var_column) == "IP":
+                graph_data.sql_data_ip = sql_column_data
+            elif str(var_column) == "Acc_X":
+                graph_data.sql_data_acc_x = sql_column_data
+            elif str(var_column) == "Acc_Y":
+                graph_data.sql_data_acc_y = sql_column_data
+            elif str(var_column) == "Acc_Z":
+                graph_data.sql_data_acc_z = sql_column_data
+            elif str(var_column) == "Mag_X":
+                graph_data.sql_data_mg_x = sql_column_data
+            elif str(var_column) == "Mag_Y":
+                graph_data.sql_data_mg_y = sql_column_data
+            elif str(var_column) == "Mag_Z":
+                graph_data.sql_data_mg_z = sql_column_data
+            elif str(var_column) == "Gyro_X":
+                graph_data.sql_data_gyro_x = sql_column_data
+            elif str(var_column) == "Gyro_Y":
+                graph_data.sql_data_gyro_y = sql_column_data
+            elif str(var_column) == "Gyro_Z":
+                graph_data.sql_data_gyro_z = sql_column_data
+            else:
+                logger.error(var_column + " - Does Not Exist")
 
-    trace_graph(graph_interval_data)
+    trace_graph(graph_data)
     logger.debug("Interval DB Graph Complete")
 
 
-def adjust_datetime(var_datetime, time_offset):
+def adjust_interval_datetime(var_datetime, time_offset):
     try:
         var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
     except Exception as error:
@@ -163,6 +220,30 @@ def adjust_datetime(var_datetime, time_offset):
 
     logger.debug("Adjusted datetime: " + str(new_time))
     return str(new_time)
+
+
+def adjust_trigger_datetime(var_datetime, time_offset):
+    tmp_ms = ""
+    if len(var_datetime) > 19:
+        try:
+            tmp_ms = str(var_datetime)[-4:]
+            var_datetime = datetime.strptime(str(var_datetime)[:-4], "%Y-%m-%d %H:%M:%S")
+        except Exception as error:
+            logger.error("Unable to Convert Trigger datetime string to datetime format - " + str(error))
+    else:
+        try:
+            var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
+        except Exception as error:
+            logger.error("Unable to Convert Interval datetime string to datetime format - " + str(error))
+
+    try:
+        new_time = var_datetime + timedelta(hours=time_offset)
+    except Exception as error:
+        logger.error("Unable to convert Hour Offset to int - " + str(error))
+        new_time = var_datetime
+
+    logger.debug("Adjusted datetime: " + str(new_time))
+    return str(new_time) + tmp_ms
 
 
 def get_sql_data(graph_interval_data, sql_command):
@@ -320,29 +401,77 @@ def trace_graph(graph_interval_data):
             sub_plots.append('Colour RGB')
             logger.debug("Graph Colour RGB Added")
 
+        if len(graph_interval_data.sql_data_acc_x) > 2:
+            row_count = row_count + 1
+
+            trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_acc_x,
+                                      name="Accelerometer X",
+                                      marker=mark_red)
+
+            trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_acc_y,
+                                      name="Accelerometer Y",
+                                      marker=mark_green)
+
+            trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_acc_z,
+                                      name="Accelerometer Z",
+                                      marker=mark_blue)
+
+            graph_collection.append([trace_gyro_x, row_count, 1])
+            graph_collection.append([trace_gyro_y, row_count, 1])
+            graph_collection.append([trace_gyro_z, row_count, 1])
+            sub_plots.append('Accelerometer XYZ')
+            logger.debug("Graph Accelerometer XYZ Added")
+
         if len(graph_interval_data.sql_data_mg_x) > 2:
             row_count = row_count + 1
 
-            trace_mg_x = go.Scatter(x=graph_interval_data.sql_data_time,
-                                    y=graph_interval_data.sql_data_mg_x,
-                                    name="Magnetic X",
-                                    marker=mark_red)
+            trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_mg_x,
+                                      name="Magnetic X",
+                                      marker=mark_red)
 
-            trace_mg_y = go.Scatter(x=graph_interval_data.sql_data_time,
-                                    y=graph_interval_data.sql_data_mg_y,
-                                    name="Magnetic Y",
-                                    marker=mark_green)
+            trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_mg_y,
+                                      name="Magnetic Y",
+                                      marker=mark_green)
 
-            trace_mg_z = go.Scatter(x=graph_interval_data.sql_data_time,
-                                    y=graph_interval_data.sql_data_mg_z,
-                                    name="Magnetic Z",
-                                    marker=mark_blue)
+            trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_mg_z,
+                                      name="Magnetic Z",
+                                      marker=mark_blue)
 
-            graph_collection.append([trace_mg_x, row_count, 1])
-            graph_collection.append([trace_mg_y, row_count, 1])
-            graph_collection.append([trace_mg_z, row_count, 1])
+            graph_collection.append([trace_gyro_x, row_count, 1])
+            graph_collection.append([trace_gyro_y, row_count, 1])
+            graph_collection.append([trace_gyro_z, row_count, 1])
             sub_plots.append('Magnetic XYZ')
             logger.debug("Graph Magnetic XYZ Added")
+
+        if len(graph_interval_data.sql_data_gyro_x) > 2:
+            row_count = row_count + 1
+
+            trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_gyro_x,
+                                      name="Gyroscopic X",
+                                      marker=mark_red)
+
+            trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_gyro_y,
+                                      name="Gyroscopic Y",
+                                      marker=mark_green)
+
+            trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
+                                      y=graph_interval_data.sql_data_gyro_z,
+                                      name="Gyroscopic Z",
+                                      marker=mark_blue)
+
+            graph_collection.append([trace_gyro_x, row_count, 1])
+            graph_collection.append([trace_gyro_y, row_count, 1])
+            graph_collection.append([trace_gyro_z, row_count, 1])
+            sub_plots.append('Gyroscopic XYZ')
+            logger.debug("Graph Gyroscopic XYZ Added")
 
         fig = tools.make_subplots(rows=row_count,
                                   cols=1,
@@ -353,7 +482,7 @@ def trace_graph(graph_interval_data):
 
         fig['layout'].update(title="Sensor IP: " + str(graph_interval_data.sql_data_ip[0]))
 
-        if row_count > 3:
+        if row_count > 4:
             fig['layout'].update(height=2048)
 
         try:

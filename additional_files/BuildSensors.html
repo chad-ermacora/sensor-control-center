@@ -5,7 +5,9 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2018-10-07T20:47:19.530000000"/>
+	<meta name="changed" content="2018-10-09T22:11:59.668000000"/>
+	<meta name="created" content="00:00:00">
+	<meta name="created" content="00:00:00">
 	<meta name="created" content="00:00:00">
 	<style type="text/css">
 		h2.cjk { font-family: "NSimSun" }
@@ -53,19 +55,23 @@ Sensors (see above)</p>
 Sensor(s) onto the Raspberry Pi<br/>
 <strong>Step 2</strong>. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install
 Raspbian OS</a> on your Raspberry Pi<br/>
-<em><font size="2" style="font-size: 11pt">This
-will modify /etc/network/interfaces &amp; replace the root users
-crontab</font></em><em><br/>
-</em><strong>Step 3</strong>. Enable SPI
-and I2C in the Raspberry Pi Configuration window on the &quot;Interfaces&quot;
-tab<br/>
-<strong>Step 4</strong>. Make sure you are connected to the
-Internet, then run the following command in a terminal to start the
-Installer</p>
-<p align="left">wget
+<strong>Step 3</strong>.
+Enable SPI and I2C in the Raspberry Pi Configuration window on the
+&quot;Interfaces&quot; tab<br/>
+<strong>Step 4</strong>. Make sure
+you are connected to the Internet, then run the following command in
+a terminal to start the Installer<br/>
+** <em><font size="2" style="font-size: 11pt">This
+</font></em><em><font size="2" style="font-size: 11pt">installer
+script </font></em><em><font size="2" style="font-size: 11pt">will
+modify /etc/network/interfaces &amp; replace the root users
+crontab<br/>
+<br/>
+</font></em>wget
 http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/update_programs_online.sh
 &amp;&amp; sudo chmod +x update_programs_online.sh &amp;&amp; sudo
 bash update_programs_online.sh &amp;&amp; sudo reboot<br/>
+<br/>
 <em>**
 Note: This will automatically reboot the Raspberry Pi after
 completion **</em></p>
