@@ -24,6 +24,10 @@ import re
 import logging
 from logging.handlers import RotatingFileHandler
 from tkinter import simpledialog
+from datetime import datetime
+from urllib.request import urlopen
+from tkinter import filedialog
+from guizero import info
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -66,7 +70,7 @@ def get_system_info(ip, net_timeout):
     try:
         sock_g.connect((ip, 10065))
         sock_g.send(b'GetSystemData')
-        var_data = pickle.loads(sock_g.recv(512))
+        var_data = pickle.loads(sock_g.recv(4096))
         sensor_data = var_data.split(",")
         sock_g.close()
         logger.debug("Getting Sensor Data from " + str(ip) + " - OK")
@@ -75,6 +79,82 @@ def get_system_info(ip, net_timeout):
         logger.warning("Getting Sensor Data from " + ip + " - Failed: " + str(error))
         offline_sensor_values = ["Network Timeout", ip, 0, 0, 0, 0, 0, 0, 0, 0, 0, "0000-00-00 00:00:00"]
         return offline_sensor_values
+
+
+def get_sensor_config(ip, net_timeout):
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock_g2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetConfiguration')
+        var_data_config = pickle.loads(sock_g.recv(4096))
+        sensor_config = var_data_config.split(",")
+        logger.debug("Configuration Received from " + ip + " - OK")
+    except Exception as error:
+        sensor_config = ["0", "0", "0", "0", "0", "0", "0"]
+        logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
+    sock_g.close()
+
+    try:
+        sock_g2.connect((ip, 10065))
+        sock_g2.send(b'GetSystemData')
+        var_data_system = pickle.loads(sock_g2.recv(4096))
+        sensor_system = var_data_system.split(",")
+    except Exception as error:
+        sensor_system = ["TimeOut", "0.0.0.0", "N/A"]
+        logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
+    sock_g2.close()
+
+    final_sensor_config = [str(sensor_system[0]),
+                           str(sensor_system[1]),
+                           str(sensor_system[2]),
+                           str(sensor_config[0]),
+                           str(sensor_config[1]),
+                           str(sensor_config[2]),
+                           str(sensor_config[3]),
+                           str(sensor_config[4]),
+                           str(sensor_config[5]),
+                           str(sensor_config[6])]
+
+    return final_sensor_config
+
+
+def download_interval_db(ip_list):
+    j = filedialog.askdirectory()
+
+    for ip in ip_list:
+        try:
+            remote_database = urlopen("http://" + str(ip) + ":8009/SensorIntervalDatabase.sqlite")
+            local_file = open(j + "/SensorIntervalDatabase" + ip[-3:] + ".sqlite", 'wb')
+            local_file.write(remote_database.read())
+            remote_database.close()
+            local_file.close()
+            logger.info("Download Interval DB from " + ip + " Complete")
+        except Exception as error:
+            logger.error("Download Interval DB from " + str(ip) + " Failed: " + str(error))
+
+    info("Information", "Interval DataBase Download(s) Complete")
+    logger.debug("Interval DataBase Download(s) Complete")
+
+
+def download_trigger_db(ip_list):
+    j = filedialog.askdirectory()
+
+    for ip in ip_list:
+        try:
+            remote_database = urlopen("http://" + str(ip) + ":8009/SensorTriggerDatabase.sqlite")
+            local_file = open(j + "/SensorTriggerDatabase" + ip[-3:] + ".sqlite", 'wb')
+            local_file.write(remote_database.read())
+            remote_database.close()
+            local_file.close()
+            logger.info("Download Trigger DB from " + ip + " Complete")
+        except Exception as error:
+            logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
+
+    info("Information", "Trigger DataBase Download(s) Complete")
+    logger.debug("Trigger DataBase Download(s) Complete")
 
 
 def upgrade_program_smb(ip):
@@ -137,15 +217,15 @@ def shutdown_sensor(ip):
     sock_g.close()
 
 
-def terminate_programs(ip):
+def restart_services(ip):
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
         sock_g.connect((ip, 10065))
-        sock_g.send(b'TerminatePrograms')
-        logger.info("Restarting Programs on " + ip + " - OK")
+        sock_g.send(b'RestartServices')
+        logger.info("Restarting Services on " + ip + " - OK")
     except Exception as error:
-        logger.warning("Restarting Programs on " + ip + " - Failed: " + str(error))
+        logger.warning("Restarting Services on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 
@@ -155,15 +235,45 @@ def set_hostname(ip):
 
     logger.debug(tmp_hostname)
 
-    if tmp_hostname is not None and not '':
+    if tmp_hostname is not None and tmp_hostname is not "":
         new_hostname = re.sub('\W', '_', tmp_hostname)
         logger.debug(new_hostname)
+
+        command_str = 'ChangeHostName' + str(new_hostname)
         try:
             sock_g.connect((ip, 10065))
-            sock_g.send(('ChangeHostName' + str(new_hostname)).encode())
+            sock_g.send(command_str.encode())
             logger.info("Sensor Name Change " + str(new_hostname) + " on " + ip + " - OK")
         except Exception as error:
             logger.warning("Sensor Name Change " + str(new_hostname) + " on " + ip + " - Failed: " + str(error))
         sock_g.close()
     else:
-        logger.warning("Hostname Cancelled or NULL on " + ip)
+        logger.warning("Hostname Cancelled or blank on " + ip)
+
+
+def set_datetime(ip):
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    new_datetime = datetime.now().strftime("%Y-%m-%d%H:%M:%S")
+    logger.debug(new_datetime)
+
+    command_str = 'SetDateTime' + str(new_datetime)
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(command_str.encode())
+        logger.info("Sensor Name Change " + str(new_datetime) + " on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Sensor Name Change " + str(new_datetime) + " on " + ip + " - Failed: " + str(error))
+    sock_g.close()
+
+
+def set_sensor_config(ip, str_config):
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    str_config = "SetConfiguration" + str_config
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(str_config.encode())
+        logger.info("Set Configuration on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Set Configuration on " + ip + " - Failed: " + str(error))
+    sock_g.close()
