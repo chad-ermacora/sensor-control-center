@@ -75,17 +75,17 @@ def app_menu_open_commands():
 
 
 def app_menu_open_sensor_config():
-    window_update_sensor_config.show()
+    window_sensor_config.show()
 
 
 def app_menu_download_interval_db():
     ip_list = check_sensors()
-    Sensor_app_imports.download_interval_db(ip_list)
+    Sensor_commands.download_interval_db(ip_list)
 
 
 def app_menu_download_trigger_db():
     ip_list = check_sensors()
-    Sensor_app_imports.download_trigger_db(ip_list)
+    Sensor_commands.download_trigger_db(ip_list)
 
 
 def app_menu_open_graph():
@@ -628,8 +628,8 @@ def get_graph_column_checkboxes():
 
 # GUI Window Configurations
 app = App(title="KootNet Sensors - PC Control Center",
-          width=400,
-          height=325,
+          width=405,
+          height=295,
           layout="grid")
 
 window_app_about = Window(app,
@@ -641,24 +641,17 @@ window_app_about = Window(app,
 
 window_config = Window(app,
                        title="Configuration",
-                       width=600,
+                       width=580,
                        height=300,
                        layout="grid",
                        visible=False)
 
 window_graph_interval = Window(app,
                                title="Interval Graphing",
-                               width=265,
-                               height=275,
+                               width=255,
+                               height=265,
                                layout="grid",
                                visible=False)
-
-window_graph_trigger = Window(app,
-                              title="Trigger Graphing",
-                              width=250,
-                              height=180,
-                              layout="grid",
-                              visible=False)
 
 window_sensor_commands = Window(app,
                                 title="Sensor Commands",
@@ -667,12 +660,12 @@ window_sensor_commands = Window(app,
                                 layout="grid",
                                 visible=False)
 
-window_update_sensor_config = Window(app,
-                                     title="Update Sensors Configuration",
-                                     width=350,
-                                     height=275,
-                                     layout="grid",
-                                     visible=False)
+window_sensor_config = Window(app,
+                              title="Update Sensors Configuration",
+                              width=340,
+                              height=265,
+                              layout="grid",
+                              visible=False)
 
 app_menubar = MenuBar(app,
                       toplevel=[["File"],
@@ -1064,7 +1057,7 @@ config_text_network_timeouts = Text(window_config,
                                     align="top")
 
 config_text_network_timeouts1 = Text(window_config,
-                                     text="Check Sensor Status: ",
+                                     text="Sensor Status",
                                      color='green',
                                      grid=[2, 7],
                                      align="top")
@@ -1076,7 +1069,7 @@ config_textbox_network_check = TextBox(window_config,
                                        align="top")
 
 config_text_network_timeouts2 = Text(window_config,
-                                     text="HTML Reports - Get Data: ",
+                                     text="HTML Reports",
                                      color='green',
                                      grid=[2, 9],
                                      align="top")
@@ -1263,85 +1256,85 @@ sensor_config_button_update_datetime = PushButton(window_sensor_commands,
                                                   align="left")
 
 # Update Sensor Configuration Section
-sensor_config_text_select = Text(window_update_sensor_config,
+sensor_config_text_select = Text(window_sensor_config,
                                  text="Select Sensors from the Main Window",
                                  grid=[1, 1, 3, 1],
                                  color='#CB0000',
                                  align="left")
 
-sensor_config_checkbox_db_record = CheckBox(window_update_sensor_config,
+sensor_config_checkbox_db_record = CheckBox(window_sensor_config,
                                             text="Enable Database Recording",
                                             command=sensor_config_enable_recording,
                                             grid=[1, 2, 2, 1],
                                             align="left")
 
-sensor_config_textbox_interval = TextBox(window_update_sensor_config,
+sensor_config_textbox_interval = TextBox(window_sensor_config,
                                          text='300',
                                          width=10,
                                          grid=[1, 3],
                                          align="left")
 
-sensor_config_text_interval = Text(window_update_sensor_config,
+sensor_config_text_interval = Text(window_sensor_config,
                                    text="Seconds Between Interval Recording",
                                    color='green',
                                    grid=[2, 3],
                                    align="left")
 
-sensor_config_textbox_trigger = TextBox(window_update_sensor_config,
+sensor_config_textbox_trigger = TextBox(window_sensor_config,
                                         text='0.15',
                                         width=10,
                                         grid=[1, 4],
                                         align="left")
 
-sensor_config_text_trigger = Text(window_update_sensor_config,
+sensor_config_text_trigger = Text(window_sensor_config,
                                   text="Seconds Between Trigger Readings",
                                   color='green',
                                   grid=[2, 4],
                                   align="left")
 
-sensor_config_checkbox_custom = CheckBox(window_update_sensor_config,
+sensor_config_checkbox_custom = CheckBox(window_sensor_config,
                                          text="Enable Custom Settings",
                                          command=sensor_config_enable_custom,
                                          grid=[1, 5, 2, 1],
                                          align="left")
 
-sensor_config_textbox_custom_acc = TextBox(window_update_sensor_config,
+sensor_config_textbox_custom_acc = TextBox(window_sensor_config,
                                            text='0.05',
                                            width=10,
                                            grid=[1, 6],
                                            align="left")
 
-sensor_config_text_custom_acc = Text(window_update_sensor_config,
+sensor_config_text_custom_acc = Text(window_sensor_config,
                                      text="Accelerometer Variance",
                                      color='green',
                                      grid=[2, 6],
                                      align="left")
 
-sensor_config_textbox_custom_mag = TextBox(window_update_sensor_config,
+sensor_config_textbox_custom_mag = TextBox(window_sensor_config,
                                            text='300',
                                            width=10,
                                            grid=[1, 7],
                                            align="left")
 
-sensor_config_text_custom_mag = Text(window_update_sensor_config,
+sensor_config_text_custom_mag = Text(window_sensor_config,
                                      text="Magnetometer Variance",
                                      color='green',
                                      grid=[2, 7],
                                      align="left")
 
-sensor_config_textbox_custom_gyro = TextBox(window_update_sensor_config,
+sensor_config_textbox_custom_gyro = TextBox(window_sensor_config,
                                             text='0.05',
                                             width=10,
                                             grid=[1, 8],
                                             align="left")
 
-sensor_config_text_custom_gyro = Text(window_update_sensor_config,
+sensor_config_text_custom_gyro = Text(window_sensor_config,
                                       text="Gyroscopic Variance",
                                       color='green',
                                       grid=[2, 8],
                                       align="left")
 
-sensor_config_button_set_config = PushButton(window_update_sensor_config,
+sensor_config_button_set_config = PushButton(window_sensor_config,
                                              text="Apply Sensor\nConfiguration",
                                              command=sensor_config_set,
                                              grid=[2, 14],
@@ -1351,9 +1344,8 @@ sensor_config_button_set_config = PushButton(window_update_sensor_config,
 app.tk.iconbitmap(default="additional_files/icon.ico")
 app.tk.resizable(False, False)
 window_graph_interval.tk.resizable(False, False)
-window_graph_trigger.tk.resizable(False, False)
 window_sensor_commands.tk.resizable(False, False)
-window_update_sensor_config.tk.resizable(False, False)
+window_sensor_config.tk.resizable(False, False)
 window_app_about.tk.resizable(False, False)
 window_config.tk.resizable(False, False)
 

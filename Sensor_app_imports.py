@@ -2,9 +2,6 @@ import webbrowser
 import sys
 import os
 import logging
-from urllib.request import urlopen
-from tkinter import filedialog
-from guizero import info
 from Sensor_commands import get_system_info, get_sensor_config
 from Sensor_config import load_file as load_config
 from logging.handlers import RotatingFileHandler
@@ -99,7 +96,7 @@ def open_url(url):
     webbrowser.open(url)
 
 
-def sensor_html_report(ip_list, html_type):
+def sensor_html_report(ip_list, report_type):
     final_file = ''
     sensor_html = ''
     replace_word = ''
@@ -107,19 +104,19 @@ def sensor_html_report(ip_list, html_type):
     temp_config = load_config()
     net_timeout = int(temp_config.network_details_timeout)
 
-    if html_type == "SystemDetails":
+    if report_type == "SystemDetails":
         replacement_codes = html_system_codes()
     else:
         replacement_codes = html_config_codes()
 
     try:
-        if html_type == "SystemDetails":
+        if report_type == "SystemDetails":
             html_file_part = open(str(app_location_directory + html_template_details1), 'r')
         else:
             html_file_part = open(str(app_location_directory + html_template_config1), 'r')
         final_file = html_file_part.read()
         html_file_part.close()
-        if html_type == "SystemDetails":
+        if report_type == "SystemDetails":
             html_file_part = open(str(app_location_directory + html_template_details2), 'r')
         else:
             html_file_part = open(str(app_location_directory + html_template_config2), 'r')
@@ -129,13 +126,13 @@ def sensor_html_report(ip_list, html_type):
     except Exception as error:
         logger.error("Open Template - Failed: " + str(error))
 
-    # For each IP in the list, Get its sensor data
+    # For each IP in the list, Get its data per Report "Type"
     # Inserting them into a final HTML file, based on a 3 part template
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
 
-            if html_type == "SystemDetails":
+            if report_type == "SystemDetails":
                 sensor_data = get_system_info(ip, net_timeout)
             else:
                 sensor_data = get_sensor_config(ip, net_timeout)
@@ -149,7 +146,7 @@ def sensor_html_report(ip_list, html_type):
                 elif count2 == 2:
                     replace_word = str(sensor_data[2])
                 elif count2 == 3:
-                    if html_type == "SystemDetails":
+                    if report_type == "SystemDetails":
                         uptime_days = int(float(sensor_data[3]) // 1440)
                         uptime_hours = int((float(sensor_data[3]) % 1440) // 60)
                         uptime_min = int(float(sensor_data[3]) % 60)
@@ -157,7 +154,7 @@ def sensor_html_report(ip_list, html_type):
                     else:
                         replace_word = str(sensor_data[3])
                 elif count2 == 4:
-                    if html_type == "SystemDetails":
+                    if report_type == "SystemDetails":
                         sensor_data[4] = round(float(sensor_data[4]), 2)
                     replace_word = str(sensor_data[4])
                 elif count2 == 5:
@@ -181,7 +178,7 @@ def sensor_html_report(ip_list, html_type):
         # Add's each sensor that checked Online, into the final HTML variable
         final_file = final_file + current_sensor_html
     try:
-        if html_type == "SystemDetails":
+        if report_type == "SystemDetails":
             html_file_part = open(str(app_location_directory + html_template_details3), 'r')
         else:
             html_file_part = open(str(app_location_directory + html_template_config3), 'r')
@@ -203,39 +200,3 @@ def sensor_html_report(ip_list, html_type):
         logger.debug("Sensor Details - HTML Save File - OK")
     except Exception as error:
         logger.error("Sensor Details - HTML Save File - Failed: " + str(error))
-
-
-def download_interval_db(ip_list):
-    j = filedialog.askdirectory()
-
-    for ip in ip_list:
-        try:
-            remote_database = urlopen("http://" + str(ip) + ":8009/SensorIntervalDatabase.sqlite")
-            local_file = open(j + "/SensorIntervalDatabase" + ip[-3:] + ".sqlite", 'wb')
-            local_file.write(remote_database.read())
-            remote_database.close()
-            local_file.close()
-            logger.info("Download Interval DB from " + ip + " Complete")
-        except Exception as error:
-            logger.error("Download Interval DB from " + str(ip) + " Failed: " + str(error))
-
-    info("Information", "Interval DataBase Download(s) Complete")
-    logger.debug("Interval DataBase Download(s) Complete")
-
-
-def download_trigger_db(ip_list):
-    j = filedialog.askdirectory()
-
-    for ip in ip_list:
-        try:
-            remote_database = urlopen("http://" + str(ip) + ":8009/SensorTriggerDatabase.sqlite")
-            local_file = open(j + "/SensorTriggerDatabase" + ip[-3:] + ".sqlite", 'wb')
-            local_file.write(remote_database.read())
-            remote_database.close()
-            local_file.close()
-            logger.info("Download Trigger DB from " + ip + " Complete")
-        except Exception as error:
-            logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
-
-    info("Information", "Trigger DataBase Download(s) Complete")
-    logger.debug("Trigger DataBase Download(s) Complete")
