@@ -24,6 +24,7 @@ import re
 import logging
 from logging.handlers import RotatingFileHandler
 from tkinter import simpledialog
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -169,6 +170,21 @@ def set_hostname(ip):
         sock_g.close()
     else:
         logger.warning("Hostname Cancelled or blank on " + ip)
+
+
+def set_datetime(ip):
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    new_datetime = datetime.now().strftime("%Y-%m-%d%H:%M:%S")
+    logger.debug(new_datetime)
+
+    command_str = 'SetDateTime' + str(new_datetime)
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(command_str.encode())
+        logger.info("Sensor Name Change " + str(new_datetime) + " on " + ip + " - OK")
+    except Exception as error:
+        logger.warning("Sensor Name Change " + str(new_datetime) + " on " + ip + " - Failed: " + str(error))
+    sock_g.close()
 
 
 def get_sensor_config(ip, net_timeout):

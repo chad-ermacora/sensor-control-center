@@ -79,12 +79,12 @@ def app_menu_open_sensor_config():
 
 
 def app_menu_download_interval_db():
-    ip_list = app_button_check_sensors()
+    ip_list = check_sensors()
     Sensor_app_imports.download_interval_db(ip_list)
 
 
 def app_menu_download_trigger_db():
-    ip_list = app_button_check_sensors()
+    ip_list = check_sensors()
     Sensor_app_imports.download_trigger_db(ip_list)
 
 
@@ -152,7 +152,7 @@ def app_check_all_ip_checkboxes(var_column):
             app_checkbox_ip16.value = 0
 
 
-def app_button_check_sensors():
+def check_sensors():
     ip_list = get_checked_ip()
     ip_list_final = []
     net_timeout = int(config_textbox_network_check.value)
@@ -328,16 +328,8 @@ def get_checked_ip():
 
 
 def app_button_sensor_details():
-    var_ip_list = app_button_check_sensors()
+    var_ip_list = check_sensors()
     Sensor_app_imports.sensor_html_report(var_ip_list, "SystemDetails")
-
-
-def app_button_hostname_change():
-    logger.debug("Change Sensor Hostname")
-    ip_list = app_button_check_sensors()
-
-    for ip in ip_list:
-        Sensor_commands.set_hostname(ip)
 
 
 def config_button_save():
@@ -457,7 +449,7 @@ def config_checkbox_enable_shutdown():
 
 def commands_upgrade_smb():
     logger.debug("Sensor Upgrade - SMB")
-    ip_list = app_button_check_sensors()
+    ip_list = check_sensors()
 
     for ip in ip_list:
         Sensor_commands.upgrade_program_smb(ip)
@@ -468,7 +460,7 @@ def commands_upgrade_smb():
 
 def commands_upgrade_http():
     logger.debug("Sensor Upgrade - HTTP")
-    ip_list = app_button_check_sensors()
+    ip_list = check_sensors()
 
     for ip in ip_list:
         Sensor_commands.upgrade_program_online(ip)
@@ -479,7 +471,7 @@ def commands_upgrade_http():
 
 def commands_os_upgrade():
     logger.debug("Sensor OS Upgrade")
-    ip_list = app_button_check_sensors()
+    ip_list = check_sensors()
 
     for ip in ip_list:
         Sensor_commands.upgrade_os_linux(ip)
@@ -491,7 +483,7 @@ def commands_os_upgrade():
 
 def commands_sensor_reboot():
     logger.debug("Sensor Reboot")
-    ip_list = app_button_check_sensors()
+    ip_list = check_sensors()
 
     for ip in ip_list:
         Sensor_commands.reboot_sensor(ip)
@@ -501,7 +493,7 @@ def commands_sensor_reboot():
 
 def commands_sensor_shutdown():
     logger.debug("Sensor Reboot")
-    ip_list = app_button_check_sensors()
+    ip_list = check_sensors()
 
     for ip in ip_list:
         Sensor_commands.shutdown_sensor(ip)
@@ -509,14 +501,32 @@ def commands_sensor_shutdown():
     info("Information", "Sensor(s) Shutting Down")
 
 
-def commands_kill_progs():
-    logger.info("Sensor(s) Programs Restarting - Please allow up to 30 Seconds to restart")
-    ip_list = app_button_check_sensors()
+def commands_restart_services():
+    logger.info("Sensor(s) Services Restarting - Please allow up to 20 Seconds to restart")
+    ip_list = check_sensors()
 
     for ip in ip_list:
         Sensor_commands.restart_services(ip)
 
-    info("Information", "Sensor(s) Programs Restarting\nPlease allow up to 30 Seconds to restart")
+    info("Information", "Sensor(s) Programs Restarting\nPlease allow up to 20 Seconds to restart")
+
+
+def commands_hostname_change():
+    logger.debug("Change Sensor Hostname")
+    ip_list = check_sensors()
+
+    for ip in ip_list:
+        Sensor_commands.set_hostname(ip)
+
+
+def commands_datetime_update():
+    logger.debug("Updating Sensors DateTime")
+    ip_list = check_sensors()
+
+    for ip in ip_list:
+        Sensor_commands.set_datetime(ip)
+
+    info("DateTime Set", "Sensors Date & Time Synchronized with local Computer's")
 
 
 def sensor_config_enable_recording():
@@ -540,13 +550,13 @@ def sensor_config_enable_custom():
 
 
 def sensor_config_report():
-    var_ip_list = app_button_check_sensors()
+    var_ip_list = check_sensors()
     Sensor_app_imports.sensor_html_report(var_ip_list, "ConfigurationDetails")
 
 
 def sensor_config_set():
     logger.debug("Setting Sensor Config")
-    ip_list = app_button_check_sensors()
+    ip_list = check_sensors()
     config_settings_str = "," + str(sensor_config_checkbox_db_record.value) + "," + \
         str(sensor_config_textbox_interval.value) + "," + \
         str(sensor_config_textbox_trigger.value) + "," + \
@@ -652,10 +662,10 @@ window_graph_trigger = Window(app,
 
 window_sensor_commands = Window(app,
                                 title="Sensor Commands",
-                                width=275,
-                                height=305,
+                                width=290,
+                                height=285,
                                 layout="grid",
-                                visible=True)
+                                visible=False)
 
 window_update_sensor_config = Window(app,
                                      title="Update Sensors Configuration",
@@ -663,16 +673,6 @@ window_update_sensor_config = Window(app,
                                      height=275,
                                      layout="grid",
                                      visible=False)
-
-# Add extra tk options to windows
-app.tk.iconbitmap(default="additional_files/icon.ico")
-app.tk.resizable(False, False)
-window_graph_interval.tk.resizable(False, False)
-window_graph_trigger.tk.resizable(False, False)
-window_sensor_commands.tk.resizable(False, False)
-window_update_sensor_config.tk.resizable(False, False)
-window_app_about.tk.resizable(False, False)
-window_config.tk.resizable(False, False)
 
 app_menubar = MenuBar(app,
                       toplevel=[["File"],
@@ -708,7 +708,7 @@ app_menubar = MenuBar(app,
 
 app_button_check_sensor = PushButton(app,
                                      text="Check Sensors\nStatus",
-                                     command=app_button_check_sensors,
+                                     command=check_sensors,
                                      grid=[1, 15, 2, 1],
                                      align="left")
 
@@ -1190,13 +1190,6 @@ graph_button_sensors = PushButton(window_graph_interval,
                                   grid=[1, 12, 2, 1],
                                   align="bottom")
 
-# graph_button_motion = PushButton(window_graph_interval,
-#                                  text="Graph\nMotion",
-#                                  command=graph_trigger_button,
-#                                  grid=[3, 8],
-#                                  align="right")
-
-# Sensor Commands Window Section
 commands_text_select = Text(window_sensor_commands,
                             text="Select Sensors from the Main Window",
                             grid=[1, 1, 3, 1],
@@ -1253,15 +1246,21 @@ commands_text_other = Text(window_sensor_commands,
 
 commands_button_terminate = PushButton(window_sensor_commands,
                                        text="Restart\nServices",
-                                       command=commands_kill_progs,
+                                       command=commands_restart_services,
                                        grid=[1, 7],
                                        align="left")
 
 sensor_config_button_get_config = PushButton(window_sensor_commands,
                                              text="Change\nNames",
-                                             command=app_button_hostname_change,
+                                             command=commands_hostname_change,
                                              grid=[2, 7],
                                              align="left")
+
+sensor_config_button_update_datetime = PushButton(window_sensor_commands,
+                                                  text="Sync DateTime\nwith Computer",
+                                                  command=commands_datetime_update,
+                                                  grid=[3, 7],
+                                                  align="left")
 
 # Update Sensor Configuration Section
 sensor_config_text_select = Text(window_update_sensor_config,
@@ -1348,7 +1347,17 @@ sensor_config_button_set_config = PushButton(window_update_sensor_config,
                                              grid=[2, 14],
                                              align="right")
 
-# Change Window Configurations before loading app
+# Add extra tk options to windows
+app.tk.iconbitmap(default="additional_files/icon.ico")
+app.tk.resizable(False, False)
+window_graph_interval.tk.resizable(False, False)
+window_graph_trigger.tk.resizable(False, False)
+window_sensor_commands.tk.resizable(False, False)
+window_update_sensor_config.tk.resizable(False, False)
+window_app_about.tk.resizable(False, False)
+window_config.tk.resizable(False, False)
+
+# Change other options before loading app
 app_checkbox_all_column1.value = 0
 app_checkbox_all_column2.value = 0
 app_check_all_ip_checkboxes(1)
