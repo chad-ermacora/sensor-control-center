@@ -197,7 +197,7 @@ def get_sensor_config(ip, net_timeout):
         sock_g.send(b'GetConfiguration')
         var_data_config = pickle.loads(sock_g.recv(4096))
         sensor_config = var_data_config.split(",")
-        logger.info("Configuration Received from " + ip + " - OK")
+        logger.debug("Configuration Received from " + ip + " - OK")
     except Exception as error:
         sensor_config = ["0", "0", "0", "0", "0", "0", "0"]
         logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))

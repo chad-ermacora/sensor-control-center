@@ -327,9 +327,14 @@ def get_checked_ip():
     return checkbox_ip_list
 
 
-def app_button_sensor_details():
+def app_sensor_details_report():
     var_ip_list = check_sensors()
     Sensor_app_imports.sensor_html_report(var_ip_list, "SystemDetails")
+
+
+def app_sensor_config_report():
+    var_ip_list = check_sensors()
+    Sensor_app_imports.sensor_html_report(var_ip_list, "ConfigurationDetails")
 
 
 def config_button_save():
@@ -549,11 +554,6 @@ def sensor_config_enable_custom():
         sensor_config_textbox_custom_gyro.disable()
 
 
-def sensor_config_report():
-    var_ip_list = check_sensors()
-    Sensor_app_imports.sensor_html_report(var_ip_list, "ConfigurationDetails")
-
-
 def sensor_config_set():
     logger.debug("Setting Sensor Config")
     ip_list = check_sensors()
@@ -714,15 +714,15 @@ app_button_check_sensor = PushButton(app,
 
 app_button_sensor_detail = PushButton(app,
                                       text="View Sensors\nSystem Report",
-                                      command=app_button_sensor_details,
+                                      command=app_sensor_details_report,
                                       grid=[2, 15, 2, 1],
                                       align="right")
 
-app_button_sensor_hostname = PushButton(app,
-                                        text="View Sensors\nConfiguration Report",
-                                        command=sensor_config_report,
-                                        grid=[4, 15],
-                                        align="right")
+app_button_sensor_config = PushButton(app,
+                                      text="View Sensors\nConfiguration Report",
+                                      command=app_sensor_config_report,
+                                      grid=[4, 15],
+                                      align="right")
 
 # Sensor's Online / Offline IP List Selection 1
 app_checkbox_all_column1 = CheckBox(app,
