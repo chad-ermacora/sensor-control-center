@@ -38,9 +38,9 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
-html_template_details1 = "additional_files/html_template_details1.html"
-html_template_details2 = "additional_files/html_template_details2.html"
-html_template_details3 = "additional_files/html_template_details3.html"
+html_template_details1 = "additional_files/html_template_system1.html"
+html_template_details2 = "additional_files/html_template_system2.html"
+html_template_details3 = "additional_files/html_template_system3.html"
 html_template_config1 = "additional_files/html_template_config1.html"
 html_template_config2 = "additional_files/html_template_config2.html"
 html_template_config3 = "additional_files/html_template_config3.html"
@@ -117,9 +117,9 @@ def sensor_html_report(ip_list, report_type):
             html_file_part = open(str(app_location_directory + html_template_config2), 'r')
         sensor_html = html_file_part.read()
         html_file_part.close()
-        logger.debug("Open html_template_details1.html & html_template_details2.html Template - OK")
+        logger.debug("Open First 2 Templates - OK")
     except Exception as error:
-        logger.error("Open Template - Failed: " + str(error))
+        logger.error("Open First 2 Templates - Failed: " + str(error))
 
     # For each IP in the list, Get its data per Report "Type"
     # Inserting them into a final HTML file, based on a 3 part template
@@ -163,12 +163,12 @@ def sensor_html_report(ip_list, report_type):
                 elif count2 == 9:
                     replace_word = str(sensor_data[9])
                 else:
-                    logger.error("Wrong format for Sensor Values - Try Updating the Program")
+                    logger.error("Too many Variables provided - Try Updating the Program")
 
                 current_sensor_html = current_sensor_html.replace(code, replace_word)
                 count2 = count2 + 1
         except Exception as error:
-                logger.error("Sensor get probably failed: " + str(error))
+                logger.error("Report Failure: " + str(error))
 
         # Add's each sensor that checked Online, into the final HTML variable
         final_file = final_file + current_sensor_html
@@ -181,17 +181,17 @@ def sensor_html_report(ip_list, report_type):
         html_end = html_file_part.read()
         html_file_part.close()
         final_file = final_file + html_end
-        logger.debug("Created Sensor Details - HTML File - OK")
+        logger.debug("Created Sensor Report - HTML File - OK")
     except Exception as error:
-        logger.error("Open html_template_details3.html Template Failed: " + str(error))
+        logger.error("Open 3rd Template File Failed: " + str(error))
 
-    # Write the final html variable to file
+    # Write to a HTML file
     try:
         save_to_location = str(temp_config.save_to + "SensorsDetails.html")
         file_out = open(save_to_location, 'w')
         file_out.write(final_file)
         file_out.close()
         open_html(save_to_location)
-        logger.debug("Sensor Details - HTML Save File - OK")
+        logger.debug("Sensor Report - HTML Save File - OK")
     except Exception as error:
-        logger.error("Sensor Details - HTML Save File - Failed: " + str(error))
+        logger.error("Sensor Report - HTML Save File - Failed: " + str(error))
