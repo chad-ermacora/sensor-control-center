@@ -407,17 +407,17 @@ def trace_graph(graph_interval_data):
             trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_acc_x,
                                       name="Accelerometer X",
-                                      marker=mark_red)
+                                      mode='markers')
 
             trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_acc_y,
                                       name="Accelerometer Y",
-                                      marker=mark_green)
+                                      mode='markers')
 
             trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_acc_z,
                                       name="Accelerometer Z",
-                                      marker=mark_blue)
+                                      mode='markers')
 
             graph_collection.append([trace_gyro_x, row_count, 1])
             graph_collection.append([trace_gyro_y, row_count, 1])
@@ -431,17 +431,17 @@ def trace_graph(graph_interval_data):
             trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_mg_x,
                                       name="Magnetic X",
-                                      marker=mark_red)
+                                      mode='markers')
 
             trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_mg_y,
                                       name="Magnetic Y",
-                                      marker=mark_green)
+                                      mode='markers')
 
             trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_mg_z,
                                       name="Magnetic Z",
-                                      marker=mark_blue)
+                                      mode='markers')
 
             graph_collection.append([trace_gyro_x, row_count, 1])
             graph_collection.append([trace_gyro_y, row_count, 1])
@@ -455,17 +455,17 @@ def trace_graph(graph_interval_data):
             trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_gyro_x,
                                       name="Gyroscopic X",
-                                      marker=mark_red)
+                                      mode='markers')
 
             trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_gyro_y,
                                       name="Gyroscopic Y",
-                                      marker=mark_green)
+                                      mode='markers')
 
             trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
                                       y=graph_interval_data.sql_data_gyro_z,
                                       name="Gyroscopic Z",
-                                      marker=mark_blue)
+                                      mode='markers')
 
             graph_collection.append([trace_gyro_x, row_count, 1])
             graph_collection.append([trace_gyro_y, row_count, 1])
