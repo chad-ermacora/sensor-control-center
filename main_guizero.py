@@ -288,82 +288,82 @@ def check_sensors():
 def get_checked_ip():
     checkbox_ip_list = []
 
-    if app_checkbox_ip1.value == 1:
+    if app_checkbox_ip1.value == 1 and app_textbox_ip1.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip1.value)
     else:
         app_textbox_ip1.bg = 'white'
 
-    if app_checkbox_ip2.value == 1:
+    if app_checkbox_ip2.value == 1 and app_textbox_ip2.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip2.value)
     else:
         app_textbox_ip2.bg = 'white'
 
-    if app_checkbox_ip3.value == 1:
+    if app_checkbox_ip3.value == 1 and app_textbox_ip3.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip3.value)
     else:
         app_textbox_ip3.bg = 'white'
 
-    if app_checkbox_ip4.value == 1:
+    if app_checkbox_ip4.value == 1 and app_textbox_ip4.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip4.value)
     else:
         app_textbox_ip4.bg = 'white'
 
-    if app_checkbox_ip5.value == 1:
+    if app_checkbox_ip5.value == 1 and app_textbox_ip5.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip5.value)
     else:
         app_textbox_ip5.bg = 'white'
 
-    if app_checkbox_ip6.value == 1:
+    if app_checkbox_ip6.value == 1 and app_textbox_ip6.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip6.value)
     else:
         app_textbox_ip6.bg = 'white'
 
-    if app_checkbox_ip7.value == 1:
+    if app_checkbox_ip7.value == 1 and app_textbox_ip7.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip7.value)
     else:
         app_textbox_ip7.bg = 'white'
 
-    if app_checkbox_ip8.value == 1:
+    if app_checkbox_ip8.value == 1 and app_textbox_ip8.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip8.value)
     else:
         app_textbox_ip8.bg = 'white'
 
-    if app_checkbox_ip9.value == 1:
+    if app_checkbox_ip9.value == 1 and app_textbox_ip9.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip9.value)
     else:
         app_textbox_ip9.bg = 'white'
 
-    if app_checkbox_ip10.value == 1:
+    if app_checkbox_ip10.value == 1 and app_textbox_ip10.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip10.value)
     else:
         app_textbox_ip10.bg = 'white'
 
-    if app_checkbox_ip11.value == 1:
+    if app_checkbox_ip11.value == 1 and app_textbox_ip11.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip11.value)
     else:
         app_textbox_ip11.bg = 'white'
 
-    if app_checkbox_ip12.value == 1:
+    if app_checkbox_ip12.value == 1 and app_textbox_ip12.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip12.value)
     else:
         app_textbox_ip12.bg = 'white'
 
-    if app_checkbox_ip13.value == 1:
+    if app_checkbox_ip13.value == 1 and app_textbox_ip13.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip13.value)
     else:
         app_textbox_ip13.bg = 'white'
 
-    if app_checkbox_ip14.value == 1:
+    if app_checkbox_ip14.value == 1 and app_textbox_ip14.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip14.value)
     else:
         app_textbox_ip14.bg = 'white'
 
-    if app_checkbox_ip15.value == 1:
+    if app_checkbox_ip15.value == 1 and app_textbox_ip15.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip15.value)
     else:
         app_textbox_ip15.bg = 'white'
 
-    if app_checkbox_ip16.value == 1:
+    if app_checkbox_ip16.value == 1 and app_textbox_ip16.value not in checkbox_ip_list:
         checkbox_ip_list.append(app_textbox_ip16.value)
     else:
         app_textbox_ip16.bg = 'white'
