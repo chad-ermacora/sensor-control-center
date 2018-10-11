@@ -26,6 +26,8 @@ import platform
 import subprocess
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, ButtonGroup
 from tkinter import filedialog
+from threading import Thread
+from queue import Queue
 # DEBUG - Detailed information, typically of interest only when diagnosing problems. test
 # INFO - Confirmation that things are working as expected.
 # WARNING - An indication that something unexpected happened, or indicative of some problem in the near future
@@ -53,6 +55,9 @@ app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver.
 app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
 config_file = app_location_directory + "/config.txt"
 logger.info('KootNet Sensors - PC Control Center - Started')
+
+sensor_ip_queue = Queue()
+sensor_data_queue = Queue()
 
 
 def app_menu_open_log():
@@ -152,13 +157,34 @@ def app_check_all_ip_checkboxes(var_column):
             app_checkbox_ip16.value = 0
 
 
+def sensor_check_worker(net_timeout):
+    while True:
+        ip = sensor_ip_queue.get()
+        data = [ip, Sensor_commands.check_online_status(ip, net_timeout)]
+
+        sensor_data_queue.put(data)
+        sensor_ip_queue.task_done()
+
+
 def check_sensors():
     ip_list = get_checked_ip()
     ip_list_final = []
     net_timeout = int(config_textbox_network_check.value)
+    num_workers = len(ip_list)
+    sensor_data_pool = []
 
-    for ip in ip_list:
-        sensor_status = Sensor_commands.check_online_status(ip, net_timeout)
+    threads = [Thread(target=sensor_check_worker, args=[net_timeout]) for _ in range(num_workers)]
+    [sensor_ip_queue.put(ip) for ip in ip_list]
+    [thread.start() for thread in threads]
+    sensor_ip_queue.join()
+
+    while not sensor_data_queue.empty():
+        sensor_data_pool.append(sensor_data_queue.get())
+        sensor_data_queue.task_done()
+
+    for data in sensor_data_pool:
+        ip = data[0]
+        sensor_status = data[1]
 
         if sensor_status == "Online":
             var_colour = "#7CFC00"
@@ -235,6 +261,7 @@ def check_sensors():
             app_textbox_ip16.bg = var_colour
             app_checkbox_ip16.value = var_checkbox
 
+    sensor_data_pool.clear()
     logger.debug("Checked IP's Processed")
     return ip_list_final
 
