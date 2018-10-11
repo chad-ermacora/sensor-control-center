@@ -1,14 +1,16 @@
 </strong></table>
 <p><font color="red">* Disable = 0, Enable = 1
-    <br />* 'SQL Enabled' shows if the programs are Recording to a SQLite3 Databases
     <br />
-    <br />* 'Interval Time' is the Duration between recording readings to the SQLite3 Database
-    <br />** Measured in Seconds.  Default is 300 Seconds (5 min)
+    <br />* 'Interval Time' is the Duration between recording, into the Interval SQL Database
+    <br />* ** Measured in Seconds.  Default is 300 Seconds (5 min)
+    <br />* 'Trigger Time' is the Duration between readings, which are checked against the Variance
+    <br />* ** Measured in Seconds.  Default is 0.15 Seconds (150ms)
     <br />
-    <br />* 'Trigger Time' is the Duration between 2 Sensor readings, which are checked for a difference more then the Variance
-    <br />** Measured in Seconds.  Default is 0.15 Seconds (150ms)
+    <br />* 'SQL' shows if the Sensor is Recording to SQLite3 Databases
+    <br />* 'Custom' shows if the sensor is using manually set Variances
     <br />
-    <br />* 'Custom' shows if you have sets your own Variances
+    <br />* Default Trigger Variances are based on the Sensors in use
+    <br />
     <br />* 'Acc' shows the currently set Accelerometer Variance
     <br />* 'Mag' shows the currently set Magnetometer Variance
     <br />* 'Gyro' shows the currently set Gyroscopic Variance
