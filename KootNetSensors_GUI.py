@@ -182,6 +182,8 @@ def check_sensors():
         sensor_data_pool.append(sensor_data_queue.get())
         sensor_data_queue.task_done()
 
+    sensor_data_pool.sort()
+
     for data in sensor_data_pool:
         ip = data[0]
         sensor_status = data[1]
