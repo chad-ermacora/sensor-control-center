@@ -187,7 +187,11 @@ def sensor_html_report(ip_list, report_type):
 
     # Write to a HTML file
     try:
-        save_to_location = str(temp_config.save_to + "SensorsDetails.html")
+        if report_type == "SystemDetails":
+            save_to_location = str(temp_config.save_to + "SensorsSystem.html")
+        else:
+            save_to_location = str(temp_config.save_to + "SensorsConfig.html")
+
         file_out = open(save_to_location, 'w')
         file_out.write(final_file)
         file_out.close()
