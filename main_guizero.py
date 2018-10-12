@@ -66,6 +66,7 @@ logger.info('KootNet Sensors - PC Control Center - Started')
 
 
 def set_about_text():
+    """ Loads and sets the about text from file. """
     try:
         local_file = open(app_about_location, 'r')
         new_text = local_file.read()
@@ -77,6 +78,7 @@ def set_about_text():
 
 
 def app_menu_open_log():
+    """ Opens the folder where the logs are kept. """
     logger.debug("Open Logs Folder")
     log_path = app_location_directory + "logs/"
     if platform.system() == "Windows":
@@ -88,18 +90,22 @@ def app_menu_open_log():
 
 
 def app_menu_open_config():
+    """ Open's the Configuration window. """
     window_config.show()
 
 
 def app_menu_open_commands():
+    """ Open's the Sensor Commands window. """
     window_sensor_commands.show()
 
 
 def app_menu_open_sensor_config():
+    """ Open's the Sensor Configuration window. """
     window_sensor_config.show()
 
 
 def app_menu_download_interval_db():
+    """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
     ip_list = check_sensors()
     threads = []
     download_to_location = filedialog.askdirectory()
@@ -117,6 +123,7 @@ def app_menu_download_interval_db():
 
 
 def app_menu_download_trigger_db():
+    """ Downloads the Trigger SQLite3 database to the chosen location, from the selected sensors. """
     ip_list = check_sensors()
     threads = []
     download_to_location = filedialog.askdirectory()
