@@ -26,8 +26,6 @@ from logging.handlers import RotatingFileHandler
 from tkinter import simpledialog
 from datetime import datetime
 from urllib.request import urlopen
-from tkinter import filedialog
-from guizero import info
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -121,40 +119,28 @@ def get_sensor_config(ip, net_timeout):
     return final_sensor_config
 
 
-def download_interval_db(ip_list):
-    j = filedialog.askdirectory()
-
-    for ip in ip_list:
-        try:
-            remote_database = urlopen("http://" + str(ip) + ":8009/SensorIntervalDatabase.sqlite")
-            local_file = open(j + "/SensorIntervalDatabase" + ip[-3:] + ".sqlite", 'wb')
-            local_file.write(remote_database.read())
-            remote_database.close()
-            local_file.close()
-            logger.info("Download Interval DB from " + ip + " Complete")
-        except Exception as error:
-            logger.error("Download Interval DB from " + str(ip) + " Failed: " + str(error))
-
-    info("Information", "Interval DataBase Download(s) Complete")
-    logger.debug("Interval DataBase Download(s) Complete")
+def download_interval_db(ip, download_to_location):
+    try:
+        remote_database = urlopen("http://" + ip + ":8009/SensorIntervalDatabase.sqlite")
+        local_file = open(download_to_location + "/SensorIntervalDatabase" + ip[-3:] + ".sqlite", 'wb')
+        local_file.write(remote_database.read())
+        remote_database.close()
+        local_file.close()
+        logger.info("Download Interval DB from " + ip + " Complete")
+    except Exception as error:
+        logger.error("Download Interval DB from " + ip + " Failed: " + str(error))
 
 
-def download_trigger_db(ip_list):
-    j = filedialog.askdirectory()
-
-    for ip in ip_list:
-        try:
-            remote_database = urlopen("http://" + str(ip) + ":8009/SensorTriggerDatabase.sqlite")
-            local_file = open(j + "/SensorTriggerDatabase" + ip[-3:] + ".sqlite", 'wb')
-            local_file.write(remote_database.read())
-            remote_database.close()
-            local_file.close()
-            logger.info("Download Trigger DB from " + ip + " Complete")
-        except Exception as error:
-            logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
-
-    info("Information", "Trigger DataBase Download(s) Complete")
-    logger.debug("Trigger DataBase Download(s) Complete")
+def download_trigger_db(ip, download_to_location):
+    try:
+        remote_database = urlopen("http://" + ip + ":8009/SensorTriggerDatabase.sqlite")
+        local_file = open(download_to_location + "/SensorTriggerDatabase" + ip[-3:] + ".sqlite", 'wb')
+        local_file.write(remote_database.read())
+        remote_database.close()
+        local_file.close()
+        logger.info("Download Trigger DB from " + ip + " Complete")
+    except Exception as error:
+        logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
 
 
 def upgrade_program_smb(ip):
