@@ -5,7 +5,7 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="2018-10-01T11:14:17.608000000"/>
-	<meta name="changed" content="2018-10-11T22:45:00.582000000"/>
+	<meta name="changed" content="2018-10-12T11:25:19.119000000"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.1in; background: transparent; line-height: 115% }
@@ -26,8 +26,7 @@ sensor supports Python3, the Raspberry Pi and you have a bit of
 Python knowledge. </font>
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">To
-make your own </span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">s</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">ensor,
-find the instructions on the </span></span></font></span></span><a href="http://kootenay-networks.com/?page_id=236">Programs
+make your own sensor, find the instructions on the </span></span></font></span></span><a href="http://kootenay-networks.com/?page_id=236">Programs
 Website</a><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">or
 in the Help menu of Kootnet Sensors &ndash; PC Control Center. </span></span></font></span></span>
@@ -48,6 +47,9 @@ on your keyboard to auto complete the command. For example, type sudo
 ./edit</i> <i>then hit the &lsquo;tab&rsquo; key to complete the
 line. </i></font>
 </p>
+<p style="margin-bottom: 0in; line-height: 100%"><br/>
+
+</p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
 ./edit_sensor_config.sh</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
@@ -58,6 +60,10 @@ Test</b></u></font></p>
 <p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
 This will print your configuration settings and a snapshot of the
 sensors readings to the screen. 
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br/>
+
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">python3
 test_sensors.py</span></p>
@@ -71,8 +77,11 @@ automatically start and restart them selves through systemd services.
 </p>
 <p style="margin-bottom: 0in; line-height: 100%">Run one or more of
 the following commands. Each line disables the corresponding service
-and stops it. To re-enable and start the services, run the command
-<span style="background: #dddddd">sudo ./edit_sensor_config.sh</span></p>
+and stops it. 
+</p>
+<p style="margin-bottom: 0in; line-height: 100%"><br/>
+
+</p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
 systemctl disable SensorCommands &amp;&amp; sudo systemctl stop
 SensorCommands</span></p>
@@ -85,12 +94,21 @@ SensorTrigger</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
+<p style="margin-bottom: 0in; line-height: 100%">To re-enable and
+start the services, run this command.  * Note: You don&rsquo;t
+actually have to change anything *</p>
+<p style="margin-bottom: 0in; line-height: 100%"><br/>
+<span style="background: #dddddd">sudo
+./edit_sensor_config.sh</span></p>
+<p style="margin-bottom: 0in; line-height: 100%"><br/>
+
+</p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Configuration
 &amp; Files</b></u></font></p>
 <p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
 <font size="3" style="font-size: 12pt">KootNet sensor program files
-are located in /home/sensors/</font></p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
+are located in /home/sensors/<br/>
+</font><br/>
 
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>zInstalled.txt</b>
@@ -104,13 +122,13 @@ are located in /home/sensors/</font></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><u><font size="4" style="font-size: 14pt"><b>Clean
-Upgrade Scripts</b></font></u></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Clean
+Upgrade Scripts</b></u></font></p>
 <p style="margin-bottom: 0in; font-variant: normal; font-style: normal; line-height: 100%">
 These 2x Upgrade scripts delete the sensor program directory<span style="text-decoration: none">
 </span><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/home/sensors/</span></font></span>
 &amp; scripts in <span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/</span></font></span>home/pi/
-then re-installs the programs.  The configuration and data files
+then re-installs the programs. The configuration and data files
 remain untouched. 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
@@ -120,18 +138,16 @@ remain untouched.
 = Clean HTTP upgrade</p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><span style="font-style: normal"><b>/home/pi/KootNetSensors/</b></span></span></span><span style="font-variant: normal"><span style="font-style: normal"><b>upgrade_smb_clean.sh</b></span></span>
 = Clean SMB (Windows share) upgrade</p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
-
-</p>
 <p style="margin-bottom: 0in; line-height: 100%"><i>**
-<b>upgrade_smb_clean.sh</b> ** <u>Requires:</u> Configuration in
-<span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/home/sensors/update_programs_smb.sh</span></font></span></i></p>
+</i><i><b>upgrade_smb_clean.sh</b></i><i> ** </i><i><u>Requires:</u></i><i>
+Configuration in </i><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">/home/sensors/update_programs_smb.sh</span></i></font></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
 </span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>upgrade_online_clean.sh</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
 </span></span></font></span></span><font size="3" style="font-size: 12pt"><i><u><span style="font-weight: normal">Optional:</span></u></i></font><span style="font-variant: normal"><span style="text-decoration: none">
-</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">modif</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">y</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">
-/home/sensors/update_programs_online.sh to use your own HTTP Server</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">modify</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">/home/sensors/update_programs_online.sh
+to use your own HTTP Server</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**</span></span></font></span></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
