@@ -152,6 +152,7 @@ def start_graph(graph_data):
                 graph_data.sql_data_blue = sql_column_data
             else:
                 logger.error(var_column + " - Does Not Exist")
+
     elif graph_data.graph_table == "TriggerData":
         for var_column in graph_data.graph_columns:
             var_sql_query = "SELECT " + \
@@ -252,28 +253,23 @@ def get_sql_data(graph_interval_data, sql_command):
     try:
         conn = sqlite3.connect(str(graph_interval_data.db_location))
         c = conn.cursor()
+        c.execute(sql_command)
+        sql_column_data = c.fetchall()
 
-        try:
-            c.execute(sql_command)
-            sql_column_data = c.fetchall()
-            count = 0
-            skip_count = 0
-            for data in sql_column_data:
-                if skip_count >= int(graph_interval_data.skip_sql):
-                    return_data.append(str(data)[2:-3])
-                    skip_count = 0
+        count = 0
+        skip_count = 0
+        for data in sql_column_data:
+            if skip_count >= int(graph_interval_data.skip_sql):
+                return_data.append(str(data)[2:-3])
+                skip_count = 0
 
-                skip_count = skip_count + 1
-                count = count + 1
+            skip_count = skip_count + 1
+            count = count + 1
 
-            c.close()
-            conn.close()
-
-        except Exception as error:
-            logger.error("Failed SQL Query Failed: " + str(error))
-
+        c.close()
+        conn.close()
     except Exception as error:
-        logger.error("Failed DB Connection: " + str(error))
+        logger.error("DB Error: " + str(error))
 
     logger.debug("SQL execute Command: " + str(sql_command))
     logger.debug("SQL Column Data Length: " + str(len(return_data)))
@@ -487,10 +483,10 @@ def trace_graph(graph_interval_data):
 
         try:
             plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
-            logger.debug("Interval Graph Creation - OK")
+            logger.debug("Graph Creation - OK")
         except Exception as error:
-            logger.error("Interval Graph Creation - Failed - " + str(error))
-            warn("Error", "Graph Failed - " + str(error))
+            logger.error("Graph Creation - Failed - " + str(error))
+            warn("Graph Failed", str(error))
     else:
         logger.error("Interval Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
         warn("Error", "No SQL Data to Graph")
