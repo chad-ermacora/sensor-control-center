@@ -134,28 +134,34 @@ def app_menu_download_trigger_db():
 
 
 def app_menu_open_graph():
+    """ Open the graphing window. """
     window_graph_interval.show()
 
 
 def app_menu_open_website():
+    """ Open the program's Website. """
     app_reports.open_url("http://kootenay-networks.com/?page_id=170")
 
 
 def app_menu_open_about():
+    """ Open the About window. """
     window_app_about.show()
 
 
 def app_menu_open_build_sensor():
+    """ Open the help file for building a Sensor Unit. """
     help_file_location = app_location_directory + "additional_files/BuildSensors.html"
     app_reports.open_html(help_file_location)
 
 
 def app_menu_open_sensor_help():
+    """ Open the help file for Sensor Units. """
     help_file_location = app_location_directory + "additional_files/SensorUnitHelp.html"
     app_reports.open_html(help_file_location)
 
 
 def app_check_all_ip_checkboxes(var_column):
+    """ Check or uncheck all IP checkboxes on the column provided. """
     if var_column == 1:
         if app_checkbox_all_column1.value == 1:
             app_checkbox_ip1.value = 1
@@ -198,6 +204,7 @@ def app_check_all_ip_checkboxes(var_column):
 
 
 def worker_sensor_check(net_timeout):
+    """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
     while not sensor_ip_queue.empty():
         ip = sensor_ip_queue.get()
         data = [ip, sensor_commands.check_online_status(ip, net_timeout)]
@@ -207,6 +214,11 @@ def worker_sensor_check(net_timeout):
 
 
 def check_sensors():
+    """
+    Checks sensor online status and changes the programs IP textbox depending on the returned results.
+
+    The sensor checks are Threaded by the IP's provided in the IP list.
+    """
     ip_list = get_checked_ip()
     ip_list_final = []
     net_timeout = int(config_textbox_network_check.value)
@@ -315,6 +327,7 @@ def check_sensors():
 
 # Returns selected IP's from Main App Window & Re-Sets unselected IP background to white
 def get_checked_ip():
+    """ Returns a list of all checked IP's, skipping duplicates """
     checkbox_ip_list = []
 
     if app_checkbox_ip1.value == 1 and app_textbox_ip1.value not in checkbox_ip_list:
@@ -401,17 +414,20 @@ def get_checked_ip():
     return checkbox_ip_list
 
 
-def app_sensor_details_report():
+def app_sensor_system_report():
+    """ Create a HTML sensor System Report containing each IP selected and online. """
     var_ip_list = check_sensors()
     app_reports.sensor_html_report(var_ip_list, "SystemDetails")
 
 
 def app_sensor_config_report():
+    """ Create a HTML sensor Configuration Report containing each IP selected and online. """
     var_ip_list = check_sensors()
     app_reports.sensor_html_report(var_ip_list, "ConfigurationDetails")
 
 
 def config_button_save():
+    """ Save the programs Configuration and IP list to file """
     logger.debug("Applying Configuration & Saving to File")
 
     config_settings = app_config.CreateConfigSettings()
@@ -450,6 +466,7 @@ def config_button_save():
 
 
 def set_config(config_settings):
+    """ Sets the programs Configuration to the provided settings. """
     final_config_settings = app_config.check_config(config_settings)
 
     try:
@@ -491,6 +508,7 @@ def set_config(config_settings):
 
 
 def config_button_save_directory():
+    """ Sets where the programs saves HTML graphs and Reports. """
     save_to = filedialog.askdirectory()
 
     if len(save_to) > 1:
@@ -822,7 +840,7 @@ app_button_check_sensor = PushButton(app,
 
 app_button_sensor_detail = PushButton(app,
                                       text="View Sensors\nSystem Report",
-                                      command=app_sensor_details_report,
+                                      command=app_sensor_system_report,
                                       grid=[2, 15, 2, 1],
                                       align="right")
 

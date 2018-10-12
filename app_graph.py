@@ -41,6 +41,7 @@ logger.addHandler(stream_handler)
 
 
 class CreateGraphData:
+    """ Creates an object to hold all the data needed for a graph. """
     logger.debug("CreateGraphData Instance Created")
 
     def __init__(self):
@@ -208,6 +209,11 @@ def start_graph(graph_data):
 
 
 def adjust_interval_datetime(var_datetime, time_offset):
+    """
+    Adjusts the provided datetime by the provided hour offset and returns the result.
+
+    Used for graph datetime's accurate to 1 second
+    """
     try:
         var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
     except Exception as error:
@@ -224,6 +230,11 @@ def adjust_interval_datetime(var_datetime, time_offset):
 
 
 def adjust_trigger_datetime(var_datetime, time_offset):
+    """
+    Adjusts the provided datetime by the provided hour offset and returns the result.
+
+    Used for graph datetime's accurate to 0.001 second
+    """
     tmp_ms = ""
     if len(var_datetime) > 19:
         try:
@@ -248,6 +259,7 @@ def adjust_trigger_datetime(var_datetime, time_offset):
 
 
 def get_sql_data(graph_interval_data, sql_command):
+    """ Execute SQLite3 command and return the results. """
     return_data = []
 
     try:
@@ -277,6 +289,7 @@ def get_sql_data(graph_interval_data, sql_command):
 
 
 def trace_graph(graph_interval_data):
+    """ Create and open a HTML offline Plotly graph with the data provided. """
     sub_plots = []
     row_count = 0
     graph_collection = []
