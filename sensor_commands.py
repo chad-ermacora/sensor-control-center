@@ -45,6 +45,7 @@ config_file = app_location_directory + "config.txt"
 
 
 def check_online_status(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor status. """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -62,6 +63,7 @@ def check_online_status(ip, net_timeout):
 
 
 def get_system_info(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor system information. """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -80,6 +82,7 @@ def get_system_info(ip, net_timeout):
 
 
 def get_sensor_config(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor configuration. """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock_g2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -120,6 +123,7 @@ def get_sensor_config(ip, net_timeout):
 
 
 def download_interval_db(ip, download_to_location):
+    """ Socket connection to sensor IP. Download Interval SQLite3 database. """
     try:
         remote_database = urlopen("http://" + ip + ":8009/SensorIntervalDatabase.sqlite")
         local_file = open(download_to_location + "/SensorIntervalDatabase" + ip[-3:] + ".sqlite", 'wb')
@@ -132,6 +136,7 @@ def download_interval_db(ip, download_to_location):
 
 
 def download_trigger_db(ip, download_to_location):
+    """ Socket connection to sensor IP. Download Trigger SQLite3 database. """
     try:
         remote_database = urlopen("http://" + ip + ":8009/SensorTriggerDatabase.sqlite")
         local_file = open(download_to_location + "/SensorTriggerDatabase" + ip[-3:] + ".sqlite", 'wb')
@@ -144,6 +149,7 @@ def download_trigger_db(ip, download_to_location):
 
 
 def upgrade_program_smb(ip):
+    """ Socket connection to sensor IP. Send command to initiate SMB Upgrade Script. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -156,6 +162,7 @@ def upgrade_program_smb(ip):
 
 
 def upgrade_program_online(ip):
+    """ Socket connection to sensor IP. Send command to initiate HTTP Upgrade Script. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -168,6 +175,7 @@ def upgrade_program_online(ip):
 
 
 def upgrade_os_linux(ip):
+    """ Socket connection to sensor IP. Send command to initiate Operating System upgrade. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -180,6 +188,7 @@ def upgrade_os_linux(ip):
 
 
 def reboot_sensor(ip):
+    """ Socket connection to sensor IP. Send command to initiate a system reboot. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -192,6 +201,7 @@ def reboot_sensor(ip):
 
 
 def shutdown_sensor(ip):
+    """ Socket connection to sensor IP. Send command to initiate system shutdown. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -204,6 +214,7 @@ def shutdown_sensor(ip):
 
 
 def restart_services(ip):
+    """ Socket connection to sensor IP. Send command to initiate KootNet Sensor services restart. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -216,6 +227,7 @@ def restart_services(ip):
 
 
 def set_hostname(ip):
+    """ Socket connection to sensor IP. Send command to update the system hostname. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tmp_hostname = simpledialog.askstring(str(ip), "New Hostname: ")
 
@@ -238,6 +250,7 @@ def set_hostname(ip):
 
 
 def set_datetime(ip):
+    """ Socket connection to sensor IP. Send command to set the sensors date and time to match the computers. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     new_datetime = datetime.now().strftime("%Y-%m-%d%H:%M:%S")
     logger.debug(new_datetime)
@@ -253,6 +266,7 @@ def set_datetime(ip):
 
 
 def set_sensor_config(ip, str_config):
+    """ Socket connection to sensor IP. Send command set the sensor Configuration. """
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     str_config = "SetConfiguration" + str_config
 
