@@ -27,7 +27,7 @@ CRITICAL - A serious error, indicating that the program itself may be unable to 
 """
 import app_config
 import sensor_commands
-import app_imports
+import app_reports
 import app_graph
 import os
 import sys
@@ -101,12 +101,36 @@ def app_menu_open_sensor_config():
 
 def app_menu_download_interval_db():
     ip_list = check_sensors()
-    sensor_commands.download_interval_db(ip_list)
+    threads = []
+    download_to_location = filedialog.askdirectory()
+
+    for ip in ip_list:
+        threads.append(Thread(target=sensor_commands.download_interval_db, args=[ip, download_to_location]))
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    info("Downloads", "Interval Database Downloads Complete")
 
 
 def app_menu_download_trigger_db():
     ip_list = check_sensors()
-    sensor_commands.download_trigger_db(ip_list)
+    threads = []
+    download_to_location = filedialog.askdirectory()
+
+    for ip in ip_list:
+        threads.append(Thread(target=sensor_commands.download_trigger_db, args=[ip, download_to_location]))
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    info("Downloads", "Trigger Database Downloads Complete")
 
 
 def app_menu_open_graph():
@@ -114,7 +138,7 @@ def app_menu_open_graph():
 
 
 def app_menu_open_website():
-    app_imports.open_url("http://kootenay-networks.com/?page_id=170")
+    app_reports.open_url("http://kootenay-networks.com/?page_id=170")
 
 
 def app_menu_open_about():
@@ -123,12 +147,12 @@ def app_menu_open_about():
 
 def app_menu_open_build_sensor():
     help_file_location = app_location_directory + "additional_files/BuildSensors.html"
-    app_imports.open_html(help_file_location)
+    app_reports.open_html(help_file_location)
 
 
 def app_menu_open_sensor_help():
     help_file_location = app_location_directory + "additional_files/SensorUnitHelp.html"
-    app_imports.open_html(help_file_location)
+    app_reports.open_html(help_file_location)
 
 
 def app_check_all_ip_checkboxes(var_column):
@@ -173,8 +197,8 @@ def app_check_all_ip_checkboxes(var_column):
             app_checkbox_ip16.value = 0
 
 
-def sensor_check_worker(net_timeout):
-    while True:
+def worker_sensor_check(net_timeout):
+    while not sensor_ip_queue.empty():
         ip = sensor_ip_queue.get()
         data = [ip, sensor_commands.check_online_status(ip, net_timeout)]
 
@@ -186,13 +210,18 @@ def check_sensors():
     ip_list = get_checked_ip()
     ip_list_final = []
     net_timeout = int(config_textbox_network_check.value)
-    num_workers = len(ip_list)
     sensor_data_pool = []
+    threads = []
 
-    threads = [Thread(target=sensor_check_worker, args=[net_timeout]) for _ in range(num_workers)]
-    [sensor_ip_queue.put(ip) for ip in ip_list]
-    [thread.start() for thread in threads]
-    sensor_ip_queue.join()
+    for ip in ip_list:
+        threads.append(Thread(target=worker_sensor_check, args=[net_timeout]))
+        sensor_ip_queue.put(ip)
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
 
     while not sensor_data_queue.empty():
         sensor_data_pool.append(sensor_data_queue.get())
@@ -374,12 +403,12 @@ def get_checked_ip():
 
 def app_sensor_details_report():
     var_ip_list = check_sensors()
-    app_imports.sensor_html_report(var_ip_list, "SystemDetails")
+    app_reports.sensor_html_report(var_ip_list, "SystemDetails")
 
 
 def app_sensor_config_report():
     var_ip_list = check_sensors()
-    app_imports.sensor_html_report(var_ip_list, "ConfigurationDetails")
+    app_reports.sensor_html_report(var_ip_list, "ConfigurationDetails")
 
 
 def config_button_save():
@@ -1303,7 +1332,7 @@ graph_checkbox_gyro = CheckBox(window_graph_interval,
                                align="left")
 
 graph_button_sensors = PushButton(window_graph_interval,
-                                  text="Graph\nSensors",
+                                  text="Open Database &\nGraph Sensors",
                                   command=graph_button_interval,
                                   grid=[1, 18, 2, 1],
                                   align="bottom")
