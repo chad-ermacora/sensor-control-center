@@ -5,7 +5,7 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="2018-10-01T11:14:17.608000000"/>
-	<meta name="changed" content="2018-10-07T20:26:28.327000000"/>
+	<meta name="changed" content="2018-10-11T22:45:00.582000000"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.1in; background: transparent; line-height: 115% }
@@ -20,14 +20,14 @@ KootNet Sensor Units</b></u></font></p>
 </p>
 <p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
 <font size="3" style="font-size: 12pt">As of right now, a Raspberry
-Pi is required at the very least with the option of adding supported
-Sensors. Additional Sensor support can be added fairly easily so long
-as the Sensor supports Python3, the Raspberry Pi and you have a bit
-of Python knowledge. I have yet to add a section on adding your own
-sensor support. </font>
+Pi is required with the option of adding supported sensors.
+Additional sensor support can be added fairly easily so long as the
+sensor supports Python3, the Raspberry Pi and you have a bit of
+Python knowledge. </font>
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">To
-make your own Sensor, find the instructions on the </span></span></font></span></span><a href="http://kootenay-networks.com/?page_id=236">Programs
+make your own </span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">s</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">ensor,
+find the instructions on the </span></span></font></span></span><a href="http://kootenay-networks.com/?page_id=236">Programs
 Website</a><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">or
 in the Help menu of Kootnet Sensors &ndash; PC Control Center. </span></span></font></span></span>
@@ -39,8 +39,8 @@ in the Help menu of Kootnet Sensors &ndash; PC Control Center. </span></span></f
 the Sensor</b></u></font></p>
 <p style="margin-bottom: 0in; line-height: 100%">This will open and
 allow you to edit all the configuration files, one after another,
-then restart the sensor programs and print to screen the current
-configuration and run sensor tests. 
+then it restarts the sensor services and runs a sensor test (See
+Sensor Test below). 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><font size="2" style="font-size: 11pt"><i>Note:
 You can type in part of a command, then hit the &lsquo;tab&rsquo; key
@@ -53,13 +53,11 @@ line. </i></font>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Test
-the Sensor</b></u></font></p>
+<p style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Sensor
+Test</b></u></font></p>
 <p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
-This will test the currently selected sensors in your configuration.
-If all is working well, it will grab the readings off the sensors and
-print them on the screen. If somethings wrong, it will either print
-an error and or all 0 for the data readings. 
+This will print your configuration settings and a snapshot of the
+sensors readings to the screen. 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">python3
 test_sensors.py</span></p>
@@ -68,15 +66,13 @@ test_sensors.py</span></p>
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b><span style="background: transparent">Program
 Auto Start</span></b></u></font></p>
-<p style="margin-bottom: 0in; line-height: 100%">The Sensor programs
-automatically start and restart them selves through systemd Services.
+<p style="margin-bottom: 0in; line-height: 100%">The sensor programs
+automatically start and restart them selves through systemd services.
 </p>
 <p style="margin-bottom: 0in; line-height: 100%">Run one or more of
-the following commands. Each line disables the corresponding program
-and stops it. To re-enable auto start and start the programs, run the
-command for Re-Configuring your Sensor<span style="background: transparent">.
-</span>
-</p>
+the following commands. Each line disables the corresponding service
+and stops it. To re-enable and start the services, run the command
+<span style="background: #dddddd">sudo ./edit_sensor_config.sh</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
 systemctl disable SensorCommands &amp;&amp; sudo systemctl stop
 SensorCommands</span></p>
@@ -92,52 +88,50 @@ SensorTrigger</span></p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Configuration
 &amp; Files</b></u></font></p>
 <p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt">KootNet Sensor program files
-are located in /home/sensors/.</font></p>
+<font size="3" style="font-size: 12pt">KootNet sensor program files
+are located in /home/sensors/</font></p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>zInstalled.txt</b>
-= When the Sensors was setup</p>
+= When the sensors was setup</p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>LastUpdated.txt</b>
-= When and how the Sensor was last updated</p>
+= When and how the sensor was last updated</p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>installed_sensors.txt</b>
-= Supported and enabled Sensors</p>
+= Supported and enabled sensors</p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>config.txt</b>
 = Sensor configuration</p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><u>&ldquo;<font size="4" style="font-size: 14pt"><b>Clean
-Upgrade&rdquo; Scripts</b></font></u></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><u><font size="4" style="font-size: 14pt"><b>Clean
+Upgrade Scripts</b></font></u></p>
 <p style="margin-bottom: 0in; font-variant: normal; font-style: normal; line-height: 100%">
-These 2x Upgrades scripts delete the program directory<span style="text-decoration: none">
+These 2x Upgrade scripts delete the sensor program directory<span style="text-decoration: none">
 </span><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/home/sensors/</span></font></span>
 &amp; scripts in <span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/</span></font></span>home/pi/
-then re-installs the programs, while keeping the configuration and
-data files. 
+then re-installs the programs.  The configuration and data files
+remain untouched. 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>upgrade_online_clean.sh</b>
-= Clean HTTP Upgrade</p>
+= Clean HTTP upgrade</p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><span style="font-style: normal"><b>/home/pi/KootNetSensors/</b></span></span></span><span style="font-variant: normal"><span style="font-style: normal"><b>upgrade_smb_clean.sh</b></span></span>
-= Clean SMB (Windows Share) Upgrade</p>
+= Clean SMB (Windows share) upgrade</p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><i>**
-<b>upgrade_smb_clean.sh</b> ** <u>Requires:</u>
-<span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/home/sensors/update_programs_smb.sh
-to be c</span></font></span>onfigured</i></p>
+<b>upgrade_smb_clean.sh</b> ** <u>Requires:</u> Configuration in
+<span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/home/sensors/update_programs_smb.sh</span></font></span></i></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
 </span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>upgrade_online_clean.sh</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
 </span></span></font></span></span><font size="3" style="font-size: 12pt"><i><u><span style="font-weight: normal">Optional:</span></u></i></font><span style="font-variant: normal"><span style="text-decoration: none">
-</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">can
-modified /home/sensors/update_programs_online.sh to use your own HTTP
-Server</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">modif</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">y</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">
+/home/sensors/update_programs_online.sh to use your own HTTP Server</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**</span></span></font></span></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
@@ -158,7 +152,7 @@ Files</b></u></font></p>
 <p style="margin-bottom: 0in; line-height: 100%"><b>Sensor_Commands_log.txt</b>
 = Contains Network Command operations and errors</p>
 <p style="margin-bottom: 0in; line-height: 100%"><b>Sensors_log.txt</b>
-= Contains Sensor errors</p>
+= Contains sensor hardware errors</p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
