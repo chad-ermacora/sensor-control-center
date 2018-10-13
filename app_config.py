@@ -43,6 +43,7 @@ config_file = str(os.path.dirname(os.path.realpath(__file__))) + "/config.txt"
 
 
 class CreateConfigSettings:
+    """ Creates a object holding all the Control Centers default configuration options. """
 
     def __init__(self):
         self.save_to = str(os.path.expanduser('~/Desktop/')).replace('\\', '/')
@@ -62,6 +63,7 @@ class CreateConfigSettings:
 
 
 def load_file():
+    """ Loads the Control Center configurations from file and returns the settings. """
     config_settings = CreateConfigSettings()
 
     try:
@@ -100,14 +102,19 @@ def load_file():
                 count = count + 1
 
         logger.debug("Configuration File Load - OK")
-        return config_settings
 
     except Exception as error:
         logger.warning("Configuration File Load Failed - Using All or Some Defaults: " + str(error))
-        return config_settings
+
+    return config_settings
 
 
 def check_config(config_settings):
+    """
+    Checks the provided Control Center configuration for validity and returns it.
+
+    Invalid options are replaced with defaults.
+    """
     logger.debug("Checking Configuration Settings")
     default_settings = CreateConfigSettings()
 
@@ -193,6 +200,7 @@ def check_config(config_settings):
 
 
 def save_config_to_file(temp_config_settings):
+    """ Saves provided Control Center configuration to file. """
     config_settings = check_config(temp_config_settings)
 
     var_final_write = str(config_settings.save_to)
