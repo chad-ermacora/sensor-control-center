@@ -17,17 +17,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import sys
 import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
+
+script_directory = str(os.path.dirname(os.path.realpath(__file__)))
+
+if not os.path.exists(os.path.dirname(script_directory + "/logs/")):
+    os.makedirs(os.path.dirname(script_directory + "/logs/"))
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
@@ -35,15 +39,13 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
-config_file = app_location_directory + "config.txt"
+config_file = str(os.path.dirname(os.path.realpath(__file__))) + "/config.txt"
 
 
 class CreateConfigSettings:
 
     def __init__(self):
-        save_to = str(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop\\'))
-        self.save_to = save_to.replace('\\', '/')
+        self.save_to = str(os.path.expanduser('~/Desktop/')).replace('\\', '/')
         self.graph_start = "2018-09-12 00:00:01"
         self.graph_end = "2200-01-01 00:00:01"
         self.time_offset = "-7"

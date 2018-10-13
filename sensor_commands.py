@@ -18,21 +18,22 @@
 """
 import socket
 import pickle
-import os
-import sys
 import re
+import os
 import logging
 from logging.handlers import RotatingFileHandler
 from tkinter import simpledialog
 from datetime import datetime
 from urllib.request import urlopen
 
+script_directory = str(os.path.dirname(os.path.realpath(__file__)))
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/Sensor_Commands_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/Sensor_Commands_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
@@ -40,8 +41,7 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
-config_file = app_location_directory + "config.txt"
+config_file = "config.txt"
 
 
 def check_online_status(ip, net_timeout):

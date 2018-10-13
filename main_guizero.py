@@ -24,14 +24,14 @@ WARNING - An indication that something unexpected happened, or indicative of som
 ERROR - Due to a more serious problem, the software has not been able to perform some function.
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
+import os
+import platform
+import subprocess
+import webbrowser
 import app_config
 import sensor_commands
 import app_reports
 import app_graph
-import os
-import sys
-import platform
-import subprocess
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, ButtonGroup
 from tkinter import filedialog
 from threading import Thread
@@ -39,12 +39,14 @@ from queue import Queue
 import logging
 from logging.handlers import RotatingFileHandler
 
+script_directory = str(os.path.dirname(os.path.realpath(__file__)))
+
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -53,11 +55,9 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
-config_file = app_location_directory + "/config.txt"
+config_file = script_directory + "/config.txt"
 app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.1"
-app_about_location = app_location_directory + "/additional_files/about_text.txt"
-
+about_text = script_directory + "/additional_files/about_text.txt"
 sensor_ip_queue = Queue()
 sensor_data_queue = Queue()
 
@@ -65,7 +65,7 @@ sensor_data_queue = Queue()
 def set_about_text():
     """ Loads and sets the about text from file. """
     try:
-        local_file = open(app_about_location, 'r')
+        local_file = open(about_text, 'r')
         new_text = local_file.read()
         local_file.close()
         about_textbox.value = new_text
@@ -74,10 +74,18 @@ def set_about_text():
         logger.error("About Text Load - Failed: " + str(error))
 
 
+def app_exit():
+    log_handlers = logger.handlers[:]
+    for handler in log_handlers:
+        handler.close()
+        logger.removeHandler(handler)
+    app.destroy()
+
+
 def app_menu_open_log():
     """ Opens the folder where the logs are kept. """
     logger.debug("Open Logs Folder")
-    log_path = app_location_directory + "logs/"
+    log_path = script_directory + "/logs/"
     if platform.system() == "Windows":
         os.startfile(log_path)
     elif platform.system() == "Darwin":
@@ -139,12 +147,7 @@ def app_menu_download_trigger_db():
 
 def app_menu_open_graph():
     """ Open the graphing window. """
-    window_graph_interval.show()
-
-
-def app_menu_open_website():
-    """ Open the program's Website. """
-    app_reports.open_url("http://kootenay-networks.com/?page_id=170")
+    window_graph_plotly.show()
 
 
 def app_menu_open_about():
@@ -152,16 +155,21 @@ def app_menu_open_about():
     window_app_about.show()
 
 
+def app_menu_open_website():
+    """ Open the program's Website. """
+    webbrowser.open_new_tab("http://kootenay-networks.com/?page_id=170")
+
+
 def app_menu_open_build_sensor():
     """ Open the help file for building a Sensor Unit. """
-    help_file_location = app_location_directory + "additional_files/BuildSensors.html"
-    app_reports.open_html(help_file_location)
+    help_file_location = str(os.path.dirname(os.path.realpath(__file__))) + "/additional_files/BuildSensors.html"
+    webbrowser.open_new_tab(help_file_location)
 
 
 def app_menu_open_sensor_help():
     """ Open the help file for Sensor Units. """
-    help_file_location = app_location_directory + "additional_files/SensorUnitHelp.html"
-    app_reports.open_html(help_file_location)
+    help_file_location = str(os.path.dirname(os.path.realpath(__file__))) + "/additional_files/SensorUnitHelp.html"
+    webbrowser.open_new_tab(help_file_location)
 
 
 def app_check_all_ip_checkboxes(var_column):
@@ -783,12 +791,12 @@ window_config = Window(app,
                        layout="grid",
                        visible=False)
 
-window_graph_interval = Window(app,
-                               title="Plotly Graphing",
-                               width=270,
-                               height=410,
-                               layout="grid",
-                               visible=False)
+window_graph_plotly = Window(app,
+                             title="Plotly Graphing",
+                             width=270,
+                             height=410,
+                             layout="grid",
+                             visible=False)
 
 window_sensor_commands = Window(app,
                                 title="Sensor Commands",
@@ -1218,142 +1226,142 @@ config_textbox_network_details = TextBox(window_config,
                                          align="top")
 
 # Graph Window Section
-graph_text_start = Text(window_graph_interval,
+graph_text_start = Text(window_graph_plotly,
                         text="Start DateTime: ",
                         color='green',
                         grid=[1, 2],
                         align="left")
 
-graph_textbox_start = TextBox(window_graph_interval,
+graph_textbox_start = TextBox(window_graph_plotly,
                               text="",
                               width=20,
                               grid=[2, 2],
                               align="left")
 
-graph_text_end = Text(window_graph_interval,
+graph_text_end = Text(window_graph_plotly,
                       text="End DateTime:",
                       color='green',
                       grid=[1, 3],
                       align="left")
 
-graph_textbox_end = TextBox(window_graph_interval,
+graph_textbox_end = TextBox(window_graph_plotly,
                             text="",
                             width=20,
                             grid=[2, 3],
                             align="left")
 
-graph_text_sql_skip = Text(window_graph_interval,
+graph_text_sql_skip = Text(window_graph_plotly,
                            text="Add row every:",
                            color='green',
                            grid=[1, 4],
                            align="left")
 
-graph_textbox_sql_skip = TextBox(window_graph_interval,
+graph_textbox_sql_skip = TextBox(window_graph_plotly,
                                  text="",
                                  width=10,
                                  grid=[2, 4],
                                  align="left")
 
-graph_text_sql_skip2 = Text(window_graph_interval,
+graph_text_sql_skip2 = Text(window_graph_plotly,
                             text="rows    ",
                             color='green',
                             grid=[2, 4],
                             align="right")
 
-graph_text_temperature_offset = Text(window_graph_interval,
+graph_text_temperature_offset = Text(window_graph_plotly,
                                      text="Environmental:",
                                      color='green',
                                      grid=[1, 5],
                                      align="left")
 
-graph_textbox_temperature_offset = TextBox(window_graph_interval,
+graph_textbox_temperature_offset = TextBox(window_graph_plotly,
                                            text="",
                                            width=4,
                                            grid=[2, 5],
                                            align="left")
 
-graph_text_temperature_offset2 = Text(window_graph_interval,
+graph_text_temperature_offset2 = Text(window_graph_plotly,
                                       text="Temp Offset",
                                       color='green',
                                       grid=[2, 5],
                                       align="right")
 
-graph_text_sensor_type_space = Text(window_graph_interval,
+graph_text_sensor_type_space = Text(window_graph_plotly,
                                     text=" ",
                                     grid=[1, 6],
                                     align="right")
 
-graph_text_sensor_type_name = Text(window_graph_interval,
+graph_text_sensor_type_name = Text(window_graph_plotly,
                                    text="Database Type",
                                    color='blue',
                                    grid=[1, 7, 2, 1],
                                    align="top")
 
-graph_radio_sensor_type = ButtonGroup(window_graph_interval,
+graph_radio_sensor_type = ButtonGroup(window_graph_plotly,
                                       options=["Interval", "Trigger"],
                                       horizontal="True",
                                       command=graph_radio_selection,
                                       grid=[1, 8, 2, 1],
                                       align="top")
 
-graph_text_column_selection = Text(window_graph_interval,
+graph_text_column_selection = Text(window_graph_plotly,
                                    text="Interval Sensors",
                                    color='blue',
                                    grid=[1, 10, 2, 1],
                                    align="top")
 
-graph_checkbox_up_time = CheckBox(window_graph_interval,
+graph_checkbox_up_time = CheckBox(window_graph_plotly,
                                   text="System Uptime",
                                   grid=[1, 11],
                                   align="left")
 
-graph_checkbox_temperature = CheckBox(window_graph_interval,
+graph_checkbox_temperature = CheckBox(window_graph_plotly,
                                       text="Temperature",
                                       grid=[1, 12],
                                       align="left")
 
-graph_checkbox_pressure = CheckBox(window_graph_interval,
+graph_checkbox_pressure = CheckBox(window_graph_plotly,
                                    text="Pressure",
                                    grid=[1, 13],
                                    align="left")
 
-graph_checkbox_humidity = CheckBox(window_graph_interval,
+graph_checkbox_humidity = CheckBox(window_graph_plotly,
                                    text="Humidity",
                                    grid=[2, 11],
                                    align="left")
 
-graph_checkbox_lumen = CheckBox(window_graph_interval,
+graph_checkbox_lumen = CheckBox(window_graph_plotly,
                                 text="Lumen",
                                 grid=[2, 12],
                                 align="left")
 
-graph_checkbox_colour = CheckBox(window_graph_interval,
+graph_checkbox_colour = CheckBox(window_graph_plotly,
                                  text="Colour RGB",
                                  grid=[2, 13],
                                  align="left")
 
-graph_text_column_selection2 = Text(window_graph_interval,
+graph_text_column_selection2 = Text(window_graph_plotly,
                                     text="Trigger Sensors",
                                     color='blue',
                                     grid=[1, 14, 2, 1],
                                     align="bottom")
 
-graph_checkbox_acc = CheckBox(window_graph_interval,
+graph_checkbox_acc = CheckBox(window_graph_plotly,
                               text="Accelerometer XYZ",
                               grid=[1, 15],
                               align="left")
 
-graph_checkbox_mag = CheckBox(window_graph_interval,
+graph_checkbox_mag = CheckBox(window_graph_plotly,
                               text="Magnetometer XYZ",
                               grid=[2, 15],
                               align="left")
 
-graph_checkbox_gyro = CheckBox(window_graph_interval,
+graph_checkbox_gyro = CheckBox(window_graph_plotly,
                                text="Gyroscopic XYZ",
                                grid=[1, 16],
                                align="left")
 
-graph_button_sensors = PushButton(window_graph_interval,
+graph_button_sensors = PushButton(window_graph_plotly,
                                   text="Open Database &\nGraph Sensors",
                                   command=graph_button_interval,
                                   grid=[1, 18, 2, 1],
@@ -1517,9 +1525,25 @@ sensor_config_button_set_config = PushButton(window_sensor_config,
                                              align="right")
 
 # Add extra tk options to windows
-app.tk.iconbitmap(default="additional_files/icon.ico")
+if platform.system() == "Windows":
+    app.tk.iconbitmap("additional_files/icon.ico")
+elif platform.system() == "Linux":
+    app.width = 490
+    app.height = 250
+    window_config.width = 675
+    window_config.height = 275
+    window_graph_plotly.width = 325
+    window_graph_plotly.height = 360
+    window_sensor_config.width = 365
+    window_sensor_config.height = 240
+    window_sensor_commands.width = 300
+    window_sensor_commands.height = 260
+    window_app_about.width = 580
+    window_app_about.height = 300
+
+app.on_close(app_exit)
 app.tk.resizable(False, False)
-window_graph_interval.tk.resizable(False, False)
+window_graph_plotly.tk.resizable(False, False)
 window_sensor_commands.tk.resizable(False, False)
 window_sensor_config.tk.resizable(False, False)
 window_app_about.tk.resizable(False, False)
@@ -1548,8 +1572,15 @@ set_about_text()
 about_textbox.disable()
 config_textbox_save_to.disable()
 
-loaded_config_settings = app_config.load_file()
-set_config(loaded_config_settings)
+if os.path.isfile(config_file):
+    loaded_config_settings = app_config.load_file()
+    set_config(loaded_config_settings)
+else:
+    logger.info('No Configuration File Found - Creating Default')
+    default_config = app_config.CreateConfigSettings()
+    default_config = app_config.check_config(default_config)
+    app_config.save_config_to_file(default_config)
+    set_config(default_config)
 
 # Start the App
 logger.info('KootNet Sensors - PC Control Center - Started')

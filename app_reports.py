@@ -17,19 +17,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import webbrowser
-import sys
 import os
 import logging
 from sensor_commands import get_system_info, get_sensor_config
 from app_config import load_file as load_config
 from logging.handlers import RotatingFileHandler
 
+script_directory = str(os.path.dirname(os.path.realpath(__file__)))
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
@@ -37,13 +38,12 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
-html_template_system1 = "additional_files/html_template_system1.html"
-html_template_system2 = "additional_files/html_template_system2.html"
-html_template_system3 = "additional_files/html_template_system3.html"
-html_template_config1 = "additional_files/html_template_config1.html"
-html_template_config2 = "additional_files/html_template_config2.html"
-html_template_config3 = "additional_files/html_template_config3.html"
+html_template_system1 = script_directory + "/additional_files/html_template_system1.html"
+html_template_system2 = script_directory + "/additional_files/html_template_system2.html"
+html_template_system3 = script_directory + "/additional_files/html_template_system3.html"
+html_template_config1 = script_directory + "/additional_files/html_template_config1.html"
+html_template_config2 = script_directory + "/additional_files/html_template_config2.html"
+html_template_config3 = script_directory + "/additional_files/html_template_config3.html"
 
 
 def html_system_codes():
@@ -82,15 +82,10 @@ def html_config_codes():
 
 def open_html(outfile):
     try:
-        file_var = "file:///" + outfile
-        webbrowser.open(file_var, new=2)
+        webbrowser.open_new_tab("file:///" + outfile)
         logger.debug("Graph HTML File Opened - OK")
     except Exception as error:
         logger.error("Graph HTML File Opened - Failed - " + str(error))
-
-
-def open_url(url):
-    webbrowser.open(url)
 
 
 def sensor_system_report(ip_list):
@@ -100,10 +95,10 @@ def sensor_system_report(ip_list):
     net_timeout = int(temp_config.network_details_timeout)
 
     try:
-        html_file_part = open(str(app_location_directory + html_template_system1), 'r')
+        html_file_part = open(html_template_system1, 'r')
         final_file = html_file_part.read()
         html_file_part.close()
-        html_file_part = open(str(app_location_directory + html_template_system2), 'r')
+        html_file_part = open(html_template_system2, 'r')
         sensor_html = html_file_part.read()
         html_file_part.close()
         logger.debug("Open First 2 System Report Templates - OK")
@@ -131,15 +126,15 @@ def sensor_system_report(ip_list):
                     replace_word = "Failed"
                     logger.error("Invalid Sensor Data: " + str(error))
 
-                print(code + " / " + replace_word)
                 current_sensor_html = current_sensor_html.replace(code, replace_word)
                 count = count + 1
+
             final_file = final_file + current_sensor_html
         except Exception as error:
                 logger.error("System Report Failure: " + str(error))
 
     try:
-        html_file_part = open(str(app_location_directory + html_template_system3), 'r')
+        html_file_part = open(html_template_system3, 'r')
         html_end = html_file_part.read()
         html_file_part.close()
         final_file = final_file + html_end
@@ -165,10 +160,10 @@ def sensor_config_report(ip_list):
     net_timeout = int(temp_config.network_details_timeout)
 
     try:
-        html_file_part = open(str(app_location_directory + html_template_config1), 'r')
+        html_file_part = open(html_template_config1, 'r')
         final_file = html_file_part.read()
         html_file_part.close()
-        html_file_part = open(str(app_location_directory + html_template_config2), 'r')
+        html_file_part = open(html_template_config2, 'r')
         sensor_html = html_file_part.read()
         html_file_part.close()
         logger.debug("Open First 2 Config Report Templates - OK")
@@ -192,7 +187,7 @@ def sensor_config_report(ip_list):
                 logger.error("Config Report Failure: " + str(error))
 
     try:
-        html_file_part = open(str(app_location_directory + html_template_config3), 'r')
+        html_file_part = open(html_template_config3, 'r')
         html_end = html_file_part.read()
         html_file_part.close()
         final_file = final_file + html_end

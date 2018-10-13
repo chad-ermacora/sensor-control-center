@@ -18,19 +18,21 @@
 """
 import plotly
 import sqlite3
-import plotly.graph_objs as go
+import os
 import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta
-from plotly import tools
+from plotly import tools, graph_objs as go
 from guizero import warn
+
+script_directory = str(os.path.dirname(os.path.realpath(__file__)))
 
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
