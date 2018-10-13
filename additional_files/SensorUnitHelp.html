@@ -5,7 +5,7 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="2018-10-01T11:14:17.608000000"/>
-	<meta name="changed" content="2018-10-12T11:25:19.119000000"/>
+	<meta name="changed" content="2018-10-12T21:04:59.789000000"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.1in; background: transparent; line-height: 115% }
@@ -61,8 +61,7 @@ Test</b></u></font></p>
 This will print your configuration settings and a snapshot of the
 sensors readings to the screen. 
 </p>
-<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
-<br/>
+<p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">python3
@@ -83,6 +82,9 @@ and stops it.
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
+systemctl disable SensorHTTP &amp;&amp; sudo systemctl stop
+SensorHTTP</span></p>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
 systemctl disable SensorCommands &amp;&amp; sudo systemctl stop
 SensorCommands</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
@@ -95,7 +97,7 @@ SensorTrigger</span></p>
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%">To re-enable and
-start the services, run this command.  * Note: You don&rsquo;t
+start the services, run this command. * Note: You don&rsquo;t
 actually have to change anything *</p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 <span style="background: #dddddd">sudo
@@ -107,10 +109,7 @@ actually have to change anything *</p>
 &amp; Files</b></u></font></p>
 <p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
 <font size="3" style="font-size: 12pt">KootNet sensor program files
-are located in /home/sensors/<br/>
-</font><br/>
-
-</p>
+are located in /home/sensors/</font></p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>zInstalled.txt</b>
 = When the sensors was setup</p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>LastUpdated.txt</b>
@@ -139,8 +138,8 @@ remain untouched.
 <p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><span style="font-style: normal"><b>/home/pi/KootNetSensors/</b></span></span></span><span style="font-variant: normal"><span style="font-style: normal"><b>upgrade_smb_clean.sh</b></span></span>
 = Clean SMB (Windows share) upgrade</p>
 <p style="margin-bottom: 0in; line-height: 100%"><i>**
-</i><i><b>upgrade_smb_clean.sh</b></i><i> ** </i><i><u>Requires:</u></i><i>
-Configuration in </i><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">/home/sensors/update_programs_smb.sh</span></i></font></span></p>
+</i><i><b>upgrade_smb_clean.sh</b></i> <i>** </i><i><u>Requires:</u></i>
+<i>Configuration in </i><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">/home/sensors/update_programs_smb.sh</span></i></font></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
 </span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>upgrade_online_clean.sh</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
