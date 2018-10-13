@@ -71,21 +71,21 @@ def get_system_info(ip, net_timeout):
         sock_g.connect((ip, 10065))
         sock_g.send(b'GetSystemData')
         var_data = pickle.loads(sock_g.recv(4096))
-        sensor_data = var_data.split(",")
+        final_data = var_data.split(',')
         sock_g.close()
         logger.debug("Getting Sensor Data from " + str(ip) + " - OK")
-        return sensor_data
+
     except Exception as error:
         logger.warning("Getting Sensor Data from " + ip + " - Failed: " + str(error))
-        offline_sensor_values = ["Network Timeout", ip, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "0000-00-00 00:00:00"]
-        return offline_sensor_values
+        final_data = ["Network Timeout", ip, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
+
+    return final_data
 
 
 def get_sensor_config(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor configuration. """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock_g2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
         sock_g.connect((ip, 10065))
@@ -98,15 +98,7 @@ def get_sensor_config(ip, net_timeout):
         logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
     sock_g.close()
 
-    try:
-        sock_g2.connect((ip, 10065))
-        sock_g2.send(b'GetSystemData')
-        var_data_system = pickle.loads(sock_g2.recv(4096))
-        sensor_system = var_data_system.split(",")
-    except Exception as error:
-        sensor_system = ["TimeOut", "0.0.0.0", "N/A"]
-        logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
-    sock_g2.close()
+    sensor_system = get_system_info(ip, net_timeout)
 
     final_sensor_config = [str(sensor_system[0]),
                            str(sensor_system[1]),

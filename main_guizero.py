@@ -424,13 +424,13 @@ def get_checked_ip():
 def app_sensor_system_report():
     """ Create a HTML sensor System Report containing each IP selected and online. """
     var_ip_list = check_sensors()
-    app_reports.sensor_html_report(var_ip_list, "SystemDetails")
+    app_reports.sensor_system_report(var_ip_list)
 
 
 def app_sensor_config_report():
     """ Create a HTML sensor Configuration Report containing each IP selected and online. """
     var_ip_list = check_sensors()
-    app_reports.sensor_html_report(var_ip_list, "ConfigurationDetails")
+    app_reports.sensor_config_report(var_ip_list)
 
 
 def config_button_save():
