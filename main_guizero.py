@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --------------------------------------------------------------------------
-
 DEBUG - Detailed information, typically of interest only when diagnosing problems. test
 INFO - Confirmation that things are working as expected.
 WARNING - An indication that something unexpected happened, or indicative of some problem in the near future
@@ -61,8 +60,6 @@ app_about_location = app_location_directory + "/additional_files/about_text.txt"
 
 sensor_ip_queue = Queue()
 sensor_data_queue = Queue()
-
-logger.info('KootNet Sensors - PC Control Center - Started')
 
 
 def set_about_text():
@@ -1555,4 +1552,5 @@ loaded_config_settings = app_config.load_file()
 set_config(loaded_config_settings)
 
 # Start the App
+logger.info('KootNet Sensors - PC Control Center - Started')
 app.display()
