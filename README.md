@@ -12,7 +12,7 @@ Installers for Windows are available as well as a installer script for Linux (WI
 
 PC Control Center - WIP
 -----------------------
-##### Some of the features include
+### Some Features Include
 - Change sensor's configuration
 - Change sensor hostname (Used in database as sensor name)
 - Sync Date & Time with the local computer's Date & Time
@@ -23,6 +23,6 @@ PC Control Center - WIP
 - Upgrade sensor software
 - Upgrade Operating System
 - Restart sensor services
-- Reboot or Shutdown Sensor
+- Reboot or Shutdown sensor
 
 ![KootNet Sensors - PC Control Center](additional_files/KootNetSensorsControlCenter.png "PC Control Center")
