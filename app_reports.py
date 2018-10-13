@@ -54,9 +54,11 @@ def html_system_codes():
                              "{{sysDateTime}}",
                              "{{sysUpTime}}",
                              "{{sysCPUTemp}}",
+                             "{{sysFreeDisk}}",
                              "{{sqldb1}}",
                              "{{sqldb2}}",
-                             "{{SensorConfig}}"]
+                             "{{SQLEnabled}}",
+                             "{{CustomEnabled}}"]
 
     return html_replacement_vars
 
