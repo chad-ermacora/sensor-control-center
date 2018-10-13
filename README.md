@@ -12,8 +12,6 @@ Installers for Windows are available as well as a installer script for Linux (WI
 
 PC Control Center - WIP
 -----------------------
-Demo screen shot of the program (Version Alpha.19.1) and some of its functions.
-
 ##### Some of the features include
 - Change sensor's configuration
 - Change sensor hostname (Used in database as sensor name)
@@ -26,6 +24,5 @@ Demo screen shot of the program (Version Alpha.19.1) and some of its functions.
 - Upgrade Operating System
 - Restart sensor services
 - Reboot or Shutdown Sensor
-
 
 ![KootNet Sensors - PC Control Center](additional_files/KootNetSensorsControlCenter.png "PC Control Center")
