@@ -5,8 +5,7 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2018-10-07T20:47:19.530000000"/>
-	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2018-10-11T22:53:54.201000000"/>
 	<style type="text/css">
 		h2.cjk { font-family: "NSimSun" }
 		h2.ctl { font-family: "Lucida Sans" }
@@ -26,8 +25,9 @@ Supported Sensor&rsquo;s</u></font></strong></p>
 Pi products</a>: Sense HAT<br/>
 <a href="https://shop.pimoroni.com/">Pimoroni
 products</a>: BH1745, BME680, Enviro pHAT, LSM303D, VL53L1X</p>
-<p align="left"><em>Note: Additional Sensors can be added fairly
-easily, so long as they support the Raspberry Pi and Python3</em></p>
+<p align="left"><em>Note: Additional </em><em>s</em><em>ensors can be
+added fairly easily, so long as they support the Raspberry Pi and
+Python3</em></p>
 <h4 class="western" align="left"><strong><font size="4" style="font-size: 14pt"><u>User
 Requirements</u></font></strong></h4>
 <p align="left">The User must know the following</p>
@@ -44,48 +44,51 @@ Pi Menu -&gt; Accessories -&gt; Terminal</em></p>
 <h4 class="western" align="left"><strong><font size="4" style="font-size: 14pt"><u>Required
 Hardware</u></font></strong></h4>
 <p align="left"><strong><a href="https://www.raspberrypi.org/products/">Raspberry
-Pi</a></strong> - I have tested the 3B+ &amp; Zero W (Should work
-with all?)</p>
+Pi</a></strong> - I have tested the 3B+ &amp; Zero W</p>
 <p align="left"><strong><em>Optional </em></strong>- additional
-Sensors (see above)</p>
+sensors (see Currently Supported Sensor&rsquo;s above)</p>
 <h3 class="western" align="left"><strong><u>Install Instructions</u></strong></h3>
 <p align="left"><strong>Step 1</strong>. Physically Install your
 Sensor(s) onto the Raspberry Pi<br/>
 <strong>Step 2</strong>. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install
 Raspbian OS</a> on your Raspberry Pi<br/>
-<em><font size="2" style="font-size: 11pt">This
-will modify /etc/network/interfaces &amp; replace the root users
-crontab</font></em><em><br/>
-</em><strong>Step 3</strong>. Enable SPI
-and I2C in the Raspberry Pi Configuration window on the &quot;Interfaces&quot;
-tab<br/>
-<strong>Step 4</strong>. Make sure you are connected to the
-Internet, then run the following command in a terminal to start the
-Installer</p>
-<p align="left">wget
+<strong>Step 3</strong>.
+Enable SPI and I2C in the Raspberry Pi Configuration window on the
+&quot;Interfaces&quot; tab<br/>
+<strong>Step 4</strong>. Make sure
+you are connected to the Internet with your Pi, then run the
+following command in a terminal to start the Installer<br/>
+** <em><font size="2" style="font-size: 11pt">Th</font></em><em><font size="2" style="font-size: 11pt">e</font></em><em><font size="2" style="font-size: 11pt">
+installer script will modify /etc/network/interfaces &amp; replace
+the root users crontab **<br/>
+** This will automatically reboot the
+Raspberry Pi after completion **<br/>
+<br/>
+</font></em>wget
 http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/update_programs_online.sh
 &amp;&amp; sudo chmod +x update_programs_online.sh &amp;&amp; sudo
 bash update_programs_online.sh &amp;&amp; sudo reboot<br/>
-<em>**
-Note: This will automatically reboot the Raspberry Pi after
-completion **</em></p>
-<p align="left">The installer will open default configuration files
-to be configured, after which it will continue to download program
-files, install necessary Python libraries, update Raspbian itself,
-and finally reboot the sensor. Once the Raspberry Pi comes back up,
-your Sensor should be ready to go Three apps auto start with the Pi
-Services. If a Service is no longer running for any reason, it will
-start up again</p>
-<p align="left"><b>1</b>. Sensor Commands &ndash; Allows KootNet
-Sensors - PC Control Center to interact with the Sensor over a
-network<br/>
-<b>2</b>. Interval Database Recording &ndash; Starts
-recording sensor readings to a sqlite3 database at the specified
-interval, found in the configuration file<br/>
-<b>3</b>. Triggered
-Database Recording &ndash; Starts recording sensor readings to a
-sqlite3 database according to specified variances in the
-configuration file</p>
+<br/>
+The
+installer will open default configuration files to be configured,
+after which it will continue to download program files, install
+necessary Python libraries, update Raspbian itself, and finally
+reboot the sensor<br/>
+Once the Raspberry Pi comes back up, your
+sensor should be ready!</p>
+<p align="left">Three apps are installed as services that auto start
+with the Raspberry Pi<br/>
+If a service stops running for any reason,
+it will start again after 5 seconds</p>
+<p align="left"><b>1</b>. SensorCommands &ndash; Allows KootNet
+Sensors - PC Control Center to interact with the Sensor over a TCP/IP
+v4 network<br/>
+<b>2</b>. SensorInterval &ndash; Starts recording
+sensor readings to a sqlite3 database at the specified interval,
+found in the configuration file<br/>
+<b>3</b>. SensorTrigger &ndash;
+Starts recording sensor readings to a sqlite3 database according to
+specified variances in the configuration file</p>
 <p align="left"><br/>
 <br/>
 
