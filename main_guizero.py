@@ -62,6 +62,79 @@ sensor_ip_queue = Queue()
 sensor_data_queue = Queue()
 
 
+def app_custom_configurations():
+    """ Apply system & user specific settings to application just before start. """
+    # Add extra tk options to guizero windows
+    app.on_close(app_exit)
+    app.tk.resizable(False, False)
+    window_graph_plotly.tk.resizable(False, False)
+    window_sensor_commands.tk.resizable(False, False)
+    window_sensor_config.tk.resizable(False, False)
+    window_app_about.tk.resizable(False, False)
+    window_config.tk.resizable(False, False)
+
+    # Add custom selections and GUI settings
+    app_checkbox_all_column1.value = 0
+    app_checkbox_all_column2.value = 0
+    graph_checkbox_up_time.value = 1
+    graph_checkbox_temperature.value = 1
+    graph_checkbox_pressure.value = 0
+    graph_checkbox_humidity.value = 0
+    graph_checkbox_lumen.value = 0
+    graph_checkbox_colour.value = 0
+    sensor_config_checkbox_db_record.value = 1
+    sensor_config_checkbox_custom.value = 0
+
+    set_about_text()
+    app_check_all_ip_checkboxes(1)
+    app_check_all_ip_checkboxes(2)
+    graph_radio_selection()
+    sensor_config_enable_recording()
+    sensor_config_enable_custom()
+
+    about_textbox.disable()
+    config_textbox_save_to.disable()
+    sensor_config_button_set_config.disable()
+    commands_button_os_Upgrade.disable()
+
+    # Platform specific adjustments
+    if platform.system() == "Windows":
+        app.tk.iconbitmap("additional_files/icon.ico")
+    elif platform.system() == "Linux":
+        app.width = 490
+        app.height = 250
+        window_config.width = 675
+        window_config.height = 275
+        window_graph_plotly.width = 325
+        window_graph_plotly.height = 360
+        window_sensor_config.width = 365
+        window_sensor_config.height = 240
+        window_sensor_commands.width = 300
+        window_sensor_commands.height = 260
+        window_app_about.width = 555
+        window_app_about.height = 290
+
+    # If no configuration file, create a default one and use it
+    if os.path.isfile(config_file):
+        loaded_config_settings = app_config.load_file()
+        set_config(loaded_config_settings)
+    else:
+        logger.info('No Configuration File Found - Creating Default')
+        default_config = app_config.CreateConfigSettings()
+        default_config = app_config.check_config(default_config)
+        app_config.save_config_to_file(default_config)
+        set_config(default_config)
+
+
+def app_exit():
+    """ Clean ups before application closes. """
+    log_handlers = logger.handlers[:]
+    for handler in log_handlers:
+        handler.close()
+        logger.removeHandler(handler)
+    app.destroy()
+
+
 def set_about_text():
     """ Loads and sets the about text from file. """
     try:
@@ -72,14 +145,6 @@ def set_about_text():
         logger.debug("About Text Load - OK")
     except Exception as error:
         logger.error("About Text Load - Failed: " + str(error))
-
-
-def app_exit():
-    log_handlers = logger.handlers[:]
-    for handler in log_handlers:
-        handler.close()
-        logger.removeHandler(handler)
-    app.destroy()
 
 
 def app_menu_open_log():
@@ -513,7 +578,7 @@ def set_config(config_settings):
         app_textbox_ip15.value = config_settings.ip_list[14]
         app_textbox_ip16.value = config_settings.ip_list[15]
         config_checkbox_enable_reset()
-        config_checkbox_enable_shutdown()
+        config_checkbox_enable_advanced()
         logger.debug("Configuration Set - OK")
     except Exception as error:
         logger.error("Configuration Set - One or More Items Failed - " + str(error))
@@ -531,19 +596,22 @@ def config_button_save_directory():
 
 
 def config_button_reset_defaults():
+    """ Resets all Control Center Configurations to default. """
     logger.info("Resetting Configuration to Defaults")
     default_settings = app_config.CreateConfigSettings()
     set_config(default_settings)
 
 
 def config_checkbox_enable_reset():
+    """ Allows use of the Control Centers configuration reset button. """
     if config_checkbox_reset.value == 1:
         config_button_reset.enable()
     else:
         config_button_reset.disable()
 
 
-def config_checkbox_enable_shutdown():
+def config_checkbox_enable_advanced():
+    """ Enables disabled buttons in the Control Center application. """
     if config_checkbox_power_controls.value == 1:
         commands_button_reboot.enable()
         commands_button_shutdown.enable()
@@ -557,6 +625,7 @@ def config_checkbox_enable_shutdown():
 
 
 def commands_upgrade_smb():
+    """ Sends the upgrade by SMB command to the Sensor Units IP. """
     logger.debug("Sensor Upgrade - SMB")
     ip_list = check_sensors()
 
@@ -568,6 +637,7 @@ def commands_upgrade_smb():
 
 
 def commands_upgrade_http():
+    """ Sends the upgrade by HTTP command to the Sensor Units IP. """
     logger.debug("Sensor Upgrade - HTTP")
     ip_list = check_sensors()
 
@@ -579,6 +649,7 @@ def commands_upgrade_http():
 
 
 def commands_os_upgrade():
+    """ Sends the upgrade Operating System command to the Sensor Units IP. """
     logger.debug("Sensor OS Upgrade")
     ip_list = check_sensors()
 
@@ -591,6 +662,7 @@ def commands_os_upgrade():
 
 
 def commands_sensor_reboot():
+    """ Sends the reboot system command to the Sensor Units IP. """
     logger.debug("Sensor Reboot")
     ip_list = check_sensors()
 
@@ -601,7 +673,8 @@ def commands_sensor_reboot():
 
 
 def commands_sensor_shutdown():
-    logger.debug("Sensor Reboot")
+    """ Sends the shutdown system command to the Sensor Units IP. """
+    logger.debug("Sensor Shutdown")
     ip_list = check_sensors()
 
     for ip in ip_list:
@@ -611,6 +684,7 @@ def commands_sensor_shutdown():
 
 
 def commands_restart_services():
+    """ Sends the restart services command to the Sensor Units IP. """
     logger.info("Sensor(s) Services Restarting - Please allow up to 20 Seconds to restart")
     ip_list = check_sensors()
 
@@ -621,6 +695,7 @@ def commands_restart_services():
 
 
 def commands_hostname_change():
+    """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
     logger.debug("Change Sensor Hostname")
     ip_list = check_sensors()
 
@@ -629,6 +704,7 @@ def commands_hostname_change():
 
 
 def commands_datetime_update():
+    """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
     logger.debug("Updating Sensors DateTime")
     ip_list = check_sensors()
 
@@ -639,6 +715,7 @@ def commands_datetime_update():
 
 
 def sensor_config_enable_recording():
+    """ Enables or disables the timing Sensor Configuration Window text boxes. """
     if sensor_config_checkbox_db_record.value:
         sensor_config_textbox_interval.enable()
         sensor_config_textbox_trigger.enable()
@@ -648,6 +725,7 @@ def sensor_config_enable_recording():
 
 
 def sensor_config_enable_custom():
+    """ Enables or disables the custom Sensor Configuration Window text boxes. """
     if sensor_config_checkbox_custom.value:
         sensor_config_textbox_custom_acc.enable()
         sensor_config_textbox_custom_mag.enable()
@@ -659,6 +737,7 @@ def sensor_config_enable_custom():
 
 
 def sensor_config_set():
+    """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
     logger.debug("Setting Sensor Config")
     ip_list = check_sensors()
     config_settings_str = "," + str(sensor_config_checkbox_db_record.value) + "," + \
@@ -676,6 +755,7 @@ def sensor_config_set():
 
 
 def graph_radio_selection():
+    """ Enables or disables the Graph Window selections, based on graph type selected. """
     if graph_radio_sensor_type.get() == "Interval":
         graph_checkbox_acc.disable()
         graph_checkbox_mag.disable()
@@ -701,11 +781,12 @@ def graph_radio_selection():
         graph_checkbox_gyro.enable()
 
 
-def graph_button_interval():
-    new_interval_graph = app_graph.CreateGraphData()
-    new_interval_graph.db_location = filedialog.askopenfilename()
+def graph_button():
+    """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
+    new_graph_data = app_graph.CreateGraphData()
+    new_graph_data.db_location = filedialog.askopenfilename()
     if graph_radio_sensor_type.get() == "Trigger":
-        new_interval_graph.graph_table = "TriggerData"
+        new_graph_data.graph_table = "TriggerData"
 
     config_settings_check = app_config.CreateConfigSettings()
     config_settings_check.save_to = config_textbox_save_to.value
@@ -722,20 +803,19 @@ def graph_button_interval():
     graph_textbox_sql_skip.value = str(config_settings_good.sql_queries_skip)
     graph_textbox_temperature_offset.value = str(config_settings_good.temperature_offset)
 
-    new_interval_graph.save_file_to = config_settings_good.save_to
-    new_interval_graph.graph_start = config_settings_good.graph_start
-    new_interval_graph.graph_end = config_settings_good.graph_end
-    new_interval_graph.time_offset = config_settings_good.time_offset
-    new_interval_graph.skip_sql = config_settings_good.sql_queries_skip
-    new_interval_graph.temperature_offset = config_settings_good.temperature_offset
-    # new_interval_graph.graph_type = ""
-    new_interval_graph.graph_columns = get_graph_column_checkboxes()
-    # new_interval_graph.get_sql_entries = ReplaceMe
+    new_graph_data.save_file_to = config_settings_good.save_to
+    new_graph_data.graph_start = config_settings_good.graph_start
+    new_graph_data.graph_end = config_settings_good.graph_end
+    new_graph_data.time_offset = config_settings_good.time_offset
+    new_graph_data.skip_sql = config_settings_good.sql_queries_skip
+    new_graph_data.temperature_offset = config_settings_good.temperature_offset
+    new_graph_data.graph_columns = get_graph_column_checkboxes()
 
-    app_graph.start_graph(new_interval_graph)
+    app_graph.start_graph(new_graph_data)
 
 
 def get_graph_column_checkboxes():
+    """ Returns selected SQL Columns from the Graph Window. """
     column_checkboxes = ["DateTime", "SensorName", "IP"]
     if graph_radio_sensor_type.get() == "Interval":
         if graph_checkbox_up_time.value:
@@ -771,7 +851,7 @@ def get_graph_column_checkboxes():
     return column_checkboxes
 
 
-# GUI Window Configurations
+# GUI Window Setup
 app = App(title="KootNet Sensors - PC Control Center",
           width=405,
           height=295,
@@ -1078,7 +1158,7 @@ config_button_reset = PushButton(window_config,
 config_checkbox_power_controls = \
     CheckBox(window_config,
              text="Enable Advanced\nSensor Commands &\nConfiguration Options",
-             command=config_checkbox_enable_shutdown,
+             command=config_checkbox_enable_advanced,
              grid=[1, 1],
              align="top")
 
@@ -1363,7 +1443,7 @@ graph_checkbox_gyro = CheckBox(window_graph_plotly,
 
 graph_button_sensors = PushButton(window_graph_plotly,
                                   text="Open Database &\nGraph Sensors",
-                                  command=graph_button_interval,
+                                  command=graph_button,
                                   grid=[1, 18, 2, 1],
                                   align="bottom")
 
@@ -1524,63 +1604,8 @@ sensor_config_button_set_config = PushButton(window_sensor_config,
                                              grid=[2, 14],
                                              align="right")
 
-# Add extra tk options to windows
-if platform.system() == "Windows":
-    app.tk.iconbitmap("additional_files/icon.ico")
-elif platform.system() == "Linux":
-    app.width = 490
-    app.height = 250
-    window_config.width = 675
-    window_config.height = 275
-    window_graph_plotly.width = 325
-    window_graph_plotly.height = 360
-    window_sensor_config.width = 365
-    window_sensor_config.height = 240
-    window_sensor_commands.width = 300
-    window_sensor_commands.height = 260
-    window_app_about.width = 580
-    window_app_about.height = 300
-
-app.on_close(app_exit)
-app.tk.resizable(False, False)
-window_graph_plotly.tk.resizable(False, False)
-window_sensor_commands.tk.resizable(False, False)
-window_sensor_config.tk.resizable(False, False)
-window_app_about.tk.resizable(False, False)
-window_config.tk.resizable(False, False)
-
-# Change other options before loading app
-app_checkbox_all_column1.value = 0
-app_checkbox_all_column2.value = 0
-app_check_all_ip_checkboxes(1)
-app_check_all_ip_checkboxes(2)
-commands_button_os_Upgrade.disable()
-graph_checkbox_up_time.value = 1
-graph_checkbox_temperature.value = 1
-graph_checkbox_pressure.value = 0
-graph_checkbox_humidity.value = 0
-graph_checkbox_lumen.value = 0
-graph_checkbox_colour.value = 0
-graph_radio_selection()
-sensor_config_checkbox_db_record.value = 1
-sensor_config_checkbox_custom.value = 0
-sensor_config_enable_recording()
-sensor_config_enable_custom()
-sensor_config_button_set_config.disable()
-
-set_about_text()
-about_textbox.disable()
-config_textbox_save_to.disable()
-
-if os.path.isfile(config_file):
-    loaded_config_settings = app_config.load_file()
-    set_config(loaded_config_settings)
-else:
-    logger.info('No Configuration File Found - Creating Default')
-    default_config = app_config.CreateConfigSettings()
-    default_config = app_config.check_config(default_config)
-    app_config.save_config_to_file(default_config)
-    set_config(default_config)
+# Set custom app configurations
+app_custom_configurations()
 
 # Start the App
 logger.info('KootNet Sensors - PC Control Center - Started')

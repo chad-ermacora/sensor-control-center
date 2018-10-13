@@ -47,7 +47,8 @@ html_template_config3 = script_directory + "/additional_files/html_template_conf
 
 
 def html_system_codes():
-    logger.debug("Getting Sensor Details HTML replacement Codes")
+    """ Returns HTML replacement codes for a Sensor System Report. """
+    logger.debug("Getting Sensor System HTML report Codes")
 
     html_replacement_vars = ["{{HostName}}",
                              "{{IP}}",
@@ -64,6 +65,7 @@ def html_system_codes():
 
 
 def html_config_codes():
+    """ Returns HTML replacement codes for a Sensor Configuration Report. """
     logger.debug("Getting Sensor Config HTML replacement Codes")
 
     html_replacement_vars = ["{{HostName}}",
@@ -81,6 +83,7 @@ def html_config_codes():
 
 
 def open_html(outfile):
+    """ Opens a HTML file in the default web browser. """
     try:
         webbrowser.open_new_tab("file:///" + outfile)
         logger.debug("Graph HTML File Opened - OK")
@@ -89,6 +92,7 @@ def open_html(outfile):
 
 
 def sensor_system_report(ip_list):
+    """ Creates and opens a HTML System Report of the provided Sensors. """
     final_file = ''
     sensor_html = ''
     temp_config = load_config()
@@ -154,6 +158,7 @@ def sensor_system_report(ip_list):
 
 
 def sensor_config_report(ip_list):
+    """ Creates and opens a HTML Configuration Report of the provided Sensors. """
     final_file = ''
     sensor_html = ''
     temp_config = load_config()
