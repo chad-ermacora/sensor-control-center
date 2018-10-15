@@ -63,7 +63,7 @@ class CreateConfigSettings:
 
 
 def load_from_file():
-    """ Loads the Control Center configurations from file and returns the settings. """
+    """ Loads the Control Center configurations from file and returns the Verified settings. """
     config_settings = CreateConfigSettings()
 
     try:
@@ -106,10 +106,10 @@ def load_from_file():
     except Exception as error:
         logger.warning("Configuration File Load Failed - Using All or Some Defaults: " + str(error))
 
-    return config_settings
+    return _check_config(config_settings)
 
 
-def check_config(config_settings):
+def _check_config(config_settings):
     """
     Checks the provided Control Center configuration for validity and returns it.
 
@@ -201,7 +201,7 @@ def check_config(config_settings):
 
 def save_config_to_file(temp_config_settings):
     """ Saves provided Control Center configuration to file. """
-    config_settings = check_config(temp_config_settings)
+    config_settings = _check_config(temp_config_settings)
 
     var_final_write = str(config_settings.save_to)
     var_final_write = var_final_write + ',' + str(config_settings.graph_start)

@@ -46,7 +46,7 @@ html_template_config2 = script_directory + "/additional_files/html_template_conf
 html_template_config3 = script_directory + "/additional_files/html_template_config3.html"
 
 
-def html_system_codes():
+def _html_system_codes():
     """ Returns HTML replacement codes for a Sensor System Report. """
     logger.debug("Getting Sensor System HTML report Codes")
 
@@ -64,7 +64,25 @@ def html_system_codes():
     return html_replacement_vars
 
 
-def html_config_codes():
+def _html_readings_codes():
+    """ Returns HTML replacement codes for a Sensor Configuration Report. """
+    logger.debug("Getting Sensor Config HTML replacement Codes")
+
+    html_replacement_vars = ["{{HostName}}",
+                             "{{IP}}",
+                             "{{DateTime}}",
+                             "{{}}",
+                             "{{}}",
+                             "{{}}",
+                             "{{}}",
+                             "{{}}",
+                             "{{}}",
+                             "{{}}"]
+
+    return html_replacement_vars
+
+
+def _html_config_codes():
     """ Returns HTML replacement codes for a Sensor Configuration Report. """
     logger.debug("Getting Sensor Config HTML replacement Codes")
 
@@ -111,7 +129,7 @@ def sensor_system_report(ip_list):
 
     # For each IP in the list, Get its data per Report "Type"
     # Inserting them into a final HTML file, based on a 3 part template
-    replacement_codes = html_system_codes()
+    replacement_codes = _html_system_codes()
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
@@ -177,7 +195,7 @@ def sensor_config_report(ip_list):
 
     # For each IP in the list, Get its data per Report "Type"
     # Inserting them into a final HTML file, based on a 3 part template
-    replacement_codes = html_config_codes()
+    replacement_codes = _html_config_codes()
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
