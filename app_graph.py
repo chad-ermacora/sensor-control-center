@@ -94,8 +94,8 @@ def start_graph(graph_data):
     logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
 
     new_time_offset = int(graph_data.time_offset) * -1
-    get_sql_graph_start = adjust_interval_datetime(graph_data.graph_start, new_time_offset)
-    get_sql_graph_end = adjust_interval_datetime(graph_data.graph_end, new_time_offset)
+    get_sql_graph_start = _adjust_interval_datetime(graph_data.graph_start, new_time_offset)
+    get_sql_graph_end = _adjust_interval_datetime(graph_data.graph_end, new_time_offset)
     if graph_data.graph_table == "IntervalData":
         for var_column in graph_data.graph_columns:
             var_sql_query = "SELECT " + \
@@ -111,12 +111,12 @@ def start_graph(graph_data):
                 "') LIMIT " + \
                             str(graph_data.max_sql_queries)
 
-            sql_column_data = get_sql_data(graph_data, var_sql_query)
+            sql_column_data = _get_sql_data(graph_data, var_sql_query)
 
             if str(var_column) == "DateTime":
                 count = 0
                 for data in sql_column_data:
-                    sql_column_data[count] = adjust_interval_datetime(data, int(graph_data.time_offset))
+                    sql_column_data[count] = _adjust_interval_datetime(data, int(graph_data.time_offset))
                     count = count + 1
 
                 graph_data.sql_data_time = sql_column_data
@@ -171,12 +171,12 @@ def start_graph(graph_data):
                 ".000') LIMIT " + \
                             str(graph_data.max_sql_queries)
 
-            sql_column_data = get_sql_data(graph_data, var_sql_query)
+            sql_column_data = _get_sql_data(graph_data, var_sql_query)
 
             if str(var_column) == "DateTime":
                 count = 0
                 for data in sql_column_data:
-                    sql_column_data[count] = adjust_trigger_datetime(data, int(graph_data.time_offset))
+                    sql_column_data[count] = _adjust_trigger_datetime(data, int(graph_data.time_offset))
                     count = count + 1
 
                 graph_data.sql_data_time = sql_column_data
@@ -206,11 +206,11 @@ def start_graph(graph_data):
             else:
                 logger.error(var_column + " - Does Not Exist")
 
-    trace_graph(graph_data)
+    _plotly_graph(graph_data)
     logger.debug("Interval DB Graph Complete")
 
 
-def adjust_interval_datetime(var_datetime, time_offset):
+def _adjust_interval_datetime(var_datetime, time_offset):
     """
     Adjusts the provided datetime by the provided hour offset and returns the result.
 
@@ -231,7 +231,7 @@ def adjust_interval_datetime(var_datetime, time_offset):
     return str(new_time)
 
 
-def adjust_trigger_datetime(var_datetime, time_offset):
+def _adjust_trigger_datetime(var_datetime, time_offset):
     """
     Adjusts the provided datetime by the provided hour offset and returns the result.
 
@@ -260,7 +260,7 @@ def adjust_trigger_datetime(var_datetime, time_offset):
     return str(new_time) + tmp_ms
 
 
-def get_sql_data(graph_interval_data, sql_command):
+def _get_sql_data(graph_interval_data, sql_command):
     """ Execute SQLite3 command and return the results. """
     return_data = []
 
@@ -290,7 +290,7 @@ def get_sql_data(graph_interval_data, sql_command):
     return return_data
 
 
-def trace_graph(graph_interval_data):
+def _plotly_graph(graph_interval_data):
     """ Create and open a HTML offline Plotly graph with the data provided. """
     sub_plots = []
     row_count = 0

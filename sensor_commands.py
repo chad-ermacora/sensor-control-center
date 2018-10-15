@@ -83,7 +83,13 @@ def get_system_info(ip, net_timeout):
 
 
 def get_sensor_readings(ip, net_timeout):
-    """ Socket connection to sensor IP. Return sensor's readings. """
+    """
+    Socket connection to sensor IP. Return sensor's readings.
+
+    Returned data is a list of 2 comma separated strings.
+
+    The first string is the Interval readings, the second, Trigger readings.
+    """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

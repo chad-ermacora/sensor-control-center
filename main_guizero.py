@@ -32,9 +32,9 @@ import app_config
 import sensor_commands
 import app_reports
 import app_graph
-from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, ButtonGroup
+from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, warn, ButtonGroup
 from tkinter import filedialog
-from matplotlib import pyplot, animation, style
+from matplotlib import pyplot, animation
 from threading import Thread
 from queue import Queue
 import logging
@@ -67,19 +67,20 @@ class CreateLiveGraph:
     def __init__(self):
         # style.use("fivethirtyeight")
         self.ip = ""
-        self.fig = pyplot.figure(figsize=(10, 5))
-        self.ax1 = self.fig.add_subplot(1, 1, 1)
         self.first_run = True
         self.first_temperature = ""
+        self.first_datetime = ""
 
+        self.fig = pyplot.figure()
+        self.ax1 = self.fig.add_subplot(1, 1, 1)
         self.x = []
         self.y = []
 
 
-def app_custom_configurations():
+def _app_custom_configurations():
     """ Apply system & user specific settings to application.  Used just before application start. """
     # Add extra tk options to guizero windows
-    app.on_close(app_exit)
+    app.on_close(_app_exit)
     app.tk.resizable(False, False)
     window_graph.tk.resizable(False, False)
     window_sensor_commands.tk.resizable(False, False)
@@ -99,10 +100,10 @@ def app_custom_configurations():
     sensor_config_checkbox_db_record.value = 1
     sensor_config_checkbox_custom.value = 0
 
-    set_about_text()
+    _set_about_text()
     app_check_all_ip_checkboxes(1)
     app_check_all_ip_checkboxes(2)
-    graph_radio_selection()
+    _graph_radio_selection()
     sensor_config_enable_recording()
     sensor_config_enable_custom()
 
@@ -135,21 +136,22 @@ def app_custom_configurations():
     else:
         logger.info('No Configuration File Found - Creating Default')
         default_config = app_config.CreateConfigSettings()
-        default_config = app_config.check_config(default_config)
         app_config.save_config_to_file(default_config)
         set_config(default_config)
 
 
-def app_exit():
+def _app_exit():
     """ Clean ups before application closes. """
     log_handlers = logger.handlers[:]
     for handler in log_handlers:
         handler.close()
         logger.removeHandler(handler)
+
+    # pyplot.close(main_live_graph.fig)
     app.destroy()
 
 
-def set_about_text():
+def _set_about_text():
     """ Loads and sets the about text from file. """
     try:
         local_file = open(about_text, 'r')
@@ -161,7 +163,7 @@ def set_about_text():
         logger.error("About Text Load - Failed: " + str(error))
 
 
-def app_menu_open_log():
+def app_menu_open_logs():
     """ Opens the folder where the logs are kept. """
     logger.debug("Open Logs Folder")
     log_path = script_directory + "/logs/"
@@ -173,65 +175,46 @@ def app_menu_open_log():
         subprocess.Popen(["xdg-open", log_path])
 
 
-def app_menu_open_config():
-    """ Open's the Configuration window. """
-    window_config.show()
-
-
-def app_menu_open_commands():
-    """ Open's the Sensor Commands window. """
-    window_sensor_commands.show()
-
-
-def app_menu_open_sensor_config():
-    """ Open's the Sensor Configuration window. """
-    window_sensor_config.show()
-
-
 def app_menu_download_interval_db():
     """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
     threads = []
     download_to_location = filedialog.askdirectory()
 
-    for ip in ip_list:
-        threads.append(Thread(target=sensor_commands.download_interval_db, args=[ip, download_to_location]))
+    if download_to_location is not "" and download_to_location is not None:
+        for ip in ip_list:
+            threads.append(Thread(target=sensor_commands.download_interval_db, args=[ip, download_to_location]))
 
-    for thread in threads:
-        thread.start()
+        for thread in threads:
+            thread.start()
 
-    for thread in threads:
-        thread.join()
+        for thread in threads:
+            thread.join()
 
-    info("Downloads", "Interval Database Downloads Complete")
+        info("Downloads", "Interval Database Downloads Complete")
+    else:
+        warn("Warning", "User Cancelled Download Operation")
 
 
 def app_menu_download_trigger_db():
     """ Downloads the Trigger SQLite3 database to the chosen location, from the selected sensors. """
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
     threads = []
     download_to_location = filedialog.askdirectory()
 
-    for ip in ip_list:
-        threads.append(Thread(target=sensor_commands.download_trigger_db, args=[ip, download_to_location]))
+    if download_to_location is not "" and download_to_location is not None:
+        for ip in ip_list:
+            threads.append(Thread(target=sensor_commands.download_trigger_db, args=[ip, download_to_location]))
 
-    for thread in threads:
-        thread.start()
+        for thread in threads:
+            thread.start()
 
-    for thread in threads:
-        thread.join()
+        for thread in threads:
+            thread.join()
 
-    info("Downloads", "Trigger Database Downloads Complete")
-
-
-def app_menu_open_graph():
-    """ Open the graphing window. """
-    window_graph.show()
-
-
-def app_menu_open_about():
-    """ Open the About window. """
-    window_app_about.show()
+        info("Downloads", "Trigger Database Downloads Complete")
+    else:
+        warn("Warning", "User Cancelled Download Operation")
 
 
 def app_menu_open_website():
@@ -294,7 +277,7 @@ def app_check_all_ip_checkboxes(var_column):
             app_checkbox_ip16.value = 0
 
 
-def worker_sensor_check(net_timeout):
+def _worker_sensor_check(net_timeout):
     """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
     while not sensor_ip_queue.empty():
         ip = sensor_ip_queue.get()
@@ -304,20 +287,20 @@ def worker_sensor_check(net_timeout):
         sensor_ip_queue.task_done()
 
 
-def check_sensors():
+def get_verified_ip_list():
     """
     Checks sensor online status and changes the programs IP textbox depending on the returned results.
 
     The sensor checks are Threaded by the IP's provided in the IP list.
     """
-    ip_list = get_checked_ip()
+    ip_list = _make_ip_list()
     ip_list_final = []
     net_timeout = int(config_textbox_network_check.value)
     sensor_data_pool = []
     threads = []
 
     for ip in ip_list:
-        threads.append(Thread(target=worker_sensor_check, args=[net_timeout]))
+        threads.append(Thread(target=_worker_sensor_check, args=[net_timeout]))
         sensor_ip_queue.put(ip)
 
     for thread in threads:
@@ -417,7 +400,7 @@ def check_sensors():
 
 
 # Returns selected IP's from Main App Window & Re-Sets unselected IP background to white
-def get_checked_ip():
+def _make_ip_list():
     """ Returns a list of all checked IP's, skipping duplicates """
     checkbox_ip_list = []
 
@@ -505,15 +488,19 @@ def get_checked_ip():
     return checkbox_ip_list
 
 
+def app_sensor_readings_report():
+    pass
+
+
 def app_sensor_system_report():
     """ Create a HTML sensor System Report containing each IP selected and online. """
-    var_ip_list = check_sensors()
+    var_ip_list = get_verified_ip_list()
     app_reports.sensor_system_report(var_ip_list)
 
 
 def app_sensor_config_report():
     """ Create a HTML sensor Configuration Report containing each IP selected and online. """
-    var_ip_list = check_sensors()
+    var_ip_list = get_verified_ip_list()
     app_reports.sensor_config_report(var_ip_list)
 
 
@@ -550,15 +537,13 @@ def config_button_save():
     config_settings.ip_list[14] = app_textbox_ip15.value
     config_settings.ip_list[15] = app_textbox_ip16.value
 
-    config_settings = app_config.check_config(config_settings)
-
     app_config.save_config_to_file(config_settings)
     set_config(config_settings)
 
 
 def set_config(config_settings):
     """ Sets the programs Configuration to the provided settings. """
-    final_config_settings = app_config.check_config(config_settings)
+    final_config_settings = app_config._check_config(config_settings)
 
     try:
         config_textbox_save_to.value = final_config_settings.save_to
@@ -641,7 +626,7 @@ def config_checkbox_enable_advanced():
 def commands_upgrade_smb():
     """ Sends the upgrade by SMB command to the Sensor Units IP. """
     logger.debug("Sensor Upgrade - SMB")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
 
     for ip in ip_list:
         sensor_commands.upgrade_program_smb(ip)
@@ -653,7 +638,7 @@ def commands_upgrade_smb():
 def commands_upgrade_http():
     """ Sends the upgrade by HTTP command to the Sensor Units IP. """
     logger.debug("Sensor Upgrade - HTTP")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
 
     for ip in ip_list:
         sensor_commands.upgrade_program_online(ip)
@@ -665,7 +650,7 @@ def commands_upgrade_http():
 def commands_os_upgrade():
     """ Sends the upgrade Operating System command to the Sensor Units IP. """
     logger.debug("Sensor OS Upgrade")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
 
     for ip in ip_list:
         sensor_commands.upgrade_os_linux(ip)
@@ -678,7 +663,7 @@ def commands_os_upgrade():
 def commands_sensor_reboot():
     """ Sends the reboot system command to the Sensor Units IP. """
     logger.debug("Sensor Reboot")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
 
     for ip in ip_list:
         sensor_commands.reboot_sensor(ip)
@@ -689,7 +674,7 @@ def commands_sensor_reboot():
 def commands_sensor_shutdown():
     """ Sends the shutdown system command to the Sensor Units IP. """
     logger.debug("Sensor Shutdown")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
 
     for ip in ip_list:
         sensor_commands.shutdown_sensor(ip)
@@ -700,7 +685,7 @@ def commands_sensor_shutdown():
 def commands_restart_services():
     """ Sends the restart services command to the Sensor Units IP. """
     logger.info("Sensor(s) Services Restarting - Please allow up to 20 Seconds to restart")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
 
     for ip in ip_list:
         sensor_commands.restart_services(ip)
@@ -711,7 +696,7 @@ def commands_restart_services():
 def commands_hostname_change():
     """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
     logger.debug("Change Sensor Hostname")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
 
     for ip in ip_list:
         sensor_commands.set_hostname(ip)
@@ -720,7 +705,7 @@ def commands_hostname_change():
 def commands_datetime_update():
     """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
     logger.debug("Updating Sensors DateTime")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
 
     for ip in ip_list:
         sensor_commands.set_datetime(ip)
@@ -753,7 +738,7 @@ def sensor_config_enable_custom():
 def sensor_config_set():
     """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
     logger.debug("Setting Sensor Config")
-    ip_list = check_sensors()
+    ip_list = get_verified_ip_list()
     config_settings_str = "," + str(sensor_config_checkbox_db_record.value) + "," + \
         str(sensor_config_textbox_interval.value) + "," + \
         str(sensor_config_textbox_trigger.value) + "," + \
@@ -768,7 +753,7 @@ def sensor_config_set():
     info("Information", "Sensor(s) Configuration Set")
 
 
-def graph_radio_selection():
+def _graph_radio_selection():
     """ Enables or disables the Graph Window selections, based on graph type selected. """
     if graph_radio_sensor_type.get() == "Interval SQL":
         graph_checkbox_acc.disable()
@@ -817,15 +802,26 @@ def graph_radio_selection():
 
         graph_textbox_temperature_offset.enable()
         graph_textbox_refresh_time.enable()
-        graph_checkbox_temperature.enable()
-        graph_checkbox_pressure.enable()
-        graph_checkbox_humidity.enable()
-        graph_checkbox_lumen.enable()
-        graph_checkbox_colour.enable()
-        graph_checkbox_up_time.enable()
-        graph_checkbox_acc.enable()
-        graph_checkbox_mag.enable()
-        graph_checkbox_gyro.enable()
+
+        graph_checkbox_temperature.disable()
+        graph_checkbox_temperature.value = 1
+        graph_checkbox_pressure.disable()
+        graph_checkbox_pressure.value = 0
+        graph_checkbox_humidity.disable()
+        graph_checkbox_humidity.value = 0
+        graph_checkbox_lumen.disable()
+        graph_checkbox_lumen.value = 0
+        graph_checkbox_colour.disable()
+        graph_checkbox_colour.value = 0
+        graph_checkbox_up_time.disable()
+        graph_checkbox_up_time.value = 0
+        graph_checkbox_acc.disable()
+        graph_checkbox_acc.value = 0
+        graph_checkbox_mag.disable()
+        graph_checkbox_mag.value = 0
+        graph_checkbox_gyro.disable()
+        graph_checkbox_gyro.value = 0
+
         graph_button_live.enable()
 
 
@@ -844,7 +840,7 @@ def graph_plotly_button():
     config_settings_check.sql_queries_skip = graph_textbox_sql_skip.value
     config_settings_check.temperature_offset = graph_textbox_temperature_offset.value
 
-    config_settings_good = app_config.check_config(config_settings_check)
+    config_settings_good = app_config._check_config(config_settings_check)
 
     graph_textbox_start.value = str(config_settings_good.graph_start)
     graph_textbox_end.value = str(config_settings_good.graph_end)
@@ -857,59 +853,66 @@ def graph_plotly_button():
     new_graph_data.time_offset = config_settings_good.time_offset
     new_graph_data.skip_sql = config_settings_good.sql_queries_skip
     new_graph_data.temperature_offset = config_settings_good.temperature_offset
-    new_graph_data.graph_columns = graph_get_column_checkboxes()
+    new_graph_data.graph_columns = _graph_get_column_checkboxes()
 
     app_graph.start_graph(new_graph_data)
 
 
 def graph_live_button():
-    if main_live_graph.first_run:
-        pass
-    else:
-        main_live_graph.fig = pyplot.figure()
-        main_live_graph.ax1 = main_live_graph.fig.add_subplot(1, 1, 1)
-        main_live_graph.x = []
-        main_live_graph.y = []
+    main_live_graph.first_run = True
+    main_live_graph.first_datetime = str(datetime.datetime.time(datetime.datetime.now()))[:8]
 
-    ip_list = get_checked_ip()
+    ip_list = get_verified_ip_list()
+    get_verified_ip_list()
     main_live_graph.ip = ip_list[0]
 
-    anim = animation.FuncAnimation(main_live_graph.fig, update_graph, interval=2000)
+    ani = animation.FuncAnimation(main_live_graph.fig,
+                                  _update_graph,
+                                  interval=int(graph_textbox_refresh_time.value) * 1000)
 
     pyplot.show()
 
 
-def update_graph(i):
+def _update_graph(x_frame):
     net_timeout = int(config_textbox_network_check.value)
-
-    sensor_readings = sensor_commands.get_sensor_readings(main_live_graph.ip, net_timeout)
+    current_time = str(datetime.datetime.time(datetime.datetime.now()))[:8]
 
     try:
-        interval_types = sensor_readings[0].split(',')
+        sensor_readings = sensor_commands.get_sensor_readings(main_live_graph.ip, net_timeout)
         interval_readings = sensor_readings[1].split(',')
-        trigger_types = sensor_readings[0].split(',')
-        trigger_readings = sensor_readings[0].split(',')
-        current_time = str(datetime.datetime.time(datetime.datetime.now()))[:8]
-        main_live_graph.y.append(str(interval_readings[4]))
-        main_live_graph.x.append(current_time)
-        main_live_graph.ax1.clear()
-        main_live_graph.ax1.plot(main_live_graph.x, main_live_graph.y)
-        pyplot.title("Live Sensor Graph")
+
+        interval_readings[4] = float(interval_readings[4].replace("'", "")) + \
+            float(graph_textbox_temperature_offset.value)
+        interval_readings[4] = round(interval_readings[4], 3)
 
         if main_live_graph.first_run:
-            main_live_graph.first_temperature = str(interval_readings[4])
-            main_live_graph.first_run = False
+                main_live_graph.first_temperature = str(interval_readings[4])
+                main_live_graph.first_run = False
+                x_frame = -1
+        else:
+            main_live_graph.ax1.clear()
 
-        pyplot.xlabel("Current Time: " + current_time + "  /  Current Temperature: " + str(interval_readings[4]))
-        pyplot.ylabel("First Temperature Reading")
-        pyplot.xticks([])
-        pyplot.yticks([main_live_graph.first_temperature])
+        try:
+            main_live_graph.y.append(interval_readings[4])
+            main_live_graph.x.append(x_frame)
 
+            main_live_graph.ax1.plot(main_live_graph.x, main_live_graph.y)
+
+            pyplot.title("Live Sensor Graph from " + interval_readings[0] + " on " + main_live_graph.ip)
+            pyplot.xlabel("Start Time: " +
+                          main_live_graph.first_datetime +
+                          " || Current Time: " +
+                          current_time +
+                          "  ||  Current Temperature: " + str(interval_readings[4]) + " °C")
+            pyplot.ylabel("Temperature in °C")
+            pyplot.xticks([])
+        except Exception as error:
+            logger.warning("Failed to process Live Graph Data: " + str(error))
     except Exception as error:
-        logger.warning("Failed to process Live Graph Data: " + str(error))
+        logger.error(str(error))
 
 
-def graph_get_column_checkboxes():
+def _graph_get_column_checkboxes():
     """ Returns selected SQL Columns from the Graph Window. """
     column_checkboxes = ["DateTime", "SensorName", "IP"]
     if graph_radio_sensor_type.get() == "Interval SQL":
@@ -966,13 +969,6 @@ window_config = Window(app,
                        layout="grid",
                        visible=False)
 
-window_graph = Window(app,
-                      title="Graphing",
-                      width=275,
-                      height=410,
-                      layout="grid",
-                      visible=False)
-
 window_sensor_commands = Window(app,
                                 title="Sensor Commands",
                                 width=290,
@@ -987,29 +983,41 @@ window_sensor_config = Window(app,
                               layout="grid",
                               visible=False)
 
+window_sensor_reports = Window(app,
+                               title="Reports",
+                               width=225,
+                               height=260,
+                               layout="grid",
+                               visible=False)
+
+window_graph = Window(app,
+                      title="Graphing",
+                      width=275,
+                      height=410,
+                      layout="grid",
+                      visible=False)
+
 app_menubar = MenuBar(app,
                       toplevel=[["File"],
-                                ["Sensor"],
+                                ["Sensors"],
                                 ["Graphing"],
                                 ["Help"]],
                       options=[[["Open Logs",
-                                 app_menu_open_log],
+                                 app_menu_open_logs],
                                 ["Save IP's",
                                  config_button_save],
                                 ["Control Center Configuration",
-                                 app_menu_open_config]],
+                                 window_config.show]],
                                [["Send Commands",
-                                app_menu_open_commands],
+                                window_sensor_commands.show],
                                 ["Update Configurations",
-                                app_menu_open_sensor_config],
-                                ["Download Interval Database(s)",
-                                 app_menu_download_interval_db],
-                                ["Download Trigger Database(s)",
-                                 app_menu_download_trigger_db]],
+                                window_sensor_config.show],
+                                ["Create Reports",
+                                window_sensor_reports.show]],
                                [["Open Graph Window",
-                                 app_menu_open_graph]],
+                                 window_graph.show]],
                                [["KootNet Sensors - About",
-                                 app_menu_open_about],
+                                 window_app_about.show],
                                 ["KootNet Sensors - Website",
                                  app_menu_open_website],
                                 ["Sensor Units - DIY",
@@ -1017,23 +1025,23 @@ app_menubar = MenuBar(app,
                                 ["Sensor Units - Help",
                                  app_menu_open_sensor_help],
                                 ["PC Control Center - Help *WIP",
-                                 app_menu_open_about]]])
+                                 window_app_about.show]]])
 
 app_button_check_sensor = PushButton(app,
                                      text="Check Sensors\nStatus",
-                                     command=check_sensors,
+                                     command=get_verified_ip_list,
                                      grid=[1, 15, 2, 1],
                                      align="left")
 
 app_button_sensor_detail = PushButton(app,
-                                      text="View Sensors\nSystem Report",
-                                      command=app_sensor_system_report,
+                                      text="Download Sensor\nInterval Databases",
+                                      command=app_menu_download_interval_db,
                                       grid=[2, 15, 2, 1],
                                       align="right")
 
 app_button_sensor_config = PushButton(app,
-                                      text="View Sensors\nConfiguration Report",
-                                      command=app_sensor_config_report,
+                                      text="Download Sensor\nTrigger Databases",
+                                      command=app_menu_download_trigger_db,
                                       grid=[4, 15],
                                       align="right")
 
@@ -1400,6 +1408,49 @@ config_textbox_network_details = TextBox(window_config,
                                          grid=[2, 10],
                                          align="top")
 
+# Sensor Reports Window Section
+reports_text_select = Text(window_sensor_reports,
+                           text="Select Sensors from\nThe Main Window",
+                           grid=[1, 1, 3, 1],
+                           color='#CB0000',
+                           align="top")
+
+reports_text1 = Text(window_sensor_reports,
+                     text="Sensors Readings Report",
+                     color='green',
+                     grid=[1, 6],
+                     align="top")
+
+reports_button_check_sensor = PushButton(window_sensor_reports,
+                                         text="Create",
+                                         command=app_sensor_readings_report,
+                                         grid=[1, 7],
+                                         align="top")
+
+reports_text2 = Text(window_sensor_reports,
+                     text="Sensors System Report",
+                     color='green',
+                     grid=[1, 8],
+                     align="top")
+
+reports_button_sensor_detail = PushButton(window_sensor_reports,
+                                          text="Create",
+                                          command=app_sensor_system_report,
+                                          grid=[1, 9],
+                                          align="top")
+
+reports_text3 = Text(window_sensor_reports,
+                     text="Sensors Configuration Report",
+                     color='green',
+                     grid=[1, 10],
+                     align="top")
+
+reports_button_sensor_config = PushButton(window_sensor_reports,
+                                          text="Create",
+                                          command=app_sensor_config_report,
+                                          grid=[1, 11],
+                                          align="top")
+
 # Graph Window Section
 graph_text_start = Text(window_graph,
                         text="Start DateTime: ",
@@ -1473,7 +1524,7 @@ graph_text_refresh_time = Text(window_graph,
                                align="left")
 
 graph_textbox_refresh_time = TextBox(window_graph,
-                                     text="5",
+                                     text="2",
                                      width=5,
                                      grid=[2, 6],
                                      align="left")
@@ -1485,9 +1536,9 @@ graph_text_sensor_type_name = Text(window_graph,
                                    align="top")
 
 graph_radio_sensor_type = ButtonGroup(window_graph,
-                                      options=["Interval SQL", "Trigger SQL", "Live"],
+                                      options=["Live", "Interval SQL", "Trigger SQL"],
                                       horizontal="True",
-                                      command=graph_radio_selection,
+                                      command=_graph_radio_selection,
                                       grid=[1, 8, 2, 1],
                                       align="top")
 
@@ -1719,7 +1770,7 @@ sensor_config_button_set_config = PushButton(window_sensor_config,
                                              align="right")
 
 # Set custom app configurations
-app_custom_configurations()
+_app_custom_configurations()
 
 main_live_graph = CreateLiveGraph()
 
