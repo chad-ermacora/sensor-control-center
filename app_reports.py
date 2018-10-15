@@ -20,7 +20,7 @@ import webbrowser
 import os
 import logging
 from sensor_commands import get_system_info, get_sensor_config
-from app_config import load_file as load_config
+from app_config import load_from_file as load_config
 from logging.handlers import RotatingFileHandler
 
 script_directory = str(os.path.dirname(os.path.realpath(__file__)))

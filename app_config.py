@@ -62,7 +62,7 @@ class CreateConfigSettings:
                         "192.168.10.23", "192.168.10.24", "192.168.10.25", "192.168.10.26"]
 
 
-def load_file():
+def load_from_file():
     """ Loads the Control Center configurations from file and returns the settings. """
     config_settings = CreateConfigSettings()
 

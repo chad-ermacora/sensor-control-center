@@ -20,11 +20,11 @@
 DEBUG - Detailed information, typically of interest only when diagnosing problems. test
 INFO - Confirmation that things are working as expected.
 WARNING - An indication that something unexpected happened, or indicative of some problem in the near future
-             (e.g. ‘disk space low’). The software is still working as expected.
 ERROR - Due to a more serious problem, the software has not been able to perform some function.
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
 import os
+import datetime
 import platform
 import subprocess
 import webbrowser
@@ -34,6 +34,7 @@ import app_reports
 import app_graph
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, ButtonGroup
 from tkinter import filedialog
+from matplotlib import pyplot, animation, style
 from threading import Thread
 from queue import Queue
 import logging
@@ -56,18 +57,31 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 config_file = script_directory + "/config.txt"
-app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.1"
+app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.2"
 about_text = script_directory + "/additional_files/about_text.txt"
 sensor_ip_queue = Queue()
 sensor_data_queue = Queue()
 
 
+class CreateLiveGraph:
+    def __init__(self):
+        # style.use("fivethirtyeight")
+        self.ip = ""
+        self.fig = pyplot.figure(figsize=(10, 5))
+        self.ax1 = self.fig.add_subplot(1, 1, 1)
+        self.first_run = True
+        self.first_temperature = ""
+
+        self.x = []
+        self.y = []
+
+
 def app_custom_configurations():
-    """ Apply system & user specific settings to application just before start. """
+    """ Apply system & user specific settings to application.  Used just before application start. """
     # Add extra tk options to guizero windows
     app.on_close(app_exit)
     app.tk.resizable(False, False)
-    window_graph_plotly.tk.resizable(False, False)
+    window_graph.tk.resizable(False, False)
     window_sensor_commands.tk.resizable(False, False)
     window_sensor_config.tk.resizable(False, False)
     window_app_about.tk.resizable(False, False)
@@ -105,8 +119,8 @@ def app_custom_configurations():
         app.height = 250
         window_config.width = 675
         window_config.height = 275
-        window_graph_plotly.width = 325
-        window_graph_plotly.height = 360
+        window_graph.width = 325
+        window_graph.height = 360
         window_sensor_config.width = 365
         window_sensor_config.height = 240
         window_sensor_commands.width = 300
@@ -116,7 +130,7 @@ def app_custom_configurations():
 
     # If no configuration file, create a default one and use it
     if os.path.isfile(config_file):
-        loaded_config_settings = app_config.load_file()
+        loaded_config_settings = app_config.load_from_file()
         set_config(loaded_config_settings)
     else:
         logger.info('No Configuration File Found - Creating Default')
@@ -212,7 +226,7 @@ def app_menu_download_trigger_db():
 
 def app_menu_open_graph():
     """ Open the graphing window. """
-    window_graph_plotly.show()
+    window_graph.show()
 
 
 def app_menu_open_about():
@@ -756,36 +770,70 @@ def sensor_config_set():
 
 def graph_radio_selection():
     """ Enables or disables the Graph Window selections, based on graph type selected. """
-    if graph_radio_sensor_type.get() == "Interval":
+    if graph_radio_sensor_type.get() == "Interval SQL":
         graph_checkbox_acc.disable()
         graph_checkbox_mag.disable()
         graph_checkbox_gyro.disable()
+        graph_button_live.disable()
+        graph_textbox_refresh_time.disable()
 
+        graph_textbox_temperature_offset.enable()
         graph_checkbox_temperature.enable()
         graph_checkbox_pressure.enable()
         graph_checkbox_humidity.enable()
         graph_checkbox_lumen.enable()
         graph_checkbox_colour.enable()
         graph_checkbox_up_time.enable()
+        graph_textbox_start.enable()
+        graph_textbox_end.enable()
+        graph_textbox_sql_skip.enable()
+        graph_button_database.enable()
 
-    if graph_radio_sensor_type.get() == "Trigger":
+    if graph_radio_sensor_type.get() == "Trigger SQL":
+        graph_textbox_sql_skip.disable()
+        graph_textbox_temperature_offset.disable()
         graph_checkbox_temperature.disable()
         graph_checkbox_pressure.disable()
         graph_checkbox_humidity.disable()
         graph_checkbox_lumen.disable()
         graph_checkbox_colour.disable()
         graph_checkbox_up_time.disable()
+        graph_button_live.disable()
+        graph_textbox_refresh_time.disable()
 
         graph_checkbox_acc.enable()
         graph_checkbox_mag.enable()
         graph_checkbox_gyro.enable()
+        graph_textbox_start.enable()
+        graph_textbox_end.enable()
+        graph_textbox_sql_skip.disable()
+        graph_button_database.enable()
+
+    if graph_radio_sensor_type.get() == "Live":
+        graph_button_database.disable()
+        graph_textbox_sql_skip.disable()
+        graph_textbox_start.disable()
+        graph_textbox_end.disable()
+
+        graph_textbox_temperature_offset.enable()
+        graph_textbox_refresh_time.enable()
+        graph_checkbox_temperature.enable()
+        graph_checkbox_pressure.enable()
+        graph_checkbox_humidity.enable()
+        graph_checkbox_lumen.enable()
+        graph_checkbox_colour.enable()
+        graph_checkbox_up_time.enable()
+        graph_checkbox_acc.enable()
+        graph_checkbox_mag.enable()
+        graph_checkbox_gyro.enable()
+        graph_button_live.enable()
 
 
-def graph_button():
+def graph_plotly_button():
     """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
     new_graph_data = app_graph.CreateGraphData()
     new_graph_data.db_location = filedialog.askopenfilename()
-    if graph_radio_sensor_type.get() == "Trigger":
+    if graph_radio_sensor_type.get() == "Trigger SQL":
         new_graph_data.graph_table = "TriggerData"
 
     config_settings_check = app_config.CreateConfigSettings()
@@ -809,15 +857,62 @@ def graph_button():
     new_graph_data.time_offset = config_settings_good.time_offset
     new_graph_data.skip_sql = config_settings_good.sql_queries_skip
     new_graph_data.temperature_offset = config_settings_good.temperature_offset
-    new_graph_data.graph_columns = get_graph_column_checkboxes()
+    new_graph_data.graph_columns = graph_get_column_checkboxes()
 
     app_graph.start_graph(new_graph_data)
 
 
-def get_graph_column_checkboxes():
+def graph_live_button():
+    if main_live_graph.first_run:
+        pass
+    else:
+        main_live_graph.fig = pyplot.figure()
+        main_live_graph.ax1 = main_live_graph.fig.add_subplot(1, 1, 1)
+        main_live_graph.x = []
+        main_live_graph.y = []
+
+    ip_list = get_checked_ip()
+    main_live_graph.ip = ip_list[0]
+
+    anim = animation.FuncAnimation(main_live_graph.fig, update_graph, interval=2000)
+
+    pyplot.show()
+
+
+def update_graph(i):
+    net_timeout = int(config_textbox_network_check.value)
+
+    sensor_readings = sensor_commands.get_sensor_readings(main_live_graph.ip, net_timeout)
+
+    try:
+        interval_types = sensor_readings[0].split(',')
+        interval_readings = sensor_readings[1].split(',')
+        trigger_types = sensor_readings[0].split(',')
+        trigger_readings = sensor_readings[0].split(',')
+        current_time = str(datetime.datetime.time(datetime.datetime.now()))[:8]
+        main_live_graph.y.append(str(interval_readings[4]))
+        main_live_graph.x.append(current_time)
+        main_live_graph.ax1.clear()
+        main_live_graph.ax1.plot(main_live_graph.x, main_live_graph.y)
+        pyplot.title("Live Sensor Graph")
+
+        if main_live_graph.first_run:
+            main_live_graph.first_temperature = str(interval_readings[4])
+            main_live_graph.first_run = False
+
+        pyplot.xlabel("Current Time: " + current_time + "  /  Current Temperature: " + str(interval_readings[4]))
+        pyplot.ylabel("First Temperature Reading")
+        pyplot.xticks([])
+        pyplot.yticks([main_live_graph.first_temperature])
+
+    except Exception as error:
+        logger.warning("Failed to process Live Graph Data: " + str(error))
+
+
+def graph_get_column_checkboxes():
     """ Returns selected SQL Columns from the Graph Window. """
     column_checkboxes = ["DateTime", "SensorName", "IP"]
-    if graph_radio_sensor_type.get() == "Interval":
+    if graph_radio_sensor_type.get() == "Interval SQL":
         if graph_checkbox_up_time.value:
             column_checkboxes.append("SensorUpTime")
         if graph_checkbox_temperature.value:
@@ -833,7 +928,7 @@ def get_graph_column_checkboxes():
             column_checkboxes.append("Red")
             column_checkboxes.append("Green")
             column_checkboxes.append("Blue")
-    elif graph_radio_sensor_type.get() == "Trigger":
+    elif graph_radio_sensor_type.get() == "Trigger SQL":
         if graph_checkbox_acc.value:
             column_checkboxes.append("Acc_X")
             column_checkboxes.append("Acc_Y")
@@ -871,12 +966,12 @@ window_config = Window(app,
                        layout="grid",
                        visible=False)
 
-window_graph_plotly = Window(app,
-                             title="Plotly Graphing",
-                             width=270,
-                             height=410,
-                             layout="grid",
-                             visible=False)
+window_graph = Window(app,
+                      title="Graphing",
+                      width=275,
+                      height=410,
+                      layout="grid",
+                      visible=False)
 
 window_sensor_commands = Window(app,
                                 title="Sensor Commands",
@@ -894,24 +989,24 @@ window_sensor_config = Window(app,
 
 app_menubar = MenuBar(app,
                       toplevel=[["File"],
-                                ["Download"],
+                                ["Sensor"],
                                 ["Graphing"],
                                 ["Help"]],
-                      options=[[["Control Center Configuration",
-                                 app_menu_open_config],
-                                ["Open Logs",
+                      options=[[["Open Logs",
                                  app_menu_open_log],
-                                ["Save IP List",
+                                ["Save IP's",
                                  config_button_save],
-                                ["Sensors Configuration",
+                                ["Control Center Configuration",
+                                 app_menu_open_config]],
+                               [["Send Commands",
+                                app_menu_open_commands],
+                                ["Update Configurations",
                                 app_menu_open_sensor_config],
-                                ["Sensor Commands",
-                                app_menu_open_commands]],
-                               [["Download Interval Database(s)",
+                                ["Download Interval Database(s)",
                                  app_menu_download_interval_db],
                                 ["Download Trigger Database(s)",
                                  app_menu_download_trigger_db]],
-                               [["Plotly Offline Graphing",
+                               [["Open Graph Window",
                                  app_menu_open_graph]],
                                [["KootNet Sensors - About",
                                  app_menu_open_about],
@@ -1306,147 +1401,166 @@ config_textbox_network_details = TextBox(window_config,
                                          align="top")
 
 # Graph Window Section
-graph_text_start = Text(window_graph_plotly,
+graph_text_start = Text(window_graph,
                         text="Start DateTime: ",
                         color='green',
                         grid=[1, 2],
                         align="left")
 
-graph_textbox_start = TextBox(window_graph_plotly,
+graph_textbox_start = TextBox(window_graph,
                               text="",
                               width=20,
                               grid=[2, 2],
                               align="left")
 
-graph_text_end = Text(window_graph_plotly,
+graph_text_end = Text(window_graph,
                       text="End DateTime:",
                       color='green',
                       grid=[1, 3],
                       align="left")
 
-graph_textbox_end = TextBox(window_graph_plotly,
+graph_textbox_end = TextBox(window_graph,
                             text="",
                             width=20,
                             grid=[2, 3],
                             align="left")
 
-graph_text_sql_skip = Text(window_graph_plotly,
+graph_text_sql_skip = Text(window_graph,
                            text="Add row every:",
                            color='green',
                            grid=[1, 4],
                            align="left")
 
-graph_textbox_sql_skip = TextBox(window_graph_plotly,
+graph_textbox_sql_skip = TextBox(window_graph,
                                  text="",
                                  width=10,
                                  grid=[2, 4],
                                  align="left")
 
-graph_text_sql_skip2 = Text(window_graph_plotly,
+graph_text_sql_skip2 = Text(window_graph,
                             text="rows    ",
                             color='green',
                             grid=[2, 4],
                             align="right")
 
-graph_text_temperature_offset = Text(window_graph_plotly,
+graph_text_temperature_offset = Text(window_graph,
                                      text="Environmental:",
                                      color='green',
                                      grid=[1, 5],
                                      align="left")
 
-graph_textbox_temperature_offset = TextBox(window_graph_plotly,
+graph_textbox_temperature_offset = TextBox(window_graph,
                                            text="",
-                                           width=4,
+                                           width=5,
                                            grid=[2, 5],
                                            align="left")
 
-graph_text_temperature_offset2 = Text(window_graph_plotly,
+graph_text_temperature_offset2 = Text(window_graph,
                                       text="Temp Offset",
                                       color='green',
                                       grid=[2, 5],
                                       align="right")
 
-graph_text_sensor_type_space = Text(window_graph_plotly,
-                                    text=" ",
-                                    grid=[1, 6],
-                                    align="right")
+# graph_text_sensor_type_space = Text(window_graph,
+#                                     text=" ",
+#                                     grid=[1, 6],
+#                                     align="right")
 
-graph_text_sensor_type_name = Text(window_graph_plotly,
-                                   text="Database Type",
+graph_text_refresh_time = Text(window_graph,
+                               text="Live Refresh (Sec):",
+                               color='green',
+                               grid=[1, 6],
+                               align="left")
+
+graph_textbox_refresh_time = TextBox(window_graph,
+                                     text="5",
+                                     width=5,
+                                     grid=[2, 6],
+                                     align="left")
+
+graph_text_sensor_type_name = Text(window_graph,
+                                   text="Data Source",
                                    color='blue',
                                    grid=[1, 7, 2, 1],
                                    align="top")
 
-graph_radio_sensor_type = ButtonGroup(window_graph_plotly,
-                                      options=["Interval", "Trigger"],
+graph_radio_sensor_type = ButtonGroup(window_graph,
+                                      options=["Interval SQL", "Trigger SQL", "Live"],
                                       horizontal="True",
                                       command=graph_radio_selection,
                                       grid=[1, 8, 2, 1],
                                       align="top")
 
-graph_text_column_selection = Text(window_graph_plotly,
+graph_text_column_selection = Text(window_graph,
                                    text="Interval Sensors",
                                    color='blue',
                                    grid=[1, 10, 2, 1],
                                    align="top")
 
-graph_checkbox_up_time = CheckBox(window_graph_plotly,
+graph_checkbox_up_time = CheckBox(window_graph,
                                   text="System Uptime",
                                   grid=[1, 11],
                                   align="left")
 
-graph_checkbox_temperature = CheckBox(window_graph_plotly,
+graph_checkbox_temperature = CheckBox(window_graph,
                                       text="Temperature",
                                       grid=[1, 12],
                                       align="left")
 
-graph_checkbox_pressure = CheckBox(window_graph_plotly,
+graph_checkbox_pressure = CheckBox(window_graph,
                                    text="Pressure",
                                    grid=[1, 13],
                                    align="left")
 
-graph_checkbox_humidity = CheckBox(window_graph_plotly,
+graph_checkbox_humidity = CheckBox(window_graph,
                                    text="Humidity",
                                    grid=[2, 11],
                                    align="left")
 
-graph_checkbox_lumen = CheckBox(window_graph_plotly,
+graph_checkbox_lumen = CheckBox(window_graph,
                                 text="Lumen",
                                 grid=[2, 12],
                                 align="left")
 
-graph_checkbox_colour = CheckBox(window_graph_plotly,
+graph_checkbox_colour = CheckBox(window_graph,
                                  text="Colour RGB",
                                  grid=[2, 13],
                                  align="left")
 
-graph_text_column_selection2 = Text(window_graph_plotly,
+graph_text_column_selection2 = Text(window_graph,
                                     text="Trigger Sensors",
                                     color='blue',
                                     grid=[1, 14, 2, 1],
                                     align="bottom")
 
-graph_checkbox_acc = CheckBox(window_graph_plotly,
+graph_checkbox_acc = CheckBox(window_graph,
                               text="Accelerometer XYZ",
                               grid=[1, 15],
                               align="left")
 
-graph_checkbox_mag = CheckBox(window_graph_plotly,
+graph_checkbox_mag = CheckBox(window_graph,
                               text="Magnetometer XYZ",
                               grid=[2, 15],
                               align="left")
 
-graph_checkbox_gyro = CheckBox(window_graph_plotly,
+graph_checkbox_gyro = CheckBox(window_graph,
                                text="Gyroscopic XYZ",
                                grid=[1, 16],
                                align="left")
 
-graph_button_sensors = PushButton(window_graph_plotly,
-                                  text="Open Database &\nGraph Sensors",
-                                  command=graph_button,
-                                  grid=[1, 18, 2, 1],
-                                  align="bottom")
+graph_button_database = PushButton(window_graph,
+                                   text="Open & Graph\nDatabase",
+                                   command=graph_plotly_button,
+                                   grid=[1, 18, 2, 1],
+                                   align="left")
 
+graph_button_live = PushButton(window_graph,
+                               text="Start Live Graph",
+                               command=graph_live_button,
+                               grid=[2, 18],
+                               align="left")
+
+# Sensor Commands Window
 commands_text_select = Text(window_sensor_commands,
                             text="Select Sensors from the Main Window",
                             grid=[1, 1, 3, 1],
@@ -1606,6 +1720,8 @@ sensor_config_button_set_config = PushButton(window_sensor_config,
 
 # Set custom app configurations
 app_custom_configurations()
+
+main_live_graph = CreateLiveGraph()
 
 # Start the App
 logger.info('KootNet Sensors - PC Control Center - Started')
