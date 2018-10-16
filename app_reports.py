@@ -16,10 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import sensor_commands
 import webbrowser
 import os
 import logging
-from sensor_commands import get_system_info, get_sensor_config
 from app_config import load_from_file as load_config
 from logging.handlers import RotatingFileHandler
 
@@ -44,6 +44,9 @@ html_template_system3 = script_directory + "/additional_files/html_template_syst
 html_template_config1 = script_directory + "/additional_files/html_template_config1.html"
 html_template_config2 = script_directory + "/additional_files/html_template_config2.html"
 html_template_config3 = script_directory + "/additional_files/html_template_config3.html"
+html_template_readings1 = script_directory + "/additional_files/html_template_readings1.html"
+html_template_readings2 = script_directory + "/additional_files/html_template_readings2.html"
+html_template_readings3 = script_directory + "/additional_files/html_template_readings3.html"
 
 
 def _html_system_codes():
@@ -68,16 +71,10 @@ def _html_readings_codes():
     """ Returns HTML replacement codes for a Sensor Configuration Report. """
     logger.debug("Getting Sensor Config HTML replacement Codes")
 
-    html_replacement_vars = ["{{HostName}}",
-                             "{{IP}}",
-                             "{{DateTime}}",
-                             "{{}}",
-                             "{{}}",
-                             "{{}}",
-                             "{{}}",
-                             "{{}}",
-                             "{{}}",
-                             "{{}}"]
+    html_replacement_vars = ["{{IntervalTypes}}",
+                             "{{IntervalReadings}}",
+                             "{{TriggerTypes}}",
+                             "{{TriggerReadings}}"]
 
     return html_replacement_vars
 
@@ -133,7 +130,7 @@ def sensor_system_report(ip_list):
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
-            sensor_data = get_system_info(ip, net_timeout)
+            sensor_data = sensor_commands.get_system_info(ip, net_timeout)
 
             uptime_days = int(float(sensor_data[3]) // 1440)
             uptime_hours = int((float(sensor_data[3]) % 1440) // 60)
@@ -175,6 +172,67 @@ def sensor_system_report(ip_list):
         logger.error("Sensor System Report - HTML Save File - Failed: " + str(error))
 
 
+def sensor_readings_report(ip_list):
+    """ Creates and opens a HTML Sensors Readings Report. """
+    final_file = ''
+    sensor_html = ''
+    temp_config = load_config()
+    net_timeout = int(temp_config.network_details_timeout)
+
+    try:
+        html_file_part = open(html_template_readings1, 'r')
+        final_file = html_file_part.read()
+        html_file_part.close()
+        html_file_part = open(html_template_readings2, 'r')
+        sensor_html = html_file_part.read()
+        html_file_part.close()
+        logger.debug("Open First 2 Readings Report Templates - OK")
+    except Exception as error:
+        logger.error("Open First 2 Readings Report Templates - Failed: " + str(error))
+
+    # For each IP in the list, Get its data per Report "Type"
+    # Inserting them into a final HTML file, based on a 3 part template
+    replacement_codes = _html_readings_codes()
+    for ip in ip_list:
+        try:
+            current_sensor_html = sensor_html
+            sensor_data = sensor_commands.get_sensor_readings(ip, net_timeout)
+
+            count = 0
+            for code in replacement_codes:
+                try:
+                    replace_word = str(sensor_data[count])
+                except Exception as error:
+                    replace_word = "Failed"
+                    logger.error("Invalid Sensor Data: " + str(error))
+
+                current_sensor_html = current_sensor_html.replace(code, replace_word)
+                count = count + 1
+
+            final_file = final_file + current_sensor_html
+        except Exception as error:
+                logger.error("Readings Report Failure: " + str(error))
+
+    try:
+        html_file_part = open(html_template_readings3, 'r')
+        html_end = html_file_part.read()
+        html_file_part.close()
+        final_file = final_file + html_end
+        logger.debug("Created Readings Report - HTML File - OK")
+    except Exception as error:
+        logger.error("Open 3rd Readings Report Template File Failed: " + str(error))
+
+    try:
+        save_to_location = str(temp_config.save_to + "SensorsReadings.html")
+        file_out = open(save_to_location, 'w')
+        file_out.write(final_file)
+        file_out.close()
+        open_html(save_to_location)
+        logger.debug("Sensor Readings Report - HTML Save File - OK")
+    except Exception as error:
+        logger.error("Sensor Readings Report - HTML Save File - Failed: " + str(error))
+
+
 def sensor_config_report(ip_list):
     """ Creates and opens a HTML Configuration Report of the provided Sensors. """
     final_file = ''
@@ -199,7 +257,7 @@ def sensor_config_report(ip_list):
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html
-            sensor_data = get_sensor_config(ip, net_timeout)
+            sensor_data = sensor_commands.get_sensor_config(ip, net_timeout)
 
             count = 0
             for code in replacement_codes:
