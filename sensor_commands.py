@@ -106,6 +106,24 @@ def get_sensor_readings(ip, net_timeout):
     return var_data
 
 
+def get_sensor_temperature(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's temperature reading. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetEnvTemperature')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
 def get_sensor_config(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor configuration. """
     socket.setdefaulttimeout(net_timeout)
