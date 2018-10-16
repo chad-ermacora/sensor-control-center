@@ -100,7 +100,7 @@ def get_sensor_readings(ip, net_timeout):
         sock_g.close()
         logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
     except Exception as error:
-        var_data = ""
+        var_data = ["Readings Failed on " + ip, str(error), "Readings Failed on " + ip, str(error)]
         logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
 
     return var_data
