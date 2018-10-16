@@ -59,21 +59,49 @@ logger.addHandler(stream_handler)
 config_file = script_directory + "/config.txt"
 app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.2"
 about_text = script_directory + "/additional_files/about_text.txt"
-sensor_ip_queue = Queue()
 sensor_data_queue = Queue()
 
 
 class CreateLiveGraph:
-    def __init__(self):
-        self.ip = ""
-        self.first_run = True
-        self.first_temperature = ""
-        self.first_datetime = ""
+    def __init__(self, ip, net_timeout):
+        self.ip = ip
+        self.first_datetime = str(datetime.datetime.time(datetime.datetime.now()))[:8]
+        self.net_timeout = net_timeout
 
         self.fig = pyplot.figure()
         self.ax1 = self.fig.add_subplot(1, 1, 1)
         self.x = []
         self.y = []
+
+        # noinspection PyUnusedLocal
+        self.ani = animation.FuncAnimation(self.fig,
+                                           self._update_graph,
+                                           interval=int(graph_textbox_refresh_time.value) * 1000)
+        pyplot.show()
+
+    def _update_graph(self, x_frame):
+        current_time = str(datetime.datetime.time(datetime.datetime.now()))[:8]
+
+        try:
+            sensor_reading = sensor_commands.get_sensor_temperature(self.ip, self.net_timeout)
+            sensor_reading = round(sensor_reading + float(graph_textbox_temperature_offset.value), 3)
+
+            self.ax1.clear()
+            self.y.append(sensor_reading)
+            self.x.append(x_frame)
+
+            self.ax1.plot(self.x, self.y)
+
+            pyplot.title("Live Sensor Graph from on " + self.ip)
+            pyplot.xlabel("Start Time: " +
+                          self.first_datetime +
+                          " || Current Time: " +
+                          current_time +
+                          "  ||  Current Temperature: " + str(sensor_reading) + " °C")
+            pyplot.ylabel("Temperature in °C")
+            pyplot.xticks([])
+        except Exception as error:
+            logger.error("Live Graph - Invalid Sensor Data: " + str(error))
 
 
 def _app_custom_configurations():
@@ -276,14 +304,10 @@ def app_check_all_ip_checkboxes(var_column):
             app_checkbox_ip16.value = 0
 
 
-def _worker_sensor_check(net_timeout):
+def _worker_sensor_check(ip, net_timeout):
     """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
-    while not sensor_ip_queue.empty():
-        ip = sensor_ip_queue.get()
-        data = [ip, sensor_commands.check_online_status(ip, net_timeout)]
-
-        sensor_data_queue.put(data)
-        sensor_ip_queue.task_done()
+    data = [ip, sensor_commands.check_online_status(ip, net_timeout)]
+    sensor_data_queue.put(data)
 
 
 def get_verified_ip_list():
@@ -299,8 +323,7 @@ def get_verified_ip_list():
     threads = []
 
     for ip in ip_list:
-        threads.append(Thread(target=_worker_sensor_check, args=[net_timeout]))
-        sensor_ip_queue.put(ip)
+        threads.append(Thread(target=_worker_sensor_check, args=[ip, net_timeout]))
 
     for thread in threads:
         thread.start()
@@ -860,56 +883,10 @@ def graph_plotly_button():
 
 
 def graph_live_button():
-    main_live_graph = CreateLiveGraph()
-
-    main_live_graph.first_datetime = str(datetime.datetime.time(datetime.datetime.now()))[:8]
-
+    pyplot.close()
     ip_list = get_verified_ip_list()
-    get_verified_ip_list()
-    main_live_graph.ip = ip_list[0]
-
-    ani = animation.FuncAnimation(main_live_graph.fig,
-                                  _update_graph,
-                                  fargs=[main_live_graph],
-                                  interval=int(graph_textbox_refresh_time.value) * 1000)
-
-    pyplot.show()
-
-
-def _update_graph(x_frame, main_live_graph):
-    net_timeout = int(config_textbox_network_check.value)
-    current_time = str(datetime.datetime.time(datetime.datetime.now()))[:8]
-
-    try:
-        sensor_readings = sensor_commands.get_sensor_readings(main_live_graph.ip, net_timeout)
-        interval_readings = sensor_readings[1].split(',')
-
-        interval_readings[4] = float(interval_readings[4].replace("'", "")) + \
-            float(graph_textbox_temperature_offset.value)
-        interval_readings[4] = round(interval_readings[4], 3)
-
-        if main_live_graph.first_run:
-                main_live_graph.first_temperature = str(interval_readings[4])
-                main_live_graph.first_run = False
-                x_frame = -1
-        else:
-            main_live_graph.ax1.clear()
-
-        main_live_graph.y.append(interval_readings[4])
-        main_live_graph.x.append(x_frame)
-
-        main_live_graph.ax1.plot(main_live_graph.x, main_live_graph.y)
-
-        pyplot.title("Live Sensor Graph from " + interval_readings[0] + " on " + main_live_graph.ip)
-        pyplot.xlabel("Start Time: " +
-                      main_live_graph.first_datetime +
-                      " || Current Time: " +
-                      current_time +
-                      "  ||  Current Temperature: " + str(interval_readings[4]) + " °C")
-        pyplot.ylabel("Temperature in °C")
-        pyplot.xticks([])
-    except Exception as error:
-        logger.error("Live Graph - Invalid Sensor Data: " + str(error))
+    net_timeout = int(config_textbox_network_details.value)
+    CreateLiveGraph(ip_list[0], net_timeout)
 
 
 def _graph_get_column_checkboxes():
@@ -963,7 +940,7 @@ window_app_about = Window(app,
                           visible=False)
 
 window_config = Window(app,
-                       title="Configuration",
+                       title="Control Center Configuration",
                        width=580,
                        height=300,
                        layout="grid",
@@ -977,16 +954,16 @@ window_sensor_commands = Window(app,
                                 visible=False)
 
 window_sensor_config = Window(app,
-                              title="Update Sensors Configuration",
+                              title="Sensors Configuration Updater",
                               width=340,
                               height=265,
                               layout="grid",
                               visible=False)
 
 window_sensor_reports = Window(app,
-                               title="Reports",
-                               width=225,
-                               height=260,
+                               title="Sensor Reports",
+                               width=475,
+                               height=100,
                                layout="grid",
                                visible=False)
 
@@ -1410,14 +1387,14 @@ config_textbox_network_details = TextBox(window_config,
 
 # Sensor Reports Window Section
 reports_text_select = Text(window_sensor_reports,
-                           text="Select Sensors from\nThe Main Window",
+                           text="Select Sensors from The Main Window",
                            grid=[1, 1, 3, 1],
                            color='#CB0000',
                            align="top")
 
 reports_text1 = Text(window_sensor_reports,
-                     text="Sensors Readings Report",
-                     color='green',
+                     text="Live Readings Report  |",
+                     color='blue',
                      grid=[1, 6],
                      align="top")
 
@@ -1428,27 +1405,27 @@ reports_button_check_sensor = PushButton(window_sensor_reports,
                                          align="top")
 
 reports_text2 = Text(window_sensor_reports,
-                     text="Sensors System Report",
-                     color='green',
-                     grid=[1, 8],
+                     text="|  System Report  |",
+                     color='blue',
+                     grid=[2, 6],
                      align="top")
 
 reports_button_sensor_detail = PushButton(window_sensor_reports,
                                           text="Create",
                                           command=app_sensor_system_report,
-                                          grid=[1, 9],
+                                          grid=[2, 7],
                                           align="top")
 
 reports_text3 = Text(window_sensor_reports,
-                     text="Sensors Configuration Report",
-                     color='green',
-                     grid=[1, 10],
+                     text="|  Configuration Report",
+                     color='blue',
+                     grid=[3, 6],
                      align="top")
 
 reports_button_sensor_config = PushButton(window_sensor_reports,
                                           text="Create",
                                           command=app_sensor_config_report,
-                                          grid=[1, 11],
+                                          grid=[3, 7],
                                           align="top")
 
 # Graph Window Section
