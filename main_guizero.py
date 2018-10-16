@@ -65,7 +65,6 @@ sensor_data_queue = Queue()
 
 class CreateLiveGraph:
     def __init__(self):
-        # style.use("fivethirtyeight")
         self.ip = ""
         self.first_run = True
         self.first_temperature = ""
@@ -147,7 +146,7 @@ def _app_exit():
         handler.close()
         logger.removeHandler(handler)
 
-    # pyplot.close(main_live_graph.fig)
+    pyplot.close()
     app.destroy()
 
 
@@ -489,7 +488,9 @@ def _make_ip_list():
 
 
 def app_sensor_readings_report():
-    pass
+    """ Create a HTML sensor Readings Report containing each IP selected and online. """
+    var_ip_list = get_verified_ip_list()
+    app_reports.sensor_readings_report(var_ip_list)
 
 
 def app_sensor_system_report():
@@ -859,7 +860,8 @@ def graph_plotly_button():
 
 
 def graph_live_button():
-    main_live_graph.first_run = True
+    main_live_graph = CreateLiveGraph()
+
     main_live_graph.first_datetime = str(datetime.datetime.time(datetime.datetime.now()))[:8]
 
     ip_list = get_verified_ip_list()
@@ -868,12 +870,13 @@ def graph_live_button():
 
     ani = animation.FuncAnimation(main_live_graph.fig,
                                   _update_graph,
+                                  fargs=[main_live_graph],
                                   interval=int(graph_textbox_refresh_time.value) * 1000)
 
     pyplot.show()
 
 
-def _update_graph(x_frame):
+def _update_graph(x_frame, main_live_graph):
     net_timeout = int(config_textbox_network_check.value)
     current_time = str(datetime.datetime.time(datetime.datetime.now()))[:8]
 
@@ -892,24 +895,21 @@ def _update_graph(x_frame):
         else:
             main_live_graph.ax1.clear()
 
-        try:
-            main_live_graph.y.append(interval_readings[4])
-            main_live_graph.x.append(x_frame)
+        main_live_graph.y.append(interval_readings[4])
+        main_live_graph.x.append(x_frame)
 
-            main_live_graph.ax1.plot(main_live_graph.x, main_live_graph.y)
+        main_live_graph.ax1.plot(main_live_graph.x, main_live_graph.y)
 
-            pyplot.title("Live Sensor Graph from " + interval_readings[0] + " on " + main_live_graph.ip)
-            pyplot.xlabel("Start Time: " +
-                          main_live_graph.first_datetime +
-                          " || Current Time: " +
-                          current_time +
-                          "  ||  Current Temperature: " + str(interval_readings[4]) + " °C")
-            pyplot.ylabel("Temperature in °C")
-            pyplot.xticks([])
-        except Exception as error:
-            logger.warning("Failed to process Live Graph Data: " + str(error))
+        pyplot.title("Live Sensor Graph from " + interval_readings[0] + " on " + main_live_graph.ip)
+        pyplot.xlabel("Start Time: " +
+                      main_live_graph.first_datetime +
+                      " || Current Time: " +
+                      current_time +
+                      "  ||  Current Temperature: " + str(interval_readings[4]) + " °C")
+        pyplot.ylabel("Temperature in °C")
+        pyplot.xticks([])
     except Exception as error:
-        logger.error(str(error))
+        logger.error("Live Graph - Invalid Sensor Data: " + str(error))
 
 
 def _graph_get_column_checkboxes():
@@ -1771,8 +1771,6 @@ sensor_config_button_set_config = PushButton(window_sensor_config,
 
 # Set custom app configurations
 _app_custom_configurations()
-
-main_live_graph = CreateLiveGraph()
 
 # Start the App
 logger.info('KootNet Sensors - PC Control Center - Started')
