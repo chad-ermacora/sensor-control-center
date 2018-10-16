@@ -63,7 +63,9 @@ sensor_data_queue = Queue()
 
 
 class CreateLiveGraph:
-    def __init__(self, ip, net_timeout):
+    def __init__(self, sensor_type, ip, net_timeout):
+        print(str(sensor_type))
+        self.sensor_type = sensor_type
         self.ip = ip
         self.first_datetime = str(datetime.datetime.time(datetime.datetime.now()))[:8]
         self.net_timeout = net_timeout
@@ -81,24 +83,76 @@ class CreateLiveGraph:
 
     def _update_graph(self, x_frame):
         current_time = str(datetime.datetime.time(datetime.datetime.now()))[:8]
-
+        sensor_name = sensor_commands.get_sensor_hostname(self.ip, self.net_timeout)
         try:
-            sensor_reading = sensor_commands.get_sensor_temperature(self.ip, self.net_timeout)
-            sensor_reading = round(sensor_reading + float(graph_textbox_temperature_offset.value), 3)
+            if self.sensor_type is "SensorUpTime":
+                sensor_reading = sensor_commands.get_sensor_uptime(self.ip, self.net_timeout)
+                sensor_type_name = "Sensor Uptime"
+                measurement_type = ""
+            elif self.sensor_type is "SystemTemp":
+                sensor_reading = sensor_commands.get_sensor_cpu_temperature(self.ip, self.net_timeout)
+                sensor_type_name = "CPU Temperature"
+                measurement_type = " in °C"
+            elif self.sensor_type is "EnvironmentTemp":
+                sensor_reading = sensor_commands.get_sensor_temperature(self.ip, self.net_timeout)
+                sensor_reading = round(float(sensor_reading) + float(graph_textbox_temperature_offset.value), 3)
+                sensor_type_name = "Environmental Temperature"
+                measurement_type = " in °C"
+            elif self.sensor_type is "Pressure":
+                sensor_reading = sensor_commands.get_sensor_pressure(self.ip, self.net_timeout)
+                sensor_type_name = "Pressure"
+                measurement_type = " in hPa"
+            elif self.sensor_type is "Humidity":
+                sensor_reading = sensor_commands.get_sensor_humidity(self.ip, self.net_timeout)
+                sensor_type_name = "Humidity"
+                measurement_type = " in %RH"
+            elif self.sensor_type is "Lumen":
+                sensor_reading = sensor_commands.get_sensor_lumen(self.ip, self.net_timeout)
+                sensor_type_name = "Lumen"
+                measurement_type = " in Lumen"
+            elif self.sensor_type[0] == "Red":
+                sensor_reading = sensor_commands.get_sensor_rgb(self.ip, self.net_timeout)
+                sensor_type_name = "RGB"
+                measurement_type = ""
+            elif self.sensor_type[0] == "Acc_X":
+                sensor_reading = 0
+                sensor_type_name = "Accelerometer XYZ"
+                measurement_type = ""
+            elif self.sensor_type[0] == "Mag_X":
+                sensor_reading = 0
+                sensor_type_name = "Magnetometer XYZ"
+                measurement_type = ""
+            elif self.sensor_type[0] == "Gyro_X":
+                sensor_reading = 0
+                sensor_type_name = "Gyroscope XYZ"
+                measurement_type = ""
+            else:
+                sensor_reading = 0
+                sensor_type_name = "Invalid Sensor"
+                measurement_type = ""
 
             self.ax1.clear()
             self.y.append(sensor_reading)
             self.x.append(x_frame)
-
             self.ax1.plot(self.x, self.y)
 
-            pyplot.title("Live Sensor Graph from on " + self.ip)
-            pyplot.xlabel("Start Time: " +
-                          self.first_datetime +
-                          " || Current Time: " +
-                          current_time +
-                          "  ||  Current Temperature: " + str(sensor_reading) + " °C")
-            pyplot.ylabel("Temperature in °C")
+            if self.sensor_type is "SensorUpTime":
+                uptime_days = int(float(sensor_reading) // 1440)
+                uptime_hours = int((float(sensor_reading) % 1440) // 60)
+                uptime_min = int(float(sensor_reading) % 60)
+                sensor_reading = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
+
+            pyplot.title("Live Sensor " + sensor_name + " on " + self.ip)
+            pyplot.xlabel("Start Time: " + self.first_datetime +
+                          "  ||  Last Updated: " + current_time +
+                          "  ||  Reading: " + str(sensor_reading) + measurement_type)
+
+            if self.sensor_type is "SensorUpTime":
+                measurement_type = " in Minutes"
+            elif self.sensor_type is "Lumen":
+                measurement_type = ""
+
+            pyplot.ylabel(sensor_type_name + measurement_type)
             pyplot.xticks([])
         except Exception as error:
             logger.error("Live Graph - Invalid Sensor Data: " + str(error))
@@ -779,6 +833,7 @@ def sensor_config_set():
 
 def _graph_radio_selection():
     """ Enables or disables the Graph Window selections, based on graph type selected. """
+    _graph_enable_all_checkboxes()
     if graph_radio_sensor_type.get() == "Interval SQL":
         graph_checkbox_acc.disable()
         graph_checkbox_mag.disable()
@@ -827,23 +882,23 @@ def _graph_radio_selection():
         graph_textbox_temperature_offset.enable()
         graph_textbox_refresh_time.enable()
 
-        graph_checkbox_temperature.disable()
-        graph_checkbox_temperature.value = 1
-        graph_checkbox_pressure.disable()
+        graph_checkbox_temperature.enable()
+        graph_checkbox_temperature.value = 0
+        graph_checkbox_pressure.enable()
         graph_checkbox_pressure.value = 0
-        graph_checkbox_humidity.disable()
+        graph_checkbox_humidity.enable()
         graph_checkbox_humidity.value = 0
-        graph_checkbox_lumen.disable()
+        graph_checkbox_lumen.enable()
         graph_checkbox_lumen.value = 0
-        graph_checkbox_colour.disable()
+        graph_checkbox_colour.enable()
         graph_checkbox_colour.value = 0
-        graph_checkbox_up_time.disable()
+        graph_checkbox_up_time.enable()
         graph_checkbox_up_time.value = 0
-        graph_checkbox_acc.disable()
+        graph_checkbox_acc.enable()
         graph_checkbox_acc.value = 0
-        graph_checkbox_mag.disable()
+        graph_checkbox_mag.enable()
         graph_checkbox_mag.value = 0
-        graph_checkbox_gyro.disable()
+        graph_checkbox_gyro.enable()
         graph_checkbox_gyro.value = 0
 
         graph_button_live.enable()
@@ -884,19 +939,27 @@ def graph_plotly_button():
 
 def graph_live_button():
     pyplot.close()
-    ip_list = get_verified_ip_list()
-    net_timeout = int(config_textbox_network_details.value)
-    CreateLiveGraph(ip_list[0], net_timeout)
+    try:
+        graph_checkbox = _graph_get_column_checkboxes()[3]
+        print(str(graph_checkbox))
+        ip_list = get_verified_ip_list()
+        net_timeout = int(config_textbox_network_details.value)
+        CreateLiveGraph(graph_checkbox, ip_list[0], net_timeout)
+    except Exception as error:
+        logger.warning("No sensors selected in the main window - " + str(error))
 
 
 def _graph_get_column_checkboxes():
-    """ Returns selected SQL Columns from the Graph Window. """
+    """ Returns selected SQL Columns from the Graph Window, depending on the Data Source Selected. """
     column_checkboxes = ["DateTime", "SensorName", "IP"]
-    if graph_radio_sensor_type.get() == "Interval SQL":
+
+    data_source_radio = graph_radio_sensor_type.get()
+    if data_source_radio == "Interval SQL" or data_source_radio == "Live":
         if graph_checkbox_up_time.value:
             column_checkboxes.append("SensorUpTime")
+        # if graph_checkbox_cpu_temperature.value:
+        #     column_checkboxes.append("SystemTemp")
         if graph_checkbox_temperature.value:
-            column_checkboxes.append("SystemTemp")
             column_checkboxes.append("EnvironmentTemp")
         if graph_checkbox_pressure.value:
             column_checkboxes.append("Pressure")
@@ -908,7 +971,7 @@ def _graph_get_column_checkboxes():
             column_checkboxes.append("Red")
             column_checkboxes.append("Green")
             column_checkboxes.append("Blue")
-    elif graph_radio_sensor_type.get() == "Trigger SQL":
+    if data_source_radio == "Trigger SQL" or data_source_radio == "Live":
         if graph_checkbox_acc.value:
             column_checkboxes.append("Acc_X")
             column_checkboxes.append("Acc_Y")
@@ -924,6 +987,131 @@ def _graph_get_column_checkboxes():
 
     logger.debug(str(column_checkboxes))
     return column_checkboxes
+
+
+def _graph_enable_all_checkboxes():
+    graph_checkbox_up_time.enable()
+    graph_checkbox_up_time.value = 0
+    graph_checkbox_temperature.enable()
+    graph_checkbox_temperature.value = 0
+    graph_checkbox_pressure.enable()
+    graph_checkbox_pressure.value = 0
+    graph_checkbox_humidity.enable()
+    graph_checkbox_humidity.value = 0
+    graph_checkbox_lumen.enable()
+    graph_checkbox_lumen.value = 0
+    graph_checkbox_colour.enable()
+    graph_checkbox_colour.value = 0
+    graph_checkbox_acc.enable()
+    graph_checkbox_acc.value = 0
+    graph_checkbox_mag.enable()
+    graph_checkbox_mag.value = 0
+    graph_checkbox_gyro.enable()
+    graph_checkbox_gyro.value = 0
+
+
+def _graph_disable_other_checkboxes(var_checkbox):
+    if graph_radio_sensor_type.value == "Live":
+        if var_checkbox is "Uptime":
+            pass
+        else:
+            graph_checkbox_up_time.disable()
+            graph_checkbox_up_time.value = 0
+        if var_checkbox is "Temperature":
+            pass
+        else:
+            graph_checkbox_temperature.disable()
+            graph_checkbox_temperature.value = 0
+        if var_checkbox is "Pressure":
+            pass
+        else:
+            graph_checkbox_pressure.disable()
+            graph_checkbox_pressure.value = 0
+        if var_checkbox is "Humidity":
+            pass
+        else:
+            graph_checkbox_humidity.disable()
+            graph_checkbox_humidity.value = 0
+        if var_checkbox is "Lumen":
+            pass
+        else:
+            graph_checkbox_lumen.disable()
+            graph_checkbox_lumen.value = 0
+        if var_checkbox is "RGB":
+            pass
+        else:
+            graph_checkbox_colour.disable()
+            graph_checkbox_colour.value = 0
+        if var_checkbox is "Accelerometer":
+            pass
+        else:
+            graph_checkbox_acc.disable()
+            graph_checkbox_acc.value = 0
+        if var_checkbox is "Magnetometer":
+            pass
+        else:
+            graph_checkbox_mag.disable()
+            graph_checkbox_mag.value = 0
+        if var_checkbox is "Gyroscopic":
+            pass
+        else:
+            graph_checkbox_gyro.disable()
+            graph_checkbox_gyro.value = 0
+
+        if var_checkbox is "Uptime":
+            if graph_checkbox_up_time.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_up_time.enable()
+                graph_checkbox_up_time.value = 1
+        elif var_checkbox is "Temperature":
+            if graph_checkbox_temperature.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_temperature.enable()
+                graph_checkbox_temperature.value = 1
+        elif var_checkbox is "Pressure":
+            if graph_checkbox_pressure.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_pressure.enable()
+                graph_checkbox_pressure.value = 1
+        elif var_checkbox is "Humidity":
+            if graph_checkbox_humidity.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_humidity.enable()
+                graph_checkbox_humidity.value = 1
+        elif var_checkbox is "Lumen":
+            if graph_checkbox_lumen.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_lumen.enable()
+                graph_checkbox_lumen.value = 1
+        elif var_checkbox is "RGB":
+            if graph_checkbox_colour.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_colour.enable()
+                graph_checkbox_colour.value = 1
+        elif var_checkbox is "Accelerometer":
+            if graph_checkbox_acc.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_acc.enable()
+                graph_checkbox_acc.value = 1
+        elif var_checkbox is "Magnetometer":
+            if graph_checkbox_mag.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_mag.enable()
+                graph_checkbox_mag.value = 1
+        elif var_checkbox is "Gyroscopic":
+            if graph_checkbox_gyro.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_gyro.enable()
+                graph_checkbox_gyro.value = 1
 
 
 # GUI Window Setup
@@ -1527,31 +1715,43 @@ graph_text_column_selection = Text(window_graph,
 
 graph_checkbox_up_time = CheckBox(window_graph,
                                   text="System Uptime",
+                                  command=_graph_disable_other_checkboxes,
+                                  args=["Uptime"],
                                   grid=[1, 11],
                                   align="left")
 
 graph_checkbox_temperature = CheckBox(window_graph,
                                       text="Temperature",
+                                      command=_graph_disable_other_checkboxes,
+                                      args=["Temperature"],
                                       grid=[1, 12],
                                       align="left")
 
 graph_checkbox_pressure = CheckBox(window_graph,
                                    text="Pressure",
+                                   command=_graph_disable_other_checkboxes,
+                                   args=["Pressure"],
                                    grid=[1, 13],
                                    align="left")
 
 graph_checkbox_humidity = CheckBox(window_graph,
                                    text="Humidity",
+                                   command=_graph_disable_other_checkboxes,
+                                   args=["Humidity"],
                                    grid=[2, 11],
                                    align="left")
 
 graph_checkbox_lumen = CheckBox(window_graph,
                                 text="Lumen",
+                                command=_graph_disable_other_checkboxes,
+                                args=["Lumen"],
                                 grid=[2, 12],
                                 align="left")
 
 graph_checkbox_colour = CheckBox(window_graph,
                                  text="Colour RGB",
+                                 command=_graph_disable_other_checkboxes,
+                                 args=["RGB"],
                                  grid=[2, 13],
                                  align="left")
 
@@ -1563,16 +1763,22 @@ graph_text_column_selection2 = Text(window_graph,
 
 graph_checkbox_acc = CheckBox(window_graph,
                               text="Accelerometer XYZ",
+                              command=_graph_disable_other_checkboxes,
+                              args=["Accelerometer"],
                               grid=[1, 15],
                               align="left")
 
 graph_checkbox_mag = CheckBox(window_graph,
                               text="Magnetometer XYZ",
+                              command=_graph_disable_other_checkboxes,
+                              args=["Magnetometer"],
                               grid=[2, 15],
                               align="left")
 
 graph_checkbox_gyro = CheckBox(window_graph,
                                text="Gyroscopic XYZ",
+                               command=_graph_disable_other_checkboxes,
+                               args=["Gyroscopic"],
                                grid=[1, 16],
                                align="left")
 
