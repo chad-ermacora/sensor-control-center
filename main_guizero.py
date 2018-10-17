@@ -71,6 +71,7 @@ class CreateLiveGraph:
         self.net_timeout = net_timeout
 
         self.fig = pyplot.figure()
+        self.fig.canvas.set_window_title('Live Sensor Graph')
         self.ax1 = self.fig.add_subplot(1, 1, 1)
         self.x = []
         self.y = []
@@ -162,7 +163,7 @@ class CreateLiveGraph:
                 except Exception as error:
                     logger.warning(str(error))
 
-            pyplot.title("Live Sensor " + sensor_name + " on " + self.ip)
+            pyplot.title("Sensor: " + sensor_name + "  ||  IP: " + self.ip)
             pyplot.xlabel("Start Time: " + self.first_datetime +
                           "  ||  Last Updated: " + current_time +
                           "  ||  Reading: " + str(sensor_reading) + measurement_type)
@@ -223,7 +224,7 @@ def _app_custom_configurations():
         window_config.width = 675
         window_config.height = 275
         window_graph.width = 325
-        window_graph.height = 370
+        window_graph.height = 440
         window_sensor_config.width = 365
         window_sensor_config.height = 240
         window_sensor_commands.width = 300
@@ -1190,6 +1191,7 @@ def _graph_disable_other_checkboxes(var_checkbox):
 app = App(title="KootNet Sensors - PC Control Center",
           width=405,
           height=295,
+
           layout="grid")
 
 window_app_about = Window(app,
@@ -1230,7 +1232,7 @@ window_sensor_reports = Window(app,
 window_graph = Window(app,
                       title="Graphing",
                       width=275,
-                      height=435,
+                      height=505,
                       layout="grid",
                       visible=False)
 
@@ -1689,149 +1691,154 @@ reports_button_sensor_config = PushButton(window_sensor_reports,
                                           align="top")
 
 # Graph Window Section
-graph_text_start = Text(window_graph,
-                        text="Start DateTime: ",
-                        color='green',
-                        grid=[1, 2],
-                        align="left")
-
-graph_textbox_start = TextBox(window_graph,
-                              text="",
-                              width=20,
-                              grid=[2, 2],
-                              align="left")
-
-graph_text_end = Text(window_graph,
-                      text="End DateTime:",
-                      color='green',
-                      grid=[1, 3],
-                      align="left")
-
-graph_textbox_end = TextBox(window_graph,
-                            text="",
-                            width=20,
-                            grid=[2, 3],
-                            align="left")
-
-graph_text_sql_skip = Text(window_graph,
-                           text="Add row every:",
-                           color='green',
-                           grid=[1, 4],
-                           align="left")
-
-graph_textbox_sql_skip = TextBox(window_graph,
-                                 text="",
-                                 width=10,
-                                 grid=[2, 4],
-                                 align="left")
-
-graph_text_sql_skip2 = Text(window_graph,
-                            text="rows    ",
-                            color='green',
-                            grid=[2, 4],
-                            align="right")
-
-graph_text_temperature_offset = Text(window_graph,
-                                     text="Environmental:",
-                                     color='green',
-                                     grid=[1, 5],
-                                     align="left")
-
-graph_textbox_temperature_offset = TextBox(window_graph,
-                                           text="",
-                                           width=5,
-                                           grid=[2, 5],
-                                           align="left")
-
-graph_text_temperature_offset2 = Text(window_graph,
-                                      text="Temp Offset",
-                                      color='green',
-                                      grid=[2, 5],
-                                      align="right")
-
-# graph_text_sensor_type_space = Text(window_graph,
-#                                     text=" ",
-#                                     grid=[1, 6],
-#                                     align="right")
-
-graph_text_refresh_time = Text(window_graph,
-                               text="Live Refresh (Sec):",
-                               color='green',
-                               grid=[1, 6],
-                               align="left")
-
-graph_textbox_refresh_time = TextBox(window_graph,
-                                     text="2",
-                                     width=5,
-                                     grid=[2, 6],
-                                     align="left")
-
 graph_text_sensor_type_name = Text(window_graph,
                                    text="Data Source",
                                    color='blue',
-                                   grid=[1, 7, 2, 1],
+                                   grid=[1, 1, 2, 1],
                                    align="top")
 
 graph_radio_sensor_type = ButtonGroup(window_graph,
                                       options=["Live", "Interval SQL", "Trigger SQL"],
                                       horizontal="True",
                                       command=_graph_radio_selection,
-                                      grid=[1, 8, 2, 1],
+                                      grid=[1, 2, 2, 1],
                                       align="top")
+
+graph_text_space1 = Text(window_graph,
+                         text=" ",
+                         grid=[1, 3],
+                         align="right")
+
+graph_text_start = Text(window_graph,
+                        text="Start DateTime: ",
+                        color='green',
+                        grid=[1, 6],
+                        align="left")
+
+graph_textbox_start = TextBox(window_graph,
+                              text="",
+                              width=20,
+                              grid=[2, 6],
+                              align="left")
+
+graph_text_end = Text(window_graph,
+                      text="End DateTime:",
+                      color='green',
+                      grid=[1, 7],
+                      align="left")
+
+graph_textbox_end = TextBox(window_graph,
+                            text="",
+                            width=20,
+                            grid=[2, 7],
+                            align="left")
+
+graph_text_sql_skip = Text(window_graph,
+                           text="Add row every:",
+                           color='green',
+                           grid=[1, 8],
+                           align="left")
+
+graph_textbox_sql_skip = TextBox(window_graph,
+                                 text="",
+                                 width=10,
+                                 grid=[2, 8],
+                                 align="left")
+
+graph_text_sql_skip2 = Text(window_graph,
+                            text="rows    ",
+                            color='green',
+                            grid=[2, 8],
+                            align="right")
+
+graph_text_temperature_offset = Text(window_graph,
+                                     text="Environmental:",
+                                     color='green',
+                                     grid=[1, 9],
+                                     align="left")
+
+graph_textbox_temperature_offset = TextBox(window_graph,
+                                           text="",
+                                           width=5,
+                                           grid=[2, 9],
+                                           align="left")
+
+graph_text_temperature_offset2 = Text(window_graph,
+                                      text="Temp Offset",
+                                      color='green',
+                                      grid=[2, 9],
+                                      align="right")
+
+graph_text_refresh_time = Text(window_graph,
+                               text="Live refresh (Sec):",
+                               color='green',
+                               grid=[1, 10],
+                               align="left")
+
+graph_textbox_refresh_time = TextBox(window_graph,
+                                     text="2",
+                                     width=5,
+                                     grid=[2, 10],
+                                     align="left")
+
+graph_text_space2 = Text(window_graph,
+                         text=" ",
+                         grid=[1, 11],
+                         align="right")
 
 graph_text_column_selection = Text(window_graph,
                                    text="Interval Sensors",
                                    color='blue',
-                                   grid=[1, 10, 2, 1],
+                                   grid=[1, 15, 2, 1],
                                    align="top")
 
 graph_checkbox_up_time = CheckBox(window_graph,
                                   text="System Uptime",
                                   command=_graph_disable_other_checkboxes,
                                   args=["Uptime"],
-                                  grid=[1, 11],
+                                  grid=[1, 16],
                                   align="left")
 
 graph_checkbox_cpu_temp = CheckBox(window_graph,
                                    text="CPU Temperature",
                                    command=_graph_disable_other_checkboxes,
                                    args=["CPUTemperature"],
-                                   grid=[1, 12],
+                                   grid=[1, 17],
                                    align="left")
 
 graph_checkbox_temperature = CheckBox(window_graph,
-                                      text="Temperature",
+                                      text="Env Temperature",
                                       command=_graph_disable_other_checkboxes,
                                       args=["Temperature"],
-                                      grid=[1, 13],
+                                      grid=[1, 18],
                                       align="left")
 
 graph_checkbox_pressure = CheckBox(window_graph,
                                    text="Pressure",
                                    command=_graph_disable_other_checkboxes,
                                    args=["Pressure"],
-                                   grid=[1, 14],
+                                   grid=[1, 19],
                                    align="left")
 
 graph_checkbox_humidity = CheckBox(window_graph,
                                    text="Humidity",
                                    command=_graph_disable_other_checkboxes,
                                    args=["Humidity"],
-                                   grid=[2, 11],
+                                   grid=[2, 16],
                                    align="left")
 
 graph_checkbox_lumen = CheckBox(window_graph,
                                 text="Lumen",
                                 command=_graph_disable_other_checkboxes,
                                 args=["Lumen"],
-                                grid=[2, 12],
+                                grid=[2, 17],
                                 align="left")
 
 graph_checkbox_colour = CheckBox(window_graph,
                                  text="Colour RGB",
                                  command=_graph_disable_other_checkboxes,
                                  args=["RGB"],
-                                 grid=[2, 13],
+                                 grid=[2, 18],
                                  align="left")
 
 graph_text_column_selection2 = Text(window_graph,
@@ -1861,16 +1868,21 @@ graph_checkbox_gyro = CheckBox(window_graph,
                                grid=[1, 26],
                                align="left")
 
+graph_text_space3 = Text(window_graph,
+                         text=" ",
+                         grid=[1, 35],
+                         align="right")
+
 graph_button_database = PushButton(window_graph,
                                    text="Open & Graph\nDatabase",
                                    command=graph_plotly_button,
-                                   grid=[1, 28, 2, 1],
+                                   grid=[1, 36, 2, 1],
                                    align="left")
 
 graph_button_live = PushButton(window_graph,
                                text="Start Live Graph",
                                command=graph_live_button,
-                               grid=[2, 28],
+                               grid=[2, 36],
                                align="left")
 
 # Sensor Commands Window
