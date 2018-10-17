@@ -338,7 +338,7 @@ def _plotly_graph(graph_interval_data):
             sub_plots.append('Sensor Uptime')
             logger.debug("Graph Sensor Uptime Added")
 
-        if len(graph_interval_data.sql_data_cpu_temp) > 1:
+        if len(graph_interval_data.sql_data_cpu_temp) > 1 or len(graph_interval_data.sql_data_hat_temp) > 1:
             row_count = row_count + 1
 
             trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,

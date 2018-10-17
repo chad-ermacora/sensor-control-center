@@ -34,7 +34,7 @@ import app_reports
 import app_graph
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, warn, ButtonGroup
 from tkinter import filedialog
-from matplotlib import pyplot, animation
+from matplotlib import pyplot, animation, style
 from threading import Thread
 from queue import Queue
 import logging
@@ -60,11 +60,11 @@ config_file = script_directory + "/config.txt"
 app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.2"
 about_text = script_directory + "/additional_files/about_text.txt"
 sensor_data_queue = Queue()
+style.use("dark_background")
 
 
 class CreateLiveGraph:
     def __init__(self, sensor_type, ip, net_timeout):
-        print(str(sensor_type))
         self.sensor_type = sensor_type
         self.ip = ip
         self.first_datetime = str(datetime.datetime.time(datetime.datetime.now()))[:8]
@@ -78,7 +78,7 @@ class CreateLiveGraph:
         # noinspection PyUnusedLocal
         self.ani = animation.FuncAnimation(self.fig,
                                            self._update_graph,
-                                           interval=int(graph_textbox_refresh_time.value) * 1000)
+                                           interval=float(graph_textbox_refresh_time.value) * 1000)
         pyplot.show()
 
     def _update_graph(self, x_frame):
@@ -91,25 +91,42 @@ class CreateLiveGraph:
                 measurement_type = ""
             elif self.sensor_type is "SystemTemp":
                 sensor_reading = sensor_commands.get_sensor_cpu_temperature(self.ip, self.net_timeout)
+
+                try:
+                    sensor_reading = round(float(sensor_reading), 3)
+                except Exception as error:
+                    logger.warning(str(error))
+
                 sensor_type_name = "CPU Temperature"
-                measurement_type = " in °C"
+                measurement_type = " °C"
             elif self.sensor_type is "EnvironmentTemp":
                 sensor_reading = sensor_commands.get_sensor_temperature(self.ip, self.net_timeout)
-                sensor_reading = round(float(sensor_reading) + float(graph_textbox_temperature_offset.value), 3)
+
+                try:
+                    sensor_reading = round(float(sensor_reading) + float(graph_textbox_temperature_offset.value), 3)
+                except Exception as error:
+                    logger.warning(str(error))
+
                 sensor_type_name = "Environmental Temperature"
-                measurement_type = " in °C"
+                measurement_type = " °C"
             elif self.sensor_type is "Pressure":
                 sensor_reading = sensor_commands.get_sensor_pressure(self.ip, self.net_timeout)
                 sensor_type_name = "Pressure"
-                measurement_type = " in hPa"
+                measurement_type = " hPa"
             elif self.sensor_type is "Humidity":
                 sensor_reading = sensor_commands.get_sensor_humidity(self.ip, self.net_timeout)
+
+                try:
+                    sensor_reading = int(round(float(sensor_reading), 0))
+                except Exception as error:
+                    logger.warning(str(error))
+
                 sensor_type_name = "Humidity"
-                measurement_type = " in %RH"
+                measurement_type = " %RH"
             elif self.sensor_type is "Lumen":
                 sensor_reading = sensor_commands.get_sensor_lumen(self.ip, self.net_timeout)
                 sensor_type_name = "Lumen"
-                measurement_type = " in Lumen"
+                measurement_type = " Lumen"
             elif self.sensor_type[0] == "Red":
                 sensor_reading = sensor_commands.get_sensor_rgb(self.ip, self.net_timeout)
                 sensor_type_name = "RGB"
@@ -137,10 +154,13 @@ class CreateLiveGraph:
             self.ax1.plot(self.x, self.y)
 
             if self.sensor_type is "SensorUpTime":
-                uptime_days = int(float(sensor_reading) // 1440)
-                uptime_hours = int((float(sensor_reading) % 1440) // 60)
-                uptime_min = int(float(sensor_reading) % 60)
-                sensor_reading = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
+                try:
+                    uptime_days = int(float(sensor_reading) // 1440)
+                    uptime_hours = int((float(sensor_reading) % 1440) // 60)
+                    uptime_min = int(float(sensor_reading) % 60)
+                    sensor_reading = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
+                except Exception as error:
+                    logger.warning(str(error))
 
             pyplot.title("Live Sensor " + sensor_name + " on " + self.ip)
             pyplot.xlabel("Start Time: " + self.first_datetime +
@@ -166,6 +186,7 @@ def _app_custom_configurations():
     window_graph.tk.resizable(False, False)
     window_sensor_commands.tk.resizable(False, False)
     window_sensor_config.tk.resizable(False, False)
+    window_sensor_reports.tk.resizable(False, False)
     window_app_about.tk.resizable(False, False)
     window_config.tk.resizable(False, False)
 
@@ -202,7 +223,7 @@ def _app_custom_configurations():
         window_config.width = 675
         window_config.height = 275
         window_graph.width = 325
-        window_graph.height = 360
+        window_graph.height = 370
         window_sensor_config.width = 365
         window_sensor_config.height = 240
         window_sensor_commands.width = 300
@@ -259,43 +280,49 @@ def app_menu_open_logs():
 def app_menu_download_interval_db():
     """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
     ip_list = get_verified_ip_list()
-    threads = []
-    download_to_location = filedialog.askdirectory()
+    if len(ip_list) >= 1:
+        threads = []
+        download_to_location = filedialog.askdirectory()
 
-    if download_to_location is not "" and download_to_location is not None:
-        for ip in ip_list:
-            threads.append(Thread(target=sensor_commands.download_interval_db, args=[ip, download_to_location]))
+        if download_to_location is not "" and download_to_location is not None:
+            for ip in ip_list:
+                threads.append(Thread(target=sensor_commands.download_interval_db, args=[ip, download_to_location]))
 
-        for thread in threads:
-            thread.start()
+            for thread in threads:
+                thread.start()
 
-        for thread in threads:
-            thread.join()
+            for thread in threads:
+                thread.join()
 
-        info("Downloads", "Interval Database Downloads Complete")
+            info("Downloads", "Interval Database Downloads Complete")
+        else:
+            warn("Warning", "User Cancelled Download Operation")
     else:
-        warn("Warning", "User Cancelled Download Operation")
+        warn("No IP Selected", "Please Select at least 1 Sensor IP")
 
 
 def app_menu_download_trigger_db():
     """ Downloads the Trigger SQLite3 database to the chosen location, from the selected sensors. """
     ip_list = get_verified_ip_list()
-    threads = []
-    download_to_location = filedialog.askdirectory()
+    if len(ip_list) >= 1:
+        threads = []
+        download_to_location = filedialog.askdirectory()
 
-    if download_to_location is not "" and download_to_location is not None:
-        for ip in ip_list:
-            threads.append(Thread(target=sensor_commands.download_trigger_db, args=[ip, download_to_location]))
+        if download_to_location is not "" and download_to_location is not None:
+            for ip in ip_list:
+                threads.append(Thread(target=sensor_commands.download_trigger_db, args=[ip, download_to_location]))
 
-        for thread in threads:
-            thread.start()
+            for thread in threads:
+                thread.start()
 
-        for thread in threads:
-            thread.join()
+            for thread in threads:
+                thread.join()
 
-        info("Downloads", "Trigger Database Downloads Complete")
+            info("Downloads", "Trigger Database Downloads Complete")
+        else:
+            warn("Warning", "User Cancelled Download Operation")
     else:
-        warn("Warning", "User Cancelled Download Operation")
+        warn("No IP Selected", "Please Select at least 1 Sensor IP")
 
 
 def app_menu_open_website():
@@ -690,14 +717,14 @@ def config_checkbox_enable_reset():
 def config_checkbox_enable_advanced():
     """ Enables disabled buttons in the Control Center application. """
     if config_checkbox_power_controls.value == 1:
-        commands_button_reboot.enable()
         commands_button_shutdown.enable()
         commands_button_os_Upgrade.enable()
+        sensor_config_button_update_datetime.enable()
         sensor_config_button_set_config.enable()
     else:
-        commands_button_reboot.disable()
         commands_button_shutdown.disable()
         commands_button_os_Upgrade.disable()
+        sensor_config_button_update_datetime.disable()
         sensor_config_button_set_config.disable()
 
 
@@ -709,8 +736,7 @@ def commands_upgrade_smb():
     for ip in ip_list:
         sensor_commands.upgrade_program_smb(ip)
 
-    info("Information", "Sensor(s) Upgrading\n"
-                        "Please Wait up to 30 seconds for the Services to restart")
+    info("Sensors Upgrading SMB", "Please Wait up to 30 seconds for the Services to restart")
 
 
 def commands_upgrade_http():
@@ -721,8 +747,7 @@ def commands_upgrade_http():
     for ip in ip_list:
         sensor_commands.upgrade_program_online(ip)
 
-    info("Information", "Sensor(s) Upgrading\n"
-                        "Please Wait up to 30 seconds for the Services to restart")
+    info("Sensors Upgrading HTTP", "Please Wait up to 30 seconds for the Services to restart")
 
 
 def commands_os_upgrade():
@@ -733,9 +758,9 @@ def commands_os_upgrade():
     for ip in ip_list:
         sensor_commands.upgrade_os_linux(ip)
 
-    info("Information", "Sensor Operating System Upgrade Started\n"
-                        "Once complete, the Sensor(s) will automatically reboot\n"
-                        "This may take awhile ...")
+    info("Sensors Operating System Upgrade Started", "Once complete, the Sensors will automatically reboot\n"
+                                                     "Sensor should continue to Operate with minor interruptions\n\n"
+                                                     "This process can take anywhere from 5 Min to 1 Hour")
 
 
 def commands_sensor_reboot():
@@ -746,7 +771,7 @@ def commands_sensor_reboot():
     for ip in ip_list:
         sensor_commands.reboot_sensor(ip)
 
-    info("Information", "Sensor(s) Rebooting")
+    info("Sensors Rebooting", "Allow up to 3 Min to reboot")
 
 
 def commands_sensor_shutdown():
@@ -757,7 +782,7 @@ def commands_sensor_shutdown():
     for ip in ip_list:
         sensor_commands.shutdown_sensor(ip)
 
-    info("Information", "Sensor(s) Shutting Down")
+    info("Sensors Shutting Down", "Allow up to 15 seconds to fully shutdown")
 
 
 def commands_restart_services():
@@ -768,7 +793,7 @@ def commands_restart_services():
     for ip in ip_list:
         sensor_commands.restart_services(ip)
 
-    info("Information", "Sensor(s) Programs Restarting\nPlease allow up to 20 Seconds to restart")
+    info("Sensors Services Restarting", "Please allow up to 20 Seconds to restart")
 
 
 def commands_hostname_change():
@@ -788,7 +813,7 @@ def commands_datetime_update():
     for ip in ip_list:
         sensor_commands.set_datetime(ip)
 
-    info("DateTime Set", "Sensors Date & Time Synchronized with local Computer's")
+    info("Sensors DateTime Set", "Sensors Date & Time Synchronized with local Computer's")
 
 
 def sensor_config_enable_recording():
@@ -828,7 +853,7 @@ def sensor_config_set():
     for ip in ip_list:
         sensor_commands.set_sensor_config(ip, config_settings_str)
 
-    info("Information", "Sensor(s) Configuration Set")
+    info("Sensors Configuration Set", "Please allow up to 20 Seconds for Services to restart")
 
 
 def _graph_radio_selection():
@@ -841,6 +866,7 @@ def _graph_radio_selection():
         graph_button_live.disable()
         graph_textbox_refresh_time.disable()
 
+        graph_checkbox_cpu_temp.enable()
         graph_textbox_temperature_offset.enable()
         graph_checkbox_temperature.enable()
         graph_checkbox_pressure.enable()
@@ -856,6 +882,7 @@ def _graph_radio_selection():
     if graph_radio_sensor_type.get() == "Trigger SQL":
         graph_textbox_sql_skip.disable()
         graph_textbox_temperature_offset.disable()
+        graph_checkbox_cpu_temp.disable()
         graph_checkbox_temperature.disable()
         graph_checkbox_pressure.disable()
         graph_checkbox_humidity.disable()
@@ -882,6 +909,10 @@ def _graph_radio_selection():
         graph_textbox_temperature_offset.enable()
         graph_textbox_refresh_time.enable()
 
+        graph_checkbox_up_time.enable()
+        graph_checkbox_up_time.value = 0
+        graph_checkbox_cpu_temp.enable()
+        graph_checkbox_cpu_temp.value = 0
         graph_checkbox_temperature.enable()
         graph_checkbox_temperature.value = 0
         graph_checkbox_pressure.enable()
@@ -890,15 +921,13 @@ def _graph_radio_selection():
         graph_checkbox_humidity.value = 0
         graph_checkbox_lumen.enable()
         graph_checkbox_lumen.value = 0
-        graph_checkbox_colour.enable()
+        graph_checkbox_colour.disable()
         graph_checkbox_colour.value = 0
-        graph_checkbox_up_time.enable()
-        graph_checkbox_up_time.value = 0
-        graph_checkbox_acc.enable()
+        graph_checkbox_acc.disable()
         graph_checkbox_acc.value = 0
-        graph_checkbox_mag.enable()
+        graph_checkbox_mag.disable()
         graph_checkbox_mag.value = 0
-        graph_checkbox_gyro.enable()
+        graph_checkbox_gyro.disable()
         graph_checkbox_gyro.value = 0
 
         graph_button_live.enable()
@@ -941,12 +970,33 @@ def graph_live_button():
     pyplot.close()
     try:
         graph_checkbox = _graph_get_column_checkboxes()[3]
-        print(str(graph_checkbox))
         ip_list = get_verified_ip_list()
+
+        try:
+            int(config_textbox_network_details.value)
+        except Exception as error:
+            logger.warning(str(error))
+            config_textbox_network_details.value = "5"
+
+        try:
+            float(graph_textbox_refresh_time.value)
+            if float(graph_textbox_refresh_time.value) < 1.0:
+                graph_textbox_refresh_time.value = "1"
+        except Exception as error:
+            logger.warning(str(error))
+            graph_textbox_refresh_time.value = "3"
+
+        try:
+            float(graph_textbox_temperature_offset.value)
+        except Exception as error:
+            logger.warning("Live Graph Temperature Offset incorrect: " + str(error))
+            graph_textbox_temperature_offset.value = "-4.5"
+
         net_timeout = int(config_textbox_network_details.value)
         CreateLiveGraph(graph_checkbox, ip_list[0], net_timeout)
     except Exception as error:
         logger.warning("No sensors selected in the main window - " + str(error))
+        warn("Select Sensor", "Please Select a Sensor IP from the Main window\n& Sensor Type from the Graph window")
 
 
 def _graph_get_column_checkboxes():
@@ -957,8 +1007,8 @@ def _graph_get_column_checkboxes():
     if data_source_radio == "Interval SQL" or data_source_radio == "Live":
         if graph_checkbox_up_time.value:
             column_checkboxes.append("SensorUpTime")
-        # if graph_checkbox_cpu_temperature.value:
-        #     column_checkboxes.append("SystemTemp")
+        if graph_checkbox_cpu_temp.value:
+            column_checkboxes.append("SystemTemp")
         if graph_checkbox_temperature.value:
             column_checkboxes.append("EnvironmentTemp")
         if graph_checkbox_pressure.value:
@@ -992,6 +1042,8 @@ def _graph_get_column_checkboxes():
 def _graph_enable_all_checkboxes():
     graph_checkbox_up_time.enable()
     graph_checkbox_up_time.value = 0
+    graph_checkbox_cpu_temp.enable()
+    graph_checkbox_cpu_temp.value = 0
     graph_checkbox_temperature.enable()
     graph_checkbox_temperature.value = 0
     graph_checkbox_pressure.enable()
@@ -1022,6 +1074,11 @@ def _graph_disable_other_checkboxes(var_checkbox):
         else:
             graph_checkbox_temperature.disable()
             graph_checkbox_temperature.value = 0
+        if var_checkbox is "CPUTemperature":
+            pass
+        else:
+            graph_checkbox_cpu_temp.disable()
+            graph_checkbox_cpu_temp.value = 0
         if var_checkbox is "Pressure":
             pass
         else:
@@ -1037,26 +1094,26 @@ def _graph_disable_other_checkboxes(var_checkbox):
         else:
             graph_checkbox_lumen.disable()
             graph_checkbox_lumen.value = 0
-        if var_checkbox is "RGB":
-            pass
-        else:
-            graph_checkbox_colour.disable()
-            graph_checkbox_colour.value = 0
-        if var_checkbox is "Accelerometer":
-            pass
-        else:
-            graph_checkbox_acc.disable()
-            graph_checkbox_acc.value = 0
-        if var_checkbox is "Magnetometer":
-            pass
-        else:
-            graph_checkbox_mag.disable()
-            graph_checkbox_mag.value = 0
-        if var_checkbox is "Gyroscopic":
-            pass
-        else:
-            graph_checkbox_gyro.disable()
-            graph_checkbox_gyro.value = 0
+        # if var_checkbox is "RGB":
+        #     pass
+        # else:
+        #     graph_checkbox_colour.disable()
+        #     graph_checkbox_colour.value = 0
+        # if var_checkbox is "Accelerometer":
+        #     pass
+        # else:
+        #     graph_checkbox_acc.disable()
+        #     graph_checkbox_acc.value = 0
+        # if var_checkbox is "Magnetometer":
+        #     pass
+        # else:
+        #     graph_checkbox_mag.disable()
+        #     graph_checkbox_mag.value = 0
+        # if var_checkbox is "Gyroscopic":
+        #     pass
+        # else:
+        #     graph_checkbox_gyro.disable()
+        #     graph_checkbox_gyro.value = 0
 
         if var_checkbox is "Uptime":
             if graph_checkbox_up_time.value == 0:
@@ -1070,6 +1127,12 @@ def _graph_disable_other_checkboxes(var_checkbox):
             else:
                 graph_checkbox_temperature.enable()
                 graph_checkbox_temperature.value = 1
+        elif var_checkbox is "CPUTemperature":
+            if graph_checkbox_cpu_temp.value == 0:
+                _graph_enable_all_checkboxes()
+            else:
+                graph_checkbox_cpu_temp.enable()
+                graph_checkbox_cpu_temp.value = 1
         elif var_checkbox is "Pressure":
             if graph_checkbox_pressure.value == 0:
                 _graph_enable_all_checkboxes()
@@ -1088,30 +1151,39 @@ def _graph_disable_other_checkboxes(var_checkbox):
             else:
                 graph_checkbox_lumen.enable()
                 graph_checkbox_lumen.value = 1
-        elif var_checkbox is "RGB":
-            if graph_checkbox_colour.value == 0:
-                _graph_enable_all_checkboxes()
-            else:
-                graph_checkbox_colour.enable()
-                graph_checkbox_colour.value = 1
-        elif var_checkbox is "Accelerometer":
-            if graph_checkbox_acc.value == 0:
-                _graph_enable_all_checkboxes()
-            else:
-                graph_checkbox_acc.enable()
-                graph_checkbox_acc.value = 1
-        elif var_checkbox is "Magnetometer":
-            if graph_checkbox_mag.value == 0:
-                _graph_enable_all_checkboxes()
-            else:
-                graph_checkbox_mag.enable()
-                graph_checkbox_mag.value = 1
-        elif var_checkbox is "Gyroscopic":
-            if graph_checkbox_gyro.value == 0:
-                _graph_enable_all_checkboxes()
-            else:
-                graph_checkbox_gyro.enable()
-                graph_checkbox_gyro.value = 1
+        # elif var_checkbox is "RGB":
+        #     if graph_checkbox_colour.value == 0:
+        #         _graph_enable_all_checkboxes()
+        #     else:
+        #         graph_checkbox_colour.enable()
+        #         graph_checkbox_colour.value = 1
+        # elif var_checkbox is "Accelerometer":
+        #     if graph_checkbox_acc.value == 0:
+        #         _graph_enable_all_checkboxes()
+        #     else:
+        #         graph_checkbox_acc.enable()
+        #         graph_checkbox_acc.value = 1
+        # elif var_checkbox is "Magnetometer":
+        #     if graph_checkbox_mag.value == 0:
+        #         _graph_enable_all_checkboxes()
+        #     else:
+        #         graph_checkbox_mag.enable()
+        #         graph_checkbox_mag.value = 1
+        # elif var_checkbox is "Gyroscopic":
+        #     if graph_checkbox_gyro.value == 0:
+        #         _graph_enable_all_checkboxes()
+        #     else:
+        #         graph_checkbox_gyro.enable()
+        #         graph_checkbox_gyro.value = 1
+
+        graph_checkbox_colour.disable()
+        graph_checkbox_colour.value = 0
+        graph_checkbox_acc.disable()
+        graph_checkbox_acc.value = 0
+        graph_checkbox_mag.disable()
+        graph_checkbox_mag.value = 0
+        graph_checkbox_gyro.disable()
+        graph_checkbox_gyro.value = 0
 
 
 # GUI Window Setup
@@ -1158,7 +1230,7 @@ window_sensor_reports = Window(app,
 window_graph = Window(app,
                       title="Graphing",
                       width=275,
-                      height=410,
+                      height=435,
                       layout="grid",
                       visible=False)
 
@@ -1720,18 +1792,25 @@ graph_checkbox_up_time = CheckBox(window_graph,
                                   grid=[1, 11],
                                   align="left")
 
+graph_checkbox_cpu_temp = CheckBox(window_graph,
+                                   text="CPU Temperature",
+                                   command=_graph_disable_other_checkboxes,
+                                   args=["CPUTemperature"],
+                                   grid=[1, 12],
+                                   align="left")
+
 graph_checkbox_temperature = CheckBox(window_graph,
                                       text="Temperature",
                                       command=_graph_disable_other_checkboxes,
                                       args=["Temperature"],
-                                      grid=[1, 12],
+                                      grid=[1, 13],
                                       align="left")
 
 graph_checkbox_pressure = CheckBox(window_graph,
                                    text="Pressure",
                                    command=_graph_disable_other_checkboxes,
                                    args=["Pressure"],
-                                   grid=[1, 13],
+                                   grid=[1, 14],
                                    align="left")
 
 graph_checkbox_humidity = CheckBox(window_graph,
@@ -1758,40 +1837,40 @@ graph_checkbox_colour = CheckBox(window_graph,
 graph_text_column_selection2 = Text(window_graph,
                                     text="Trigger Sensors",
                                     color='blue',
-                                    grid=[1, 14, 2, 1],
+                                    grid=[1, 24, 2, 1],
                                     align="bottom")
 
 graph_checkbox_acc = CheckBox(window_graph,
                               text="Accelerometer XYZ",
                               command=_graph_disable_other_checkboxes,
                               args=["Accelerometer"],
-                              grid=[1, 15],
+                              grid=[1, 25],
                               align="left")
 
 graph_checkbox_mag = CheckBox(window_graph,
                               text="Magnetometer XYZ",
                               command=_graph_disable_other_checkboxes,
                               args=["Magnetometer"],
-                              grid=[2, 15],
+                              grid=[2, 25],
                               align="left")
 
 graph_checkbox_gyro = CheckBox(window_graph,
                                text="Gyroscopic XYZ",
                                command=_graph_disable_other_checkboxes,
                                args=["Gyroscopic"],
-                               grid=[1, 16],
+                               grid=[1, 26],
                                align="left")
 
 graph_button_database = PushButton(window_graph,
                                    text="Open & Graph\nDatabase",
                                    command=graph_plotly_button,
-                                   grid=[1, 18, 2, 1],
+                                   grid=[1, 28, 2, 1],
                                    align="left")
 
 graph_button_live = PushButton(window_graph,
                                text="Start Live Graph",
                                command=graph_live_button,
-                               grid=[2, 18],
+                               grid=[2, 28],
                                align="left")
 
 # Sensor Commands Window
