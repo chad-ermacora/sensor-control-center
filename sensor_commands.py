@@ -41,8 +41,6 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-config_file = "config.txt"
-
 
 def check_online_status(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor status. """
@@ -59,6 +57,7 @@ def check_online_status(ip, net_timeout):
         sensor_status = "Offline"
 
     sock_g.close()
+
     return sensor_status
 
 

@@ -54,7 +54,6 @@ class CreateGraphData:
         self.time_offset = 0.0
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
-        self.graph_type = ""
         self.graph_table = "IntervalData"
         self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
                               "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
