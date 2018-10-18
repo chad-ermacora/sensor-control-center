@@ -23,15 +23,15 @@ WARNING - An indication that something unexpected happened, or indicative of som
 ERROR - Due to a more serious problem, the software has not been able to perform some function.
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
+import app_config
+import sensor_commands
+import app_reports
+import app_graph
 import os
 import datetime
 import platform
 import subprocess
 import webbrowser
-import app_config
-import sensor_commands
-import app_reports
-import app_graph
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, warn, ButtonGroup
 from tkinter import filedialog
 from matplotlib import pyplot, animation, style
@@ -40,26 +40,25 @@ from queue import Queue
 import logging
 from logging.handlers import RotatingFileHandler
 
-script_directory = str(os.path.dirname(os.path.realpath(__file__)))
+script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
 
 logger = logging.getLogger(__name__)
-
 logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt',
+                                   maxBytes=256000,
+                                   backupCount=5)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s',
+                              '%Y-%m-%d %H:%M:%S')
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
-
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-config_file = script_directory + "/config.txt"
-app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.2"
-about_text = script_directory + "/additional_files/about_text.txt"
-sensor_data_queue = Queue()
+current_config = app_config._load_from_file()
+data_queue = Queue()
 style.use("dark_background")
 
 
@@ -104,7 +103,8 @@ class CreateLiveGraph:
                 sensor_reading = sensor_commands.get_sensor_temperature(self.ip, self.net_timeout)
 
                 try:
-                    sensor_reading = round(float(sensor_reading) + float(graph_textbox_temperature_offset.value), 3)
+                    sensor_reading = round(float(sensor_reading) +
+                                           float(graph_textbox_temperature_offset.value), 3)
                 except Exception as error:
                     logger.warning(str(error))
 
@@ -159,7 +159,9 @@ class CreateLiveGraph:
                     uptime_days = int(float(sensor_reading) // 1440)
                     uptime_hours = int((float(sensor_reading) % 1440) // 60)
                     uptime_min = int(float(sensor_reading) % 60)
-                    sensor_reading = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
+                    sensor_reading = str(uptime_days) + " Days / " + \
+                        str(uptime_hours) + "." + \
+                        str(uptime_min) + " Hours"
                 except Exception as error:
                     logger.warning(str(error))
 
@@ -217,7 +219,7 @@ def _app_custom_configurations():
 
     # Platform specific adjustments
     if platform.system() == "Windows":
-        app.tk.iconbitmap("additional_files/icon.ico")
+        app.tk.iconbitmap(current_config.additional_files_directory + "/icon.ico")
     elif platform.system() == "Linux":
         app.width = 490
         app.height = 250
@@ -232,15 +234,10 @@ def _app_custom_configurations():
         window_app_about.width = 555
         window_app_about.height = 290
 
-    # If no configuration file, create a default one and use it
-    if os.path.isfile(config_file):
-        loaded_config_settings = app_config.load_from_file()
-        set_config(loaded_config_settings)
-    else:
-        logger.info('No Configuration File Found - Creating Default')
-        default_config = app_config.CreateConfigSettings()
-        app_config.save_config_to_file(default_config)
-        set_config(default_config)
+    set_config()
+    if not os.path.isfile(current_config.config_file):
+        logger.info('No Configuration File Found - Saving Default')
+        app_config.save_config_to_file(current_config)
 
 
 def _app_exit():
@@ -257,7 +254,7 @@ def _app_exit():
 def _set_about_text():
     """ Loads and sets the about text from file. """
     try:
-        local_file = open(about_text, 'r')
+        local_file = open(current_config.about_text, 'r')
         new_text = local_file.read()
         local_file.close()
         about_textbox.value = new_text
@@ -269,13 +266,12 @@ def _set_about_text():
 def app_menu_open_logs():
     """ Opens the folder where the logs are kept. """
     logger.debug("Open Logs Folder")
-    log_path = script_directory + "/logs/"
     if platform.system() == "Windows":
-        os.startfile(log_path)
+        os.startfile(current_config.logs_directory)
     elif platform.system() == "Darwin":
-        subprocess.Popen(["open", log_path])
+        subprocess.Popen(["open", current_config.logs_directory])
     else:
-        subprocess.Popen(["xdg-open", log_path])
+        subprocess.Popen(["xdg-open", current_config.logs_directory])
 
 
 def app_menu_download_interval_db():
@@ -287,7 +283,8 @@ def app_menu_download_interval_db():
 
         if download_to_location is not "" and download_to_location is not None:
             for ip in ip_list:
-                threads.append(Thread(target=sensor_commands.download_interval_db, args=[ip, download_to_location]))
+                threads.append(Thread(target=sensor_commands.download_interval_db,
+                                      args=[ip, download_to_location]))
 
             for thread in threads:
                 thread.start()
@@ -311,7 +308,8 @@ def app_menu_download_trigger_db():
 
         if download_to_location is not "" and download_to_location is not None:
             for ip in ip_list:
-                threads.append(Thread(target=sensor_commands.download_trigger_db, args=[ip, download_to_location]))
+                threads.append(Thread(target=sensor_commands.download_trigger_db,
+                                      args=[ip, download_to_location]))
 
             for thread in threads:
                 thread.start()
@@ -333,13 +331,13 @@ def app_menu_open_website():
 
 def app_menu_open_build_sensor():
     """ Open the help file for building a Sensor Unit. """
-    help_file_location = str(os.path.dirname(os.path.realpath(__file__))) + "/additional_files/BuildSensors.html"
+    help_file_location = current_config.additional_files_directory + "/BuildSensors.html"
     webbrowser.open_new_tab(help_file_location)
 
 
 def app_menu_open_sensor_help():
     """ Open the help file for Sensor Units. """
-    help_file_location = str(os.path.dirname(os.path.realpath(__file__))) + "/additional_files/SensorUnitHelp.html"
+    help_file_location = current_config.additional_files_directory + "/SensorUnitHelp.html"
     webbrowser.open_new_tab(help_file_location)
 
 
@@ -386,10 +384,10 @@ def app_check_all_ip_checkboxes(var_column):
             app_checkbox_ip16.value = 0
 
 
-def _worker_sensor_check(ip, net_timeout):
+def _worker_sensor_check(ip):
     """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
-    data = [ip, sensor_commands.check_online_status(ip, net_timeout)]
-    sensor_data_queue.put(data)
+    data = [ip, sensor_commands.check_online_status(ip, current_config.network_timeout_sensor_check)]
+    data_queue.put(data)
 
 
 def get_verified_ip_list():
@@ -400,12 +398,11 @@ def get_verified_ip_list():
     """
     ip_list = _make_ip_list()
     ip_list_final = []
-    net_timeout = int(config_textbox_network_check.value)
     sensor_data_pool = []
     threads = []
 
     for ip in ip_list:
-        threads.append(Thread(target=_worker_sensor_check, args=[ip, net_timeout]))
+        threads.append(Thread(target=_worker_sensor_check, args=[ip]))
 
     for thread in threads:
         thread.start()
@@ -413,9 +410,9 @@ def get_verified_ip_list():
     for thread in threads:
         thread.join()
 
-    while not sensor_data_queue.empty():
-        sensor_data_pool.append(sensor_data_queue.get())
-        sensor_data_queue.task_done()
+    while not data_queue.empty():
+        sensor_data_pool.append(data_queue.get())
+        data_queue.task_done()
 
     sensor_data_pool.sort()
 
@@ -595,95 +592,97 @@ def _make_ip_list():
 def app_sensor_readings_report():
     """ Create a HTML sensor Readings Report containing each IP selected and online. """
     var_ip_list = get_verified_ip_list()
-    app_reports.sensor_readings_report(var_ip_list)
+    readings_config = app_reports.HTMLReadings()
+    app_reports.sensor_html_report(readings_config, var_ip_list)
 
 
 def app_sensor_system_report():
     """ Create a HTML sensor System Report containing each IP selected and online. """
     var_ip_list = get_verified_ip_list()
-    app_reports.sensor_system_report(var_ip_list)
+    system_config = app_reports.HTMLSystem()
+    app_reports.sensor_html_report(system_config, var_ip_list)
 
 
 def app_sensor_config_report():
     """ Create a HTML sensor Configuration Report containing each IP selected and online. """
     var_ip_list = get_verified_ip_list()
-    app_reports.sensor_config_report(var_ip_list)
+    sensor_config_config = app_reports.HTMLConfig()
+    app_reports.sensor_html_report(sensor_config_config, var_ip_list)
 
 
 def config_button_save():
     """ Save the programs Configuration and IP list to file """
     logger.debug("Applying Configuration & Saving to File")
 
-    config_settings = app_config.CreateConfigSettings()
+    current_config.save_to = config_textbox_save_to.value
+    current_config.graph_start = config_textbox_start.value
+    current_config.graph_end = config_textbox_end.value
+    current_config.datetime_offset = config_textbox_time_offset.value
+    current_config.sql_queries_skip = config_textbox_sql_skip.value
+    current_config.temperature_offset = config_textbox_temperature_offset.value
+    current_config.live_refresh = graph_textbox_refresh_time.value
+    current_config.network_timeout_sensor_check = config_textbox_network_check.value
+    current_config.network_timeout_data = config_textbox_network_details.value
+    current_config.allow_advanced_controls = config_checkbox_power_controls.value
+    current_config.ip_list[0] = app_textbox_ip1.value
+    current_config.ip_list[1] = app_textbox_ip2.value
+    current_config.ip_list[2] = app_textbox_ip3.value
+    current_config.ip_list[3] = app_textbox_ip4.value
+    current_config.ip_list[4] = app_textbox_ip5.value
+    current_config.ip_list[5] = app_textbox_ip6.value
+    current_config.ip_list[6] = app_textbox_ip7.value
+    current_config.ip_list[7] = app_textbox_ip8.value
+    current_config.ip_list[8] = app_textbox_ip9.value
+    current_config.ip_list[9] = app_textbox_ip10.value
+    current_config.ip_list[10] = app_textbox_ip11.value
+    current_config.ip_list[11] = app_textbox_ip12.value
+    current_config.ip_list[12] = app_textbox_ip13.value
+    current_config.ip_list[13] = app_textbox_ip14.value
+    current_config.ip_list[14] = app_textbox_ip15.value
+    current_config.ip_list[15] = app_textbox_ip16.value
 
-    config_settings.save_to = config_textbox_save_to.value
-    config_settings.graph_start = config_textbox_start.value
-    config_settings.graph_end = config_textbox_end.value
-    config_settings.time_offset = config_textbox_time_offset.value
-    config_settings.sql_queries_skip = config_textbox_sql_skip.value
-    config_settings.temperature_offset = config_textbox_temperature_offset.value
-    config_settings.network_check_timeout = config_textbox_network_check.value
-    config_settings.network_details_timeout = config_textbox_network_details.value
-    config_settings.allow_power_controls = config_checkbox_power_controls.value
-    config_settings.allow_reset_config = config_checkbox_reset.value
-    config_settings.ip_list[0] = app_textbox_ip1.value
-    config_settings.ip_list[1] = app_textbox_ip2.value
-    config_settings.ip_list[2] = app_textbox_ip3.value
-    config_settings.ip_list[3] = app_textbox_ip4.value
-    config_settings.ip_list[4] = app_textbox_ip5.value
-    config_settings.ip_list[5] = app_textbox_ip6.value
-    config_settings.ip_list[6] = app_textbox_ip7.value
-    config_settings.ip_list[7] = app_textbox_ip8.value
-    config_settings.ip_list[8] = app_textbox_ip9.value
-    config_settings.ip_list[9] = app_textbox_ip10.value
-    config_settings.ip_list[10] = app_textbox_ip11.value
-    config_settings.ip_list[11] = app_textbox_ip12.value
-    config_settings.ip_list[12] = app_textbox_ip13.value
-    config_settings.ip_list[13] = app_textbox_ip14.value
-    config_settings.ip_list[14] = app_textbox_ip15.value
-    config_settings.ip_list[15] = app_textbox_ip16.value
-
-    app_config.save_config_to_file(config_settings)
-    set_config(config_settings)
+    app_config.save_config_to_file(current_config)
+    set_config()
 
 
-def set_config(config_settings):
+def set_config():
     """ Sets the programs Configuration to the provided settings. """
-    final_config_settings = app_config._check_config(config_settings)
-
     try:
-        config_textbox_save_to.value = final_config_settings.save_to
-        config_textbox_start.value = final_config_settings.graph_start
-        graph_textbox_start.value = final_config_settings.graph_start
-        config_textbox_end.value = final_config_settings.graph_end
-        graph_textbox_end.value = final_config_settings.graph_end
-        config_textbox_time_offset.value = final_config_settings.time_offset
-        config_textbox_sql_skip.value = final_config_settings.sql_queries_skip
-        graph_textbox_sql_skip.value = final_config_settings.sql_queries_skip
-        config_textbox_temperature_offset.value = final_config_settings.temperature_offset
-        graph_textbox_temperature_offset.value = final_config_settings.temperature_offset
-        config_textbox_network_check.value = final_config_settings.network_check_timeout
-        config_textbox_network_details.value = final_config_settings.network_details_timeout
-        config_checkbox_power_controls.value = final_config_settings.allow_power_controls
-        config_checkbox_reset.value = final_config_settings.allow_reset_config
-        app_textbox_ip1.value = config_settings.ip_list[0]
-        app_textbox_ip2.value = config_settings.ip_list[1]
-        app_textbox_ip3.value = config_settings.ip_list[2]
-        app_textbox_ip4.value = config_settings.ip_list[3]
-        app_textbox_ip5.value = config_settings.ip_list[4]
-        app_textbox_ip6.value = config_settings.ip_list[5]
-        app_textbox_ip7.value = config_settings.ip_list[6]
-        app_textbox_ip8.value = config_settings.ip_list[7]
-        app_textbox_ip9.value = config_settings.ip_list[8]
-        app_textbox_ip10.value = config_settings.ip_list[9]
-        app_textbox_ip11.value = config_settings.ip_list[10]
-        app_textbox_ip12.value = config_settings.ip_list[11]
-        app_textbox_ip13.value = config_settings.ip_list[12]
-        app_textbox_ip14.value = config_settings.ip_list[13]
-        app_textbox_ip15.value = config_settings.ip_list[14]
-        app_textbox_ip16.value = config_settings.ip_list[15]
-        config_checkbox_enable_reset()
+        config_textbox_save_to.value = current_config.save_to
+        config_textbox_start.value = current_config.graph_start
+        config_textbox_end.value = current_config.graph_end
+        config_textbox_time_offset.value = current_config.datetime_offset
+        config_textbox_sql_skip.value = current_config.sql_queries_skip
+        config_textbox_temperature_offset.value = current_config.temperature_offset
+        config_textbox_network_check.value = current_config.network_timeout_sensor_check
+        config_textbox_network_details.value = current_config.network_timeout_data
+        config_checkbox_power_controls.value = current_config.allow_advanced_controls
+
+        graph_textbox_start.value = current_config.graph_start
+        graph_textbox_end.value = current_config.graph_end
+        graph_textbox_sql_skip.value = current_config.sql_queries_skip
+        graph_textbox_temperature_offset.value = current_config.temperature_offset
+        graph_textbox_refresh_time.value = current_config.live_refresh
+
+        app_textbox_ip1.value = current_config.ip_list[0]
+        app_textbox_ip2.value = current_config.ip_list[1]
+        app_textbox_ip3.value = current_config.ip_list[2]
+        app_textbox_ip4.value = current_config.ip_list[3]
+        app_textbox_ip5.value = current_config.ip_list[4]
+        app_textbox_ip6.value = current_config.ip_list[5]
+        app_textbox_ip7.value = current_config.ip_list[6]
+        app_textbox_ip8.value = current_config.ip_list[7]
+        app_textbox_ip9.value = current_config.ip_list[8]
+        app_textbox_ip10.value = current_config.ip_list[9]
+        app_textbox_ip11.value = current_config.ip_list[10]
+        app_textbox_ip12.value = current_config.ip_list[11]
+        app_textbox_ip13.value = current_config.ip_list[12]
+        app_textbox_ip14.value = current_config.ip_list[13]
+        app_textbox_ip15.value = current_config.ip_list[14]
+        app_textbox_ip16.value = current_config.ip_list[15]
+
         config_checkbox_enable_advanced()
+
         logger.debug("Configuration Set - OK")
     except Exception as error:
         logger.error("Configuration Set - One or More Items Failed - " + str(error))
@@ -703,26 +702,20 @@ def config_button_save_directory():
 def config_button_reset_defaults():
     """ Resets all Control Center Configurations to default. """
     logger.info("Resetting Configuration to Defaults")
-    default_settings = app_config.CreateConfigSettings()
-    set_config(default_settings)
-
-
-def config_checkbox_enable_reset():
-    """ Allows use of the Control Centers configuration reset button. """
-    if config_checkbox_reset.value == 1:
-        config_button_reset.enable()
-    else:
-        config_button_reset.disable()
+    current_config.reset_to_defaults()
+    set_config()
 
 
 def config_checkbox_enable_advanced():
     """ Enables disabled buttons in the Control Center application. """
     if config_checkbox_power_controls.value == 1:
+        config_button_reset.enable()
         commands_button_shutdown.enable()
         commands_button_os_Upgrade.enable()
         sensor_config_button_update_datetime.enable()
         sensor_config_button_set_config.enable()
     else:
+        config_button_reset.disable()
         commands_button_shutdown.disable()
         commands_button_os_Upgrade.disable()
         sensor_config_button_update_datetime.disable()
@@ -759,9 +752,10 @@ def commands_os_upgrade():
     for ip in ip_list:
         sensor_commands.upgrade_os_linux(ip)
 
-    info("Sensors Operating System Upgrade Started", "Once complete, the Sensors will automatically reboot\n"
-                                                     "Sensor should continue to Operate with minor interruptions\n\n"
-                                                     "This process can take anywhere from 5 Min to 1 Hour")
+    info("Sensors Operating System Upgrade Started",
+         "Once complete, the Sensors will automatically reboot\n"
+         "Sensor should continue to Operate with minor interruptions\n\n"
+         "This process can take anywhere from 5 Min to 1 Hour")
 
 
 def commands_sensor_reboot():
@@ -854,7 +848,7 @@ def sensor_config_set():
     for ip in ip_list:
         sensor_commands.set_sensor_config(ip, config_settings_str)
 
-    info("Sensors Configuration Set", "Please allow up to 20 Seconds for Services to restart")
+    info("Sensors Configuration Set", "Configurations Set")
 
 
 def _graph_radio_selection():
@@ -938,30 +932,26 @@ def graph_plotly_button():
     """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
     new_graph_data = app_graph.CreateGraphData()
     new_graph_data.db_location = filedialog.askopenfilename()
-    if graph_radio_sensor_type.get() == "Trigger SQL":
+
+    if graph_radio_sensor_type.get() == "Interval SQL":
+        new_graph_data.graph_table = "IntervalData"
+    elif graph_radio_sensor_type.get() == "Trigger SQL":
         new_graph_data.graph_table = "TriggerData"
 
-    config_settings_check = app_config.CreateConfigSettings()
-    config_settings_check.save_to = config_textbox_save_to.value
-    config_settings_check.graph_start = graph_textbox_start.value
-    config_settings_check.graph_end = graph_textbox_end.value
-    config_settings_check.time_offset = config_textbox_time_offset.value
-    config_settings_check.sql_queries_skip = graph_textbox_sql_skip.value
-    config_settings_check.temperature_offset = graph_textbox_temperature_offset.value
+    current_config.graph_start = graph_textbox_start.value
+    current_config.graph_end = graph_textbox_end.value
+    current_config.sql_queries_skip = graph_textbox_sql_skip.value
+    current_config.temperature_offset = graph_textbox_temperature_offset.value
 
-    config_settings_good = app_config._check_config(config_settings_check)
+    app_config.check_config(current_config)
+    set_config()
 
-    graph_textbox_start.value = str(config_settings_good.graph_start)
-    graph_textbox_end.value = str(config_settings_good.graph_end)
-    graph_textbox_sql_skip.value = str(config_settings_good.sql_queries_skip)
-    graph_textbox_temperature_offset.value = str(config_settings_good.temperature_offset)
-
-    new_graph_data.save_file_to = config_settings_good.save_to
-    new_graph_data.graph_start = config_settings_good.graph_start
-    new_graph_data.graph_end = config_settings_good.graph_end
-    new_graph_data.time_offset = config_settings_good.time_offset
-    new_graph_data.skip_sql = config_settings_good.sql_queries_skip
-    new_graph_data.temperature_offset = config_settings_good.temperature_offset
+    new_graph_data.save_file_to = current_config.save_to
+    new_graph_data.graph_start = current_config.graph_start
+    new_graph_data.graph_end = current_config.graph_end
+    new_graph_data.time_offset = current_config.datetime_offset
+    new_graph_data.skip_sql = current_config.sql_queries_skip
+    new_graph_data.temperature_offset = current_config.temperature_offset
     new_graph_data.graph_columns = _graph_get_column_checkboxes()
 
     app_graph.start_graph(new_graph_data)
@@ -973,31 +963,16 @@ def graph_live_button():
         graph_checkbox = _graph_get_column_checkboxes()[3]
         ip_list = get_verified_ip_list()
 
-        try:
-            int(config_textbox_network_details.value)
-        except Exception as error:
-            logger.warning(str(error))
-            config_textbox_network_details.value = "5"
+        current_config.live_refresh = graph_textbox_refresh_time.value
+        current_config.temperature_offset = graph_textbox_temperature_offset.value
+        app_config.check_config(current_config)
+        set_config()
 
-        try:
-            float(graph_textbox_refresh_time.value)
-            if float(graph_textbox_refresh_time.value) < 1.0:
-                graph_textbox_refresh_time.value = "1"
-        except Exception as error:
-            logger.warning(str(error))
-            graph_textbox_refresh_time.value = "3"
-
-        try:
-            float(graph_textbox_temperature_offset.value)
-        except Exception as error:
-            logger.warning("Live Graph Temperature Offset incorrect: " + str(error))
-            graph_textbox_temperature_offset.value = "-4.5"
-
-        net_timeout = int(config_textbox_network_details.value)
-        CreateLiveGraph(graph_checkbox, ip_list[0], net_timeout)
+        CreateLiveGraph(graph_checkbox, ip_list[0], current_config.network_timeout_data)
     except Exception as error:
         logger.warning("No sensors selected in the main window - " + str(error))
-        warn("Select Sensor", "Please Select a Sensor IP from the Main window\n& Sensor Type from the Graph window")
+        warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
+                              "& Sensor Type from the Graph window")
 
 
 def _graph_get_column_checkboxes():
@@ -1478,7 +1453,7 @@ app_textbox_ip16 = TextBox(app,
 
 # About Window Section
 about_text1 = Text(window_app_about,
-                   text=app_version,
+                   text=current_config.app_version,
                    grid=[1, 1],
                    align="right")
 
@@ -1497,18 +1472,11 @@ config_button_reset = PushButton(window_config,
                                  grid=[1, 1],
                                  align="right")
 
-config_checkbox_power_controls = \
-    CheckBox(window_config,
-             text="Enable Advanced\nSensor Commands &\nConfiguration Options",
-             command=config_checkbox_enable_advanced,
-             grid=[1, 1],
-             align="top")
-
-config_checkbox_reset = CheckBox(window_config,
-                                 text="Enable Configuration Reset button",
-                                 command=config_checkbox_enable_reset,
-                                 grid=[1, 2],
-                                 align="top")
+config_checkbox_power_controls = CheckBox(window_config,
+                                          text="Enable Advanced\nSensor Commands &\nConfiguration Options",
+                                          command=config_checkbox_enable_advanced,
+                                          grid=[1, 1],
+                                          align="top")
 
 config_button_save_apply = PushButton(window_config,
                                       text="Save &\nApply",
@@ -1649,7 +1617,7 @@ config_textbox_network_details = TextBox(window_config,
 
 # Sensor Reports Window Section
 reports_text_select = Text(window_sensor_reports,
-                           text="Select Sensors from The Main Window",
+                           text="Check Sensor IPs from The Main Window",
                            grid=[1, 1, 3, 1],
                            color='#CB0000',
                            align="top")
@@ -1887,7 +1855,7 @@ graph_button_live = PushButton(window_graph,
 
 # Sensor Commands Window
 commands_text_select = Text(window_sensor_commands,
-                            text="Select Sensors from the Main Window",
+                            text="Check Sensor IPs from the Main Window",
                             grid=[1, 1, 3, 1],
                             color='#CB0000',
                             align="left")
@@ -1960,7 +1928,7 @@ sensor_config_button_update_datetime = PushButton(window_sensor_commands,
 
 # Update Sensor Configuration Section
 sensor_config_text_select = Text(window_sensor_config,
-                                 text="Select Sensors from the Main Window",
+                                 text="Check Sensor IPs from the Main Window",
                                  grid=[1, 1, 3, 1],
                                  color='#CB0000',
                                  align="left")

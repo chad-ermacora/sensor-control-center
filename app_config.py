@@ -21,7 +21,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 
-script_directory = str(os.path.dirname(os.path.realpath(__file__)))
+script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
 
 if not os.path.exists(os.path.dirname(script_directory + "/logs/")):
     os.makedirs(os.path.dirname(script_directory + "/logs/"))
@@ -39,57 +39,74 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-config_file = str(os.path.dirname(os.path.realpath(__file__))) + "/config.txt"
-
 
 class CreateConfigSettings:
     """ Creates a object holding all the Control Centers default configuration options. """
 
     def __init__(self):
+        self.script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
+        self.logs_directory = script_directory + "/logs"
+        self.additional_files_directory = self.script_directory + "/additional_files"
+        self.config_file = self.script_directory + "/config.txt"
+        self.about_text = self.additional_files_directory + "/about_text.txt"
+        self.app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.2"
+
+        # Start of user configurable options
         self.save_to = str(os.path.expanduser('~/Desktop/')).replace('\\', '/')
         self.graph_start = "2018-09-12 00:00:01"
         self.graph_end = "2200-01-01 00:00:01"
-        self.time_offset = "-7"
-        self.sql_queries_skip = "3"
-        self.temperature_offset = "-4"
-        self.network_check_timeout = "2"
-        self.network_details_timeout = "5"
-        self.allow_power_controls = 0
-        self.allow_reset_config = 0
+        self.datetime_offset = -7.0
+        self.sql_queries_skip = 3
+        self.temperature_offset = -4.0
+        self.live_refresh = 5
+        self.network_timeout_sensor_check = 2
+        self.network_timeout_data = 5
+        self.allow_advanced_controls = 0
         self.ip_list = ["192.168.10.11", "192.168.10.12", "192.168.10.13", "192.168.10.14",
                         "192.168.10.15", "192.168.10.16", "192.168.10.17", "192.168.10.18",
                         "192.168.10.19", "192.168.10.20", "192.168.10.21", "192.168.10.22",
                         "192.168.10.23", "192.168.10.24", "192.168.10.25", "192.168.10.26"]
 
+    def reset_to_defaults(self):
+        default_config = CreateConfigSettings()
 
-def load_from_file():
+        self.save_to = default_config.save_to
+        self.graph_start = default_config.graph_start
+        self.graph_end = default_config.graph_end
+        self.datetime_offset = default_config.datetime_offset
+        self.sql_queries_skip = default_config.sql_queries_skip
+        self.temperature_offset = default_config.temperature_offset
+        self.live_refresh = default_config.live_refresh
+        self.network_timeout_sensor_check = default_config.network_timeout_sensor_check
+        self.network_timeout_data = default_config.network_timeout_data
+        self.allow_advanced_controls = default_config.allow_advanced_controls
+        self.ip_list = default_config.ip_list
+
+
+def _load_from_file():
     """ Loads the Control Center configurations from file and returns the Verified settings. """
     config_settings = CreateConfigSettings()
 
     try:
-        os.path.isfile(config_file)
-        local_file = open(config_file, 'r')
+        os.path.isfile(config_settings.config_file)
+        local_file = open(config_settings.config_file, 'r')
         tmp_config_settings = local_file.read().split(',')
         local_file.close()
 
         config_settings.save_to = tmp_config_settings[0]
         config_settings.graph_start = tmp_config_settings[1]
         config_settings.graph_end = tmp_config_settings[2]
-        config_settings.time_offset = tmp_config_settings[3]
+        config_settings.datetime_offset = tmp_config_settings[3]
         config_settings.sql_queries_skip = tmp_config_settings[4]
         config_settings.temperature_offset = tmp_config_settings[5]
-        config_settings.network_check_timeout = tmp_config_settings[6]
-        config_settings.network_details_timeout = tmp_config_settings[7]
+        config_settings.live_refresh = tmp_config_settings[6]
+        config_settings.network_timeout_sensor_check = tmp_config_settings[7]
+        config_settings.network_timeout_data = tmp_config_settings[8]
 
-        if int(tmp_config_settings[8]) >= 0:
-            config_settings.allow_power_controls = int(tmp_config_settings[8])
-        else:
-            logger.error("Setting Enable Sensor Shutdown/Reboot - BAD - Using Default")
-
-        if int(tmp_config_settings[9]) >= 0:
-            config_settings.allow_reset_config = int(tmp_config_settings[9])
-        else:
-            logger.error("Setting Enable Config Reset - BAD - Using Default")
+        try:
+            config_settings.allow_advanced_controls = int(tmp_config_settings[9])
+        except Exception as error:
+            logger.error("Setting Enable Sensor Shutdown/Reboot - Using Default: " + str(error))
 
         count = 0
         while count < 16:
@@ -106,10 +123,11 @@ def load_from_file():
     except Exception as error:
         logger.warning("Configuration File Load Failed - Using All or Some Defaults: " + str(error))
 
-    return _check_config(config_settings)
+    check_config(config_settings)
+    return config_settings
 
 
-def _check_config(config_settings):
+def check_config(config_settings):
     """
     Checks the provided Control Center configuration for validity and returns it.
 
@@ -139,53 +157,54 @@ def _check_config(config_settings):
         config_settings.graph_end = default_settings.graph_end
 
     try:
-        float(config_settings.time_offset)
+        config_settings.datetime_offset = float(config_settings.datetime_offset)
         logger.debug("Setting DataBase Hours Offset - OK")
     except Exception as error:
         logger.error("Setting DataBase Hours Offset - BAD - Using Default: " + str(error))
-        config_settings.time_offset = default_settings.time_offset
+        config_settings.datetime_offset = default_settings.datetime_offset
 
     try:
-        int(config_settings.sql_queries_skip)
+        config_settings.sql_queries_skip = int(config_settings.sql_queries_skip)
         logger.debug("Setting Skip SQL Queries - OK")
     except Exception as error:
         logger.error("Setting Skip SQL Queries - BAD - Using Default: " + str(error))
         config_settings.sql_queries_skip = default_settings.sql_queries_skip
 
     try:
-        float(config_settings.temperature_offset)
+        config_settings.temperature_offset = float(config_settings.temperature_offset)
         logger.debug("Setting Temperature Offset - OK")
     except Exception as error:
         logger.error("Setting Temperature Offset - BAD - Using Default: " + str(error))
         config_settings.temperature_offset = default_settings.temperature_offset
 
     try:
-        int(config_settings.network_check_timeout)
+        config_settings.live_refresh = int(config_settings.live_refresh)
+        logger.debug("Setting Live Refresh - OK")
+    except Exception as error:
+        logger.error("Setting Live Refresh - BAD - Using Default: " + str(error))
+        config_settings.live_refresh = default_settings.live_refresh
+
+    try:
+        config_settings.network_timeout_sensor_check = int(config_settings.network_timeout_sensor_check)
         logger.debug("Setting Sensor Check Timeout - OK")
     except Exception as error:
         logger.error("Setting Sensor Check Timeout - BAD - Using Default: " + str(error))
-        config_settings.network_check_timeout = default_settings.network_check_timeout
+        config_settings.network_timeout_sensor_check = default_settings.network_timeout_sensor_check
 
     try:
-        int(config_settings.network_details_timeout)
+        config_settings.network_timeout_data = int(config_settings.network_timeout_data)
         logger.debug("Setting Get Details Timeout - OK")
     except Exception as error:
         logger.error("Setting Get Details Timeout - BAD - Using Default: " + str(error))
-        config_settings.network_details_timeout = default_settings.network_details_timeout
+        config_settings.network_timeout_data = default_settings.network_timeout_data
 
     try:
-        if config_settings.allow_power_controls >= 0:
+        config_settings.allow_advanced_controls = int(config_settings.allow_advanced_controls)
+        if 2 > config_settings.allow_advanced_controls >= 0:
             logger.debug("Setting Enable Sensor Shutdown/Reboot - OK")
     except Exception as error:
         logger.error("Setting Enable Sensor Shutdown/Reboot - BAD - Using Default: " + str(error))
-        config_settings.allow_power_controls = default_settings.allow_power_controls
-
-    try:
-        if config_settings.allow_reset_config >= 0:
-            logger.debug("Setting Enable Config Reset - OK")
-    except Exception as error:
-        logger.error("Setting Enable Config Reset - BAD - Using Default: " + str(error))
-        config_settings.allow_reset_config = default_settings.allow_reset_config
+        config_settings.allow_advanced_controls = default_settings.allow_advanced_controls
 
     count = 0
     while count < 16:
@@ -196,28 +215,26 @@ def _check_config(config_settings):
             config_settings.ip_list[count] = default_settings.ip_list[count]
             count = count + 1
 
-    return config_settings
 
-
-def save_config_to_file(temp_config_settings):
+def save_config_to_file(config_settings):
     """ Saves provided Control Center configuration to file. """
-    config_settings = _check_config(temp_config_settings)
+    check_config(config_settings)
 
     var_final_write = str(config_settings.save_to)
     var_final_write = var_final_write + ',' + str(config_settings.graph_start)
     var_final_write = var_final_write + ',' + str(config_settings.graph_end)
-    var_final_write = var_final_write + ',' + str(config_settings.time_offset)
+    var_final_write = var_final_write + ',' + str(config_settings.datetime_offset)
     var_final_write = var_final_write + ',' + str(config_settings.sql_queries_skip)
     var_final_write = var_final_write + ',' + str(config_settings.temperature_offset)
-    var_final_write = var_final_write + ',' + str(config_settings.network_check_timeout)
-    var_final_write = var_final_write + ',' + str(config_settings.network_details_timeout)
-    var_final_write = var_final_write + ',' + str(config_settings.allow_power_controls)
-    var_final_write = var_final_write + ',' + str(config_settings.allow_reset_config)
+    var_final_write = var_final_write + ',' + str(config_settings.live_refresh)
+    var_final_write = var_final_write + ',' + str(config_settings.network_timeout_sensor_check)
+    var_final_write = var_final_write + ',' + str(config_settings.network_timeout_data)
+    var_final_write = var_final_write + ',' + str(config_settings.allow_advanced_controls)
     for ip in config_settings.ip_list:
         var_final_write = var_final_write + ',' + str(ip)
 
     try:
-        local_file = open(config_file, 'w')
+        local_file = open(config_settings.config_file, 'w')
         local_file.write(var_final_write)
         local_file.close()
         logger.debug("Configuration Settings Save to File - OK")
