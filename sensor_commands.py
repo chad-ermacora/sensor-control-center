@@ -18,21 +18,22 @@
 """
 import socket
 import pickle
-import os
-import sys
 import re
+import os
 import logging
 from logging.handlers import RotatingFileHandler
 from tkinter import simpledialog
 from datetime import datetime
 from urllib.request import urlopen
 
+script_directory = str(os.path.dirname(os.path.realpath(__file__)))
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/Sensor_Commands_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/Sensor_Commands_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
@@ -40,11 +41,8 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
-config_file = app_location_directory + "config.txt"
 
-
-def check_online_status(ip, net_timeout):
+def check_sensor_status(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor status. """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -59,10 +57,11 @@ def check_online_status(ip, net_timeout):
         sensor_status = "Offline"
 
     sock_g.close()
+
     return sensor_status
 
 
-def get_system_info(ip, net_timeout):
+def get_sensor_system(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor system information. """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -82,6 +81,174 @@ def get_system_info(ip, net_timeout):
     return final_data
 
 
+def get_sensor_readings(ip, net_timeout):
+    """
+    Socket connection to sensor IP. Return sensor's readings.
+
+    Returned data is a list of 2 comma separated strings.
+
+    The first string is the Interval readings, the second, Trigger readings.
+    """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetSensorReadings')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = ["Readings Failed on " + ip, str(error), "Readings Failed on " + ip, str(error)]
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
+def get_sensor_hostname(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's hostname. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetHostName')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
+def get_sensor_uptime(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's System Uptime. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetSystemUptime')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
+def get_sensor_cpu_temperature(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's System CPU Temperature. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetCPUTemperature')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
+def get_sensor_temperature(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's temperature. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetEnvTemperature')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
+def get_sensor_pressure(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's Pressure in hPa. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetPressure')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
+def get_sensor_humidity(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's Humidity in %RH. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetHumidity')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
+def get_sensor_lumen(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's Lumen. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetLumen')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
+def get_sensor_rgb(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensor's Red, Green, Blue readings. """
+    socket.setdefaulttimeout(net_timeout)
+    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock_g.connect((ip, 10065))
+        sock_g.send(b'GetRGB')
+        var_data = pickle.loads(sock_g.recv(4096))
+        sock_g.close()
+        logger.debug("Getting Sensor Readings from " + str(ip) + " - OK")
+    except Exception as error:
+        var_data = 0
+        logger.warning("Getting Sensor Readings from " + ip + " - Failed: " + str(error))
+
+    return var_data
+
+
 def get_sensor_config(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor configuration. """
     socket.setdefaulttimeout(net_timeout)
@@ -98,7 +265,7 @@ def get_sensor_config(ip, net_timeout):
         logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
     sock_g.close()
 
-    sensor_system = get_system_info(ip, net_timeout)
+    sensor_system = get_sensor_system(ip, net_timeout)
 
     final_sensor_config = [str(sensor_system[0]),
                            str(sensor_system[1]),

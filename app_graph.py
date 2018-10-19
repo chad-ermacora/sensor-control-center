@@ -16,21 +16,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import sensor_commands
 import plotly
 import sqlite3
-import plotly.graph_objs as go
+import os
 import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta
-from plotly import tools
+from plotly import tools, graph_objs as go
+from matplotlib import pyplot, animation, style
 from guizero import warn
+
+script_directory = str(os.path.dirname(os.path.realpath(__file__)))
 
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -38,6 +42,8 @@ stream_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
+
+style.use("dark_background")
 
 
 class CreateGraphData:
@@ -52,8 +58,6 @@ class CreateGraphData:
         self.time_offset = 0.0
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
-        self.graph_type = ""
-        self.graph_table = "IntervalData"
         self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
                               "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
         self.max_sql_queries = 200000
@@ -84,131 +88,273 @@ class CreateGraphData:
         self.sql_data_gyro_z = []
 
 
-def start_graph(graph_data):
+class CreateLiveGraph:
+    def __init__(self, sensor_type, ip, current_config):
+        self.current_config = current_config
+        self.sensor_type = sensor_type
+        self.ip = ip
+        self.first_datetime = str(datetime.time(datetime.now()))[:8]
+
+        self.fig = pyplot.figure()
+        self.fig.canvas.set_window_title('Live Sensor Graph')
+        self.ax1 = self.fig.add_subplot(1, 1, 1)
+        self.x = []
+        self.y = []
+
+        self.ani = animation.FuncAnimation(self.fig,
+                                           self._update_graph,
+                                           interval=float(self.current_config.live_refresh) * 1000)
+        pyplot.show()
+
+    def _update_graph(self, x_frame):
+        current_time = str(datetime.time(datetime.now()))[:8]
+        sensor_name = sensor_commands.get_sensor_hostname(self.ip,
+                                                          self.current_config.network_timeout_data)
+        try:
+            if self.sensor_type is "SensorUpTime":
+                sensor_reading = sensor_commands.get_sensor_uptime(self.ip,
+                                                                   self.current_config.network_timeout_data)
+                sensor_type_name = "Sensor Uptime"
+                measurement_type = ""
+            elif self.sensor_type is "SystemTemp":
+                sensor_reading = sensor_commands.get_sensor_cpu_temperature(self.ip,
+                                                                            self.current_config.network_timeout_data)
+
+                try:
+                    sensor_reading = round(float(sensor_reading), 3)
+                except Exception as error:
+                    logger.warning(str(error))
+
+                sensor_type_name = "CPU Temperature"
+                measurement_type = " °C"
+            elif self.sensor_type is "EnvironmentTemp":
+                sensor_reading = sensor_commands.get_sensor_temperature(self.ip,
+                                                                        self.current_config.network_timeout_data)
+
+                try:
+                    sensor_reading = round(float(sensor_reading) +
+                                           float(self.current_config.temperature_offset), 3)
+                except Exception as error:
+                    logger.warning(str(error))
+
+                sensor_type_name = "Environmental Temperature"
+                measurement_type = " °C"
+            elif self.sensor_type is "Pressure":
+                sensor_reading = sensor_commands.get_sensor_pressure(self.ip,
+                                                                     self.current_config.network_timeout_data)
+                sensor_type_name = "Pressure"
+                measurement_type = " hPa"
+            elif self.sensor_type is "Humidity":
+                sensor_reading = sensor_commands.get_sensor_humidity(self.ip,
+                                                                     self.current_config.network_timeout_data)
+
+                try:
+                    sensor_reading = int(round(float(sensor_reading), 0))
+                except Exception as error:
+                    logger.warning(str(error))
+
+                sensor_type_name = "Humidity"
+                measurement_type = " %RH"
+            elif self.sensor_type is "Lumen":
+                sensor_reading = sensor_commands.get_sensor_lumen(self.ip,
+                                                                  self.current_config.network_timeout_data)
+                sensor_type_name = "Lumen"
+                measurement_type = " Lumen"
+            elif self.sensor_type[0] == "Red":
+                sensor_reading = sensor_commands.get_sensor_rgb(self.ip,
+                                                                self.current_config.network_timeout_data)
+                sensor_type_name = "RGB"
+                measurement_type = ""
+            elif self.sensor_type[0] == "Acc_X":
+                sensor_reading = 0
+                sensor_type_name = "Accelerometer XYZ"
+                measurement_type = ""
+            elif self.sensor_type[0] == "Mag_X":
+                sensor_reading = 0
+                sensor_type_name = "Magnetometer XYZ"
+                measurement_type = ""
+            elif self.sensor_type[0] == "Gyro_X":
+                sensor_reading = 0
+                sensor_type_name = "Gyroscope XYZ"
+                measurement_type = ""
+            else:
+                sensor_reading = 0
+                sensor_type_name = "Invalid Sensor"
+                measurement_type = ""
+
+            self.ax1.clear()
+            self.y.append(sensor_reading)
+            self.x.append(x_frame)
+            self.ax1.plot(self.x, self.y)
+
+            if self.sensor_type is "SensorUpTime":
+                try:
+                    uptime_days = int(float(sensor_reading) // 1440)
+                    uptime_hours = int((float(sensor_reading) % 1440) // 60)
+                    uptime_min = int(float(sensor_reading) % 60)
+                    sensor_reading = str(uptime_days) + " Days / " + \
+                        str(uptime_hours) + "." + \
+                        str(uptime_min) + " Hours"
+                except Exception as error:
+                    logger.warning(str(error))
+
+            pyplot.title("Sensor: " + sensor_name + "  ||  IP: " + self.ip)
+            pyplot.xlabel("Start Time: " + self.first_datetime +
+                          "  ||  Last Updated: " + current_time +
+                          "  ||  Reading: " + str(sensor_reading) + measurement_type)
+
+            if self.sensor_type is "SensorUpTime":
+                measurement_type = " in Minutes"
+            elif self.sensor_type is "Lumen":
+                measurement_type = ""
+
+            pyplot.ylabel(sensor_type_name + measurement_type)
+            pyplot.xticks([])
+        except Exception as error:
+            logger.error("Live Graph - Invalid Sensor Data: " + str(error))
+
+
+def start_graph_interval(graph_data):
+    graph_data.graph_table = "IntervalData"
     logger.debug("SQL Columns: " + str(graph_data.graph_columns))
     logger.debug("SQL Table(s): " + str(graph_data.graph_table))
     logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
     logger.debug("SQL End DateTime: " + str(graph_data.graph_end))
     logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
 
+    # Adjust dates to Database timezone in UTC 0
     new_time_offset = int(graph_data.time_offset) * -1
-    get_sql_graph_start = adjust_interval_datetime(graph_data.graph_start, new_time_offset)
-    get_sql_graph_end = adjust_interval_datetime(graph_data.graph_end, new_time_offset)
-    if graph_data.graph_table == "IntervalData":
-        for var_column in graph_data.graph_columns:
-            var_sql_query = "SELECT " + \
-                            str(var_column) + \
-                " FROM " + \
-                            str(graph_data.graph_table) + \
-                " WHERE " + \
-                            var_column + \
-                " IS NOT NULL AND DateTime BETWEEN datetime('" + \
-                            str(get_sql_graph_start) + \
-                "') AND datetime('" + \
-                            str(get_sql_graph_end) + \
-                "') LIMIT " + \
-                            str(graph_data.max_sql_queries)
+    get_sql_graph_start = _adjust_interval_datetime(graph_data.graph_start, new_time_offset)
+    get_sql_graph_end = _adjust_interval_datetime(graph_data.graph_end, new_time_offset)
+    for var_column in graph_data.graph_columns:
+        var_sql_query = "SELECT " + \
+                        str(var_column) + \
+            " FROM " + \
+                        str(graph_data.graph_table) + \
+            " WHERE " + \
+                        var_column + \
+            " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                        str(get_sql_graph_start) + \
+            "') AND datetime('" + \
+                        str(get_sql_graph_end) + \
+            "') LIMIT " + \
+                        str(graph_data.max_sql_queries)
 
-            sql_column_data = get_sql_data(graph_data, var_sql_query)
+        sql_column_data = _get_sql_data(graph_data, var_sql_query)
 
-            if str(var_column) == "DateTime":
-                count = 0
-                for data in sql_column_data:
-                    sql_column_data[count] = adjust_interval_datetime(data, int(graph_data.time_offset))
+        # Adjust SQL data from its UTC time, to user set timezone (Hour Offset)
+        if str(var_column) == "DateTime":
+            count = 0
+            for data in sql_column_data:
+                sql_column_data[count] = _adjust_interval_datetime(data, int(graph_data.time_offset))
+                count = count + 1
+
+            graph_data.sql_data_time = sql_column_data
+
+        elif str(var_column) == "SensorName":
+            graph_data.sql_data_host_name = sql_column_data
+        elif str(var_column) == "SensorUpTime":
+            graph_data.sql_data_up_time = sql_column_data
+        elif str(var_column) == "IP":
+            graph_data.sql_data_ip = sql_column_data
+        elif str(var_column) == "SystemTemp":
+            graph_data.sql_data_cpu_temp = sql_column_data
+        elif str(var_column) == "EnvironmentTemp":
+            count = 0
+            for data in sql_column_data:
+                try:
+                    sql_column_data[count] = str(float(data) + float(graph_data.temperature_offset))
                     count = count + 1
-
-                graph_data.sql_data_time = sql_column_data
-
-            elif str(var_column) == "SensorName":
-                graph_data.sql_data_host_name = sql_column_data
-            elif str(var_column) == "SensorUpTime":
-                graph_data.sql_data_up_time = sql_column_data
-            elif str(var_column) == "IP":
-                graph_data.sql_data_ip = sql_column_data
-            elif str(var_column) == "SystemTemp":
-                graph_data.sql_data_cpu_temp = sql_column_data
-            elif str(var_column) == "EnvironmentTemp":
-                count = 0
-                for data in sql_column_data:
-                    try:
-                        sql_column_data[count] = str(float(data) + float(graph_data.temperature_offset))
-                        count = count + 1
-                    except Exception as error:
-                        count = count + 1
-                        logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
-
-                graph_data.sql_data_hat_temp = sql_column_data
-
-            elif str(var_column) == "Pressure":
-                graph_data.sql_data_pressure = sql_column_data
-            elif str(var_column) == "Humidity":
-                graph_data.sql_data_humidity = sql_column_data
-            elif str(var_column) == "Lumen":
-                graph_data.sql_data_lumen = sql_column_data
-            elif str(var_column) == "Red":
-                graph_data.sql_data_red = sql_column_data
-            elif str(var_column) == "Green":
-                graph_data.sql_data_green = sql_column_data
-            elif str(var_column) == "Blue":
-                graph_data.sql_data_blue = sql_column_data
-            else:
-                logger.error(var_column + " - Does Not Exist")
-
-    elif graph_data.graph_table == "TriggerData":
-        for var_column in graph_data.graph_columns:
-            var_sql_query = "SELECT " + \
-                            str(var_column) + \
-                " FROM " + \
-                            str(graph_data.graph_table) + \
-                " WHERE " + \
-                            var_column + \
-                " IS NOT NULL AND DateTime BETWEEN datetime('" + \
-                            str(get_sql_graph_start) + \
-                ".000') AND datetime('" + \
-                            str(get_sql_graph_end) + \
-                ".000') LIMIT " + \
-                            str(graph_data.max_sql_queries)
-
-            sql_column_data = get_sql_data(graph_data, var_sql_query)
-
-            if str(var_column) == "DateTime":
-                count = 0
-                for data in sql_column_data:
-                    sql_column_data[count] = adjust_trigger_datetime(data, int(graph_data.time_offset))
+                except Exception as error:
                     count = count + 1
+                    logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
 
-                graph_data.sql_data_time = sql_column_data
+            graph_data.sql_data_hat_temp = sql_column_data
 
-            elif str(var_column) == "SensorName":
-                graph_data.sql_data_host_name = sql_column_data
-            elif str(var_column) == "IP":
-                graph_data.sql_data_ip = sql_column_data
-            elif str(var_column) == "Acc_X":
-                graph_data.sql_data_acc_x = sql_column_data
-            elif str(var_column) == "Acc_Y":
-                graph_data.sql_data_acc_y = sql_column_data
-            elif str(var_column) == "Acc_Z":
-                graph_data.sql_data_acc_z = sql_column_data
-            elif str(var_column) == "Mag_X":
-                graph_data.sql_data_mg_x = sql_column_data
-            elif str(var_column) == "Mag_Y":
-                graph_data.sql_data_mg_y = sql_column_data
-            elif str(var_column) == "Mag_Z":
-                graph_data.sql_data_mg_z = sql_column_data
-            elif str(var_column) == "Gyro_X":
-                graph_data.sql_data_gyro_x = sql_column_data
-            elif str(var_column) == "Gyro_Y":
-                graph_data.sql_data_gyro_y = sql_column_data
-            elif str(var_column) == "Gyro_Z":
-                graph_data.sql_data_gyro_z = sql_column_data
-            else:
-                logger.error(var_column + " - Does Not Exist")
-
-    trace_graph(graph_data)
+        elif str(var_column) == "Pressure":
+            graph_data.sql_data_pressure = sql_column_data
+        elif str(var_column) == "Humidity":
+            graph_data.sql_data_humidity = sql_column_data
+        elif str(var_column) == "Lumen":
+            graph_data.sql_data_lumen = sql_column_data
+        elif str(var_column) == "Red":
+            graph_data.sql_data_red = sql_column_data
+        elif str(var_column) == "Green":
+            graph_data.sql_data_green = sql_column_data
+        elif str(var_column) == "Blue":
+            graph_data.sql_data_blue = sql_column_data
+        else:
+            logger.error(var_column + " - Does Not Exist")
+    _plotly_graph(graph_data)
     logger.debug("Interval DB Graph Complete")
 
 
-def adjust_interval_datetime(var_datetime, time_offset):
+def start_graph_trigger(graph_data):
+    graph_data.graph_table = "TriggerData"
+    logger.debug("SQL Columns: " + str(graph_data.graph_columns))
+    logger.debug("SQL Table(s): " + str(graph_data.graph_table))
+    logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
+    logger.debug("SQL End DateTime: " + str(graph_data.graph_end))
+    logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
+
+    # Adjust dates to Database timezone in UTC 0
+    new_time_offset = int(graph_data.time_offset) * -1
+    get_sql_graph_start = _adjust_interval_datetime(graph_data.graph_start, new_time_offset)
+    get_sql_graph_end = _adjust_interval_datetime(graph_data.graph_end, new_time_offset)
+
+    for var_column in graph_data.graph_columns:
+        var_sql_query = "SELECT " + \
+                        str(var_column) + \
+            " FROM " + \
+                        str(graph_data.graph_table) + \
+            " WHERE " + \
+                        var_column + \
+            " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                        str(get_sql_graph_start) + \
+            ".000') AND datetime('" + \
+                        str(get_sql_graph_end) + \
+            ".000') LIMIT " + \
+                        str(graph_data.max_sql_queries)
+
+        sql_column_data = _get_sql_data(graph_data, var_sql_query)
+
+        if str(var_column) == "DateTime":
+            count = 0
+            for data in sql_column_data:
+                sql_column_data[count] = _adjust_trigger_datetime(data, int(graph_data.time_offset))
+                count = count + 1
+
+            graph_data.sql_data_time = sql_column_data
+
+        elif str(var_column) == "SensorName":
+            graph_data.sql_data_host_name = sql_column_data
+        elif str(var_column) == "IP":
+            graph_data.sql_data_ip = sql_column_data
+        elif str(var_column) == "Acc_X":
+            graph_data.sql_data_acc_x = sql_column_data
+        elif str(var_column) == "Acc_Y":
+            graph_data.sql_data_acc_y = sql_column_data
+        elif str(var_column) == "Acc_Z":
+            graph_data.sql_data_acc_z = sql_column_data
+        elif str(var_column) == "Mag_X":
+            graph_data.sql_data_mg_x = sql_column_data
+        elif str(var_column) == "Mag_Y":
+            graph_data.sql_data_mg_y = sql_column_data
+        elif str(var_column) == "Mag_Z":
+            graph_data.sql_data_mg_z = sql_column_data
+        elif str(var_column) == "Gyro_X":
+            graph_data.sql_data_gyro_x = sql_column_data
+        elif str(var_column) == "Gyro_Y":
+            graph_data.sql_data_gyro_y = sql_column_data
+        elif str(var_column) == "Gyro_Z":
+            graph_data.sql_data_gyro_z = sql_column_data
+        else:
+            logger.error(var_column + " - Does Not Exist")
+    _plotly_graph(graph_data)
+    logger.debug("Trigger DB Graph Complete")
+
+
+def _adjust_interval_datetime(var_datetime, time_offset):
     """
     Adjusts the provided datetime by the provided hour offset and returns the result.
 
@@ -229,7 +375,7 @@ def adjust_interval_datetime(var_datetime, time_offset):
     return str(new_time)
 
 
-def adjust_trigger_datetime(var_datetime, time_offset):
+def _adjust_trigger_datetime(var_datetime, time_offset):
     """
     Adjusts the provided datetime by the provided hour offset and returns the result.
 
@@ -258,7 +404,7 @@ def adjust_trigger_datetime(var_datetime, time_offset):
     return str(new_time) + tmp_ms
 
 
-def get_sql_data(graph_interval_data, sql_command):
+def _get_sql_data(graph_interval_data, sql_command):
     """ Execute SQLite3 command and return the results. """
     return_data = []
 
@@ -288,7 +434,7 @@ def get_sql_data(graph_interval_data, sql_command):
     return return_data
 
 
-def trace_graph(graph_interval_data):
+def _plotly_graph(graph_interval_data):
     """ Create and open a HTML offline Plotly graph with the data provided. """
     sub_plots = []
     row_count = 0
@@ -336,7 +482,7 @@ def trace_graph(graph_interval_data):
             sub_plots.append('Sensor Uptime')
             logger.debug("Graph Sensor Uptime Added")
 
-        if len(graph_interval_data.sql_data_cpu_temp) > 1:
+        if len(graph_interval_data.sql_data_cpu_temp) > 1 or len(graph_interval_data.sql_data_hat_temp) > 1:
             row_count = row_count + 1
 
             trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,
@@ -495,7 +641,7 @@ def trace_graph(graph_interval_data):
             fig['layout'].update(height=2048)
 
         try:
-            plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'PlotSensors.html', auto_open=True)
+            plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'SensorGraph.html', auto_open=True)
             logger.debug("Graph Creation - OK")
         except Exception as error:
             logger.error("Graph Creation - Failed - " + str(error))

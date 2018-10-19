@@ -16,20 +16,21 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import sensor_commands
 import webbrowser
-import sys
 import os
 import logging
-from sensor_commands import get_system_info, get_sensor_config
-from app_config import load_file as load_config
+import app_config
 from logging.handlers import RotatingFileHandler
+
+script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
@@ -37,176 +38,164 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-app_location_directory = str(os.path.dirname(sys.argv[0])) + "/"
-html_template_system1 = "additional_files/html_template_system1.html"
-html_template_system2 = "additional_files/html_template_system2.html"
-html_template_system3 = "additional_files/html_template_system3.html"
-html_template_config1 = "additional_files/html_template_config1.html"
-html_template_config2 = "additional_files/html_template_config2.html"
-html_template_config3 = "additional_files/html_template_config3.html"
+
+class HTMLSystem:
+    def __init__(self):
+        self.config_settings = app_config.get_from_file()
+        self.template1 = script_directory + "/additional_files/html_template_system1.html"
+        self.template2 = script_directory + "/additional_files/html_template_system2.html"
+        self.template3 = script_directory + "/additional_files/html_template_system3.html"
+        self.file_output_name = "SensorsSystem.html"
+
+        self.replacement_codes = ["{{HostName}}",
+                                  "{{IP}}",
+                                  "{{DateTime}}",
+                                  "{{UpTime}}",
+                                  "{{CPUTemp}}",
+                                  "{{FreeDisk}}",
+                                  "{{IntervalSize}}",
+                                  "{{TriggerSize}}",
+                                  "{{SQLWriteEnabled}}",
+                                  "{{CustomEnabled}}"]
+
+    def get_sensor_data(self, ip):
+        sensor_data = sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
+        # Convert the sensor's system uptime of minutes to human readable day/hour.min
+        sensor_data[3] = _convert_minutes_string(sensor_data[3])
+
+        return sensor_data
 
 
-def html_system_codes():
-    logger.debug("Getting Sensor Details HTML replacement Codes")
+class HTMLReadings:
+    def __init__(self):
+        self.config_settings = app_config.get_from_file()
+        self.template1 = script_directory + "/additional_files/html_template_readings1.html"
+        self.template2 = script_directory + "/additional_files/html_template_readings2.html"
+        self.template3 = script_directory + "/additional_files/html_template_readings3.html"
+        self.file_output_name = "SensorsSystem.html"
 
-    html_replacement_vars = ["{{HostName}}",
-                             "{{IP}}",
-                             "{{DateTime}}",
-                             "{{UpTime}}",
-                             "{{CPUTemp}}",
-                             "{{FreeDisk}}",
-                             "{{IntervalSize}}",
-                             "{{TriggerSize}}",
-                             "{{SQLWriteEnabled}}",
-                             "{{CustomEnabled}}"]
+        self.replacement_codes = ["{{IntervalTypes}}",
+                                  "{{IntervalReadings}}",
+                                  "{{TriggerTypes}}",
+                                  "{{TriggerReadings}}"]
 
-    return html_replacement_vars
+    def get_sensor_data(self, ip):
+        sensor_data = sensor_commands.get_sensor_readings(ip, self.config_settings.network_timeout_data)
 
-
-def html_config_codes():
-    logger.debug("Getting Sensor Config HTML replacement Codes")
-
-    html_replacement_vars = ["{{HostName}}",
-                             "{{IP}}",
-                             "{{DateTime}}",
-                             "{{IntervalDuration}}",
-                             "{{TriggerDuration}}",
-                             "{{SQLWriteEnabled}}",
-                             "{{CustomEnabled}}",
-                             "{{CustomAcc}}",
-                             "{{CustomMag}}",
-                             "{{CustomGyro}}"]
-
-    return html_replacement_vars
+        return sensor_data
 
 
-def open_html(outfile):
+class HTMLConfig:
+    def __init__(self):
+        self.config_settings = app_config.get_from_file()
+        self.template1 = script_directory + "/additional_files/html_template_config1.html"
+        self.template2 = script_directory + "/additional_files/html_template_config2.html"
+        self.template3 = script_directory + "/additional_files/html_template_config3.html"
+        self.file_output_name = "SensorsConfig.html"
+
+        self.replacement_codes = ["{{HostName}}",
+                                  "{{IP}}",
+                                  "{{DateTime}}",
+                                  "{{IntervalDuration}}",
+                                  "{{TriggerDuration}}",
+                                  "{{SQLWriteEnabled}}",
+                                  "{{CustomEnabled}}",
+                                  "{{CustomAcc}}",
+                                  "{{CustomMag}}",
+                                  "{{CustomGyro}}"]
+
+    def get_sensor_data(self, ip):
+        sensor_data = sensor_commands.get_sensor_config(ip, self.config_settings.network_timeout_data)
+
+        return sensor_data
+
+
+def sensor_html_report(report_configuration, ip_list):
+    """ Creates and opens a HTML Report based on provided IP's and report configurations data. """
+    final_file = _get_file_content(report_configuration.template1)
+    sensor_html_template = _get_file_content(report_configuration.template2)
+
+    # Add first HTML Template file to final HTML output file
+    # Insert each sensors data into final HTML output file through the 2nd template & replacement codes
+    for ip in ip_list:
+        try:
+            current_sensor_html = sensor_html_template
+            sensor_data = report_configuration.get_sensor_data(ip)
+
+            current_sensor_html = _replace_with_codes(sensor_data,
+                                                      report_configuration.replacement_codes,
+                                                      current_sensor_html)
+
+            final_file = final_file + current_sensor_html
+        except Exception as error:
+                logger.error("Report Failure: " + str(error))
+
+    # Merge the result with the Final HTML Template file.
+    template3 = _get_file_content(report_configuration.template3)
+    final_file = final_file + template3
+
     try:
-        file_var = "file:///" + outfile
-        webbrowser.open(file_var, new=2)
+        save_to_location = str(report_configuration.config_settings.save_to + report_configuration.file_output_name)
+        _save_data_to_file(final_file, save_to_location)
+        _open_html(save_to_location)
+        logger.debug("Sensor Report - HTML Save File - OK")
+    except Exception as error:
+        logger.error("Sensor Report - HTML Save File - Failed: " + str(error))
+
+
+def _get_file_content(file_location):
+    try:
+        tmp_file = open(file_location, "r")
+        file_content = tmp_file.read()
+        tmp_file.close()
+    except Exception as error:
+        logger.error("Unable to get file contents: " + str(error))
+        file_content = "Unable to get file contents: " + str(error)
+
+    return file_content
+
+
+def _convert_minutes_string(var_minutes):
+    try:
+        uptime_days = int(float(var_minutes) // 1440)
+        uptime_hours = int((float(var_minutes) % 1440) // 60)
+        uptime_min = int(float(var_minutes) % 60)
+        str_day_hour_min = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
+    except Exception as error:
+        logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
+        str_day_hour_min = var_minutes
+
+    return str_day_hour_min
+
+
+def _replace_with_codes(data, codes, template):
+    count = 0
+    for code in codes:
+        try:
+            replace_word = str(data[count])
+        except Exception as error:
+            replace_word = "No Data"
+            logger.error("Invalid Sensor Data: " + str(error))
+
+        template = template.replace(code, replace_word)
+        count = count + 1
+
+    return template
+
+
+def _save_data_to_file(data, file_location):
+    try:
+        file_out = open(file_location, "w")
+        file_out.write(data)
+        file_out.close()
+    except Exception as error:
+        logger.error("Unable to save file: " + str(error))
+
+
+def _open_html(outfile):
+    """ Opens a HTML file in the default web browser. """
+    try:
+        webbrowser.open_new_tab("file:///" + outfile)
         logger.debug("Graph HTML File Opened - OK")
     except Exception as error:
         logger.error("Graph HTML File Opened - Failed - " + str(error))
-
-
-def open_url(url):
-    webbrowser.open(url)
-
-
-def sensor_system_report(ip_list):
-    final_file = ''
-    sensor_html = ''
-    temp_config = load_config()
-    net_timeout = int(temp_config.network_details_timeout)
-
-    try:
-        html_file_part = open(str(app_location_directory + html_template_system1), 'r')
-        final_file = html_file_part.read()
-        html_file_part.close()
-        html_file_part = open(str(app_location_directory + html_template_system2), 'r')
-        sensor_html = html_file_part.read()
-        html_file_part.close()
-        logger.debug("Open First 2 System Report Templates - OK")
-    except Exception as error:
-        logger.error("Open First 2 System Report Templates - Failed: " + str(error))
-
-    # For each IP in the list, Get its data per Report "Type"
-    # Inserting them into a final HTML file, based on a 3 part template
-    replacement_codes = html_system_codes()
-    for ip in ip_list:
-        try:
-            current_sensor_html = sensor_html
-            sensor_data = get_system_info(ip, net_timeout)
-
-            uptime_days = int(float(sensor_data[3]) // 1440)
-            uptime_hours = int((float(sensor_data[3]) % 1440) // 60)
-            uptime_min = int(float(sensor_data[3]) % 60)
-            sensor_data[3] = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
-
-            count = 0
-            for code in replacement_codes:
-                try:
-                    replace_word = str(sensor_data[count])
-                except Exception as error:
-                    replace_word = "Failed"
-                    logger.error("Invalid Sensor Data: " + str(error))
-
-                print(code + " / " + replace_word)
-                current_sensor_html = current_sensor_html.replace(code, replace_word)
-                count = count + 1
-            final_file = final_file + current_sensor_html
-        except Exception as error:
-                logger.error("System Report Failure: " + str(error))
-
-    try:
-        html_file_part = open(str(app_location_directory + html_template_system3), 'r')
-        html_end = html_file_part.read()
-        html_file_part.close()
-        final_file = final_file + html_end
-        logger.debug("Created System Report - HTML File - OK")
-    except Exception as error:
-        logger.error("Open 3rd System Report Template File Failed: " + str(error))
-
-    try:
-        save_to_location = str(temp_config.save_to + "SensorsSystem.html")
-        file_out = open(save_to_location, 'w')
-        file_out.write(final_file)
-        file_out.close()
-        open_html(save_to_location)
-        logger.debug("Sensor System Report - HTML Save File - OK")
-    except Exception as error:
-        logger.error("Sensor System Report - HTML Save File - Failed: " + str(error))
-
-
-def sensor_config_report(ip_list):
-    final_file = ''
-    sensor_html = ''
-    temp_config = load_config()
-    net_timeout = int(temp_config.network_details_timeout)
-
-    try:
-        html_file_part = open(str(app_location_directory + html_template_config1), 'r')
-        final_file = html_file_part.read()
-        html_file_part.close()
-        html_file_part = open(str(app_location_directory + html_template_config2), 'r')
-        sensor_html = html_file_part.read()
-        html_file_part.close()
-        logger.debug("Open First 2 Config Report Templates - OK")
-    except Exception as error:
-        logger.error("Open First 2 Config Report Templates - Failed: " + str(error))
-
-    # For each IP in the list, Get its data per Report "Type"
-    # Inserting them into a final HTML file, based on a 3 part template
-    replacement_codes = html_config_codes()
-    for ip in ip_list:
-        try:
-            current_sensor_html = sensor_html
-            sensor_data = get_sensor_config(ip, net_timeout)
-
-            count = 0
-            for code in replacement_codes:
-                current_sensor_html = current_sensor_html.replace(code, str(sensor_data[count]))
-                count = count + 1
-            final_file = final_file + current_sensor_html
-        except Exception as error:
-                logger.error("Config Report Failure: " + str(error))
-
-    try:
-        html_file_part = open(str(app_location_directory + html_template_config3), 'r')
-        html_end = html_file_part.read()
-        html_file_part.close()
-        final_file = final_file + html_end
-        logger.debug("Created Sensor Config Report - HTML File - OK")
-    except Exception as error:
-        logger.error("Open 3rd Template File Failed: " + str(error))
-
-    # Write to a HTML file
-    try:
-        save_to_location = str(temp_config.save_to + "SensorsConfig.html")
-        file_out = open(save_to_location, 'w')
-        file_out.write(final_file)
-        file_out.close()
-        open_html(save_to_location)
-        logger.debug("Sensor Config Report  - HTML Save File - OK")
-    except Exception as error:
-        logger.error("Sensor Config Report  - HTML Save File - Failed: " + str(error))
