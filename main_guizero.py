@@ -1843,7 +1843,7 @@ sensor_config_text_trigger = Text(window_sensor_config,
                                   align="left")
 
 sensor_config_checkbox_custom = CheckBox(window_sensor_config,
-                                         text="Enable Custom Settings",
+                                         text="Enable Custom Variances",
                                          command=sensor_config_enable_custom,
                                          grid=[1, 5, 2, 1],
                                          align="left")
