@@ -49,7 +49,7 @@ class CreateDefaultConfigSettings:
         self.additional_files_directory = self.script_directory + "/additional_files"
         self.config_file = self.script_directory + "/config.txt"
         self.about_text = self.additional_files_directory + "/about_text.txt"
-        self.app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.19.2"
+        self.app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.20.1"
 
         # Start of user configurable options
         self.save_to = str(os.path.expanduser('~/Desktop/')).replace('\\', '/')
