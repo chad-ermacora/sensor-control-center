@@ -28,13 +28,12 @@ import sensor_commands
 import app_reports
 import app_graph
 import os
-import datetime
 import platform
 import subprocess
 import webbrowser
 from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, warn, ButtonGroup
 from tkinter import filedialog
-from matplotlib import pyplot, animation, style
+from matplotlib import pyplot
 from threading import Thread
 from queue import Queue
 import logging
@@ -57,128 +56,8 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-current_config = app_config._load_from_file()
+current_config = app_config.get_from_file()
 data_queue = Queue()
-style.use("dark_background")
-
-
-class CreateLiveGraph:
-    def __init__(self, sensor_type, ip, net_timeout):
-        self.sensor_type = sensor_type
-        self.ip = ip
-        self.first_datetime = str(datetime.datetime.time(datetime.datetime.now()))[:8]
-        self.net_timeout = net_timeout
-
-        self.fig = pyplot.figure()
-        self.fig.canvas.set_window_title('Live Sensor Graph')
-        self.ax1 = self.fig.add_subplot(1, 1, 1)
-        self.x = []
-        self.y = []
-
-        # noinspection PyUnusedLocal
-        self.ani = animation.FuncAnimation(self.fig,
-                                           self._update_graph,
-                                           interval=float(graph_textbox_refresh_time.value) * 1000)
-        pyplot.show()
-
-    def _update_graph(self, x_frame):
-        current_time = str(datetime.datetime.time(datetime.datetime.now()))[:8]
-        sensor_name = sensor_commands.get_sensor_hostname(self.ip, self.net_timeout)
-        try:
-            if self.sensor_type is "SensorUpTime":
-                sensor_reading = sensor_commands.get_sensor_uptime(self.ip, self.net_timeout)
-                sensor_type_name = "Sensor Uptime"
-                measurement_type = ""
-            elif self.sensor_type is "SystemTemp":
-                sensor_reading = sensor_commands.get_sensor_cpu_temperature(self.ip, self.net_timeout)
-
-                try:
-                    sensor_reading = round(float(sensor_reading), 3)
-                except Exception as error:
-                    logger.warning(str(error))
-
-                sensor_type_name = "CPU Temperature"
-                measurement_type = " °C"
-            elif self.sensor_type is "EnvironmentTemp":
-                sensor_reading = sensor_commands.get_sensor_temperature(self.ip, self.net_timeout)
-
-                try:
-                    sensor_reading = round(float(sensor_reading) +
-                                           float(graph_textbox_temperature_offset.value), 3)
-                except Exception as error:
-                    logger.warning(str(error))
-
-                sensor_type_name = "Environmental Temperature"
-                measurement_type = " °C"
-            elif self.sensor_type is "Pressure":
-                sensor_reading = sensor_commands.get_sensor_pressure(self.ip, self.net_timeout)
-                sensor_type_name = "Pressure"
-                measurement_type = " hPa"
-            elif self.sensor_type is "Humidity":
-                sensor_reading = sensor_commands.get_sensor_humidity(self.ip, self.net_timeout)
-
-                try:
-                    sensor_reading = int(round(float(sensor_reading), 0))
-                except Exception as error:
-                    logger.warning(str(error))
-
-                sensor_type_name = "Humidity"
-                measurement_type = " %RH"
-            elif self.sensor_type is "Lumen":
-                sensor_reading = sensor_commands.get_sensor_lumen(self.ip, self.net_timeout)
-                sensor_type_name = "Lumen"
-                measurement_type = " Lumen"
-            elif self.sensor_type[0] == "Red":
-                sensor_reading = sensor_commands.get_sensor_rgb(self.ip, self.net_timeout)
-                sensor_type_name = "RGB"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Acc_X":
-                sensor_reading = 0
-                sensor_type_name = "Accelerometer XYZ"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Mag_X":
-                sensor_reading = 0
-                sensor_type_name = "Magnetometer XYZ"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Gyro_X":
-                sensor_reading = 0
-                sensor_type_name = "Gyroscope XYZ"
-                measurement_type = ""
-            else:
-                sensor_reading = 0
-                sensor_type_name = "Invalid Sensor"
-                measurement_type = ""
-
-            self.ax1.clear()
-            self.y.append(sensor_reading)
-            self.x.append(x_frame)
-            self.ax1.plot(self.x, self.y)
-
-            if self.sensor_type is "SensorUpTime":
-                try:
-                    uptime_days = int(float(sensor_reading) // 1440)
-                    uptime_hours = int((float(sensor_reading) % 1440) // 60)
-                    uptime_min = int(float(sensor_reading) % 60)
-                    sensor_reading = str(uptime_days) + " Days / " + \
-                        str(uptime_hours) + "." + \
-                        str(uptime_min) + " Hours"
-                except Exception as error:
-                    logger.warning(str(error))
-
-            pyplot.title("Sensor: " + sensor_name + "  ||  IP: " + self.ip)
-            pyplot.xlabel("Start Time: " + self.first_datetime +
-                          "  ||  Last Updated: " + current_time +
-                          "  ||  Reading: " + str(sensor_reading) + measurement_type)
-
-            if self.sensor_type is "SensorUpTime":
-                measurement_type = " in Minutes"
-            elif self.sensor_type is "Lumen":
-                measurement_type = ""
-
-            pyplot.ylabel(sensor_type_name + measurement_type)
-            pyplot.xticks([])
-        except Exception as error:
-            logger.error("Live Graph - Invalid Sensor Data: " + str(error))
 
 
 def _app_custom_configurations():
@@ -386,7 +265,7 @@ def app_check_all_ip_checkboxes(var_column):
 
 def _worker_sensor_check(ip):
     """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
-    data = [ip, sensor_commands.check_online_status(ip, current_config.network_timeout_sensor_check)]
+    data = [ip, sensor_commands.check_sensor_status(ip, current_config.network_timeout_sensor_check)]
     data_queue.put(data)
 
 
@@ -933,11 +812,6 @@ def graph_plotly_button():
     new_graph_data = app_graph.CreateGraphData()
     new_graph_data.db_location = filedialog.askopenfilename()
 
-    if graph_radio_sensor_type.get() == "Interval SQL":
-        new_graph_data.graph_table = "IntervalData"
-    elif graph_radio_sensor_type.get() == "Trigger SQL":
-        new_graph_data.graph_table = "TriggerData"
-
     current_config.graph_start = graph_textbox_start.value
     current_config.graph_end = graph_textbox_end.value
     current_config.sql_queries_skip = graph_textbox_sql_skip.value
@@ -954,7 +828,10 @@ def graph_plotly_button():
     new_graph_data.temperature_offset = current_config.temperature_offset
     new_graph_data.graph_columns = _graph_get_column_checkboxes()
 
-    app_graph.start_graph(new_graph_data)
+    if graph_radio_sensor_type.get() == "Interval SQL":
+        app_graph.start_graph_interval(new_graph_data)
+    elif graph_radio_sensor_type.get() == "Trigger SQL":
+        app_graph.start_graph_trigger(new_graph_data)
 
 
 def graph_live_button():
@@ -968,7 +845,7 @@ def graph_live_button():
         app_config.check_config(current_config)
         set_config()
 
-        CreateLiveGraph(graph_checkbox, ip_list[0], current_config.network_timeout_data)
+        app_graph.CreateLiveGraph(graph_checkbox, ip_list[0], current_config)
     except Exception as error:
         logger.warning("No sensors selected in the main window - " + str(error))
         warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
