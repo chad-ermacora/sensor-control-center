@@ -41,7 +41,7 @@ logger.addHandler(stream_handler)
 
 class HTMLSystem:
     def __init__(self):
-        self.config_settings = app_config._load_from_file()
+        self.config_settings = app_config.get_from_file()
         self.template1 = script_directory + "/additional_files/html_template_system1.html"
         self.template2 = script_directory + "/additional_files/html_template_system2.html"
         self.template3 = script_directory + "/additional_files/html_template_system3.html"
@@ -59,7 +59,7 @@ class HTMLSystem:
                                   "{{CustomEnabled}}"]
 
     def get_sensor_data(self, ip):
-        sensor_data = sensor_commands.get_system_info(ip, self.config_settings.network_timeout_data)
+        sensor_data = sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
         # Convert the sensor's system uptime of minutes to human readable day/hour.min
         sensor_data[3] = _convert_minutes_string(sensor_data[3])
 
@@ -68,7 +68,7 @@ class HTMLSystem:
 
 class HTMLReadings:
     def __init__(self):
-        self.config_settings = app_config._load_from_file()
+        self.config_settings = app_config.get_from_file()
         self.template1 = script_directory + "/additional_files/html_template_readings1.html"
         self.template2 = script_directory + "/additional_files/html_template_readings2.html"
         self.template3 = script_directory + "/additional_files/html_template_readings3.html"
@@ -87,7 +87,7 @@ class HTMLReadings:
 
 class HTMLConfig:
     def __init__(self):
-        self.config_settings = app_config._load_from_file()
+        self.config_settings = app_config.get_from_file()
         self.template1 = script_directory + "/additional_files/html_template_config1.html"
         self.template2 = script_directory + "/additional_files/html_template_config2.html"
         self.template3 = script_directory + "/additional_files/html_template_config3.html"
@@ -115,8 +115,8 @@ def sensor_html_report(report_configuration, ip_list):
     final_file = _get_file_content(report_configuration.template1)
     sensor_html_template = _get_file_content(report_configuration.template2)
 
-    # Insert each sensors data into the 2nd template through replacement codes
-    # Merge the result with the Final HTML File.
+    # Add first HTML Template file to final HTML output file
+    # Insert each sensors data into final HTML output file through the 2nd template & replacement codes
     for ip in ip_list:
         try:
             current_sensor_html = sensor_html_template
@@ -130,6 +130,7 @@ def sensor_html_report(report_configuration, ip_list):
         except Exception as error:
                 logger.error("Report Failure: " + str(error))
 
+    # Merge the result with the Final HTML Template file.
     template3 = _get_file_content(report_configuration.template3)
     final_file = final_file + template3
 

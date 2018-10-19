@@ -42,7 +42,7 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 
-def check_online_status(ip, net_timeout):
+def check_sensor_status(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor status. """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -61,7 +61,7 @@ def check_online_status(ip, net_timeout):
     return sensor_status
 
 
-def get_system_info(ip, net_timeout):
+def get_sensor_system(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor system information. """
     socket.setdefaulttimeout(net_timeout)
     sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -265,7 +265,7 @@ def get_sensor_config(ip, net_timeout):
         logger.warning("Configuration Received from " + ip + " - Failed: " + str(error))
     sock_g.close()
 
-    sensor_system = get_system_info(ip, net_timeout)
+    sensor_system = get_sensor_system(ip, net_timeout)
 
     final_sensor_config = [str(sensor_system[0]),
                            str(sensor_system[1]),

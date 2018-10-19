@@ -40,7 +40,7 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 
-class CreateConfigSettings:
+class CreateDefaultConfigSettings:
     """ Creates a object holding all the Control Centers default configuration options. """
 
     def __init__(self):
@@ -68,7 +68,7 @@ class CreateConfigSettings:
                         "192.168.10.23", "192.168.10.24", "192.168.10.25", "192.168.10.26"]
 
     def reset_to_defaults(self):
-        default_config = CreateConfigSettings()
+        default_config = CreateDefaultConfigSettings()
 
         self.save_to = default_config.save_to
         self.graph_start = default_config.graph_start
@@ -83,9 +83,9 @@ class CreateConfigSettings:
         self.ip_list = default_config.ip_list
 
 
-def _load_from_file():
+def get_from_file():
     """ Loads the Control Center configurations from file and returns the Verified settings. """
-    config_settings = CreateConfigSettings()
+    config_settings = CreateDefaultConfigSettings()
 
     try:
         os.path.isfile(config_settings.config_file)
@@ -134,7 +134,7 @@ def check_config(config_settings):
     Invalid options are replaced with defaults.
     """
     logger.debug("Checking Configuration Settings")
-    default_settings = CreateConfigSettings()
+    default_settings = CreateDefaultConfigSettings()
 
     if os.path.isdir(config_settings.save_to):
         logger.debug("Setting Save to Folder - OK")
