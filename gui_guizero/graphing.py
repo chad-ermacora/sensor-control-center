@@ -25,7 +25,8 @@ import control_center_logger
 
 
 class CreateGraphingWindow:
-    def __init__(self, app):
+    def __init__(self, app, ip_selection):
+        self.ip_selection = ip_selection
         self.current_config = app_config.get_from_file()
         self.window = Window(app,
                              title="Graphing",
@@ -330,19 +331,20 @@ class CreateGraphingWindow:
         self.set_config()
 
         new_data.save_file_to = self.current_config.save_to
-        new_data.start = self.current_config.self.start
-        new_data.end = self.current_config.self.end
+        new_data.start = self.current_config.start
+        new_data.end = self.current_config.end
         new_data.time_offset = self.current_config.datetime_offset
         new_data.skip_sql = self.current_config.sql_queries_skip
         new_data.temperature_offset = self.current_config.temperature_offset
-        new_data.columns = self._get_column_checkboxes()
+        new_data.graph_columns = self._get_column_checkboxes()
 
         if self.radio_sensor_type.get() == "Interval SQL":
             app_graph.start_graph_interval(new_data)
         elif self.radio_sensor_type.get() == "Trigger SQL":
             app_graph.start_graph_trigger(new_data)
 
-    def live_button(self, ip):
+    def live_button(self):
+        ip = self.ip_selection.get_verified_ip_list()[0]
         pyplot.close()
         try:
             checkbox = self._get_column_checkboxes()[3]

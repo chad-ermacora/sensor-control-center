@@ -4,7 +4,6 @@ from queue import Queue
 import sensor_commands
 import app_config
 import control_center_logger
-ip_queue = Queue()
 
 
 class CreateIPSelector:
@@ -241,7 +240,7 @@ class CreateIPSelector:
 
         control_center_logger.app_logger.debug("IP List Generated from All Boxes")
 
-        ip_queue.put(checkbox_ip_list)
+        return checkbox_ip_list
 
     def _worker_sensor_check(self, ip):
         """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
@@ -355,7 +354,7 @@ class CreateIPSelector:
 
         sensor_data_pool.clear()
         control_center_logger.app_logger.debug("Checked IP's Processed")
-        ip_queue.put(ip_list_final)
+        return ip_list_final
 
     # Returns selected IP's from Main App Window & Re-Sets unselected IP background to white
     def _make_ip_list(self):

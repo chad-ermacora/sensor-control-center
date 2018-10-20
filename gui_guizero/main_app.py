@@ -47,10 +47,10 @@ class CreateMainWindow:
         self.ip_selection = gui_guizero.ip_selection.CreateIPSelector(self.app)
 
         self.window_control_center_config = gui_guizero.control_center_config.CreateConfigWindow(self.app)
-        self.window_sensor_commands = gui_guizero.sensor_commands.CreateSensorCommandsWindow(self.app)
-        self.window_sensor_config = gui_guizero.sensor_config.CreateSensorConfigWindow(self.app)
-        self.window_reports = gui_guizero.reports.CreateReportsWindow(self.app)
-        self.window_graph = gui_guizero.graphing.CreateGraphingWindow(self.app)
+        self.window_sensor_commands = gui_guizero.sensor_commands.CreateSensorCommandsWindow(self.app, self.ip_selection)
+        self.window_sensor_config = gui_guizero.sensor_config.CreateSensorConfigWindow(self.app, self.ip_selection)
+        self.window_reports = gui_guizero.reports.CreateReportsWindow(self.app, self.ip_selection)
+        self.window_graph = gui_guizero.graphing.CreateGraphingWindow(self.app, self.ip_selection)
         self.window_about = gui_guizero.control_center_about.CreateAboutWindow(self.app)
 
         self.app_menubar = MenuBar(self.app,
@@ -61,7 +61,7 @@ class CreateMainWindow:
                                    options=[[["Open Logs",
                                               self.app_menu_open_logs],
                                              ["Save ALL Configurations & IP's",
-                                              app_config.save_config_to_file(self.current_config)],
+                                              self.save_ip_list],
                                              ["Control Center Configuration",
                                               self.window_control_center_config.window.show],
                                              ["Quit",
@@ -104,6 +104,10 @@ class CreateMainWindow:
                                                    align="right")
 
         self._app_custom_configurations()
+
+    def save_ip_list(self):
+        self.current_config.ip_list = self.ip_selection.get_all_ip_list()
+        app_config.save_config_to_file(self.current_config)
 
     def _app_custom_configurations(self):
         """ Apply system & user specific settings to application.  Used just before application start. """

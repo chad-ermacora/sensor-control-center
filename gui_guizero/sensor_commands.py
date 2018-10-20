@@ -22,8 +22,8 @@ import control_center_logger
 
 
 class CreateSensorCommandsWindow:
-    def __init__(self, app):
-        self.app = app
+    def __init__(self, app, ip_selection):
+        self.ip_selection = ip_selection
         self.window = Window(app,
                              title="Sensor Commands",
                              width=290,
@@ -114,31 +114,31 @@ class CreateSensorCommandsWindow:
         self.button_shutdown.disable()
         self.button_update_datetime.disable()
 
-    @staticmethod
-    def upgrade_smb(ip_list):
+    def upgrade_smb(self):
         """ Sends the upgrade by SMB command to the Sensor Units IP. """
         control_center_logger.sensor_logger.debug("Sensor Upgrade - SMB")
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             sensor_commands.upgrade_program_smb(ip)
 
         info("Sensors Upgrading SMB", "Please Wait up to 30 seconds for the Services to restart")
 
-    @staticmethod
-    def upgrade_http(ip_list):
+    def upgrade_http(self):
         """ Sends the upgrade by HTTP command to the Sensor Units IP. """
         control_center_logger.sensor_logger.debug("Sensor Upgrade - HTTP")
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             sensor_commands.upgrade_program_online(ip)
 
         info("Sensors Upgrading HTTP", "Please Wait up to 30 seconds for the Services to restart")
 
-    @staticmethod
-    def os_upgrade(ip_list):
+    def os_upgrade(self):
         """ Sends the upgrade Operating System command to the Sensor Units IP. """
         control_center_logger.sensor_logger.debug("Sensor OS Upgrade")
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             sensor_commands.upgrade_os_linux(ip)
 
@@ -147,50 +147,50 @@ class CreateSensorCommandsWindow:
              "Sensor should continue to Operate with minor interruptions\n\n"
              "This process can take anywhere from 5 Min to 1 Hour")
 
-    @staticmethod
-    def sensor_reboot(ip_list):
+    def sensor_reboot(self):
         """ Sends the reboot system command to the Sensor Units IP. """
         control_center_logger.sensor_logger.debug("Sensor Reboot")
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             sensor_commands.reboot_sensor(ip)
 
         info("Sensors Rebooting", "Allow up to 3 Min to reboot")
 
-    @staticmethod
-    def sensor_shutdown(ip_list):
+    def sensor_shutdown(self):
         """ Sends the shutdown system command to the Sensor Units IP. """
         control_center_logger.sensor_logger.debug("Sensor Shutdown")
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             sensor_commands.shutdown_sensor(ip)
 
         info("Sensors Shutting Down", "Allow up to 15 seconds to fully shutdown")
 
-    @staticmethod
-    def restart_services(ip_list):
+    def restart_services(self):
         """ Sends the restart services command to the Sensor Units IP. """
         control_center_logger.sensor_logger.info(
             "Sensor(s) Services Restarting - Please allow up to 20 Seconds to restart")
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             sensor_commands.restart_services(ip)
 
         info("Sensors Services Restarting", "Please allow up to 20 Seconds to restart")
 
-    @staticmethod
-    def hostname_change(ip_list):
+    def hostname_change(self):
         """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
         control_center_logger.sensor_logger.debug("Change Sensor Hostname")
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             sensor_commands.set_hostname(ip)
 
-    @staticmethod
-    def datetime_update(ip_list):
+    def datetime_update(self):
         """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
         control_center_logger.sensor_logger.debug("Updating Sensors DateTime")
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             sensor_commands.set_datetime(ip)
 

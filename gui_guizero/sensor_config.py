@@ -21,7 +21,8 @@ from sensor_commands import set_sensor_config
 
 
 class CreateSensorConfigWindow:
-    def __init__(self, app):
+    def __init__(self, app, ip_selection):
+        self.ip_selection = ip_selection
         self.window = Window(app,
                              title="Sensors Configuration Updater",
                              width=340,
@@ -137,7 +138,7 @@ class CreateSensorConfigWindow:
             self.textbox_custom_mag.disable()
             self.textbox_custom_gyro.disable()
 
-    def config_set(self, ip_list):
+    def config_set(self):
         """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
         config_settings_str = "," + str(self.checkbox_db_record.value) + "," + \
                               str(self.textbox_interval.value) + "," + \
@@ -147,6 +148,7 @@ class CreateSensorConfigWindow:
                               str(self.textbox_custom_mag.value) + "," + \
                               str(self.textbox_custom_gyro.value)
 
+        ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             set_sensor_config(ip, config_settings_str)
 
