@@ -182,26 +182,41 @@ class CreateConfigWindow:
                                                grid=[2, 10],
                                                align="top")
 
-        self.set_config()
+        self.set_config(self.current_config)
         self._advanced_checkbox()
 
-    def set_config(self):
+    def get_config(self):
+        new_config = self.current_config
+
+        new_config.save_to = self.textbox_save_to.value
+        new_config.graph_start = self.textbox_start.value
+        new_config.graph_end = self.textbox_end.value
+        new_config.datetime_offset = self.textbox_time_offset.value
+        new_config.sql_queries_skip = self.textbox_sql_skip.value
+        new_config.temperature_offset = self.textbox_temperature_offset.value
+        new_config.network_timeout_sensor_check = self.textbox_network_check.value
+        new_config.network_timeout_data = self.textbox_network_details.value
+        new_config.allow_advanced_controls = self.checkbox_power_controls.value
+
+        return new_config
+
+    def set_config(self, new_config):
         """ Sets the Configuration window to the provided settings. """
-        self.textbox_save_to.value = self.current_config.save_to
-        self.textbox_start.value = self.current_config.graph_start
-        self.textbox_end.value = self.current_config.graph_end
-        self.textbox_time_offset.value = self.current_config.datetime_offset
-        self.textbox_sql_skip.value = self.current_config.sql_queries_skip
-        self.textbox_temperature_offset.value = self.current_config.temperature_offset
-        self.textbox_network_check.value = self.current_config.network_timeout_sensor_check
-        self.textbox_network_details.value = self.current_config.network_timeout_data
-        self.checkbox_power_controls.value = self.current_config.allow_advanced_controls
+        self.textbox_save_to.value = new_config.save_to
+        self.textbox_start.value = new_config.graph_start
+        self.textbox_end.value = new_config.graph_end
+        self.textbox_time_offset.value = new_config.datetime_offset
+        self.textbox_sql_skip.value = new_config.sql_queries_skip
+        self.textbox_temperature_offset.value = new_config.temperature_offset
+        self.textbox_network_check.value = new_config.network_timeout_sensor_check
+        self.textbox_network_details.value = new_config.network_timeout_data
+        self.checkbox_power_controls.value = new_config.allow_advanced_controls
 
     def reset_to_defaults(self):
         """ Resets all Control Center Configurations to default. """
         control_center_logger.app_logger.info("Resetting Configuration to Defaults")
-        self.current_config.reset_to_defaults()
-        self.set_config()
+        default_config = app_config.CreateDefaultConfigSettings()
+        self.set_config(default_config)
 
     def _button_save_apply(self):
         pass
