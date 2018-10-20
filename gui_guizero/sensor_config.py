@@ -22,96 +22,100 @@ from sensor_commands import set_sensor_config
 
 class CreateSensorConfigWindow:
     def __init__(self, app):
-        self.window_sensor_config = Window(app,
-                                           title="Sensors Configuration Updater",
-                                           width=340,
-                                           height=265,
-                                           layout="grid",
-                                           visible=True)
+        self.window = Window(app,
+                             title="Sensors Configuration Updater",
+                             width=340,
+                             height=265,
+                             layout="grid",
+                             visible=False)
 
-        self.text_select = Text(self.window_sensor_config,
+        self.text_select = Text(self.window,
                                 text="Check Sensor IPs from the Main Window",
                                 grid=[1, 1, 3, 1],
                                 color='#CB0000',
                                 align="left")
 
-        self.checkbox_db_record = CheckBox(self.window_sensor_config,
+        self.checkbox_db_record = CheckBox(self.window,
                                            text="Enable Database Recording",
                                            command=self._recording_checkbox,
                                            grid=[1, 2, 2, 1],
                                            align="left")
 
-        self.textbox_interval = TextBox(self.window_sensor_config,
+        self.textbox_interval = TextBox(self.window,
                                         text='300',
                                         width=10,
                                         grid=[1, 3],
                                         align="left")
 
-        self.text_interval = Text(self.window_sensor_config,
+        self.text_interval = Text(self.window,
                                   text="Seconds Between Interval Recording",
                                   color='green',
                                   grid=[2, 3],
                                   align="left")
 
-        self.textbox_trigger = TextBox(self.window_sensor_config,
+        self.textbox_trigger = TextBox(self.window,
                                        text='0.15',
                                        width=10,
                                        grid=[1, 4],
                                        align="left")
 
-        self.text_trigger = Text(self.window_sensor_config,
+        self.text_trigger = Text(self.window,
                                  text="Seconds Between Trigger Readings",
                                  color='green',
                                  grid=[2, 4],
                                  align="left")
 
-        self.checkbox_custom = CheckBox(self.window_sensor_config,
+        self.checkbox_custom = CheckBox(self.window,
                                         text="Enable Custom Variances",
                                         command=self._custom_checkbox,
                                         grid=[1, 5, 2, 1],
                                         align="left")
 
-        self.textbox_custom_acc = TextBox(self.window_sensor_config,
+        self.textbox_custom_acc = TextBox(self.window,
                                           text='0.05',
                                           width=10,
                                           grid=[1, 6],
                                           align="left")
 
-        self.text_custom_acc = Text(self.window_sensor_config,
+        self.text_custom_acc = Text(self.window,
                                     text="Accelerometer Variance",
                                     color='green',
                                     grid=[2, 6],
                                     align="left")
 
-        self.textbox_custom_mag = TextBox(self.window_sensor_config,
+        self.textbox_custom_mag = TextBox(self.window,
                                           text='300',
                                           width=10,
                                           grid=[1, 7],
                                           align="left")
 
-        self.text_custom_mag = Text(self.window_sensor_config,
+        self.text_custom_mag = Text(self.window,
                                     text="Magnetometer Variance",
                                     color='green',
                                     grid=[2, 7],
                                     align="left")
 
-        self.textbox_custom_gyro = TextBox(self.window_sensor_config,
+        self.textbox_custom_gyro = TextBox(self.window,
                                            text='0.05',
                                            width=10,
                                            grid=[1, 8],
                                            align="left")
 
-        self.text_custom_gyro = Text(self.window_sensor_config,
+        self.text_custom_gyro = Text(self.window,
                                      text="Gyroscopic Variance",
                                      color='green',
                                      grid=[2, 8],
                                      align="left")
 
-        self.button_set_config = PushButton(self.window_sensor_config,
+        self.button_set_config = PushButton(self.window,
                                             text="Apply Sensor\nConfiguration",
                                             command=self.config_set,
                                             grid=[2, 14],
                                             align="right")
+        self.checkbox_db_record.value = 1
+        self._recording_checkbox()
+        self._custom_checkbox()
+        self.disable_set_config_button()
 
     def _recording_checkbox(self):
         """ Enables or disables the timing Sensor Configuration Window text boxes. """

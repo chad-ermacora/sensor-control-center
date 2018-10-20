@@ -25,162 +25,165 @@ import control_center_logger
 class CreateConfigWindow:
     def __init__(self, app):
         self.current_config = app_config.get_from_file()
-        self.window_config = Window(app,
-                                    title="Control Center Configuration",
-                                    width=580,
-                                    height=300,
-                                    layout="grid",
-                                    visible=True)
+        self.window = Window(app,
+                             title="Control Center Configuration",
+                             width=580,
+                             height=300,
+                             layout="grid",
+                             visible=False)
 
         # Configuration Window Section
-        self.button_reset = PushButton(self.window_config,
+        self.button_reset = PushButton(self.window,
                                        text="Reset to\nDefaults",
                                        command=self.reset_to_defaults,
                                        grid=[1, 1],
                                        align="right")
 
-        self.checkbox_power_controls = CheckBox(self.window_config,
+        self.checkbox_power_controls = CheckBox(self.window,
                                                 text="Enable Advanced\nSensor Commands &\nConfiguration Options",
                                                 command=self._advanced_checkbox,
                                                 grid=[1, 1],
                                                 align="top")
 
-        self.button_save_apply = PushButton(self.window_config,
+        self.button_save_apply = PushButton(self.window,
                                             text="Save &\nApply",
                                             command=self._button_save_apply,
                                             grid=[1, 1],
                                             align="left")
 
-        self.text_database_time = Text(self.window_config,
+        self.text_database_time = Text(self.window,
                                        text="Sensor Databases\nSaved in UTC 0",
                                        size=10,
                                        grid=[2, 1],
                                        color='#CB0000',
                                        align="top")
 
-        self.text_spacer1 = Text(self.window_config,
+        self.text_spacer1 = Text(self.window,
                                  text=" ",
                                  grid=[1, 2],
                                  align="left")
 
-        self.text3 = Text(self.window_config,
+        self.text3 = Text(self.window,
                           text="Save Files To",
                           color='blue',
                           grid=[1, 3],
                           align="top")
 
-        self.button_save_dir = PushButton(self.window_config,
+        self.button_save_dir = PushButton(self.window,
                                           text="Choose Folder",
                                           command=self._button_save_to,
                                           grid=[1, 5],
                                           align="bottom")
 
-        self.textbox_save_to = TextBox(self.window_config,
+        self.textbox_save_to = TextBox(self.window,
                                        text='',
                                        width=50,
                                        grid=[1, 4],
                                        align="bottom")
 
-        self.text_spacer3 = Text(self.window_config,
+        self.text_spacer3 = Text(self.window,
                                  text=" ",
                                  grid=[1, 6],
                                  align="left")
 
-        self.text_info = Text(self.window_config,
+        self.text_info = Text(self.window,
                               text="Default Graph Date Range",
                               color='blue',
                               grid=[1, 7],
                               align="top")
 
-        self.text_start = Text(self.window_config,
+        self.text_start = Text(self.window,
                                text="         Start DateTime: ",
                                color='green',
                                grid=[1, 8],
                                align="left")
 
-        self.textbox_start = TextBox(self.window_config,
+        self.textbox_start = TextBox(self.window,
                                      text="",
                                      width=20,
                                      grid=[1, 8],
                                      align="right")
 
-        self.text_end = Text(self.window_config,
+        self.text_end = Text(self.window,
                              text="         End DateTime: ",
                              color='green',
                              grid=[1, 9],
                              align="left")
 
-        self.textbox_end = TextBox(self.window_config,
+        self.textbox_end = TextBox(self.window,
                                    text="",
                                    width=20,
                                    grid=[1, 9],
                                    align="right")
 
-        self.text_time_offset2 = Text(self.window_config,
+        self.text_time_offset2 = Text(self.window,
                                       text="Graph DateTime Offset in Hours",
                                       color='blue',
                                       grid=[2, 1],
                                       align="bottom")
 
-        self.textbox_time_offset = TextBox(self.window_config,
+        self.textbox_time_offset = TextBox(self.window,
                                            text="",
                                            width="5",
                                            grid=[2, 2],
                                            align="bottom")
 
-        self.text_sql_skip = Text(self.window_config,
+        self.text_sql_skip = Text(self.window,
                                   text="Add SQL row to Graph every 'X' rows",
                                   color='blue',
                                   grid=[2, 3],
                                   align="top")
 
-        self.textbox_sql_skip = TextBox(self.window_config,
+        self.textbox_sql_skip = TextBox(self.window,
                                         text="",
                                         width="5",
                                         grid=[2, 4],
                                         align="top")
 
-        self.text_temperature_offset = Text(self.window_config,
+        self.text_temperature_offset = Text(self.window,
                                             text="Environment Temperature Offset in °C",
                                             color='blue',
                                             grid=[2, 5],
                                             align="top")
 
-        self.textbox_temperature_offset = TextBox(self.window_config,
+        self.textbox_temperature_offset = TextBox(self.window,
                                                   text="",
                                                   width="5",
                                                   grid=[2, 5],
                                                   align="bottom")
 
-        self.text_network_timeouts = Text(self.window_config,
+        self.text_network_timeouts = Text(self.window,
                                           text="Network Timeouts in Seconds",
                                           color='blue',
                                           grid=[2, 6],
                                           align="top")
 
-        self.text_network_timeouts1 = Text(self.window_config,
+        self.text_network_timeouts1 = Text(self.window,
                                            text="Sensor Status",
                                            color='green',
                                            grid=[2, 7],
                                            align="top")
 
-        self.textbox_network_check = TextBox(self.window_config,
+        self.textbox_network_check = TextBox(self.window,
                                              text="",
                                              width="5",
                                              grid=[2, 8],
                                              align="top")
 
-        self.text_network_timeouts2 = Text(self.window_config,
+        self.text_network_timeouts2 = Text(self.window,
                                            text="Sensor Reports",
                                            color='green',
                                            grid=[2, 9],
                                            align="top")
 
-        self.textbox_network_details = TextBox(self.window_config,
+        self.textbox_network_details = TextBox(self.window,
                                                text="",
                                                width="5",
                                                grid=[2, 10],
                                                align="top")
+
+        self.set_config()
+        self._advanced_checkbox()
 
     def set_config(self):
         """ Sets the Configuration window to the provided settings. """

@@ -27,19 +27,19 @@ class CreateAboutWindow:
         self.current_config = app_config.get_from_file()
         self.about_text = self.current_config.additional_files_directory + "/about_text.txt"
 
-        self.window_app_about = Window(app,
-                                       title="About KootNet Sensors - PC Control Center",
-                                       width=610,
-                                       height=325,
-                                       layout="grid",
-                                       visible=True)
+        self.window = Window(app,
+                             title="About KootNet Sensors - PC Control Center",
+                             width=610,
+                             height=325,
+                             layout="grid",
+                             visible=False)
         # About Window Section
-        self.about_text1 = Text(self.window_app_about,
+        self.about_text1 = Text(self.window,
                                 text=app_version,
                                 grid=[1, 1],
                                 align="right")
 
-        self.about_textbox = TextBox(self.window_app_about,
+        self.about_textbox = TextBox(self.window,
                                      text="About",
                                      grid=[1, 2],
                                      width=75,

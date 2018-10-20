@@ -16,17 +16,23 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import App, CheckBox, PushButton, TextBox, MenuBar, info, warn
-from tkinter import filedialog
-import sensor_commands
-import control_center_logger
-import app_config
 import webbrowser
 import platform
 import os
 import subprocess
+from guizero import App, CheckBox, PushButton, TextBox, MenuBar, info, warn
+from tkinter import filedialog
 from queue import Queue
 from threading import Thread
+import sensor_commands
+import control_center_logger
+import app_config
+import gui_guizero.control_center_config
+import gui_guizero.control_center_about
+import gui_guizero.sensor_config
+import gui_guizero.reports
+import gui_guizero.sensor_commands
+import gui_guizero.graphing
 
 
 class CreateMainWindow:
@@ -39,6 +45,13 @@ class CreateMainWindow:
                        height=295,
                        layout="grid")
 
+        self.window_control_center_config = gui_guizero.control_center_config.CreateConfigWindow(self.app)
+        self.window_sensor_commands = gui_guizero.sensor_commands.CreateSensorCommandsWindow(self.app)
+        self.window_sensor_config = gui_guizero.sensor_config.CreateSensorConfigWindow(self.app)
+        self.window_reports = gui_guizero.reports.CreateReportsWindow(self.app)
+        self.window_graph = gui_guizero.graphing.CreateGraphingWindow(self.app)
+        self.window_about = gui_guizero.control_center_about.CreateAboutWindow(self.app)
+
         self.app_menubar = MenuBar(self.app,
                                    toplevel=[["File"],
                                              ["Sensors"],
@@ -47,21 +60,21 @@ class CreateMainWindow:
                                    options=[[["Open Logs",
                                               self.app_menu_open_logs],
                                              ["Save ALL Configurations & IP's",
-                                              self.config_button_save],
+                                              app_config.save_config_to_file(self.current_config)],
                                              ["Control Center Configuration",
-                                              self.app_menu_open_logs],
+                                              self.window_control_center_config.window.show],
                                              ["Quit",
-                                              self.app_menu_open_logs]],
+                                              self._app_exit]],
                                             [["Send Commands",
-                                              self.app_menu_open_logs],
+                                              self.window_sensor_commands.window.show],
                                              ["Update Configurations",
-                                              self.app_menu_open_logs],
+                                              self.window_sensor_config.window.show],
                                              ["Create Reports",
-                                              self.app_menu_open_logs]],
+                                              self.window_reports.window.show]],
                                             [["Open Graph Window",
-                                              self.app_menu_open_logs]],
+                                              self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
-                                              self.app_menu_open_logs],
+                                              self.window_about.window.show],
                                              ["KootNet Sensors - Website",
                                               self.app_menu_open_website],
                                              ["Sensor Units - DIY",
@@ -69,7 +82,7 @@ class CreateMainWindow:
                                              ["Sensor Units - Help",
                                               self.app_menu_open_sensor_help],
                                              ["PC Control Center - Help *WIP",
-                                              self.app_menu_open_logs]]])
+                                              self.window_about.window.show]]])
 
         self.app_button_check_sensor = PushButton(self.app,
                                                   text="Check Sensors\nStatus",
@@ -279,73 +292,78 @@ class CreateMainWindow:
                                         grid=[4, 9],
                                         align="left")
 
-    # def _app_custom_configurations(self):
-    #     """ Apply system & user specific settings to application.  Used just before application start. """
-    #     # Add extra tk options to guizero windows
-    #     app.on_close(_app_exit)
-    #     app.tk.resizable(False, False)
-    #     window_graph.tk.resizable(False, False)
-    #     window_sensor_commands.tk.resizable(False, False)
-    #     window_sensor_config.tk.resizable(False, False)
-    #     window_sensor_reports.tk.resizable(False, False)
-    #     window_app_about.tk.resizable(False, False)
-    #     window_config.tk.resizable(False, False)
-    #
-    #     # Add custom selections and GUI settings
-    #     app_checkbox_all_column1.value = 0
-    #     app_checkbox_all_column2.value = 0
-    #     graph_checkbox_up_time.value = 1
-    #     graph_checkbox_temperature.value = 1
-    #     graph_checkbox_pressure.value = 0
-    #     graph_checkbox_humidity.value = 0
-    #     graph_checkbox_lumen.value = 0
-    #     graph_checkbox_colour.value = 0
-    #     sensor_config_checkbox_db_record.value = 1
-    #     sensor_config_checkbox_custom.value = 0
-    #
-    #     _set_about_text()
-    #     app_check_all_ip1()
-    #     app_check_all_ip2()
-    #     _graph_radio_selection()
-    #     sensor_config_enable_recording()
-    #     sensor_config_enable_custom()
-    #
-    #     about_textbox.disable()
-    #     config_textbox_save_to.disable()
-    #     sensor_config_button_set_config.disable()
-    #     commands_button_os_Upgrade.disable()
-    #
-    #     # Platform specific adjustments
-    #     if platform.system() == "Windows":
-    #         app.tk.iconbitmap(current_config.additional_files_directory + "/icon.ico")
-    #     elif platform.system() == "Linux":
-    #         app.width = 490
-    #         app.height = 250
-    #         window_config.width = 675
-    #         window_config.height = 275
-    #         window_graph.width = 325
-    #         window_graph.height = 440
-    #         window_sensor_config.width = 365
-    #         window_sensor_config.height = 240
-    #         window_sensor_commands.width = 300
-    #         window_sensor_commands.height = 260
-    #         window_app_about.width = 555
-    #         window_app_about.height = 290
-    #
-    #     self.set_config()
-    #     if not os.path.isfile(self.current_config.config_file):
-    #         logger.info('No Configuration File Found - Saving Default')
-    #         app_config.save_config_to_file(self.current_config)
-    #
-    # def _app_exit(self):
-    #     """ Closes log handlers & matplotlib before closing the application. """
-    #     log_handlers = logger.handlers[:]
-    #     for handler in log_handlers:
-    #         handler.close()
-    #         logger.removeHandler(handler)
-    #
-    #     self.pyplot.close()
-    #     self.app.destroy()
+        self._app_custom_configurations()
+
+    def _app_custom_configurations(self):
+        """ Apply system & user specific settings to application.  Used just before application start. """
+        # Add extra tk options to guizero windows
+        self.app.on_close(self._app_exit)
+        self.app.tk.resizable(False, False)
+        self.window_sensor_commands.window.tk.resizable(False, False)
+        self.window_sensor_config.window.tk.resizable(False, False)
+        self.window_reports.window.tk.resizable(False, False)
+        self.window_graph.window.tk.resizable(False, False)
+        self.window_about.window.tk.resizable(False, False)
+
+        # # Add custom selections and GUI settings
+        # self.app_checkbox_all_column1.value = 0
+        # self.app_checkbox_all_column2.value = 0
+        # self.graph_checkbox_up_time.value = 1
+        # self.graph_checkbox_temperature.value = 1
+        # self.graph_checkbox_pressure.value = 0
+        # self.graph_checkbox_humidity.value = 0
+        # self.graph_checkbox_lumen.value = 0
+        # self.graph_checkbox_colour.value = 0
+        # self.sensor_config_checkbox_db_record.value = 1
+        # self.sensor_config_checkbox_custom.value = 0
+        #
+        # self.app_check_all_ip1()
+        # self.app_check_all_ip2()
+        # self._graph_radio_selection()
+        # self.sensor_config_enable_recording()
+        # self.sensor_config_enable_custom()
+        #
+        # self.about_textbox.disable()
+        # self.config_textbox_save_to.disable()
+        # self.sensor_config_button_set_config.disable()
+        # self.commands_button_os_Upgrade.disable()
+
+        # Platform specific adjustments
+        if platform.system() == "Windows":
+            self.app.tk.iconbitmap(self.current_config.additional_files_directory + "/icon.ico")
+        elif platform.system() == "Linux":
+            self.app.width = 490
+            self.app.height = 250
+            self.window_control_center_config.window.width = 675
+            self.window_control_center_config.window.height = 275
+            self.window_graph.window.width = 325
+            self.window_graph.window.height = 440
+            self.window_sensor_config.window.width = 365
+            self.window_sensor_config.window.height = 240
+            self.window_sensor_commands.window.width = 300
+            self.window_sensor_commands.window.height = 260
+            self.window_about.window.width = 555
+            self.window_about.window.height = 290
+
+        self.set_config()
+        if not os.path.isfile(self.current_config.config_file):
+            control_center_logger.app_logger.info('No Configuration File Found - Saving Default')
+            app_config.save_config_to_file(self.current_config)
+
+    def _app_exit(self):
+        """ Closes log handlers & matplotlib before closing the application. """
+        app_log_handlers = control_center_logger.app_logger.handlers[:]
+        for handler in app_log_handlers:
+            handler.close()
+            control_center_logger.app_logger.removeHandler(handler)
+
+        sensor_log_handlers = control_center_logger.sensor_logger.handlers[:]
+        for handler in sensor_log_handlers:
+            handler.close()
+            control_center_logger.sensor_logger.removeHandler(handler)
+
+        gui_guizero.graphing.pyplot.close()
+        self.app.destroy()
 
     def app_menu_open_logs(self):
         """ Opens the folder where the logs are kept. """
@@ -667,16 +685,16 @@ class CreateMainWindow:
         """ Save the programs Configuration and IP list to file """
         control_center_logger.app_logger.debug("Applying Configuration & Saving to File")
 
-        self.current_config.save_to = self.config_textbox_save_to.value
-        self.current_config.graph_start = self.config_textbox_start.value
-        self.current_config.graph_end = self.config_textbox_end.value
-        self.current_config.datetime_offset = self.config_textbox_time_offset.value
-        self.current_config.sql_queries_skip = self.config_textbox_sql_skip.value
-        self.current_config.temperature_offset = self.config_textbox_temperature_offset.value
+        # self.current_config.save_to = self.config_textbox_save_to.value
+        # self.current_config.graph_start = self.config_textbox_start.value
+        # self.current_config.graph_end = self.config_textbox_end.value
+        # self.current_config.datetime_offset = self.config_textbox_time_offset.value
+        # self.current_config.sql_queries_skip = self.config_textbox_sql_skip.value
+        # self.current_config.temperature_offset = self.config_textbox_temperature_offset.value
         # self.current_config.live_refresh = graph_textbox_refresh_time.value
-        self.current_config.network_timeout_sensor_check = self.config_textbox_network_check.value
-        self.current_config.network_timeout_data = self.config_textbox_network_details.value
-        self.current_config.allow_advanced_controls = self.config_checkbox_power_controls.value
+        # self.current_config.network_timeout_sensor_check = self.config_textbox_network_check.value
+        # self.current_config.network_timeout_data = self.config_textbox_network_details.value
+        # self.current_config.allow_advanced_controls = self.config_checkbox_power_controls.value
         self.current_config.ip_list[0] = self.app_textbox_ip1.value
         self.current_config.ip_list[1] = self.app_textbox_ip2.value
         self.current_config.ip_list[2] = self.app_textbox_ip3.value
@@ -700,11 +718,11 @@ class CreateMainWindow:
     def set_config(self):
         """ Sets the programs Configuration to the provided settings. """
 
-        self.graph_textbox_start.value = self.current_config.graph_start
-        self.graph_textbox_end.value = self.current_config.graph_end
-        self.graph_textbox_sql_skip.value = self.current_config.sql_queries_skip
-        self.graph_textbox_temperature_offset.value = self.current_config.temperature_offset
-        self.graph_textbox_refresh_time.value = self.current_config.live_refresh
+        # self.graph_textbox_start.value = self.current_config.graph_start
+        # self.graph_textbox_end.value = self.current_config.graph_end
+        # self.graph_textbox_sql_skip.value = self.current_config.sql_queries_skip
+        # self.graph_textbox_temperature_offset.value = self.current_config.temperature_offset
+        # self.graph_textbox_refresh_time.value = self.current_config.live_refresh
 
         self.app_textbox_ip1.value = self.current_config.ip_list[0]
         self.app_textbox_ip2.value = self.current_config.ip_list[1]
@@ -723,4 +741,4 @@ class CreateMainWindow:
         self.app_textbox_ip15.value = self.current_config.ip_list[14]
         self.app_textbox_ip16.value = self.current_config.ip_list[15]
 
-        self.config_checkbox_enable_advanced()
+        # self.config_checkbox_enable_advanced()

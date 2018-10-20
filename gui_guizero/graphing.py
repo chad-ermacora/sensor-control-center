@@ -24,209 +24,212 @@ import app_graph
 import control_center_logger
 
 
-class CreateSensorCommandsWindow:
+class CreateGraphingWindow:
     def __init__(self, app):
         self.current_config = app_config.get_from_file()
-        self.window_graph = Window(app,
-                                   title="Graphing",
-                                   width=275,
-                                   height=505,
-                                   layout="grid",
-                                   visible=False)
+        self.window = Window(app,
+                             title="Graphing",
+                             width=275,
+                             height=505,
+                             layout="grid",
+                             visible=False)
 
-        self.text_sensor_type_name = Text(self.window_graph,
+        self.text_sensor_type_name = Text(self.window,
                                           text="Data Source",
                                           color='blue',
                                           grid=[1, 1, 2, 1],
                                           align="top")
 
-        self.radio_sensor_type = ButtonGroup(self.window_graph,
+        self.radio_sensor_type = ButtonGroup(self.window,
                                              options=["Live", "Interval SQL", "Trigger SQL"],
                                              horizontal="True",
                                              command=self._radio_selection,
                                              grid=[1, 2, 2, 1],
                                              align="top")
 
-        self.text_space1 = Text(self.window_graph,
+        self.text_space1 = Text(self.window,
                                 text=" ",
                                 grid=[1, 3],
                                 align="right")
 
-        self.text_start = Text(self.window_graph,
+        self.text_start = Text(self.window,
                                text="Start DateTime: ",
                                color='green',
                                grid=[1, 6],
                                align="left")
 
-        self.textbox_start = TextBox(self.window_graph,
+        self.textbox_start = TextBox(self.window,
                                      text="",
                                      width=20,
                                      grid=[2, 6],
                                      align="left")
 
-        self.text_end = Text(self.window_graph,
+        self.text_end = Text(self.window,
                              text="End DateTime:",
                              color='green',
                              grid=[1, 7],
                              align="left")
 
-        self.textbox_end = TextBox(self.window_graph,
+        self.textbox_end = TextBox(self.window,
                                    text="",
                                    width=20,
                                    grid=[2, 7],
                                    align="left")
 
-        self.text_sql_skip = Text(self.window_graph,
+        self.text_sql_skip = Text(self.window,
                                   text="Add row every:",
                                   color='green',
                                   grid=[1, 8],
                                   align="left")
 
-        self.textbox_sql_skip = TextBox(self.window_graph,
+        self.textbox_sql_skip = TextBox(self.window,
                                         text="",
                                         width=10,
                                         grid=[2, 8],
                                         align="left")
 
-        self.text_sql_skip2 = Text(self.window_graph,
+        self.text_sql_skip2 = Text(self.window,
                                    text="rows    ",
                                    color='green',
                                    grid=[2, 8],
                                    align="right")
 
-        self.text_temperature_offset = Text(self.window_graph,
+        self.text_temperature_offset = Text(self.window,
                                             text="Environmental:",
                                             color='green',
                                             grid=[1, 9],
                                             align="left")
 
-        self.textbox_temperature_offset = TextBox(self.window_graph,
+        self.textbox_temperature_offset = TextBox(self.window,
                                                   text="",
                                                   width=5,
                                                   grid=[2, 9],
                                                   align="left")
 
-        self.text_temperature_offset2 = Text(self.window_graph,
+        self.text_temperature_offset2 = Text(self.window,
                                              text="Temp Offset",
                                              color='green',
                                              grid=[2, 9],
                                              align="right")
 
-        self.text_refresh_time = Text(self.window_graph,
+        self.text_refresh_time = Text(self.window,
                                       text="Live refresh (Sec):",
                                       color='green',
                                       grid=[1, 10],
                                       align="left")
 
-        self.textbox_refresh_time = TextBox(self.window_graph,
+        self.textbox_refresh_time = TextBox(self.window,
                                             text="2",
                                             width=5,
                                             grid=[2, 10],
                                             align="left")
 
-        self.text_space2 = Text(self.window_graph,
+        self.text_space2 = Text(self.window,
                                 text=" ",
                                 grid=[1, 11],
                                 align="right")
 
-        self.text_column_selection = Text(self.window_graph,
+        self.text_column_selection = Text(self.window,
                                           text="Interval Sensors",
                                           color='blue',
                                           grid=[1, 15, 2, 1],
                                           align="top")
 
-        self.checkbox_up_time = CheckBox(self.window_graph,
+        self.checkbox_up_time = CheckBox(self.window,
                                          text="System Uptime",
                                          command=self._disable_other_checkboxes,
                                          args=["Uptime"],
                                          grid=[1, 16],
                                          align="left")
 
-        self.checkbox_cpu_temp = CheckBox(self.window_graph,
+        self.checkbox_cpu_temp = CheckBox(self.window,
                                           text="CPU Temperature",
                                           command=self._disable_other_checkboxes,
                                           args=["CPUTemperature"],
                                           grid=[1, 17],
                                           align="left")
 
-        self.checkbox_temperature = CheckBox(self.window_graph,
+        self.checkbox_temperature = CheckBox(self.window,
                                              text="Env Temperature",
                                              command=self._disable_other_checkboxes,
                                              args=["Temperature"],
                                              grid=[1, 18],
                                              align="left")
 
-        self.checkbox_pressure = CheckBox(self.window_graph,
+        self.checkbox_pressure = CheckBox(self.window,
                                           text="Pressure",
                                           command=self._disable_other_checkboxes,
                                           args=["Pressure"],
                                           grid=[1, 19],
                                           align="left")
 
-        self.checkbox_humidity = CheckBox(self.window_graph,
+        self.checkbox_humidity = CheckBox(self.window,
                                           text="Humidity",
                                           command=self._disable_other_checkboxes,
                                           args=["Humidity"],
                                           grid=[2, 16],
                                           align="left")
 
-        self.checkbox_lumen = CheckBox(self.window_graph,
+        self.checkbox_lumen = CheckBox(self.window,
                                        text="Lumen",
                                        command=self._disable_other_checkboxes,
                                        args=["Lumen"],
                                        grid=[2, 17],
                                        align="left")
 
-        self.checkbox_colour = CheckBox(self.window_graph,
+        self.checkbox_colour = CheckBox(self.window,
                                         text="Colour RGB",
                                         command=self._disable_other_checkboxes,
                                         args=["RGB"],
                                         grid=[2, 18],
                                         align="left")
 
-        self.text_column_selection2 = Text(self.window_graph,
+        self.text_column_selection2 = Text(self.window,
                                            text="Trigger Sensors",
                                            color='blue',
                                            grid=[1, 24, 2, 1],
                                            align="bottom")
 
-        self.checkbox_acc = CheckBox(self.window_graph,
+        self.checkbox_acc = CheckBox(self.window,
                                      text="Accelerometer XYZ",
                                      command=self._disable_other_checkboxes,
                                      args=["Accelerometer"],
                                      grid=[1, 25],
                                      align="left")
 
-        self.checkbox_mag = CheckBox(self.window_graph,
+        self.checkbox_mag = CheckBox(self.window,
                                      text="Magnetometer XYZ",
                                      command=self._disable_other_checkboxes,
                                      args=["Magnetometer"],
                                      grid=[2, 25],
                                      align="left")
 
-        self.checkbox_gyro = CheckBox(self.window_graph,
+        self.checkbox_gyro = CheckBox(self.window,
                                       text="Gyroscopic XYZ",
                                       command=self._disable_other_checkboxes,
                                       args=["Gyroscopic"],
                                       grid=[1, 26],
                                       align="left")
 
-        self.text_space3 = Text(self.window_graph,
+        self.text_space3 = Text(self.window,
                                 text=" ",
                                 grid=[1, 35],
                                 align="right")
 
-        self.button_database = PushButton(self.window_graph,
+        self.button_database = PushButton(self.window,
                                           text="Open & Graph\nDatabase",
                                           command=self.plotly_button,
                                           grid=[1, 36, 2, 1],
                                           align="left")
 
-        self.button_live = PushButton(self.window_graph,
+        self.button_live = PushButton(self.window,
                                       text="Start Live Graph",
                                       command=self.live_button,
                                       grid=[2, 36],
                                       align="left")
+
+        self.set_config()
+        self._radio_selection()
 
     def set_config(self):
         """ Sets the programs Configuration to the provided settings. """
