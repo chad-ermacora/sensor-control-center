@@ -21,7 +21,8 @@ import app_reports
 
 
 class CreateReportsWindow:
-    def __init__(self, app):
+    def __init__(self, app, ip_selection):
+        self.ip_selection = ip_selection
         self.app = app
         self.window = Window(app,
                              title="Sensor Reports",
@@ -72,20 +73,20 @@ class CreateReportsWindow:
                                                grid=[3, 7],
                                                align="top")
 
-    @staticmethod
-    def app_sensor_readings_report(ip_list):
+    def app_sensor_readings_report(self):
         """ Create a HTML sensor Readings Report containing each IP selected and online. """
         readings_config = app_reports.HTMLReadings()
+        ip_list = self.ip_selection.get_verified_ip_list()
         app_reports.sensor_html_report(readings_config, ip_list)
 
-    @staticmethod
-    def app_sensor_system_report(ip_list):
+    def app_sensor_system_report(self):
         """ Create a HTML sensor System Report containing each IP selected and online. """
         system_config = app_reports.HTMLSystem()
+        ip_list = self.ip_selection.get_verified_ip_list()
         app_reports.sensor_html_report(system_config, ip_list)
 
-    @staticmethod
-    def app_sensor_config_report(ip_list):
+    def app_sensor_config_report(self):
         """ Create a HTML sensor Configuration Report containing each IP selected and online. """
         sensor_config_config = app_reports.HTMLConfig()
+        ip_list = self.ip_selection.get_verified_ip_list()
         app_reports.sensor_html_report(sensor_config_config, ip_list)
