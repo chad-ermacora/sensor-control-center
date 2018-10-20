@@ -85,8 +85,8 @@ def _app_custom_configurations():
     sensor_config_checkbox_custom.value = 0
 
     _set_about_text()
-    app_check_all_ip_checkboxes(1)
-    app_check_all_ip_checkboxes(2)
+    app_check_all_ip1()
+    app_check_all_ip2()
     _graph_radio_selection()
     sensor_config_enable_recording()
     sensor_config_enable_custom()
@@ -120,7 +120,7 @@ def _app_custom_configurations():
 
 
 def _app_exit():
-    """ Clean ups before application closes. """
+    """ Closes log handlers & matplotlib before closing the application. """
     log_handlers = logger.handlers[:]
     for handler in log_handlers:
         handler.close()
@@ -220,47 +220,48 @@ def app_menu_open_sensor_help():
     webbrowser.open_new_tab(help_file_location)
 
 
-def app_check_all_ip_checkboxes(var_column):
-    """ Check or uncheck all IP checkboxes on the column provided. """
-    if var_column == 1:
-        if app_checkbox_all_column1.value == 1:
-            app_checkbox_ip1.value = 1
-            app_checkbox_ip2.value = 1
-            app_checkbox_ip3.value = 1
-            app_checkbox_ip4.value = 1
-            app_checkbox_ip5.value = 1
-            app_checkbox_ip6.value = 1
-            app_checkbox_ip7.value = 1
-            app_checkbox_ip8.value = 1
-        elif app_checkbox_all_column1.value == 0:
-            app_checkbox_ip1.value = 0
-            app_checkbox_ip2.value = 0
-            app_checkbox_ip3.value = 0
-            app_checkbox_ip4.value = 0
-            app_checkbox_ip5.value = 0
-            app_checkbox_ip6.value = 0
-            app_checkbox_ip7.value = 0
-            app_checkbox_ip8.value = 0
+def app_check_all_ip1():
+    """ Check or uncheck all IP checkboxes on the 1st column. """
+    if app_checkbox_all_column1.value == 1:
+        app_checkbox_ip1.value = 1
+        app_checkbox_ip2.value = 1
+        app_checkbox_ip3.value = 1
+        app_checkbox_ip4.value = 1
+        app_checkbox_ip5.value = 1
+        app_checkbox_ip6.value = 1
+        app_checkbox_ip7.value = 1
+        app_checkbox_ip8.value = 1
+    elif app_checkbox_all_column1.value == 0:
+        app_checkbox_ip1.value = 0
+        app_checkbox_ip2.value = 0
+        app_checkbox_ip3.value = 0
+        app_checkbox_ip4.value = 0
+        app_checkbox_ip5.value = 0
+        app_checkbox_ip6.value = 0
+        app_checkbox_ip7.value = 0
+        app_checkbox_ip8.value = 0
 
-    elif var_column == 2:
-        if app_checkbox_all_column2.value == 1:
-            app_checkbox_ip9.value = 1
-            app_checkbox_ip10.value = 1
-            app_checkbox_ip11.value = 1
-            app_checkbox_ip12.value = 1
-            app_checkbox_ip13.value = 1
-            app_checkbox_ip14.value = 1
-            app_checkbox_ip15.value = 1
-            app_checkbox_ip16.value = 1
-        elif app_checkbox_all_column2.value == 0:
-            app_checkbox_ip9.value = 0
-            app_checkbox_ip10.value = 0
-            app_checkbox_ip11.value = 0
-            app_checkbox_ip12.value = 0
-            app_checkbox_ip13.value = 0
-            app_checkbox_ip14.value = 0
-            app_checkbox_ip15.value = 0
-            app_checkbox_ip16.value = 0
+
+def app_check_all_ip2():
+    """ Check or uncheck all IP checkboxes on the 2nd column. """
+    if app_checkbox_all_column2.value == 1:
+        app_checkbox_ip9.value = 1
+        app_checkbox_ip10.value = 1
+        app_checkbox_ip11.value = 1
+        app_checkbox_ip12.value = 1
+        app_checkbox_ip13.value = 1
+        app_checkbox_ip14.value = 1
+        app_checkbox_ip15.value = 1
+        app_checkbox_ip16.value = 1
+    elif app_checkbox_all_column2.value == 0:
+        app_checkbox_ip9.value = 0
+        app_checkbox_ip10.value = 0
+        app_checkbox_ip11.value = 0
+        app_checkbox_ip12.value = 0
+        app_checkbox_ip13.value = 0
+        app_checkbox_ip14.value = 0
+        app_checkbox_ip15.value = 0
+        app_checkbox_ip16.value = 0
 
 
 def _worker_sensor_check(ip):
@@ -1043,7 +1044,6 @@ def _graph_disable_other_checkboxes(var_checkbox):
 app = App(title="KootNet Sensors - PC Control Center",
           width=405,
           height=295,
-
           layout="grid")
 
 window_app_about = Window(app,
@@ -1141,8 +1141,7 @@ app_button_sensor_config = PushButton(app,
 # Sensor's Online / Offline IP List Selection 1
 app_checkbox_all_column1 = CheckBox(app,
                                     text="Check ALL Column 1",
-                                    command=app_check_all_ip_checkboxes,
-                                    args=[1],
+                                    command=app_check_all_ip1,
                                     grid=[1, 1, 3, 1],
                                     align="left")
 
@@ -1237,8 +1236,7 @@ app_textbox_ip8 = TextBox(app,
 # Sensor's Online / Offline IP List Selection 2
 app_checkbox_all_column2 = CheckBox(app,
                                     text="Check ALL Column 2",
-                                    command=app_check_all_ip_checkboxes,
-                                    args=[2],
+                                    command=app_check_all_ip2,
                                     grid=[3, 1, 3, 1],
                                     align="left")
 
