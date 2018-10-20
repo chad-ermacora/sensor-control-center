@@ -23,84 +23,85 @@ import control_center_logger
 
 class CreateSensorCommandsWindow:
     def __init__(self, app):
-        self.window_sensor_commands = Window(app,
-                                             title="Sensor Commands",
-                                             width=290,
-                                             height=285,
-                                             layout="grid",
-                                             visible=True)
+        self.window = Window(app,
+                             title="Sensor Commands",
+                             width=290,
+                             height=285,
+                             layout="grid",
+                             visible=False)
 
-        self.text_select = Text(self.window_sensor_commands,
+        self.text_select = Text(self.window,
                                 text="Check Sensor IPs from the Main Window",
                                 grid=[1, 1, 3, 1],
                                 color='#CB0000',
                                 align="left")
 
-        self.text_upgrade = Text(self.window_sensor_commands,
+        self.text_upgrade = Text(self.window,
                                  text="Upgrade Commands",
                                  grid=[1, 2, 2, 1],
                                  color='blue',
                                  align="left")
 
-        self.button_lan_Upgrade = PushButton(self.window_sensor_commands,
+        self.button_lan_Upgrade = PushButton(self.window,
                                              text="Upgrade\nSoftware\nOver SMB",
                                              command=self.upgrade_smb,
                                              grid=[1, 3],
                                              align="left")
 
-        self.button_online_Upgrade = PushButton(self.window_sensor_commands,
+        self.button_online_Upgrade = PushButton(self.window,
                                                 text="Upgrade\nSoftware\nOver HTTP",
                                                 command=self.upgrade_http,
                                                 grid=[2, 3],
                                                 align="left")
 
-        self.button_os_Upgrade = PushButton(self.window_sensor_commands,
+        self.button_os_Upgrade = PushButton(self.window,
                                             text="Upgrade\nOperating\nSystem",
                                             command=self.os_upgrade,
                                             grid=[3, 3],
                                             align="left")
 
-        self.text_power = Text(self.window_sensor_commands,
+        self.text_power = Text(self.window,
                                text="Power Commands",
                                grid=[1, 4, 3, 1],
                                color='blue',
                                align="left")
 
-        self.button_reboot = PushButton(self.window_sensor_commands,
+        self.button_reboot = PushButton(self.window,
                                         text="Reboot",
                                         command=self.sensor_reboot,
                                         grid=[1, 5],
                                         align="left")
 
-        self.button_shutdown = PushButton(self.window_sensor_commands,
+        self.button_shutdown = PushButton(self.window,
                                           text="Shutdown",
                                           command=self.sensor_shutdown,
                                           grid=[2, 5],
                                           align="left")
 
-        self.text_other = Text(self.window_sensor_commands,
+        self.text_other = Text(self.window,
                                text="Other Commands",
                                grid=[1, 6, 3, 1],
                                color='blue',
                                align="left")
 
-        self.button_terminate = PushButton(self.window_sensor_commands,
+        self.button_terminate = PushButton(self.window,
                                            text="Restart\nServices",
                                            command=self.restart_services,
                                            grid=[1, 7],
                                            align="left")
 
-        self.button_get_config = PushButton(self.window_sensor_commands,
+        self.button_get_config = PushButton(self.window,
                                             text="Change\nNames",
                                             command=self.hostname_change,
                                             grid=[2, 7],
                                             align="left")
 
-        self.button_update_datetime = PushButton(self.window_sensor_commands,
+        self.button_update_datetime = PushButton(self.window,
                                                  text="Sync DateTime\nwith Computer",
                                                  command=self.datetime_update,
                                                  grid=[3, 7],
                                                  align="left")
+        self.disable_advanced()
 
     def enable_advanced(self):
         self.button_os_Upgrade.enable()

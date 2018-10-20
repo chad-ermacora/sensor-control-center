@@ -21,7 +21,6 @@ stream_handler.setFormatter(formatter)
 app_logger.addHandler(file_handler)
 app_logger.addHandler(stream_handler)
 
-
 # Sensor Commands Log
 sensor_logger = logging.getLogger("SensorLog")
 sensor_logger.setLevel(logging.INFO)

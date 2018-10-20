@@ -29,14 +29,11 @@ import gui_guizero.control_center_about
 import gui_guizero.sensor_config
 import gui_guizero.reports
 import gui_guizero.sensor_commands
+import gui_guizero.graphing
 import control_center_logger
 
 new_app = gui_guizero.main_app.CreateMainWindow()
-program_config_window = gui_guizero.control_center_config.CreateConfigWindow(new_app.app)
-about_window = gui_guizero.control_center_about.CreateAboutWindow(new_app.app)
-sensor_config_window = gui_guizero.sensor_config.CreateSensorConfigWindow(new_app.app)
-reports_window = gui_guizero.reports.CreateReportsWindow(new_app.app)
-sensor_commands_window = gui_guizero.sensor_commands.CreateSensorCommandsWindow(new_app.app)
+
 
 # _app_custom_configurations()
 

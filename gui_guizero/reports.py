@@ -22,50 +22,51 @@ import app_reports
 
 class CreateReportsWindow:
     def __init__(self, app):
-        self.window_sensor_reports = Window(app,
-                                            title="Sensor Reports",
-                                            width=475,
-                                            height=100,
-                                            layout="grid",
-                                            visible=True)
+        self.app = app
+        self.window = Window(app,
+                             title="Sensor Reports",
+                             width=475,
+                             height=100,
+                             layout="grid",
+                             visible=False)
 
-        self.text_select = Text(self.window_sensor_reports,
+        self.text_select = Text(self.window,
                                 text="Check Sensor IPs from The Main Window",
                                 grid=[1, 1, 3, 1],
                                 color='#CB0000',
                                 align="top")
 
-        self.text1 = Text(self.window_sensor_reports,
+        self.text1 = Text(self.window,
                           text="Live Readings Report  |",
                           color='blue',
                           grid=[1, 6],
                           align="top")
 
-        self.button_check_sensor = PushButton(self.window_sensor_reports,
+        self.button_check_sensor = PushButton(self.window,
                                               text="Create",
                                               command=self.app_sensor_readings_report,
                                               grid=[1, 7],
                                               align="top")
 
-        self.text2 = Text(self.window_sensor_reports,
+        self.text2 = Text(self.window,
                           text="|  System Report  |",
                           color='blue',
                           grid=[2, 6],
                           align="top")
 
-        self.button_sensor_detail = PushButton(self.window_sensor_reports,
+        self.button_sensor_detail = PushButton(self.window,
                                                text="Create",
                                                command=self.app_sensor_system_report,
                                                grid=[2, 7],
                                                align="top")
 
-        self.text3 = Text(self.window_sensor_reports,
+        self.text3 = Text(self.window,
                           text="|  Configuration Report",
                           color='blue',
                           grid=[3, 6],
                           align="top")
 
-        self.button_sensor_config = PushButton(self.window_sensor_reports,
+        self.button_sensor_config = PushButton(self.window,
                                                text="Create",
                                                command=self.app_sensor_config_report,
                                                grid=[3, 7],
