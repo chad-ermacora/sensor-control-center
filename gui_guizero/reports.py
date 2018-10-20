@@ -23,7 +23,6 @@ import app_reports
 class CreateReportsWindow:
     def __init__(self, app, ip_selection):
         self.ip_selection = ip_selection
-        self.app = app
         self.window = Window(app,
                              title="Sensor Reports",
                              width=475,

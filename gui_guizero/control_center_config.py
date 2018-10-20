@@ -23,8 +23,8 @@ import control_center_logger
 
 
 class CreateConfigWindow:
-    def __init__(self, app):
-        self.current_config = app_config.get_from_file()
+    def __init__(self, app, current_config):
+        self.current_config = current_config
         self.window = Window(app,
                              title="Control Center Configuration",
                              width=580,

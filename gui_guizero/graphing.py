@@ -25,9 +25,9 @@ import control_center_logger
 
 
 class CreateGraphingWindow:
-    def __init__(self, app, ip_selection):
+    def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
-        self.current_config = app_config.get_from_file()
+        self.current_config = current_config
         self.window = Window(app,
                              title="Graphing",
                              width=275,
