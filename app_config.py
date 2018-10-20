@@ -68,6 +68,7 @@ class CreateDefaultConfigSettings:
                         "192.168.10.23", "192.168.10.24", "192.168.10.25", "192.168.10.26"]
 
     def reset_to_defaults(self):
+        """ Resets the User configurable options to a default state on object self. """
         default_config = CreateDefaultConfigSettings()
 
         self.save_to = default_config.save_to
