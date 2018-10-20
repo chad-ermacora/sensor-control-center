@@ -2,13 +2,12 @@ from guizero import CheckBox, TextBox
 from threading import Thread
 from queue import Queue
 import sensor_commands
-import app_config
 import control_center_logger
 
 
 class CreateIPSelector:
-    def __init__(self, app):
-        self.current_config = app_config.get_from_file()
+    def __init__(self, app, current_config):
+        self.current_config = current_config
         self.data_queue = Queue()
         # Sensor's Online / Offline IP List Selection 1
         self.app_checkbox_all_column1 = CheckBox(app,

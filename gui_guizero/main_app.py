@@ -44,14 +44,14 @@ class CreateMainWindow:
                        height=295,
                        layout="grid")
 
-        self.ip_selection = gui_guizero.ip_selection.CreateIPSelector(self.app)
+        self.ip_selection = gui_guizero.ip_selection.CreateIPSelector(self.app, self.current_config)
 
-        self.window_control_center_config = gui_guizero.control_center_config.CreateConfigWindow(self.app)
+        self.window_control_center_config = gui_guizero.control_center_config.CreateConfigWindow(self.app, self.current_config)
         self.window_sensor_commands = gui_guizero.sensor_commands.CreateSensorCommandsWindow(self.app, self.ip_selection)
         self.window_sensor_config = gui_guizero.sensor_config.CreateSensorConfigWindow(self.app, self.ip_selection)
         self.window_reports = gui_guizero.reports.CreateReportsWindow(self.app, self.ip_selection)
-        self.window_graph = gui_guizero.graphing.CreateGraphingWindow(self.app, self.ip_selection)
-        self.window_about = gui_guizero.control_center_about.CreateAboutWindow(self.app)
+        self.window_graph = gui_guizero.graphing.CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
+        self.window_about = gui_guizero.control_center_about.CreateAboutWindow(self.app, self.current_config)
 
         self.app_menubar = MenuBar(self.app,
                                    toplevel=[["File"],
