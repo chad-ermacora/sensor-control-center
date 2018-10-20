@@ -45,7 +45,7 @@ class HTMLSystem:
         self.template1 = script_directory + "/additional_files/html_template_system1.html"
         self.template2 = script_directory + "/additional_files/html_template_system2.html"
         self.template3 = script_directory + "/additional_files/html_template_system3.html"
-        self.file_output_name = "SensorsSystem.html"
+        self.file_output_name = "SensorsSystemReport.html"
 
         self.replacement_codes = ["{{HostName}}",
                                   "{{IP}}",
@@ -72,7 +72,7 @@ class HTMLReadings:
         self.template1 = script_directory + "/additional_files/html_template_readings1.html"
         self.template2 = script_directory + "/additional_files/html_template_readings2.html"
         self.template3 = script_directory + "/additional_files/html_template_readings3.html"
-        self.file_output_name = "SensorsSystem.html"
+        self.file_output_name = "SensorsReadingsReport.html"
 
         self.replacement_codes = ["{{IntervalTypes}}",
                                   "{{IntervalReadings}}",
@@ -91,7 +91,7 @@ class HTMLConfig:
         self.template1 = script_directory + "/additional_files/html_template_config1.html"
         self.template2 = script_directory + "/additional_files/html_template_config2.html"
         self.template3 = script_directory + "/additional_files/html_template_config3.html"
-        self.file_output_name = "SensorsConfig.html"
+        self.file_output_name = "SensorsConfigReport.html"
 
         self.replacement_codes = ["{{HostName}}",
                                   "{{IP}}",
