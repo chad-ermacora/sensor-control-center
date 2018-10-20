@@ -20,9 +20,8 @@ import webbrowser
 import platform
 import os
 import subprocess
-from guizero import App, CheckBox, PushButton, TextBox, MenuBar, info, warn
+from guizero import App, PushButton, MenuBar, info, warn
 from tkinter import filedialog
-from queue import Queue
 from threading import Thread
 import sensor_commands
 import control_center_logger
@@ -33,17 +32,19 @@ import gui_guizero.sensor_config
 import gui_guizero.reports
 import gui_guizero.sensor_commands
 import gui_guizero.graphing
+import gui_guizero.ip_selection
 
 
 class CreateMainWindow:
     def __init__(self):
         self.current_config = app_config.get_from_file()
-        self.data_queue = Queue()
 
         self.app = App(title="KootNet Sensors - PC Control Center",
                        width=405,
                        height=295,
                        layout="grid")
+
+        self.ip_selection = gui_guizero.ip_selection.CreateIPSelector(self.app)
 
         self.window_control_center_config = gui_guizero.control_center_config.CreateConfigWindow(self.app)
         self.window_sensor_commands = gui_guizero.sensor_commands.CreateSensorCommandsWindow(self.app)
@@ -86,7 +87,7 @@ class CreateMainWindow:
 
         self.app_button_check_sensor = PushButton(self.app,
                                                   text="Check Sensors\nStatus",
-                                                  command=self.get_verified_ip_list,
+                                                  command=self.ip_selection.get_verified_ip_list,
                                                   grid=[1, 15, 2, 1],
                                                   align="left")
 
@@ -101,196 +102,6 @@ class CreateMainWindow:
                                                    command=self.app_menu_download_trigger_db,
                                                    grid=[4, 15],
                                                    align="right")
-
-        # Sensor's Online / Offline IP List Selection 1
-        self.app_checkbox_all_column1 = CheckBox(self.app,
-                                                 text="Check ALL Column 1",
-                                                 command=self.app_check_all_ip1,
-                                                 grid=[1, 1, 3, 1],
-                                                 align="left")
-
-        self.app_checkbox_ip1 = CheckBox(self.app,
-                                         text="IP        ",
-                                         grid=[1, 2],
-                                         align="left")
-
-        self.app_textbox_ip1 = TextBox(self.app,
-                                       text="192.168.10.11",
-                                       width=21,
-                                       grid=[2, 2],
-                                       align="left")
-
-        self.app_checkbox_ip2 = CheckBox(self.app,
-                                         text="IP ",
-                                         grid=[1, 3],
-                                         align="left")
-
-        self.app_textbox_ip2 = TextBox(self.app,
-                                       text="192.168.10.12",
-                                       width=21,
-                                       grid=[2, 3],
-                                       align="left")
-
-        self.app_checkbox_ip3 = CheckBox(self.app,
-                                         text="IP ",
-                                         grid=[1, 4],
-                                         align="left")
-
-        self.app_textbox_ip3 = TextBox(self.app,
-                                       text="192.168.10.13",
-                                       width=21,
-                                       grid=[2, 4],
-                                       align="left")
-
-        self.app_checkbox_ip4 = CheckBox(self.app,
-                                         text="IP ",
-                                         grid=[1, 5],
-                                         align="left")
-
-        self.app_textbox_ip4 = TextBox(self.app,
-                                       text="192.168.10.14",
-                                       width=21,
-                                       grid=[2, 5],
-                                       align="left")
-
-        self.app_checkbox_ip5 = CheckBox(self.app,
-                                         text="IP ",
-                                         grid=[1, 6],
-                                         align="left")
-
-        self.app_textbox_ip5 = TextBox(self.app,
-                                       text="192.168.10.15",
-                                       width=21,
-                                       grid=[2, 6],
-                                       align="left")
-
-        self.app_checkbox_ip6 = CheckBox(self.app,
-                                         text="IP ",
-                                         grid=[1, 7],
-                                         align="left")
-
-        self.app_textbox_ip6 = TextBox(self.app,
-                                       text="192.168.10.16",
-                                       width=21,
-                                       grid=[2, 7],
-                                       align="left")
-
-        self.app_checkbox_ip7 = CheckBox(self.app,
-                                         text="IP ",
-                                         grid=[1, 8],
-                                         align="left")
-
-        self.app_textbox_ip7 = TextBox(self.app,
-                                       text="192.168.10.17",
-                                       width=21,
-                                       grid=[2, 8],
-                                       align="left")
-
-        self.app_checkbox_ip8 = CheckBox(self.app,
-                                         text="IP ",
-                                         grid=[1, 9],
-                                         align="left")
-
-        self.app_textbox_ip8 = TextBox(self.app,
-                                       text="192.168.10.18",
-                                       width=21,
-                                       grid=[2, 9],
-                                       align="left")
-
-        # Sensor's Online / Offline IP List Selection 2
-        self.app_checkbox_all_column2 = CheckBox(self.app,
-                                                 text="Check ALL Column 2",
-                                                 command=self.app_check_all_ip2,
-                                                 grid=[3, 1, 3, 1],
-                                                 align="left")
-
-        self.app_checkbox_ip9 = CheckBox(self.app,
-                                         text="IP        ",
-                                         grid=[3, 2],
-                                         align="left")
-
-        self.app_textbox_ip9 = TextBox(self.app,
-                                       text="192.168.10.19",
-                                       width=21,
-                                       grid=[4, 2],
-                                       align="left")
-
-        self.app_checkbox_ip10 = CheckBox(self.app,
-                                          text="IP ",
-                                          grid=[3, 3],
-                                          align="left")
-
-        self.app_textbox_ip10 = TextBox(self.app,
-                                        text="192.168.10.20",
-                                        width=21,
-                                        grid=[4, 3],
-                                        align="left")
-
-        self.app_checkbox_ip11 = CheckBox(self.app,
-                                          text="IP ",
-                                          grid=[3, 4],
-                                          align="left")
-
-        self.app_textbox_ip11 = TextBox(self.app,
-                                        text="192.168.10.21",
-                                        width=21,
-                                        grid=[4, 4],
-                                        align="left")
-
-        self.app_checkbox_ip12 = CheckBox(self.app,
-                                          text="IP ",
-                                          grid=[3, 5],
-                                          align="left")
-
-        self.app_textbox_ip12 = TextBox(self.app,
-                                        text="192.168.10.22",
-                                        width=21,
-                                        grid=[4, 5],
-                                        align="left")
-
-        self.app_checkbox_ip13 = CheckBox(self.app,
-                                          text="IP ",
-                                          grid=[3, 6],
-                                          align="left")
-
-        self.app_textbox_ip13 = TextBox(self.app,
-                                        text="192.168.10.23",
-                                        width=21,
-                                        grid=[4, 6],
-                                        align="left")
-
-        self.app_checkbox_ip14 = CheckBox(self.app,
-                                          text="IP ",
-                                          grid=[3, 7],
-                                          align="left")
-
-        self.app_textbox_ip14 = TextBox(self.app,
-                                        text="192.168.10.24",
-                                        width=21,
-                                        grid=[4, 7],
-                                        align="left")
-
-        self.app_checkbox_ip15 = CheckBox(self.app,
-                                          text="IP ",
-                                          grid=[3, 8],
-                                          align="left")
-
-        self.app_textbox_ip15 = TextBox(self.app,
-                                        text="192.168.10.25",
-                                        width=21,
-                                        grid=[4, 8],
-                                        align="left")
-
-        self.app_checkbox_ip16 = CheckBox(self.app,
-                                          text="IP ",
-                                          grid=[3, 9],
-                                          align="left")
-
-        self.app_textbox_ip16 = TextBox(self.app,
-                                        text="192.168.10.26",
-                                        width=21,
-                                        grid=[4, 9],
-                                        align="left")
 
         self._app_custom_configurations()
 
@@ -317,8 +128,8 @@ class CreateMainWindow:
         # self.sensor_config_checkbox_db_record.value = 1
         # self.sensor_config_checkbox_custom.value = 0
         #
-        # self.app_check_all_ip1()
-        # self.app_check_all_ip2()
+        # self._app_check_all_ip1()
+        # self._app_check_all_ip2()
         # self._graph_radio_selection()
         # self.sensor_config_enable_recording()
         # self.sensor_config_enable_custom()
@@ -376,7 +187,7 @@ class CreateMainWindow:
 
     def app_menu_download_interval_db(self):
         """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
-        ip_list = self.get_verified_ip_list()
+        ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) >= 1:
             threads = []
             download_to_location = filedialog.askdirectory()
@@ -400,7 +211,7 @@ class CreateMainWindow:
 
     def app_menu_download_trigger_db(self):
         """ Downloads the Trigger SQLite3 database to the chosen location, from the selected sensors. """
-        ip_list = self.get_verified_ip_list()
+        ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) >= 1:
             threads = []
             download_to_location = filedialog.askdirectory()
@@ -437,250 +248,6 @@ class CreateMainWindow:
         help_file_location = self.current_config.additional_files_directory + "/SensorUnitHelp.html"
         webbrowser.open_new_tab(help_file_location)
 
-    def app_check_all_ip1(self):
-        """ Check or uncheck all IP checkboxes on the 1st column. """
-        if self.app_checkbox_all_column1.value == 1:
-            self.app_checkbox_ip1.value = 1
-            self.app_checkbox_ip2.value = 1
-            self.app_checkbox_ip3.value = 1
-            self.app_checkbox_ip4.value = 1
-            self.app_checkbox_ip5.value = 1
-            self.app_checkbox_ip6.value = 1
-            self.app_checkbox_ip7.value = 1
-            self.app_checkbox_ip8.value = 1
-        elif self.app_checkbox_all_column1.value == 0:
-            self.app_checkbox_ip1.value = 0
-            self.app_checkbox_ip2.value = 0
-            self.app_checkbox_ip3.value = 0
-            self.app_checkbox_ip4.value = 0
-            self.app_checkbox_ip5.value = 0
-            self.app_checkbox_ip6.value = 0
-            self.app_checkbox_ip7.value = 0
-            self.app_checkbox_ip8.value = 0
-
-    def app_check_all_ip2(self):
-        """ Check or uncheck all IP checkboxes on the 2nd column. """
-        if self.app_checkbox_all_column2.value == 1:
-            self.app_checkbox_ip9.value = 1
-            self.app_checkbox_ip10.value = 1
-            self.app_checkbox_ip11.value = 1
-            self.app_checkbox_ip12.value = 1
-            self.app_checkbox_ip13.value = 1
-            self.app_checkbox_ip14.value = 1
-            self.app_checkbox_ip15.value = 1
-            self.app_checkbox_ip16.value = 1
-        elif self.app_checkbox_all_column2.value == 0:
-            self.app_checkbox_ip9.value = 0
-            self.app_checkbox_ip10.value = 0
-            self.app_checkbox_ip11.value = 0
-            self.app_checkbox_ip12.value = 0
-            self.app_checkbox_ip13.value = 0
-            self.app_checkbox_ip14.value = 0
-            self.app_checkbox_ip15.value = 0
-            self.app_checkbox_ip16.value = 0
-
-    def _worker_sensor_check(self, ip):
-        """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
-        data = [ip, sensor_commands.check_sensor_status(ip, self.current_config.network_timeout_sensor_check)]
-        self.data_queue.put(data)
-
-    def get_verified_ip_list(self):
-        """
-        Checks sensor online status and changes the programs IP textbox depending on the returned results.
-
-        The sensor checks are Threaded by the IP's provided in the IP list.
-        """
-        ip_list = self._make_ip_list()
-        ip_list_final = []
-        sensor_data_pool = []
-        threads = []
-
-        for ip in ip_list:
-            threads.append(Thread(target=self._worker_sensor_check, args=[ip]))
-
-        for thread in threads:
-            thread.start()
-
-        for thread in threads:
-            thread.join()
-
-        while not self.data_queue.empty():
-            sensor_data_pool.append(self.data_queue.get())
-            self.data_queue.task_done()
-
-        sensor_data_pool.sort()
-
-        for data in sensor_data_pool:
-            ip = data[0]
-            sensor_status = data[1]
-
-            if sensor_status == "Online":
-                var_colour = "#7CFC00"
-                var_checkbox = 1
-            else:
-                var_colour = "red"
-                var_checkbox = 0
-
-            if var_checkbox == 1:
-                ip_list_final.append(ip)
-
-            if ip == self.app_textbox_ip1.value:
-                self.app_checkbox_ip1.text = sensor_status
-                self.app_textbox_ip1.bg = var_colour
-                self.app_checkbox_ip1.value = var_checkbox
-            elif ip == self.app_textbox_ip2.value:
-                self.app_checkbox_ip2.text = sensor_status
-                self.app_textbox_ip2.bg = var_colour
-                self.app_checkbox_ip2.value = var_checkbox
-            elif ip == self.app_textbox_ip3.value:
-                self.app_checkbox_ip3.text = sensor_status
-                self.app_textbox_ip3.bg = var_colour
-                self.app_checkbox_ip3.value = var_checkbox
-            elif ip == self.app_textbox_ip4.value:
-                self.app_checkbox_ip4.text = sensor_status
-                self.app_textbox_ip4.bg = var_colour
-                self.app_checkbox_ip4.value = var_checkbox
-            elif ip == self.app_textbox_ip5.value:
-                self.app_checkbox_ip5.text = sensor_status
-                self.app_textbox_ip5.bg = var_colour
-                self.app_checkbox_ip5.value = var_checkbox
-            elif ip == self.app_textbox_ip6.value:
-                self.app_checkbox_ip6.text = sensor_status
-                self.app_textbox_ip6.bg = var_colour
-                self.app_checkbox_ip6.value = var_checkbox
-            elif ip == self.app_textbox_ip7.value:
-                self.app_checkbox_ip7.text = sensor_status
-                self.app_textbox_ip7.bg = var_colour
-                self.app_checkbox_ip7.value = var_checkbox
-            elif ip == self.app_textbox_ip8.value:
-                self.app_checkbox_ip8.text = sensor_status
-                self.app_textbox_ip8.bg = var_colour
-                self.app_checkbox_ip8.value = var_checkbox
-            elif ip == self.app_textbox_ip9.value:
-                self.app_checkbox_ip9.text = sensor_status
-                self.app_textbox_ip9.bg = var_colour
-                self.app_checkbox_ip9.value = var_checkbox
-            elif ip == self.app_textbox_ip10.value:
-                self.app_checkbox_ip10.text = sensor_status
-                self.app_textbox_ip10.bg = var_colour
-                self.app_checkbox_ip10.value = var_checkbox
-            elif ip == self.app_textbox_ip11.value:
-                self.app_checkbox_ip11.text = sensor_status
-                self.app_textbox_ip11.bg = var_colour
-                self.app_checkbox_ip11.value = var_checkbox
-            elif ip == self.app_textbox_ip12.value:
-                self.app_checkbox_ip12.text = sensor_status
-                self.app_textbox_ip12.bg = var_colour
-                self.app_checkbox_ip12.value = var_checkbox
-            elif ip == self.app_textbox_ip13.value:
-                self.app_checkbox_ip13.text = sensor_status
-                self.app_textbox_ip13.bg = var_colour
-                self.app_checkbox_ip13.value = var_checkbox
-            elif ip == self.app_textbox_ip14.value:
-                self.app_checkbox_ip14.text = sensor_status
-                self.app_textbox_ip14.bg = var_colour
-                self.app_checkbox_ip14.value = var_checkbox
-            elif ip == self.app_textbox_ip15.value:
-                self.app_checkbox_ip15.text = sensor_status
-                self.app_textbox_ip15.bg = var_colour
-                self.app_checkbox_ip15.value = var_checkbox
-            elif ip == self.app_textbox_ip16.value:
-                self.app_checkbox_ip16.text = sensor_status
-                self.app_textbox_ip16.bg = var_colour
-                self.app_checkbox_ip16.value = var_checkbox
-
-        sensor_data_pool.clear()
-        control_center_logger.app_logger.debug("Checked IP's Processed")
-        return ip_list_final
-
-    # Returns selected IP's from Main App Window & Re-Sets unselected IP background to white
-    def _make_ip_list(self):
-        """ Returns a list of all checked IP's, skipping duplicates """
-        checkbox_ip_list = []
-
-        if self.app_checkbox_ip1.value == 1 and self.app_textbox_ip1.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip1.value)
-        else:
-            self.app_textbox_ip1.bg = 'white'
-
-        if self.app_checkbox_ip2.value == 1 and self.app_textbox_ip2.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip2.value)
-        else:
-            self.app_textbox_ip2.bg = 'white'
-
-        if self.app_checkbox_ip3.value == 1 and self.app_textbox_ip3.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip3.value)
-        else:
-            self.app_textbox_ip3.bg = 'white'
-
-        if self.app_checkbox_ip4.value == 1 and self.app_textbox_ip4.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip4.value)
-        else:
-            self.app_textbox_ip4.bg = 'white'
-
-        if self.app_checkbox_ip5.value == 1 and self.app_textbox_ip5.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip5.value)
-        else:
-            self.app_textbox_ip5.bg = 'white'
-
-        if self.app_checkbox_ip6.value == 1 and self.app_textbox_ip6.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip6.value)
-        else:
-            self.app_textbox_ip6.bg = 'white'
-
-        if self.app_checkbox_ip7.value == 1 and self.app_textbox_ip7.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip7.value)
-        else:
-            self.app_textbox_ip7.bg = 'white'
-
-        if self.app_checkbox_ip8.value == 1 and self.app_textbox_ip8.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip8.value)
-        else:
-            self.app_textbox_ip8.bg = 'white'
-
-        if self.app_checkbox_ip9.value == 1 and self.app_textbox_ip9.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip9.value)
-        else:
-            self.app_textbox_ip9.bg = 'white'
-
-        if self.app_checkbox_ip10.value == 1 and self.app_textbox_ip10.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip10.value)
-        else:
-            self.app_textbox_ip10.bg = 'white'
-
-        if self.app_checkbox_ip11.value == 1 and self.app_textbox_ip11.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip11.value)
-        else:
-            self.app_textbox_ip11.bg = 'white'
-
-        if self.app_checkbox_ip12.value == 1 and self.app_textbox_ip12.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip12.value)
-        else:
-            self.app_textbox_ip12.bg = 'white'
-
-        if self.app_checkbox_ip13.value == 1 and self.app_textbox_ip13.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip13.value)
-        else:
-            self.app_textbox_ip13.bg = 'white'
-
-        if self.app_checkbox_ip14.value == 1 and self.app_textbox_ip14.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip14.value)
-        else:
-            self.app_textbox_ip14.bg = 'white'
-
-        if self.app_checkbox_ip15.value == 1 and self.app_textbox_ip15.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip15.value)
-        else:
-            self.app_textbox_ip15.bg = 'white'
-
-        if self.app_checkbox_ip16.value == 1 and self.app_textbox_ip16.value not in checkbox_ip_list:
-            checkbox_ip_list.append(self.app_textbox_ip16.value)
-        else:
-            self.app_textbox_ip16.bg = 'white'
-
-        control_center_logger.app_logger.debug("IP List Generated from Checked Boxes")
-        return checkbox_ip_list
-
     def config_button_save(self):
         """ Save the programs Configuration and IP list to file """
         control_center_logger.app_logger.debug("Applying Configuration & Saving to File")
@@ -695,22 +262,7 @@ class CreateMainWindow:
         # self.current_config.network_timeout_sensor_check = self.config_textbox_network_check.value
         # self.current_config.network_timeout_data = self.config_textbox_network_details.value
         # self.current_config.allow_advanced_controls = self.config_checkbox_power_controls.value
-        self.current_config.ip_list[0] = self.app_textbox_ip1.value
-        self.current_config.ip_list[1] = self.app_textbox_ip2.value
-        self.current_config.ip_list[2] = self.app_textbox_ip3.value
-        self.current_config.ip_list[3] = self.app_textbox_ip4.value
-        self.current_config.ip_list[4] = self.app_textbox_ip5.value
-        self.current_config.ip_list[5] = self.app_textbox_ip6.value
-        self.current_config.ip_list[6] = self.app_textbox_ip7.value
-        self.current_config.ip_list[7] = self.app_textbox_ip8.value
-        self.current_config.ip_list[8] = self.app_textbox_ip9.value
-        self.current_config.ip_list[9] = self.app_textbox_ip10.value
-        self.current_config.ip_list[10] = self.app_textbox_ip11.value
-        self.current_config.ip_list[11] = self.app_textbox_ip12.value
-        self.current_config.ip_list[12] = self.app_textbox_ip13.value
-        self.current_config.ip_list[13] = self.app_textbox_ip14.value
-        self.current_config.ip_list[14] = self.app_textbox_ip15.value
-        self.current_config.ip_list[15] = self.app_textbox_ip16.value
+        self.current_config.ip_list = self.ip_selection.get_all_ip_list()
 
         app_config.save_config_to_file(self.current_config)
         self.set_config()
@@ -724,21 +276,6 @@ class CreateMainWindow:
         # self.graph_textbox_temperature_offset.value = self.current_config.temperature_offset
         # self.graph_textbox_refresh_time.value = self.current_config.live_refresh
 
-        self.app_textbox_ip1.value = self.current_config.ip_list[0]
-        self.app_textbox_ip2.value = self.current_config.ip_list[1]
-        self.app_textbox_ip3.value = self.current_config.ip_list[2]
-        self.app_textbox_ip4.value = self.current_config.ip_list[3]
-        self.app_textbox_ip5.value = self.current_config.ip_list[4]
-        self.app_textbox_ip6.value = self.current_config.ip_list[5]
-        self.app_textbox_ip7.value = self.current_config.ip_list[6]
-        self.app_textbox_ip8.value = self.current_config.ip_list[7]
-        self.app_textbox_ip9.value = self.current_config.ip_list[8]
-        self.app_textbox_ip10.value = self.current_config.ip_list[9]
-        self.app_textbox_ip11.value = self.current_config.ip_list[10]
-        self.app_textbox_ip12.value = self.current_config.ip_list[11]
-        self.app_textbox_ip13.value = self.current_config.ip_list[12]
-        self.app_textbox_ip14.value = self.current_config.ip_list[13]
-        self.app_textbox_ip15.value = self.current_config.ip_list[14]
-        self.app_textbox_ip16.value = self.current_config.ip_list[15]
+        # self.ip_selection.set_ip_list(self.current_config)
 
         # self.config_checkbox_enable_advanced()

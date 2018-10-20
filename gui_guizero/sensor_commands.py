@@ -23,6 +23,7 @@ import control_center_logger
 
 class CreateSensorCommandsWindow:
     def __init__(self, app):
+        self.app = app
         self.window = Window(app,
                              title="Sensor Commands",
                              width=290,

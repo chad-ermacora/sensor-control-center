@@ -24,18 +24,9 @@ ERROR - Due to a more serious problem, the software has not been able to perform
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
 import gui_guizero.main_app
-import gui_guizero.control_center_config
-import gui_guizero.control_center_about
-import gui_guizero.sensor_config
-import gui_guizero.reports
-import gui_guizero.sensor_commands
-import gui_guizero.graphing
 import control_center_logger
 
 new_app = gui_guizero.main_app.CreateMainWindow()
-
-
-# _app_custom_configurations()
 
 # Start the App
 control_center_logger.app_logger.info('KootNet Sensors - PC Control Center - Started')
