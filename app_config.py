@@ -48,6 +48,7 @@ class CreateDefaultConfigSettings:
         self.logs_directory = script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
         self.config_file = self.script_directory + "/config.txt"
+        # Remove app ver and about text when new gui in place
         self.about_text = self.additional_files_directory + "/about_text.txt"
         self.app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.20.1"
 
