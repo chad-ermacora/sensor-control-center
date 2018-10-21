@@ -31,7 +31,7 @@ class CreateSensorConfigWindow:
                              visible=False)
 
         self.text_select = Text(self.window,
-                                text="Check Sensor IPs from the main window",
+                                text="Select Sensor IPs in the main window",
                                 grid=[1, 1, 3, 1],
                                 color='#CB0000',
                                 align="left")
