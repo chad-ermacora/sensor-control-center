@@ -31,7 +31,7 @@ class CreateSensorConfigWindow:
                              visible=False)
 
         self.text_select = Text(self.window,
-                                text="Check Sensor IPs from the Main Window",
+                                text="Check Sensor IPs from the main window",
                                 grid=[1, 1, 3, 1],
                                 color='#CB0000',
                                 align="left")
@@ -49,7 +49,7 @@ class CreateSensorConfigWindow:
                                         align="left")
 
         self.text_interval = Text(self.window,
-                                  text="Seconds Between Interval Recording",
+                                  text="Seconds between Interval recording",
                                   color='green',
                                   grid=[2, 3],
                                   align="left")
@@ -61,7 +61,7 @@ class CreateSensorConfigWindow:
                                        align="left")
 
         self.text_trigger = Text(self.window,
-                                 text="Seconds Between Trigger Readings",
+                                 text="Seconds between Trigger readings",
                                  color='green',
                                  grid=[2, 4],
                                  align="left")

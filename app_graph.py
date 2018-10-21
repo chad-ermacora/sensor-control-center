@@ -194,8 +194,8 @@ class CreateLiveGraph:
                     uptime_hours = int((float(sensor_reading) % 1440) // 60)
                     uptime_min = int(float(sensor_reading) % 60)
                     sensor_reading = str(uptime_days) + " Days / " + \
-                        str(uptime_hours) + "." + \
-                        str(uptime_min) + " Hours"
+                                     str(uptime_hours) + "." + \
+                                     str(uptime_min) + " Hours"
                 except Exception as error:
                     logger.warning(str(error))
 
@@ -230,15 +230,15 @@ def start_graph_interval(graph_data):
     for var_column in graph_data.graph_columns:
         var_sql_query = "SELECT " + \
                         str(var_column) + \
-            " FROM " + \
+                        " FROM " + \
                         str(graph_data.graph_table) + \
-            " WHERE " + \
+                        " WHERE " + \
                         var_column + \
-            " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                        " IS NOT NULL AND DateTime BETWEEN datetime('" + \
                         str(get_sql_graph_start) + \
-            "') AND datetime('" + \
+                        "') AND datetime('" + \
                         str(get_sql_graph_end) + \
-            "') LIMIT " + \
+                        "') LIMIT " + \
                         str(graph_data.max_sql_queries)
 
         sql_column_data = _get_sql_data(graph_data, var_sql_query)
@@ -306,15 +306,15 @@ def start_graph_trigger(graph_data):
     for var_column in graph_data.graph_columns:
         var_sql_query = "SELECT " + \
                         str(var_column) + \
-            " FROM " + \
+                        " FROM " + \
                         str(graph_data.graph_table) + \
-            " WHERE " + \
+                        " WHERE " + \
                         var_column + \
-            " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                        " IS NOT NULL AND DateTime BETWEEN datetime('" + \
                         str(get_sql_graph_start) + \
-            ".000') AND datetime('" + \
+                        ".000') AND datetime('" + \
                         str(get_sql_graph_end) + \
-            ".000') LIMIT " + \
+                        ".000') LIMIT " + \
                         str(graph_data.max_sql_queries)
 
         sql_column_data = _get_sql_data(graph_data, var_sql_query)

@@ -128,7 +128,7 @@ def sensor_html_report(report_configuration, ip_list):
 
             final_file = final_file + current_sensor_html
         except Exception as error:
-                logger.error("Report Failure: " + str(error))
+            logger.error("Report Failure: " + str(error))
 
     # Merge the result with the Final HTML Template file.
     template3 = _get_file_content(report_configuration.template3)

@@ -49,12 +49,14 @@ class CreateGraphingWindow:
                                              align="top")
 
         self.text_space1 = Text(self.window,
-                                text=" ",
-                                grid=[1, 3],
-                                align="right")
+                                text="YYYY-MM-DD HH:MM:SS",
+                                size=7,
+                                color='#CB0000',
+                                grid=[2, 3, 2, 1],
+                                align="left")
 
         self.text_start = Text(self.window,
-                               text="Start DateTime: ",
+                               text="Start Date & Time: ",
                                color='green',
                                grid=[1, 6],
                                align="left")
@@ -66,7 +68,7 @@ class CreateGraphingWindow:
                                      align="left")
 
         self.text_end = Text(self.window,
-                             text="End DateTime:",
+                             text="End Date & Time:",
                              color='green',
                              grid=[1, 7],
                              align="left")
