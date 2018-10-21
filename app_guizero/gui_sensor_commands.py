@@ -39,7 +39,7 @@ class CreateSensorCommandsWindow:
                                               self.disable_advanced]]])
 
         self.text_select = Text(self.window,
-                                text="Check Sensor IPs from the Main Window",
+                                text="Check Sensor IPs from the main window",
                                 grid=[1, 1, 3, 1],
                                 color='#CB0000',
                                 align="left")

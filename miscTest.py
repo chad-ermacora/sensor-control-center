@@ -39,9 +39,6 @@ new_about_window = AboutWindow(new_app.app)
 change_text(new_app.test_text, "test444444444")
 new_app.app.display()
 
-
-
-
 # class Test1:
 #     def __init__(self):
 #         self.var1 = "test1: var1"

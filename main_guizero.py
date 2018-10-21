@@ -30,5 +30,5 @@ guizero_app = app_guizero.gui_main.CreateMainWindow()
 guizero_app.app_custom_configurations()
 
 # Start the App
-app_logger.app_logger.info('KootNet Sensors - PC Control Center - Started')
+app_logger.app_logger.info('KootNet Sensors - Control Center - Started')
 guizero_app.app.display()

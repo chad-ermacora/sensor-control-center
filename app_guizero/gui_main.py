@@ -20,42 +20,38 @@ import webbrowser
 import platform
 import os
 import subprocess
-from guizero import App, PushButton, MenuBar, info, warn, yesno
-from tkinter import filedialog
-from threading import Thread
 import app_sensor_commands
 import app_logger
 import app_config
-import app_guizero.gui_config
-import app_guizero.gui_about
-import app_guizero.gui_sensor_config
-import app_guizero.gui_reports
-import app_guizero.gui_sensor_commands
-import app_guizero.gui_graphing
-import app_guizero.gui_ip_selection
+from guizero import App, PushButton, MenuBar, info, warn, yesno
+from tkinter import filedialog
+from threading import Thread
+from app_guizero.gui_config import CreateConfigWindow
+from app_guizero.gui_about import CreateAboutWindow
+from app_guizero.gui_sensor_config import CreateSensorConfigWindow
+from app_guizero.gui_reports import CreateReportsWindow
+from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
+from app_guizero.gui_graphing import CreateGraphingWindow, pyplot
+from app_guizero.gui_ip_selection import CreateIPSelector
 
 
 class CreateMainWindow:
     def __init__(self):
         self.current_config = app_config.get_from_file()
 
-        self.app = App(title="KootNet Sensors - PC Control Center",
+        self.app = App(title="KootNet Sensors - Control Center",
                        width=405,
                        height=295,
                        layout="grid")
 
-        self.ip_selection = app_guizero.gui_ip_selection.CreateIPSelector(self.app, self.current_config)
+        self.ip_selection = CreateIPSelector(self.app, self.current_config)
 
-        self.window_control_center_config = app_guizero.gui_config.CreateConfigWindow(self.app,
-                                                                                      self.current_config,
-                                                                                      self.ip_selection)
-        self.window_sensor_commands = app_guizero.gui_sensor_commands.CreateSensorCommandsWindow(self.app,
-                                                                                                 self.ip_selection)
-        self.window_sensor_config = app_guizero.gui_sensor_config.CreateSensorConfigWindow(self.app, self.ip_selection)
-        self.window_reports = app_guizero.gui_reports.CreateReportsWindow(self.app, self.ip_selection)
-        self.window_graph = app_guizero.gui_graphing.CreateGraphingWindow(self.app, self.ip_selection,
-                                                                          self.current_config)
-        self.window_about = app_guizero.gui_about.CreateAboutWindow(self.app, self.current_config)
+        self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
+        self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection)
+        self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection)
+        self.window_reports = CreateReportsWindow(self.app, self.ip_selection)
+        self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
+        self.window_about = CreateAboutWindow(self.app, self.current_config)
 
         self.app_menubar = MenuBar(self.app,
                                    toplevel=[["File"],
@@ -66,29 +62,29 @@ class CreateMainWindow:
                                               self.window_control_center_config.window.show],
                                              ["Open Logs",
                                               self._app_menu_open_logs],
-                                             ["Save ALL Configurations & IP's",
+                                             ["Save IP List",
                                               self.window_control_center_config.save_ip_list],
-                                             ["Reset ALL IP List",
+                                             ["Reset IP List",
                                               self._reset_ip_list],
                                              ["Quit",
                                               self._app_exit]],
-                                            [["Send Commands",
+                                            [["Create Reports",
+                                              self.window_reports.window.show],
+                                             ["Send Commands",
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
-                                              self.window_sensor_config.window.show],
-                                             ["Create Reports",
-                                              self.window_reports.window.show]],
+                                              self.window_sensor_config.window.show]],
                                             [["Open Graph Window",
                                               self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
                                               self.window_about.window.show],
                                              ["KootNet Sensors - Website",
                                               self._app_menu_open_website],
-                                             ["Sensor Units - DIY",
+                                             ["Sensor Units - Making a Sensor",
                                               self._app_menu_open_build_sensor],
                                              ["Sensor Units - Help",
                                               self._app_menu_open_sensor_help],
-                                             ["PC Control Center - Help *WIP",
+                                             ["Control Center - Help *WIP",
                                               self.window_about.window.show]]])
 
         self.app_button_check_sensor = PushButton(self.app,
@@ -176,7 +172,7 @@ class CreateMainWindow:
             handler.close()
             app_logger.sensor_logger.removeHandler(handler)
 
-        app_guizero.gui_graphing.pyplot.close()
+        pyplot.close()
         self.app.destroy()
 
     def _app_menu_open_logs(self):

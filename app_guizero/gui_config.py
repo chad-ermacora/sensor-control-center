@@ -43,7 +43,7 @@ class CreateConfigWindow:
                                                 text="Enable Reset to Defaults",
                                                 command=self._enable_config_reset,
                                                 grid=[1, 1],
-                                                align="bottom")
+                                                align="top")
 
         self.button_save_apply = PushButton(self.window,
                                             text="Save &\nApply",
@@ -51,39 +51,36 @@ class CreateConfigWindow:
                                             grid=[1, 1],
                                             align="left")
 
-        self.text_spacer1 = Text(self.window,
-                                 text=" ",
-                                 grid=[1, 2],
-                                 align="left")
-
         self.text3 = Text(self.window,
                           text="Save Files To",
                           color='blue',
-                          grid=[1, 3],
+                          grid=[1, 2],
                           align="top")
-
-        self.button_save_dir = PushButton(self.window,
-                                          text="Choose Folder",
-                                          command=self._button_save_to,
-                                          grid=[1, 5],
-                                          align="bottom")
 
         self.textbox_save_to = TextBox(self.window,
                                        text='',
                                        width=50,
-                                       grid=[1, 4],
+                                       grid=[1, 3],
                                        align="bottom")
 
-        self.text_spacer3 = Text(self.window,
-                                 text=" ",
-                                 grid=[1, 6],
-                                 align="left")
+        self.button_save_dir = PushButton(self.window,
+                                          text="Choose Folder",
+                                          command=self._button_save_to,
+                                          grid=[1, 4],
+                                          align="bottom")
 
         self.text_info = Text(self.window,
                               text="Default Graph Date Range",
                               color='blue',
-                              grid=[1, 7],
+                              grid=[1, 6],
                               align="top")
+
+        self.text_spacer3 = Text(self.window,
+                                 text="YYYY-MM-DD HH:MM:SS",
+                                 size=7,
+                                 color='#CB0000',
+                                 grid=[1, 7],
+                                 align="right")
 
         self.text_start = Text(self.window,
                                text="         Start DateTime: ",

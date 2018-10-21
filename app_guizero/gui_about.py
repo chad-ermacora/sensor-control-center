@@ -19,7 +19,7 @@
 from guizero import Window, Text, TextBox
 import app_logger
 
-app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.20.1"
+app_version = "Tested on Python 3.7 / KootNet Sensors - Control Center / Ver. Alpha.20.1"
 
 
 class CreateAboutWindow:
@@ -28,7 +28,7 @@ class CreateAboutWindow:
         self.about_text = self.current_config.additional_files_directory + "/about_text.txt"
 
         self.window = Window(app,
-                             title="About KootNet Sensors - PC Control Center",
+                             title="About KootNet Sensors - Control Center",
                              width=610,
                              height=325,
                              layout="grid",
