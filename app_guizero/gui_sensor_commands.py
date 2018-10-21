@@ -16,9 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, PushButton, Text, info
-import sensor_commands
-import control_center_logger
+from guizero import Window, PushButton, Text, info, MenuBar
+import app_sensor_commands
+import app_logger
 
 
 class CreateSensorCommandsWindow:
@@ -30,6 +30,13 @@ class CreateSensorCommandsWindow:
                              height=285,
                              layout="grid",
                              visible=False)
+
+        self.app_menubar = MenuBar(self.window,
+                                   toplevel=[["Advanced"]],
+                                   options=[[["Enable Advanced Commands",
+                                              self.enable_advanced],
+                                             ["Disable Advanced Commands",
+                                              self.disable_advanced]]])
 
         self.text_select = Text(self.window,
                                 text="Check Sensor IPs from the Main Window",
@@ -116,31 +123,31 @@ class CreateSensorCommandsWindow:
 
     def upgrade_smb(self):
         """ Sends the upgrade by SMB command to the Sensor Units IP. """
-        control_center_logger.sensor_logger.debug("Sensor Upgrade - SMB")
+        app_logger.sensor_logger.debug("Sensor Upgrade - SMB")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            sensor_commands.upgrade_program_smb(ip)
+            app_sensor_commands.upgrade_program_smb(ip)
 
         info("Sensors Upgrading SMB", "Please Wait up to 30 seconds for the Services to restart")
 
     def upgrade_http(self):
         """ Sends the upgrade by HTTP command to the Sensor Units IP. """
-        control_center_logger.sensor_logger.debug("Sensor Upgrade - HTTP")
+        app_logger.sensor_logger.debug("Sensor Upgrade - HTTP")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            sensor_commands.upgrade_program_online(ip)
+            app_sensor_commands.upgrade_program_online(ip)
 
         info("Sensors Upgrading HTTP", "Please Wait up to 30 seconds for the Services to restart")
 
     def os_upgrade(self):
         """ Sends the upgrade Operating System command to the Sensor Units IP. """
-        control_center_logger.sensor_logger.debug("Sensor OS Upgrade")
+        app_logger.sensor_logger.debug("Sensor OS Upgrade")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            sensor_commands.upgrade_os_linux(ip)
+            app_sensor_commands.upgrade_os_linux(ip)
 
         info("Sensors Operating System Upgrade Started",
              "Once complete, the Sensors will automatically reboot\n"
@@ -149,49 +156,49 @@ class CreateSensorCommandsWindow:
 
     def sensor_reboot(self):
         """ Sends the reboot system command to the Sensor Units IP. """
-        control_center_logger.sensor_logger.debug("Sensor Reboot")
+        app_logger.sensor_logger.debug("Sensor Reboot")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            sensor_commands.reboot_sensor(ip)
+            app_sensor_commands.reboot_sensor(ip)
 
         info("Sensors Rebooting", "Allow up to 3 Min to reboot")
 
     def sensor_shutdown(self):
         """ Sends the shutdown system command to the Sensor Units IP. """
-        control_center_logger.sensor_logger.debug("Sensor Shutdown")
+        app_logger.sensor_logger.debug("Sensor Shutdown")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            sensor_commands.shutdown_sensor(ip)
+            app_sensor_commands.shutdown_sensor(ip)
 
         info("Sensors Shutting Down", "Allow up to 15 seconds to fully shutdown")
 
     def restart_services(self):
         """ Sends the restart services command to the Sensor Units IP. """
-        control_center_logger.sensor_logger.info(
+        app_logger.sensor_logger.info(
             "Sensor(s) Services Restarting - Please allow up to 20 Seconds to restart")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            sensor_commands.restart_services(ip)
+            app_sensor_commands.restart_services(ip)
 
         info("Sensors Services Restarting", "Please allow up to 20 Seconds to restart")
 
     def hostname_change(self):
         """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
-        control_center_logger.sensor_logger.debug("Change Sensor Hostname")
+        app_logger.sensor_logger.debug("Change Sensor Hostname")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            sensor_commands.set_hostname(ip)
+            app_sensor_commands.set_hostname(ip)
 
     def datetime_update(self):
         """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
-        control_center_logger.sensor_logger.debug("Updating Sensors DateTime")
+        app_logger.sensor_logger.debug("Updating Sensors DateTime")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            sensor_commands.set_datetime(ip)
+            app_sensor_commands.set_datetime(ip)
 
         info("Sensors DateTime Set", "Sensors Date & Time Synchronized with local Computer's")

@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import sensor_commands
+import app_sensor_commands
 import webbrowser
 import os
 import logging
@@ -59,7 +59,7 @@ class HTMLSystem:
                                   "{{CustomEnabled}}"]
 
     def get_sensor_data(self, ip):
-        sensor_data = sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
+        sensor_data = app_sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
         # Convert the sensor's system uptime of minutes to human readable day/hour.min
         sensor_data[3] = _convert_minutes_string(sensor_data[3])
 
@@ -80,7 +80,7 @@ class HTMLReadings:
                                   "{{TriggerReadings}}"]
 
     def get_sensor_data(self, ip):
-        sensor_data = sensor_commands.get_sensor_readings(ip, self.config_settings.network_timeout_data)
+        sensor_data = app_sensor_commands.get_sensor_readings(ip, self.config_settings.network_timeout_data)
 
         return sensor_data
 
@@ -105,7 +105,7 @@ class HTMLConfig:
                                   "{{CustomGyro}}"]
 
     def get_sensor_data(self, ip):
-        sensor_data = sensor_commands.get_sensor_config(ip, self.config_settings.network_timeout_data)
+        sensor_data = app_sensor_commands.get_sensor_config(ip, self.config_settings.network_timeout_data)
 
         return sensor_data
 
