@@ -15,13 +15,6 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
---------------------------------------------------------------------------
-DEBUG - Detailed information, typically of interest only when diagnosing problems. test
-INFO - Confirmation that things are working as expected.
-WARNING - An indication that something unexpected happened, or indicative of some problem in the near future
-ERROR - Due to a more serious problem, the software has not been able to perform some function.
-CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
 import app_guizero.gui_main
 import app_logger

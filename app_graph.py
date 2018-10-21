@@ -194,8 +194,8 @@ class CreateLiveGraph:
                     uptime_hours = int((float(sensor_reading) % 1440) // 60)
                     uptime_min = int(float(sensor_reading) % 60)
                     sensor_reading = str(uptime_days) + " Days / " + \
-                                     str(uptime_hours) + "." + \
-                                     str(uptime_min) + " Hours"
+                        str(uptime_hours) + "." + \
+                        str(uptime_min) + " Hours"
                 except Exception as error:
                     logger.warning(str(error))
 
