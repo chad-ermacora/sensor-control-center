@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from guizero import Window, CheckBox, PushButton, Text, TextBox, info
-from sensor_commands import set_sensor_config
+from app_sensor_commands import set_sensor_config
 
 
 class CreateSensorConfigWindow:
@@ -38,7 +38,7 @@ class CreateSensorConfigWindow:
 
         self.checkbox_db_record = CheckBox(self.window,
                                            text="Enable Database Recording",
-                                           command=self._recording_checkbox,
+                                           command=self.recording_checkbox,
                                            grid=[1, 2, 2, 1],
                                            align="left")
 
@@ -68,7 +68,7 @@ class CreateSensorConfigWindow:
 
         self.checkbox_custom = CheckBox(self.window,
                                         text="Enable Custom Variances",
-                                        command=self._custom_checkbox,
+                                        command=self.custom_checkbox,
                                         grid=[1, 5, 2, 1],
                                         align="left")
 
@@ -113,12 +113,8 @@ class CreateSensorConfigWindow:
                                             command=self.config_set,
                                             grid=[2, 14],
                                             align="right")
-        self.checkbox_db_record.value = 1
-        self._recording_checkbox()
-        self._custom_checkbox()
-        self.disable_set_config_button()
 
-    def _recording_checkbox(self):
+    def recording_checkbox(self):
         """ Enables or disables the timing Sensor Configuration Window text boxes. """
         if self.checkbox_db_record.value:
             self.textbox_interval.enable()
@@ -127,7 +123,7 @@ class CreateSensorConfigWindow:
             self.textbox_interval.disable()
             self.textbox_trigger.disable()
 
-    def _custom_checkbox(self):
+    def custom_checkbox(self):
         """ Enables or disables the custom Sensor Configuration Window text boxes. """
         if self.checkbox_custom.value:
             self.textbox_custom_acc.enable()
@@ -153,9 +149,3 @@ class CreateSensorConfigWindow:
             set_sensor_config(ip, config_settings_str)
 
         info("Sensors Configuration Set", "Configurations Set")
-
-    def enable_set_config_button(self):
-        self.button_set_config.enable()
-
-    def disable_set_config_button(self):
-        self.button_set_config.disable()

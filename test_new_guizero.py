@@ -23,11 +23,12 @@ WARNING - An indication that something unexpected happened, or indicative of som
 ERROR - Due to a more serious problem, the software has not been able to perform some function.
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
-import gui_guizero.main_app
-import control_center_logger
+import app_guizero.gui_main
+import app_logger
 
-new_app = gui_guizero.main_app.CreateMainWindow()
+guizero_app = app_guizero.gui_main.CreateMainWindow()
+guizero_app.app_custom_configurations()
 
 # Start the App
-control_center_logger.app_logger.info('KootNet Sensors - PC Control Center - Started')
-new_app.app.display()
+app_logger.app_logger.info('KootNet Sensors - PC Control Center - Started')
+guizero_app.app.display()

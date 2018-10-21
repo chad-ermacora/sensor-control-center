@@ -24,7 +24,7 @@ ERROR - Due to a more serious problem, the software has not been able to perform
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
 import app_config
-import sensor_commands
+import app_sensor_commands
 import app_reports
 import app_graph
 import os
@@ -162,7 +162,7 @@ def app_menu_download_interval_db():
 
         if download_to_location is not "" and download_to_location is not None:
             for ip in ip_list:
-                threads.append(Thread(target=sensor_commands.download_interval_db,
+                threads.append(Thread(target=app_sensor_commands.download_interval_db,
                                       args=[ip, download_to_location]))
 
             for thread in threads:
@@ -187,7 +187,7 @@ def app_menu_download_trigger_db():
 
         if download_to_location is not "" and download_to_location is not None:
             for ip in ip_list:
-                threads.append(Thread(target=sensor_commands.download_trigger_db,
+                threads.append(Thread(target=app_sensor_commands.download_trigger_db,
                                       args=[ip, download_to_location]))
 
             for thread in threads:
@@ -266,7 +266,7 @@ def app_check_all_ip2():
 
 def _worker_sensor_check(ip):
     """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
-    data = [ip, sensor_commands.check_sensor_status(ip, current_config.network_timeout_sensor_check)]
+    data = [ip, app_sensor_commands.check_sensor_status(ip, current_config.network_timeout_sensor_check)]
     data_queue.put(data)
 
 
@@ -608,7 +608,7 @@ def commands_upgrade_smb():
     ip_list = get_verified_ip_list()
 
     for ip in ip_list:
-        sensor_commands.upgrade_program_smb(ip)
+        app_sensor_commands.upgrade_program_smb(ip)
 
     info("Sensors Upgrading SMB", "Please Wait up to 30 seconds for the Services to restart")
 
@@ -619,7 +619,7 @@ def commands_upgrade_http():
     ip_list = get_verified_ip_list()
 
     for ip in ip_list:
-        sensor_commands.upgrade_program_online(ip)
+        app_sensor_commands.upgrade_program_online(ip)
 
     info("Sensors Upgrading HTTP", "Please Wait up to 30 seconds for the Services to restart")
 
@@ -630,7 +630,7 @@ def commands_os_upgrade():
     ip_list = get_verified_ip_list()
 
     for ip in ip_list:
-        sensor_commands.upgrade_os_linux(ip)
+        app_sensor_commands.upgrade_os_linux(ip)
 
     info("Sensors Operating System Upgrade Started",
          "Once complete, the Sensors will automatically reboot\n"
@@ -644,7 +644,7 @@ def commands_sensor_reboot():
     ip_list = get_verified_ip_list()
 
     for ip in ip_list:
-        sensor_commands.reboot_sensor(ip)
+        app_sensor_commands.reboot_sensor(ip)
 
     info("Sensors Rebooting", "Allow up to 3 Min to reboot")
 
@@ -655,7 +655,7 @@ def commands_sensor_shutdown():
     ip_list = get_verified_ip_list()
 
     for ip in ip_list:
-        sensor_commands.shutdown_sensor(ip)
+        app_sensor_commands.shutdown_sensor(ip)
 
     info("Sensors Shutting Down", "Allow up to 15 seconds to fully shutdown")
 
@@ -666,7 +666,7 @@ def commands_restart_services():
     ip_list = get_verified_ip_list()
 
     for ip in ip_list:
-        sensor_commands.restart_services(ip)
+        app_sensor_commands.restart_services(ip)
 
     info("Sensors Services Restarting", "Please allow up to 20 Seconds to restart")
 
@@ -677,7 +677,7 @@ def commands_hostname_change():
     ip_list = get_verified_ip_list()
 
     for ip in ip_list:
-        sensor_commands.set_hostname(ip)
+        app_sensor_commands.set_hostname(ip)
 
 
 def commands_datetime_update():
@@ -686,7 +686,7 @@ def commands_datetime_update():
     ip_list = get_verified_ip_list()
 
     for ip in ip_list:
-        sensor_commands.set_datetime(ip)
+        app_sensor_commands.set_datetime(ip)
 
     info("Sensors DateTime Set", "Sensors Date & Time Synchronized with local Computer's")
 
@@ -726,7 +726,7 @@ def sensor_config_set():
         str(sensor_config_textbox_custom_gyro.value)
 
     for ip in ip_list:
-        sensor_commands.set_sensor_config(ip, config_settings_str)
+        app_sensor_commands.set_sensor_config(ip, config_settings_str)
 
     info("Sensors Configuration Set", "Configurations Set")
 

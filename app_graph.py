@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import sensor_commands
+import app_sensor_commands
 import plotly
 import sqlite3
 import os
@@ -108,17 +108,17 @@ class CreateLiveGraph:
 
     def _update_graph(self, x_frame):
         current_time = str(datetime.time(datetime.now()))[:8]
-        sensor_name = sensor_commands.get_sensor_hostname(self.ip,
-                                                          self.current_config.network_timeout_data)
+        sensor_name = app_sensor_commands.get_sensor_hostname(self.ip,
+                                                              self.current_config.network_timeout_data)
         try:
             if self.sensor_type is "SensorUpTime":
-                sensor_reading = sensor_commands.get_sensor_uptime(self.ip,
-                                                                   self.current_config.network_timeout_data)
+                sensor_reading = app_sensor_commands.get_sensor_uptime(self.ip,
+                                                                       self.current_config.network_timeout_data)
                 sensor_type_name = "Sensor Uptime"
                 measurement_type = ""
             elif self.sensor_type is "SystemTemp":
-                sensor_reading = sensor_commands.get_sensor_cpu_temperature(self.ip,
-                                                                            self.current_config.network_timeout_data)
+                sensor_reading = app_sensor_commands.get_sensor_cpu_temperature(self.ip,
+                                                                                self.current_config.network_timeout_data)
 
                 try:
                     sensor_reading = round(float(sensor_reading), 3)
@@ -128,8 +128,8 @@ class CreateLiveGraph:
                 sensor_type_name = "CPU Temperature"
                 measurement_type = " °C"
             elif self.sensor_type is "EnvironmentTemp":
-                sensor_reading = sensor_commands.get_sensor_temperature(self.ip,
-                                                                        self.current_config.network_timeout_data)
+                sensor_reading = app_sensor_commands.get_sensor_temperature(self.ip,
+                                                                            self.current_config.network_timeout_data)
 
                 try:
                     sensor_reading = round(float(sensor_reading) +
@@ -140,13 +140,13 @@ class CreateLiveGraph:
                 sensor_type_name = "Environmental Temperature"
                 measurement_type = " °C"
             elif self.sensor_type is "Pressure":
-                sensor_reading = sensor_commands.get_sensor_pressure(self.ip,
-                                                                     self.current_config.network_timeout_data)
+                sensor_reading = app_sensor_commands.get_sensor_pressure(self.ip,
+                                                                         self.current_config.network_timeout_data)
                 sensor_type_name = "Pressure"
                 measurement_type = " hPa"
             elif self.sensor_type is "Humidity":
-                sensor_reading = sensor_commands.get_sensor_humidity(self.ip,
-                                                                     self.current_config.network_timeout_data)
+                sensor_reading = app_sensor_commands.get_sensor_humidity(self.ip,
+                                                                         self.current_config.network_timeout_data)
 
                 try:
                     sensor_reading = int(round(float(sensor_reading), 0))
@@ -156,13 +156,13 @@ class CreateLiveGraph:
                 sensor_type_name = "Humidity"
                 measurement_type = " %RH"
             elif self.sensor_type is "Lumen":
-                sensor_reading = sensor_commands.get_sensor_lumen(self.ip,
-                                                                  self.current_config.network_timeout_data)
+                sensor_reading = app_sensor_commands.get_sensor_lumen(self.ip,
+                                                                      self.current_config.network_timeout_data)
                 sensor_type_name = "Lumen"
                 measurement_type = " Lumen"
             elif self.sensor_type[0] == "Red":
-                sensor_reading = sensor_commands.get_sensor_rgb(self.ip,
-                                                                self.current_config.network_timeout_data)
+                sensor_reading = app_sensor_commands.get_sensor_rgb(self.ip,
+                                                                    self.current_config.network_timeout_data)
                 sensor_type_name = "RGB"
                 measurement_type = ""
             elif self.sensor_type[0] == "Acc_X":

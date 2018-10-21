@@ -21,7 +21,7 @@ from tkinter import filedialog
 from matplotlib import pyplot
 import app_config
 import app_graph
-import control_center_logger
+import app_logger
 
 
 class CreateGraphingWindow:
@@ -356,7 +356,7 @@ class CreateGraphingWindow:
 
             app_graph.CreateLiveGraph(checkbox, ip, self.current_config)
         except Exception as error:
-            control_center_logger.app_logger.warning("No sensors selected in the main window - " + str(error))
+            app_logger.app_logger.warning("No sensors selected in the main window - " + str(error))
             warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
                                   "& Sensor Type from the Graph window")
 
@@ -396,7 +396,7 @@ class CreateGraphingWindow:
                 column_checkboxes.append("Gyro_Y")
                 column_checkboxes.append("Gyro_Z")
 
-        control_center_logger.app_logger.debug(str(column_checkboxes))
+        app_logger.app_logger.debug(str(column_checkboxes))
         return column_checkboxes
 
     def _enable_all_checkboxes(self):

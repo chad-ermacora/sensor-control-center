@@ -98,22 +98,23 @@ def get_from_file():
         config_settings.save_to = tmp_config_settings[0]
         config_settings.graph_start = tmp_config_settings[1]
         config_settings.graph_end = tmp_config_settings[2]
-        config_settings.datetime_offset = tmp_config_settings[3]
-        config_settings.sql_queries_skip = tmp_config_settings[4]
-        config_settings.temperature_offset = tmp_config_settings[5]
-        config_settings.live_refresh = tmp_config_settings[6]
-        config_settings.network_timeout_sensor_check = tmp_config_settings[7]
-        config_settings.network_timeout_data = tmp_config_settings[8]
+        config_settings.live_refresh = tmp_config_settings[3]
+        config_settings.datetime_offset = tmp_config_settings[4]
+        config_settings.sql_queries_skip = tmp_config_settings[5]
+        config_settings.temperature_offset = tmp_config_settings[6]
+        config_settings.live_refresh = tmp_config_settings[7]
+        config_settings.network_timeout_sensor_check = tmp_config_settings[8]
+        config_settings.network_timeout_data = tmp_config_settings[9]
 
         try:
-            config_settings.allow_advanced_controls = int(tmp_config_settings[9])
+            config_settings.allow_advanced_controls = int(tmp_config_settings[10])
         except Exception as error:
             logger.error("Setting Enable Sensor Shutdown/Reboot - Using Default: " + str(error))
 
         count = 0
         while count < 16:
             try:
-                tmp_setting_location = 10 + count
+                tmp_setting_location = 11 + count
                 config_settings.ip_list[count] = tmp_config_settings[tmp_setting_location]
                 count = count + 1
             except Exception as error:
@@ -157,6 +158,13 @@ def check_config(config_settings):
     except Exception as error:
         logger.error("Setting Graph End Date Range - BAD - Using Default - " + str(error))
         config_settings.graph_end = default_settings.graph_end
+
+    try:
+        config_settings.live_refresh = int(config_settings.live_refresh)
+        logger.debug("Setting Graph End Date Range - OK")
+    except Exception as error:
+        logger.error("Setting Graph End Date Range - BAD - Using Default - " + str(error))
+        config_settings.live_refresh = default_settings.live_refresh
 
     try:
         config_settings.datetime_offset = float(config_settings.datetime_offset)
@@ -225,6 +233,7 @@ def save_config_to_file(config_settings):
     var_final_write = str(config_settings.save_to)
     var_final_write = var_final_write + ',' + str(config_settings.graph_start)
     var_final_write = var_final_write + ',' + str(config_settings.graph_end)
+    var_final_write = var_final_write + ',' + str(config_settings.live_refresh)
     var_final_write = var_final_write + ',' + str(config_settings.datetime_offset)
     var_final_write = var_final_write + ',' + str(config_settings.sql_queries_skip)
     var_final_write = var_final_write + ',' + str(config_settings.temperature_offset)

@@ -1,8 +1,8 @@
 from guizero import CheckBox, TextBox
 from threading import Thread
 from queue import Queue
-import sensor_commands
-import control_center_logger
+import app_sensor_commands
+import app_logger
 
 
 class CreateIPSelector:
@@ -12,7 +12,7 @@ class CreateIPSelector:
         # Sensor's Online / Offline IP List Selection 1
         self.app_checkbox_all_column1 = CheckBox(app,
                                                  text="Check ALL Column 1",
-                                                 command=self._app_check_all_ip1,
+                                                 command=self.app_check_all_ip1,
                                                  grid=[1, 1, 3, 1],
                                                  align="left")
 
@@ -107,7 +107,7 @@ class CreateIPSelector:
         # Sensor's Online / Offline IP List Selection 2
         self.app_checkbox_all_column2 = CheckBox(app,
                                                  text="Check ALL Column 2",
-                                                 command=self._app_check_all_ip2,
+                                                 command=self.app_check_all_ip2,
                                                  grid=[3, 1, 3, 1],
                                                  align="left")
 
@@ -199,6 +199,48 @@ class CreateIPSelector:
                                         grid=[4, 9],
                                         align="left")
 
+    def app_check_all_ip1(self):
+        """ Check or uncheck all IP checkboxes on the 1st column. """
+        if self.app_checkbox_all_column1.value == 1:
+            self.app_checkbox_ip1.value = 1
+            self.app_checkbox_ip2.value = 1
+            self.app_checkbox_ip3.value = 1
+            self.app_checkbox_ip4.value = 1
+            self.app_checkbox_ip5.value = 1
+            self.app_checkbox_ip6.value = 1
+            self.app_checkbox_ip7.value = 1
+            self.app_checkbox_ip8.value = 1
+        elif self.app_checkbox_all_column1.value == 0:
+            self.app_checkbox_ip1.value = 0
+            self.app_checkbox_ip2.value = 0
+            self.app_checkbox_ip3.value = 0
+            self.app_checkbox_ip4.value = 0
+            self.app_checkbox_ip5.value = 0
+            self.app_checkbox_ip6.value = 0
+            self.app_checkbox_ip7.value = 0
+            self.app_checkbox_ip8.value = 0
+
+    def app_check_all_ip2(self):
+        """ Check or uncheck all IP checkboxes on the 2nd column. """
+        if self.app_checkbox_all_column2.value == 1:
+            self.app_checkbox_ip9.value = 1
+            self.app_checkbox_ip10.value = 1
+            self.app_checkbox_ip11.value = 1
+            self.app_checkbox_ip12.value = 1
+            self.app_checkbox_ip13.value = 1
+            self.app_checkbox_ip14.value = 1
+            self.app_checkbox_ip15.value = 1
+            self.app_checkbox_ip16.value = 1
+        elif self.app_checkbox_all_column2.value == 0:
+            self.app_checkbox_ip9.value = 0
+            self.app_checkbox_ip10.value = 0
+            self.app_checkbox_ip11.value = 0
+            self.app_checkbox_ip12.value = 0
+            self.app_checkbox_ip13.value = 0
+            self.app_checkbox_ip14.value = 0
+            self.app_checkbox_ip15.value = 0
+            self.app_checkbox_ip16.value = 0
+
     def set_ip_list(self, new_config):
 
         self.app_textbox_ip1.value = new_config.ip_list[0]
@@ -237,13 +279,13 @@ class CreateIPSelector:
                             self.app_textbox_ip15.value,
                             self.app_textbox_ip16.value]
 
-        control_center_logger.app_logger.debug("IP List Generated from All Boxes")
+        app_logger.app_logger.debug("IP List Generated from All Boxes")
 
         return checkbox_ip_list
 
     def _worker_sensor_check(self, ip):
         """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
-        data = [ip, sensor_commands.check_sensor_status(ip, self.current_config.network_timeout_sensor_check)]
+        data = [ip, app_sensor_commands.check_sensor_status(ip, self.current_config.network_timeout_sensor_check)]
         self.data_queue.put(data)
 
     def get_verified_ip_list(self):
@@ -352,7 +394,7 @@ class CreateIPSelector:
                 self.app_checkbox_ip16.value = var_checkbox
 
         sensor_data_pool.clear()
-        control_center_logger.app_logger.debug("Checked IP's Processed")
+        app_logger.app_logger.debug("Checked IP's Processed")
         return ip_list_final
 
     # Returns selected IP's from Main App Window & Re-Sets unselected IP background to white
@@ -440,47 +482,5 @@ class CreateIPSelector:
         else:
             self.app_textbox_ip16.bg = 'white'
 
-        control_center_logger.app_logger.debug("IP List Generated from Checked Boxes")
+        app_logger.app_logger.debug("IP List Generated from Checked Boxes")
         return checkbox_ip_list
-
-    def _app_check_all_ip1(self):
-        """ Check or uncheck all IP checkboxes on the 1st column. """
-        if self.app_checkbox_all_column1.value == 1:
-            self.app_checkbox_ip1.value = 1
-            self.app_checkbox_ip2.value = 1
-            self.app_checkbox_ip3.value = 1
-            self.app_checkbox_ip4.value = 1
-            self.app_checkbox_ip5.value = 1
-            self.app_checkbox_ip6.value = 1
-            self.app_checkbox_ip7.value = 1
-            self.app_checkbox_ip8.value = 1
-        elif self.app_checkbox_all_column1.value == 0:
-            self.app_checkbox_ip1.value = 0
-            self.app_checkbox_ip2.value = 0
-            self.app_checkbox_ip3.value = 0
-            self.app_checkbox_ip4.value = 0
-            self.app_checkbox_ip5.value = 0
-            self.app_checkbox_ip6.value = 0
-            self.app_checkbox_ip7.value = 0
-            self.app_checkbox_ip8.value = 0
-
-    def _app_check_all_ip2(self):
-        """ Check or uncheck all IP checkboxes on the 2nd column. """
-        if self.app_checkbox_all_column2.value == 1:
-            self.app_checkbox_ip9.value = 1
-            self.app_checkbox_ip10.value = 1
-            self.app_checkbox_ip11.value = 1
-            self.app_checkbox_ip12.value = 1
-            self.app_checkbox_ip13.value = 1
-            self.app_checkbox_ip14.value = 1
-            self.app_checkbox_ip15.value = 1
-            self.app_checkbox_ip16.value = 1
-        elif self.app_checkbox_all_column2.value == 0:
-            self.app_checkbox_ip9.value = 0
-            self.app_checkbox_ip10.value = 0
-            self.app_checkbox_ip11.value = 0
-            self.app_checkbox_ip12.value = 0
-            self.app_checkbox_ip13.value = 0
-            self.app_checkbox_ip14.value = 0
-            self.app_checkbox_ip15.value = 0
-            self.app_checkbox_ip16.value = 0

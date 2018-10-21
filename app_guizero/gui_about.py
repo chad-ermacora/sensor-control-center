@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from guizero import Window, Text, TextBox
-import control_center_logger
+import app_logger
 
 app_version = "Tested on Python 3.7 / KootNet Sensors - PC Control Center / Ver. Alpha.20.1"
 
@@ -47,6 +47,7 @@ class CreateAboutWindow:
                                      multiline=True,
                                      align="right")
         self._set_about_text()
+        self.about_textbox.disable()
 
     def _set_about_text(self):
         """ Loads and sets the about text from file. """
@@ -55,6 +56,6 @@ class CreateAboutWindow:
             new_text = local_file.read()
             local_file.close()
             self.about_textbox.value = new_text
-            control_center_logger.app_logger.debug("About Text Load - OK")
+            app_logger.app_logger.debug("About Text Load - OK")
         except Exception as error:
-            control_center_logger.app_logger.error("About Text Load - Failed: " + str(error))
+            app_logger.app_logger.error("About Text Load - Failed: " + str(error))
