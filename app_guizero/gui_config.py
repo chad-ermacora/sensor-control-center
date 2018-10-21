@@ -152,8 +152,8 @@ class CreateConfigWindow:
         self.text_temperature_offset = Text(self.window,
                                             text="Environment Temperature Offset in °C",
                                             color='blue',
-                                            grid=[2, 5],
-                                            align="top")
+                                            grid=[2, 4],
+                                            align="bottom")
 
         self.textbox_temperature_offset = TextBox(self.window,
                                                   text="",
