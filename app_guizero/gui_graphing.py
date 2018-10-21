@@ -322,19 +322,19 @@ class CreateGraphingWindow:
         new_data = app_graph.CreateGraphData()
         new_data.db_location = filedialog.askopenfilename()
 
-        self.current_config.start = self.textbox_start.value
-        self.current_config.end = self.textbox_end.value
+        self.current_config.graph_start = self.textbox_start.value
+        self.current_config.graph_end = self.textbox_end.value
         self.current_config.sql_queries_skip = self.textbox_sql_skip.value
         self.current_config.temperature_offset = self.textbox_temperature_offset.value
 
         app_config.check_config(self.current_config)
         self.set_config()
 
-        new_data.save_file_to = self.current_config.save_to
-        new_data.start = self.current_config.start
-        new_data.end = self.current_config.end
-        new_data.time_offset = self.current_config.datetime_offset
-        new_data.skip_sql = self.current_config.sql_queries_skip
+        new_data.save_to = self.current_config.save_to
+        new_data.graph_start = self.current_config.graph_start
+        new_data.graph_end = self.current_config.graph_end
+        new_data.datetime_offset = self.current_config.datetime_offset
+        new_data.sql_queries_skip = self.current_config.sql_queries_skip
         new_data.temperature_offset = self.current_config.temperature_offset
         new_data.graph_columns = self._get_column_checkboxes()
 

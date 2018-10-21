@@ -52,12 +52,13 @@ class CreateGraphData:
 
     def __init__(self):
         self.db_location = ""
-        self.save_file_to = ""
-        self.skip_sql = 12
-        self.temperature_offset = -4.5
-        self.time_offset = 0.0
+        self.save_to = ""
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
+        self.datetime_offset = 0.0
+        self.sql_queries_skip = 12
+        self.temperature_offset = -4.5
+
         self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
                               "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
         self.max_sql_queries = 200000
@@ -223,7 +224,7 @@ def start_graph_interval(graph_data):
     logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
 
     # Adjust dates to Database timezone in UTC 0
-    new_time_offset = int(graph_data.time_offset) * -1
+    new_time_offset = int(graph_data.datetime_offset) * -1
     get_sql_graph_start = _adjust_interval_datetime(graph_data.graph_start, new_time_offset)
     get_sql_graph_end = _adjust_interval_datetime(graph_data.graph_end, new_time_offset)
     for var_column in graph_data.graph_columns:
@@ -246,7 +247,7 @@ def start_graph_interval(graph_data):
         if str(var_column) == "DateTime":
             count = 0
             for data in sql_column_data:
-                sql_column_data[count] = _adjust_interval_datetime(data, int(graph_data.time_offset))
+                sql_column_data[count] = _adjust_interval_datetime(data, int(graph_data.datetime_offset))
                 count = count + 1
 
             graph_data.sql_data_time = sql_column_data
@@ -298,7 +299,7 @@ def start_graph_trigger(graph_data):
     logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
 
     # Adjust dates to Database timezone in UTC 0
-    new_time_offset = int(graph_data.time_offset) * -1
+    new_time_offset = int(graph_data.datetime_offset) * -1
     get_sql_graph_start = _adjust_interval_datetime(graph_data.graph_start, new_time_offset)
     get_sql_graph_end = _adjust_interval_datetime(graph_data.graph_end, new_time_offset)
 
@@ -321,7 +322,7 @@ def start_graph_trigger(graph_data):
         if str(var_column) == "DateTime":
             count = 0
             for data in sql_column_data:
-                sql_column_data[count] = _adjust_trigger_datetime(data, int(graph_data.time_offset))
+                sql_column_data[count] = _adjust_trigger_datetime(data, int(graph_data.datetime_offset))
                 count = count + 1
 
             graph_data.sql_data_time = sql_column_data
@@ -354,7 +355,7 @@ def start_graph_trigger(graph_data):
     logger.debug("Trigger DB Graph Complete")
 
 
-def _adjust_interval_datetime(var_datetime, time_offset):
+def _adjust_interval_datetime(var_datetime, datetime_offset):
     """
     Adjusts the provided datetime by the provided hour offset and returns the result.
 
@@ -366,7 +367,7 @@ def _adjust_interval_datetime(var_datetime, time_offset):
         logger.error("Unable to Convert datetime string to datetime format - " + str(error))
 
     try:
-        new_time = var_datetime + timedelta(hours=time_offset)
+        new_time = var_datetime + timedelta(hours=datetime_offset)
     except Exception as error:
         logger.error("Unable to convert Hour Offset to int - " + str(error))
         new_time = var_datetime
@@ -375,7 +376,7 @@ def _adjust_interval_datetime(var_datetime, time_offset):
     return str(new_time)
 
 
-def _adjust_trigger_datetime(var_datetime, time_offset):
+def _adjust_trigger_datetime(var_datetime, datetime_offset):
     """
     Adjusts the provided datetime by the provided hour offset and returns the result.
 
@@ -395,7 +396,7 @@ def _adjust_trigger_datetime(var_datetime, time_offset):
             logger.error("Unable to Convert Interval datetime string to datetime format - " + str(error))
 
     try:
-        new_time = var_datetime + timedelta(hours=time_offset)
+        new_time = var_datetime + timedelta(hours=datetime_offset)
     except Exception as error:
         logger.error("Unable to convert Hour Offset to int - " + str(error))
         new_time = var_datetime
@@ -417,7 +418,7 @@ def _get_sql_data(graph_interval_data, sql_command):
         count = 0
         skip_count = 0
         for data in sql_column_data:
-            if skip_count >= int(graph_interval_data.skip_sql):
+            if skip_count >= int(graph_interval_data.sql_queries_skip):
                 return_data.append(str(data)[2:-3])
                 skip_count = 0
 
@@ -641,7 +642,7 @@ def _plotly_graph(graph_interval_data):
             fig['layout'].update(height=2048)
 
         try:
-            plotly.offline.plot(fig, filename=graph_interval_data.save_file_to + 'SensorGraph.html', auto_open=True)
+            plotly.offline.plot(fig, filename=graph_interval_data.save_to + 'SensorGraph.html', auto_open=True)
             logger.debug("Graph Creation - OK")
         except Exception as error:
             logger.error("Graph Creation - Failed - " + str(error))
