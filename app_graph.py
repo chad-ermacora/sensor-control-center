@@ -19,36 +19,18 @@
 import app_sensor_commands
 import plotly
 import sqlite3
-import os
-import logging
-from logging.handlers import RotatingFileHandler
+import app_logger
 from datetime import datetime, timedelta
 from plotly import tools, graph_objs as go
 from matplotlib import pyplot, animation, style
 from guizero import warn
-
-script_directory = str(os.path.dirname(os.path.realpath(__file__)))
-
-logger = logging.getLogger(__name__)
-
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
-
-file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
-file_handler.setFormatter(formatter)
-
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
 
 style.use("dark_background")
 
 
 class CreateGraphData:
     """ Creates an object to hold all the data needed for a graph. """
-    logger.debug("CreateGraphData Instance Created")
+    app_logger.app_logger.debug("CreateGraphData Instance Created")
 
     def __init__(self):
         self.db_location = ""
@@ -124,7 +106,7 @@ class CreateLiveGraph:
                 try:
                     sensor_reading = round(float(sensor_reading), 3)
                 except Exception as error:
-                    logger.warning(str(error))
+                    app_logger.app_logger.warning(str(error))
 
                 sensor_type_name = "CPU Temperature"
                 measurement_type = " °C"
@@ -136,7 +118,7 @@ class CreateLiveGraph:
                     sensor_reading = round(float(sensor_reading) +
                                            float(self.current_config.temperature_offset), 3)
                 except Exception as error:
-                    logger.warning(str(error))
+                    app_logger.app_logger.warning(str(error))
 
                 sensor_type_name = "Environmental Temperature"
                 measurement_type = " °C"
@@ -152,7 +134,7 @@ class CreateLiveGraph:
                 try:
                     sensor_reading = int(round(float(sensor_reading), 0))
                 except Exception as error:
-                    logger.warning(str(error))
+                    app_logger.app_logger.warning(str(error))
 
                 sensor_type_name = "Humidity"
                 measurement_type = " %RH"
@@ -197,7 +179,7 @@ class CreateLiveGraph:
                         str(uptime_hours) + "." + \
                         str(uptime_min) + " Hours"
                 except Exception as error:
-                    logger.warning(str(error))
+                    app_logger.app_logger.warning(str(error))
 
             pyplot.title("Sensor: " + sensor_name + "  ||  IP: " + self.ip)
             pyplot.xlabel("Start Time: " + self.first_datetime +
@@ -212,16 +194,16 @@ class CreateLiveGraph:
             pyplot.ylabel(sensor_type_name + measurement_type)
             pyplot.xticks([])
         except Exception as error:
-            logger.error("Live Graph - Invalid Sensor Data: " + str(error))
+            app_logger.app_logger.error("Live Graph - Invalid Sensor Data: " + str(error))
 
 
 def start_graph_interval(graph_data):
     graph_data.graph_table = "IntervalData"
-    logger.debug("SQL Columns: " + str(graph_data.graph_columns))
-    logger.debug("SQL Table(s): " + str(graph_data.graph_table))
-    logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
-    logger.debug("SQL End DateTime: " + str(graph_data.graph_end))
-    logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
+    app_logger.app_logger.debug("SQL Columns: " + str(graph_data.graph_columns))
+    app_logger.app_logger.debug("SQL Table(s): " + str(graph_data.graph_table))
+    app_logger.app_logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
+    app_logger.app_logger.debug("SQL End DateTime: " + str(graph_data.graph_end))
+    app_logger.app_logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
 
     # Adjust dates to Database timezone in UTC 0
     new_time_offset = int(graph_data.datetime_offset) * -1
@@ -268,7 +250,7 @@ def start_graph_interval(graph_data):
                     count = count + 1
                 except Exception as error:
                     count = count + 1
-                    logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
+                    app_logger.app_logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
 
             graph_data.sql_data_hat_temp = sql_column_data
 
@@ -285,18 +267,18 @@ def start_graph_interval(graph_data):
         elif str(var_column) == "Blue":
             graph_data.sql_data_blue = sql_column_data
         else:
-            logger.error(var_column + " - Does Not Exist")
+            app_logger.app_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
-    logger.debug("Interval DB Graph Complete")
+    app_logger.app_logger.debug("Interval DB Graph Complete")
 
 
 def start_graph_trigger(graph_data):
     graph_data.graph_table = "TriggerData"
-    logger.debug("SQL Columns: " + str(graph_data.graph_columns))
-    logger.debug("SQL Table(s): " + str(graph_data.graph_table))
-    logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
-    logger.debug("SQL End DateTime: " + str(graph_data.graph_end))
-    logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
+    app_logger.app_logger.debug("SQL Columns: " + str(graph_data.graph_columns))
+    app_logger.app_logger.debug("SQL Table(s): " + str(graph_data.graph_table))
+    app_logger.app_logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
+    app_logger.app_logger.debug("SQL End DateTime: " + str(graph_data.graph_end))
+    app_logger.app_logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
 
     # Adjust dates to Database timezone in UTC 0
     new_time_offset = int(graph_data.datetime_offset) * -1
@@ -350,9 +332,9 @@ def start_graph_trigger(graph_data):
         elif str(var_column) == "Gyro_Z":
             graph_data.sql_data_gyro_z = sql_column_data
         else:
-            logger.error(var_column + " - Does Not Exist")
+            app_logger.app_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
-    logger.debug("Trigger DB Graph Complete")
+    app_logger.app_logger.debug("Trigger DB Graph Complete")
 
 
 def _adjust_interval_datetime(var_datetime, datetime_offset):
@@ -364,15 +346,15 @@ def _adjust_interval_datetime(var_datetime, datetime_offset):
     try:
         var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
     except Exception as error:
-        logger.error("Unable to Convert datetime string to datetime format - " + str(error))
+        app_logger.app_logger.error("Unable to Convert datetime string to datetime format - " + str(error))
 
     try:
         new_time = var_datetime + timedelta(hours=datetime_offset)
     except Exception as error:
-        logger.error("Unable to convert Hour Offset to int - " + str(error))
+        app_logger.app_logger.error("Unable to convert Hour Offset to int - " + str(error))
         new_time = var_datetime
 
-    logger.debug("Adjusted datetime: " + str(new_time))
+    app_logger.app_logger.debug("Adjusted datetime: " + str(new_time))
     return str(new_time)
 
 
@@ -388,20 +370,20 @@ def _adjust_trigger_datetime(var_datetime, datetime_offset):
             tmp_ms = str(var_datetime)[-4:]
             var_datetime = datetime.strptime(str(var_datetime)[:-4], "%Y-%m-%d %H:%M:%S")
         except Exception as error:
-            logger.error("Unable to Convert Trigger datetime string to datetime format - " + str(error))
+            app_logger.app_logger.error("Unable to Convert Trigger datetime string to datetime format - " + str(error))
     else:
         try:
             var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
         except Exception as error:
-            logger.error("Unable to Convert Interval datetime string to datetime format - " + str(error))
+            app_logger.app_logger.error("Unable to Convert Interval datetime string to datetime format - " + str(error))
 
     try:
         new_time = var_datetime + timedelta(hours=datetime_offset)
     except Exception as error:
-        logger.error("Unable to convert Hour Offset to int - " + str(error))
+        app_logger.app_logger.error("Unable to convert Hour Offset to int - " + str(error))
         new_time = var_datetime
 
-    logger.debug("Adjusted datetime: " + str(new_time))
+    app_logger.app_logger.debug("Adjusted datetime: " + str(new_time))
     return str(new_time) + tmp_ms
 
 
@@ -428,10 +410,10 @@ def _get_sql_data(graph_interval_data, sql_command):
         c.close()
         conn.close()
     except Exception as error:
-        logger.error("DB Error: " + str(error))
+        app_logger.app_logger.error("DB Error: " + str(error))
 
-    logger.debug("SQL execute Command: " + str(sql_command))
-    logger.debug("SQL Column Data Length: " + str(len(return_data)))
+    app_logger.app_logger.debug("SQL execute Command: " + str(sql_command))
+    app_logger.app_logger.debug("SQL Column Data Length: " + str(len(return_data)))
     return return_data
 
 
@@ -470,7 +452,7 @@ def _plotly_graph(graph_interval_data):
 
             graph_collection.append([trace_sensor_name, row_count, 1])
             sub_plots.append(tmp_sensor_name)
-            logger.debug("Graph Sensor Sensor Name Added")
+            app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
 
         if len(graph_interval_data.sql_data_up_time) > 1:
             row_count = row_count + 1
@@ -481,7 +463,7 @@ def _plotly_graph(graph_interval_data):
 
             graph_collection.append([trace_uptime, row_count, 1])
             sub_plots.append('Sensor Uptime')
-            logger.debug("Graph Sensor Uptime Added")
+            app_logger.app_logger.debug("Graph Sensor Uptime Added")
 
         if len(graph_interval_data.sql_data_cpu_temp) > 1 or len(graph_interval_data.sql_data_hat_temp) > 1:
             row_count = row_count + 1
@@ -497,7 +479,7 @@ def _plotly_graph(graph_interval_data):
             graph_collection.append([trace_cpu_temp, row_count, 1])
             graph_collection.append([trace_hat_temp, row_count, 1])
             sub_plots.append('CPU / Environmental Temp')
-            logger.debug("Graph CPU / Environmental Temp Added")
+            app_logger.app_logger.debug("Graph CPU / Environmental Temp Added")
 
         if len(graph_interval_data.sql_data_pressure) > 2:
             row_count = row_count + 1
@@ -508,7 +490,7 @@ def _plotly_graph(graph_interval_data):
 
             graph_collection.append([trace_pressure, row_count, 1])
             sub_plots.append('Pressure hPa')
-            logger.debug("Graph Pressure hPa Added")
+            app_logger.app_logger.debug("Graph Pressure hPa Added")
 
         if len(graph_interval_data.sql_data_humidity) > 2:
             row_count = row_count + 1
@@ -519,7 +501,7 @@ def _plotly_graph(graph_interval_data):
 
             graph_collection.append([trace_humidity, row_count, 1])
             sub_plots.append('Humidity')
-            logger.debug("Graph Humidity Added")
+            app_logger.app_logger.debug("Graph Humidity Added")
 
         if len(graph_interval_data.sql_data_lumen) > 2:
             row_count = row_count + 1
@@ -531,7 +513,7 @@ def _plotly_graph(graph_interval_data):
 
             graph_collection.append([trace_lumen, row_count, 1])
             sub_plots.append('Lumen')
-            logger.debug("Graph Lumen Added")
+            app_logger.app_logger.debug("Graph Lumen Added")
 
         if len(graph_interval_data.sql_data_red) > 2:
             row_count = row_count + 1
@@ -555,7 +537,7 @@ def _plotly_graph(graph_interval_data):
             graph_collection.append([trace_green, row_count, 1])
             graph_collection.append([trace_blue, row_count, 1])
             sub_plots.append('Colour RGB')
-            logger.debug("Graph Colour RGB Added")
+            app_logger.app_logger.debug("Graph Colour RGB Added")
 
         if len(graph_interval_data.sql_data_acc_x) > 2:
             row_count = row_count + 1
@@ -579,7 +561,7 @@ def _plotly_graph(graph_interval_data):
             graph_collection.append([trace_gyro_y, row_count, 1])
             graph_collection.append([trace_gyro_z, row_count, 1])
             sub_plots.append('Accelerometer XYZ')
-            logger.debug("Graph Accelerometer XYZ Added")
+            app_logger.app_logger.debug("Graph Accelerometer XYZ Added")
 
         if len(graph_interval_data.sql_data_mg_x) > 2:
             row_count = row_count + 1
@@ -603,7 +585,7 @@ def _plotly_graph(graph_interval_data):
             graph_collection.append([trace_gyro_y, row_count, 1])
             graph_collection.append([trace_gyro_z, row_count, 1])
             sub_plots.append('Magnetic XYZ')
-            logger.debug("Graph Magnetic XYZ Added")
+            app_logger.app_logger.debug("Graph Magnetic XYZ Added")
 
         if len(graph_interval_data.sql_data_gyro_x) > 2:
             row_count = row_count + 1
@@ -627,7 +609,7 @@ def _plotly_graph(graph_interval_data):
             graph_collection.append([trace_gyro_y, row_count, 1])
             graph_collection.append([trace_gyro_z, row_count, 1])
             sub_plots.append('Gyroscopic XYZ')
-            logger.debug("Graph Gyroscopic XYZ Added")
+            app_logger.app_logger.debug("Graph Gyroscopic XYZ Added")
 
         fig = tools.make_subplots(rows=row_count,
                                   cols=1,
@@ -643,10 +625,10 @@ def _plotly_graph(graph_interval_data):
 
         try:
             plotly.offline.plot(fig, filename=graph_interval_data.save_to + 'SensorGraph.html', auto_open=True)
-            logger.debug("Graph Creation - OK")
+            app_logger.app_logger.debug("Graph Creation - OK")
         except Exception as error:
-            logger.error("Graph Creation - Failed - " + str(error))
+            app_logger.app_logger.error("Graph Creation - Failed - " + str(error))
             warn("Graph Failed", str(error))
     else:
-        logger.error("Interval Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
+        app_logger.app_logger.error("Interval Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
         warn("Error", "No SQL Data to Graph")
