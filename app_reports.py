@@ -19,24 +19,10 @@
 import app_sensor_commands
 import webbrowser
 import os
-import logging
+import app_logger
 import app_config
-from logging.handlers import RotatingFileHandler
 
 script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
-
-file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
-file_handler.setFormatter(formatter)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
 
 
 class HTMLSystem:
@@ -128,7 +114,7 @@ def sensor_html_report(report_configuration, ip_list):
 
             final_file = final_file + current_sensor_html
         except Exception as error:
-            logger.error("Report Failure: " + str(error))
+            app_logger.app_logger.error("Report Failure: " + str(error))
 
     # Merge the result with the Final HTML Template file.
     template3 = _get_file_content(report_configuration.template3)
@@ -138,9 +124,9 @@ def sensor_html_report(report_configuration, ip_list):
         save_to_location = str(report_configuration.config_settings.save_to + report_configuration.file_output_name)
         _save_data_to_file(final_file, save_to_location)
         _open_html(save_to_location)
-        logger.debug("Sensor Report - HTML Save File - OK")
+        app_logger.app_logger.debug("Sensor Report - HTML Save File - OK")
     except Exception as error:
-        logger.error("Sensor Report - HTML Save File - Failed: " + str(error))
+        app_logger.app_logger.error("Sensor Report - HTML Save File - Failed: " + str(error))
 
 
 def _get_file_content(file_location):
@@ -149,7 +135,7 @@ def _get_file_content(file_location):
         file_content = tmp_file.read()
         tmp_file.close()
     except Exception as error:
-        logger.error("Unable to get file contents: " + str(error))
+        app_logger.app_logger.error("Unable to get file contents: " + str(error))
         file_content = "Unable to get file contents: " + str(error)
 
     return file_content
@@ -162,7 +148,7 @@ def _convert_minutes_string(var_minutes):
         uptime_min = int(float(var_minutes) % 60)
         str_day_hour_min = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
     except Exception as error:
-        logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
+        app_logger.app_logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
         str_day_hour_min = var_minutes
 
     return str_day_hour_min
@@ -175,7 +161,7 @@ def _replace_with_codes(data, codes, template):
             replace_word = str(data[count])
         except Exception as error:
             replace_word = "No Data"
-            logger.error("Invalid Sensor Data: " + str(error))
+            app_logger.app_logger.error("Invalid Sensor Data: " + str(error))
 
         template = template.replace(code, replace_word)
         count = count + 1
@@ -189,13 +175,13 @@ def _save_data_to_file(data, file_location):
         file_out.write(data)
         file_out.close()
     except Exception as error:
-        logger.error("Unable to save file: " + str(error))
+        app_logger.app_logger.error("Unable to save file: " + str(error))
 
 
 def _open_html(outfile):
     """ Opens a HTML file in the default web browser. """
     try:
         webbrowser.open_new_tab("file:///" + outfile)
-        logger.debug("Graph HTML File Opened - OK")
+        app_logger.app_logger.debug("Graph HTML File Opened - OK")
     except Exception as error:
-        logger.error("Graph HTML File Opened - Failed - " + str(error))
+        app_logger.app_logger.error("Graph HTML File Opened - Failed - " + str(error))
