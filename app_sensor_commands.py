@@ -16,13 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import socket
 import pickle
 import re
-import app_logger
-from tkinter import simpledialog
+import socket
 from datetime import datetime
+from tkinter import simpledialog
 from urllib.request import urlopen
+
+import app_logger
 
 
 def check_sensor_status(ip, net_timeout):
@@ -385,7 +386,8 @@ def set_hostname(ip):
             sock_g.send(command_str.encode())
             app_logger.sensor_logger.info("Sensor Name Change " + str(new_hostname) + " on " + ip + " - OK")
         except Exception as error:
-            app_logger.sensor_logger.warning("Sensor Name Change " + str(new_hostname) + " on " + ip + " - Failed: " + str(error))
+            app_logger.sensor_logger.warning(
+                "Sensor Name Change " + str(new_hostname) + " on " + ip + " - Failed: " + str(error))
         sock_g.close()
     else:
         app_logger.sensor_logger.warning("Hostname Cancelled or blank on " + ip)
@@ -403,7 +405,8 @@ def set_datetime(ip):
         sock_g.send(command_str.encode())
         app_logger.sensor_logger.info("Sensor Name Change " + str(new_datetime) + " on " + ip + " - OK")
     except Exception as error:
-        app_logger.sensor_logger.warning("Sensor Name Change " + str(new_datetime) + " on " + ip + " - Failed: " + str(error))
+        app_logger.sensor_logger.warning(
+            "Sensor Name Change " + str(new_datetime) + " on " + ip + " - Failed: " + str(error))
     sock_g.close()
 
 

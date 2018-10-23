@@ -17,8 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from guizero import Window, PushButton, Text, info, MenuBar
-import app_sensor_commands
+
 import app_logger
+import app_sensor_commands
 
 
 class CreateSensorCommandsWindow:

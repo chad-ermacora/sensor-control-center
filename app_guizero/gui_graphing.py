@@ -16,9 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
 from tkinter import filedialog
+
+from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
 from matplotlib import pyplot
+
 import app_config
 import app_graph
 import app_logger

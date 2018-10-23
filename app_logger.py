@@ -23,8 +23,8 @@ WARNING - An indication that something unexpected happened, or indicative of som
 ERROR - Due to a more serious problem, the software has not been able to perform some function.
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
-import os
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 
 script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
@@ -38,7 +38,9 @@ app_logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler_main = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
+file_handler_main = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt',
+                                        maxBytes=256000,
+                                        backupCount=5)
 file_handler_main.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
@@ -52,7 +54,9 @@ sensor_logger.setLevel(logging.INFO)
 
 formatter_sensor = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler_sensor = RotatingFileHandler(script_directory + '/logs/Sensor_Commands_log.txt', maxBytes=256000, backupCount=5)
+file_handler_sensor = RotatingFileHandler(script_directory + '/logs/Sensor_Commands_log.txt',
+                                          maxBytes=256000,
+                                          backupCount=5)
 file_handler_sensor.setFormatter(formatter_sensor)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter_sensor)
