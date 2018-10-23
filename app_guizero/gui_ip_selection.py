@@ -27,6 +27,7 @@ class CreateIPSelector:
     def __init__(self, app, current_config):
         self.current_config = current_config
         self.data_queue = Queue()
+
         # Sensor's Online / Offline IP List Selection 1
         self.app_checkbox_all_column1 = CheckBox(app,
                                                  text="Check ALL Column 1",
@@ -260,7 +261,7 @@ class CreateIPSelector:
             self.app_checkbox_ip16.value = 0
 
     def set_ip_list(self, new_config):
-
+        """ Sets GUI IP text boxes from the provided configuration file. """
         self.app_textbox_ip1.value = new_config.ip_list[0]
         self.app_textbox_ip2.value = new_config.ip_list[1]
         self.app_textbox_ip3.value = new_config.ip_list[2]
@@ -279,7 +280,7 @@ class CreateIPSelector:
         self.app_textbox_ip16.value = new_config.ip_list[15]
 
     def get_all_ip_list(self):
-        """ Returns a list of all IP's """
+        """ Returns a list of all GUI text box IP's """
         checkbox_ip_list = [self.app_textbox_ip1.value,
                             self.app_textbox_ip2.value,
                             self.app_textbox_ip3.value,
@@ -413,11 +414,11 @@ class CreateIPSelector:
 
         sensor_data_pool.clear()
         app_logger.app_logger.debug("Checked IP's Processed")
+
         return ip_list_final
 
-    # Returns selected IP's from Main App Window & Re-Sets unselected IP background to white
     def _make_ip_list(self):
-        """ Returns a list of all checked IP's, skipping duplicates """
+        """ Returns a list of all checked IP's, skipping duplicates, re sets unselected IP background to white """
         checkbox_ip_list = []
 
         if self.app_checkbox_ip1.value == 1 and self.app_textbox_ip1.value not in checkbox_ip_list:
@@ -501,4 +502,5 @@ class CreateIPSelector:
             self.app_textbox_ip16.bg = 'white'
 
         app_logger.app_logger.debug("IP List Generated from Checked Boxes")
+
         return checkbox_ip_list
