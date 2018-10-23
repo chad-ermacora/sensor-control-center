@@ -206,7 +206,7 @@ class CreateConfigWindow:
         new_config.temperature_offset = self.textbox_temperature_offset.value
         new_config.network_timeout_sensor_check = self.textbox_network_check.value
         new_config.network_timeout_data = self.textbox_network_details.value
-        new_config.allow_advanced_controls = self.checkbox_power_controls.value
+        new_config.allow_config_reset = self.checkbox_power_controls.value
 
         return new_config
 
@@ -223,7 +223,7 @@ class CreateConfigWindow:
         self.textbox_temperature_offset.value = new_config.temperature_offset
         self.textbox_network_check.value = new_config.network_timeout_sensor_check
         self.textbox_network_details.value = new_config.network_timeout_data
-        self.checkbox_power_controls.value = new_config.allow_advanced_controls
+        self.checkbox_power_controls.value = new_config.allow_config_reset
 
     def reset_to_defaults(self):
         """ Resets all Control Center Configurations to default. """
@@ -248,7 +248,7 @@ class CreateConfigWindow:
         self.current_config.live_refresh = self.textbox_live_refresh.value
         self.current_config.network_timeout_sensor_check = self.textbox_network_check.value
         self.current_config.network_timeout_data = self.textbox_network_details.value
-        self.current_config.allow_advanced_controls = self.checkbox_power_controls.value
+        self.current_config.allow_config_reset = self.checkbox_power_controls.value
         self.current_config.ip_list = self.ip_selection.get_all_ip_list()
 
         app_config.check_config(self.current_config)
