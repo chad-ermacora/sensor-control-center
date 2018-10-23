@@ -66,6 +66,8 @@ class TestAppConfig(unittest.TestCase):
         self.assertEqual(config_default.allow_config_reset, config_file.allow_config_reset)
         self.assertEqual(config_default.ip_list, config_file.ip_list)
 
+        app_config.save_config_to_file(config_default)
+
     def test_app_graph(self):
         # This test section needs work
         self.assertEqual(app_graph._adjust_interval_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
