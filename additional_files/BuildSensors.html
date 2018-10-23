@@ -5,7 +5,9 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2018-10-11T22:53:54.201000000"/>
+	<meta name="changed" content="2018-10-22T21:55:53.630000000"/>
+	<meta name="created" content="00:00:00">
+	<meta name="created" content="00:00:00">
 	<style type="text/css">
 		h2.cjk { font-family: "NSimSun" }
 		h2.ctl { font-family: "Lucida Sans" }
@@ -25,9 +27,8 @@ Supported Sensor&rsquo;s</u></font></strong></p>
 Pi products</a>: Sense HAT<br/>
 <a href="https://shop.pimoroni.com/">Pimoroni
 products</a>: BH1745, BME680, Enviro pHAT, LSM303D, VL53L1X</p>
-<p align="left"><em>Note: Additional </em><em>s</em><em>ensors can be
-added fairly easily, so long as they support the Raspberry Pi and
-Python3</em></p>
+<p align="left"><em>Note: Additional sensors can be added fairly
+easily, so long as they support the Raspberry Pi and Python3</em></p>
 <h4 class="western" align="left"><strong><font size="4" style="font-size: 14pt"><u>User
 Requirements</u></font></strong></h4>
 <p align="left">The User must know the following</p>
@@ -48,6 +49,11 @@ Pi</a></strong> - I have tested the 3B+ &amp; Zero W</p>
 <p align="left"><strong><em>Optional </em></strong>- additional
 sensors (see Currently Supported Sensor&rsquo;s above)</p>
 <h3 class="western" align="left"><strong><u>Install Instructions</u></strong></h3>
+<p><em><span style="font-style: normal">The installer script will
+modify /etc/network/interfaces &amp; replace the root users crontab.
+<br/>
+This command will automatically reboot the Raspberry Pi after
+completion.</span></em></p>
 <p align="left"><strong>Step 1</strong>. Physically Install your
 Sensor(s) onto the Raspberry Pi<br/>
 <strong>Step 2</strong>. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install
@@ -58,16 +64,11 @@ Enable SPI and I2C in the Raspberry Pi Configuration window on the
 <strong>Step 4</strong>. Make sure
 you are connected to the Internet with your Pi, then run the
 following command in a terminal to start the Installer<br/>
-** <em><font size="2" style="font-size: 11pt">Th</font></em><em><font size="2" style="font-size: 11pt">e</font></em><em><font size="2" style="font-size: 11pt">
-installer script will modify /etc/network/interfaces &amp; replace
-the root users crontab **<br/>
-** This will automatically reboot the
-Raspberry Pi after completion **<br/>
-<br/>
-</font></em>wget
+<em><font size="2" style="font-size: 11pt"><br/>
+</font></em><span style="background: #dddddd">wget
 http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/upgrade/update_programs_online.sh
 &amp;&amp; sudo chmod +x update_programs_online.sh &amp;&amp; sudo
-bash update_programs_online.sh &amp;&amp; sudo reboot<br/>
+bash update_programs_online.sh &amp;&amp; sudo reboot</span><br/>
 <br/>
 The
 installer will open default configuration files to be configured,
@@ -76,27 +77,6 @@ necessary Python libraries, update Raspbian itself, and finally
 reboot the sensor<br/>
 Once the Raspberry Pi comes back up, your
 sensor should be ready!</p>
-<p align="left">Three apps are installed as services that auto start
-with the Raspberry Pi<br/>
-If a service stops running for any reason,
-it will start again after 5 seconds</p>
-<p align="left"><b>1</b>. SensorCommands &ndash; Allows KootNet
-Sensors - PC Control Center to interact with the Sensor over a TCP/IP
-v4 network<br/>
-<b>2</b>. SensorInterval &ndash; Starts recording
-sensor readings to a sqlite3 database at the specified interval,
-found in the configuration file<br/>
-<b>3</b>. SensorTrigger &ndash;
-Starts recording sensor readings to a sqlite3 database according to
-specified variances in the configuration file</p>
-<p align="left"><br/>
-<br/>
-
-</p>
-<p align="left"><br/>
-<br/>
-
-</p>
 <p align="left"><br/>
 <br/>
 
