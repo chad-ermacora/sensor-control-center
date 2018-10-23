@@ -16,11 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import app_sensor_commands
-import webbrowser
 import os
-import app_logger
+import webbrowser
+
 import app_config
+import app_logger
+import app_sensor_commands
 
 script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
 

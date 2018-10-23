@@ -1,17 +1,8 @@
 import unittest
+
 import app_config
 import app_graph
-import app_logger
 import app_reports
-import app_sensor_commands
-import app_guizero.gui_about as gui_about
-import app_guizero.gui_config as gui_config
-import app_guizero.gui_graphing as gui_graphing
-import app_guizero.gui_ip_selection as ip_selection
-import app_guizero.gui_main as gui_main
-import app_guizero.gui_reports as gui_reports
-import app_guizero.gui_sensor_commands as gui_sensor_commands
-import app_guizero.gui_sensor_config as gui_sensor_config
 
 
 class TestAppConfig(unittest.TestCase):

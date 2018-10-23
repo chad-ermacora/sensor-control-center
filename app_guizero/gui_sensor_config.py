@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from guizero import Window, CheckBox, PushButton, Text, TextBox, info
+
 from app_sensor_commands import set_sensor_config
 
 

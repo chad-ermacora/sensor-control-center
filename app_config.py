@@ -18,7 +18,9 @@
 """
 import os
 from datetime import datetime
+
 import app_logger
+
 script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
 
 

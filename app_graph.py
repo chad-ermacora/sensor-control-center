@@ -16,14 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import app_sensor_commands
-import plotly
 import sqlite3
-import app_logger
 from datetime import datetime, timedelta
-from plotly import tools, graph_objs as go
-from matplotlib import pyplot, animation, style
+
+import plotly
 from guizero import warn
+from matplotlib import pyplot, animation, style
+from plotly import tools, graph_objs as go
+
+import app_logger
+import app_sensor_commands
 
 style.use("dark_background")
 
@@ -175,9 +177,8 @@ class CreateLiveGraph:
                     uptime_days = int(float(sensor_reading) // 1440)
                     uptime_hours = int((float(sensor_reading) % 1440) // 60)
                     uptime_min = int(float(sensor_reading) % 60)
-                    sensor_reading = str(uptime_days) + " Days / " + \
-                        str(uptime_hours) + "." + \
-                        str(uptime_min) + " Hours"
+                    sensor_reading = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(
+                        uptime_min) + " Hours"
                 except Exception as error:
                     app_logger.app_logger.warning(str(error))
 
@@ -630,5 +631,6 @@ def _plotly_graph(graph_interval_data):
             app_logger.app_logger.error("Graph Creation - Failed - " + str(error))
             warn("Graph Failed", str(error))
     else:
-        app_logger.app_logger.error("Interval Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
+        app_logger.app_logger.error(
+            "Interval Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
         warn("Error", "No SQL Data to Graph")

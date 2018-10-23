@@ -1,4 +1,4 @@
-from guizero import App, Window, CheckBox, PushButton, Text, TextBox, MenuBar, info, warn, ButtonGroup
+from guizero import App, Window, Text
 
 
 class MainApplication:
