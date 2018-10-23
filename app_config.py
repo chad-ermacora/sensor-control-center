@@ -33,17 +33,17 @@ class CreateDefaultConfigSettings:
 
         # Start of user configurable options
         self.save_to = str(os.path.expanduser('~/Desktop/')).replace('\\', '/')
-        self.graph_start = "2018-09-12 00:00:01"
+        self.graph_start = "2018-10-15 15:00:01"
         self.graph_end = "2200-01-01 00:00:01"
         self.datetime_offset = -7.0
-        self.sql_queries_skip = 3
-        self.temperature_offset = -4.0
-        self.live_refresh = 5
-        self.network_timeout_sensor_check = 2
+        self.sql_queries_skip = 6
+        self.temperature_offset = -4.5
+        self.live_refresh = 3
+        self.network_timeout_sensor_check = 3
         self.network_timeout_data = 5
         self.allow_config_reset = 0
-        self.ip_list = ["192.168.10.11", "192.168.10.12", "192.168.10.13", "192.168.10.14",
-                        "192.168.10.15", "192.168.10.16", "192.168.10.17", "192.168.10.18",
+        self.ip_list = ["192.168.10.11", "192.168.10.12", "192.168.10.14", "192.168.10.15",
+                        "192.168.10.16", "192.168.10.17", "192.168.10.51", "192.168.10.52",
                         "192.168.10.19", "192.168.10.20", "192.168.10.21", "192.168.10.22",
                         "192.168.10.23", "192.168.10.24", "192.168.10.25", "192.168.10.26"]
 
