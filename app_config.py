@@ -41,7 +41,7 @@ class CreateDefaultConfigSettings:
         self.live_refresh = 5
         self.network_timeout_sensor_check = 2
         self.network_timeout_data = 5
-        self.allow_advanced_controls = 0
+        self.allow_config_reset = 0
         self.ip_list = ["192.168.10.11", "192.168.10.12", "192.168.10.13", "192.168.10.14",
                         "192.168.10.15", "192.168.10.16", "192.168.10.17", "192.168.10.18",
                         "192.168.10.19", "192.168.10.20", "192.168.10.21", "192.168.10.22",
@@ -60,7 +60,7 @@ class CreateDefaultConfigSettings:
         self.live_refresh = default_config.live_refresh
         self.network_timeout_sensor_check = default_config.network_timeout_sensor_check
         self.network_timeout_data = default_config.network_timeout_data
-        self.allow_advanced_controls = default_config.allow_advanced_controls
+        self.allow_config_reset = default_config.allow_config_reset
         self.ip_list = default_config.ip_list
 
 
@@ -86,7 +86,7 @@ def get_from_file():
         config_settings.network_timeout_data = tmp_config_settings[9]
 
         try:
-            config_settings.allow_advanced_controls = int(tmp_config_settings[10])
+            config_settings.allow_config_reset = int(tmp_config_settings[10])
         except Exception as error:
             app_logger.app_logger.error("Setting Enable Sensor Shutdown/Reboot - Using Default: " + str(error))
 
@@ -188,12 +188,12 @@ def check_config(config_settings):
         config_settings.network_timeout_data = default_settings.network_timeout_data
 
     try:
-        config_settings.allow_advanced_controls = int(config_settings.allow_advanced_controls)
-        if 2 > config_settings.allow_advanced_controls >= 0:
+        config_settings.allow_config_reset = int(config_settings.allow_config_reset)
+        if 2 > config_settings.allow_config_reset >= 0:
             app_logger.app_logger.debug("Setting Enable Sensor Shutdown/Reboot - OK")
     except Exception as error:
         app_logger.app_logger.error("Setting Enable Sensor Shutdown/Reboot - BAD - Using Default: " + str(error))
-        config_settings.allow_advanced_controls = default_settings.allow_advanced_controls
+        config_settings.allow_config_reset = default_settings.allow_config_reset
 
     count = 0
     while count < 16:
@@ -219,7 +219,7 @@ def save_config_to_file(config_settings):
     var_final_write = var_final_write + ',' + str(config_settings.live_refresh)
     var_final_write = var_final_write + ',' + str(config_settings.network_timeout_sensor_check)
     var_final_write = var_final_write + ',' + str(config_settings.network_timeout_data)
-    var_final_write = var_final_write + ',' + str(config_settings.allow_advanced_controls)
+    var_final_write = var_final_write + ',' + str(config_settings.allow_config_reset)
     for ip in config_settings.ip_list:
         var_final_write = var_final_write + ',' + str(ip)
 
