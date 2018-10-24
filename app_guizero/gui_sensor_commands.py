@@ -130,7 +130,7 @@ class CreateSensorCommandsWindow:
         for ip in ip_list:
             app_sensor_commands.upgrade_program_smb(ip)
 
-        info("Sensors Upgrading SMB", "Please Wait up to 30 seconds for the Services to restart")
+        info("Sensors Upgrading SMB", "Please wait up to 30 seconds for the Services to restart")
 
     def upgrade_http(self):
         """ Sends the upgrade by HTTP command to the Sensor Units IP. """
@@ -140,7 +140,7 @@ class CreateSensorCommandsWindow:
         for ip in ip_list:
             app_sensor_commands.upgrade_program_online(ip)
 
-        info("Sensors Upgrading HTTP", "Please Wait up to 30 seconds for the Services to restart")
+        info("Sensors Upgrading HTTP", "Please wait up to 30 seconds for the Services to restart")
 
     def os_upgrade(self):
         """ Sends the upgrade Operating System command to the Sensor Units IP. """
@@ -151,8 +151,8 @@ class CreateSensorCommandsWindow:
             app_sensor_commands.upgrade_os_linux(ip)
 
         info("Sensors Operating System Upgrade Started",
-             "Once complete, the Sensors will automatically reboot\n"
-             "Sensor should continue to Operate with minor interruptions\n\n"
+             "Once complete, the sensors will automatically reboot\n\n"
+             "During the upgrade process, the sensors should continue to Operate\n\n"
              "This process can take anywhere from 5 Min to 1 Hour")
 
     def sensor_reboot(self):
@@ -178,13 +178,13 @@ class CreateSensorCommandsWindow:
     def restart_services(self):
         """ Sends the restart services command to the Sensor Units IP. """
         app_logger.sensor_logger.info(
-            "Sensor(s) Services Restarting - Please allow up to 20 Seconds to restart")
+            "Sensor(s) Services Restarting - Please allow up to 20 seconds to restart")
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             app_sensor_commands.restart_services(ip)
 
-        info("Sensors Services Restarting", "Please allow up to 20 Seconds to restart")
+        info("Sensors Services Restarting", "Please allow up to 20 seconds to restart Services")
 
     def hostname_change(self):
         """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
@@ -202,4 +202,4 @@ class CreateSensorCommandsWindow:
         for ip in ip_list:
             app_sensor_commands.set_datetime(ip)
 
-        info("Sensors DateTime Set", "Sensors Date & Time Synchronized with local Computer's")
+        info("Sensors DateTime Set", "Sensors Date & Time synchronized with local computer's")
