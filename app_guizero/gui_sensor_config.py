@@ -149,4 +149,4 @@ class CreateSensorConfigWindow:
         for ip in ip_list:
             set_sensor_config(ip, config_settings_str)
 
-        info("Sensors Configuration Set", "Configurations Set")
+        info("Sensors Configuration Set", "Configurations set & Services restarted")
