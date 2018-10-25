@@ -45,6 +45,7 @@ class CreateMainWindow:
                        layout="grid")
 
         self.ip_selection = CreateIPSelector(self.app, self.current_config)
+        self._set_ip_list()
 
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
         self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection)
@@ -123,6 +124,7 @@ class CreateMainWindow:
         self.ip_selection.app_checkbox_all_column2.value = 0
         self.ip_selection.app_check_all_ip1()
         self.ip_selection.app_check_all_ip2()
+        self.ip_selection.app_checkbox_ip1.value = 1
 
         self.window_graph.checkbox_up_time.value = 0
         self.window_graph.checkbox_temperature.value = 0
@@ -157,8 +159,6 @@ class CreateMainWindow:
         if not os.path.isfile(self.current_config.config_file):
             app_logger.app_logger.info('No Configuration File Found - Saving Default')
             app_config.save_config_to_file(self.current_config)
-        else:
-            self._set_ip_list()
 
     def _app_exit(self):
         """ Closes log handlers & matplotlib before closing the application. """
