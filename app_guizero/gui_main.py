@@ -143,17 +143,19 @@ class CreateMainWindow:
             self.app.tk.iconbitmap(self.current_config.additional_files_directory + "/icon.ico")
         elif platform.system() == "Linux":
             self.app.width = 490
-            self.app.height = 250
+            self.app.height = 240
             self.window_control_center_config.window.width = 675
             self.window_control_center_config.window.height = 275
-            self.window_graph.window.width = 325
-            self.window_graph.window.height = 440
-            self.window_sensor_config.window.width = 365
-            self.window_sensor_config.window.height = 240
-            self.window_sensor_commands.window.width = 300
-            self.window_sensor_commands.window.height = 260
-            self.window_about.window.width = 555
-            self.window_about.window.height = 290
+            self.window_reports.window.width = 460
+            self.window_reports.window.height = 85
+            self.window_graph.window.width = 320
+            self.window_graph.window.height = 420
+            self.window_sensor_config.window.width = 350
+            self.window_sensor_config.window.height = 230
+            self.window_sensor_commands.window.width = 295
+            self.window_sensor_commands.window.height = 255
+            self.window_about.window.width = 535
+            self.window_about.window.height = 285
 
         # If no config file, create and save it
         if not os.path.isfile(self.current_config.config_file):
