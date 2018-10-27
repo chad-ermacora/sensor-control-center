@@ -19,7 +19,7 @@
 from guizero import Window, Text, TextBox
 import app_logger
 
-app_version = "Tested on Python 3.7 / KootNet Sensors - Control Center / Ver. Alpha.20.1"
+app_version = "Tested on Python 3.7 / KootNet Sensors - Control Center / Ver. Alpha.20.2"
 
 
 class CreateAboutWindow:
