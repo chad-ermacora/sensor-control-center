@@ -116,30 +116,40 @@ class CreateSensorCommandsWindow:
         self.button_os_Upgrade.enable()
         self.button_shutdown.enable()
         self.button_update_datetime.enable()
+        self.button_lan_Upgrade.text = "Clean\nUpgrade\nOver SMB"
+        self.button_online_Upgrade.text = "Clean\nUpgrade\nOver HTTP"
 
     def disable_advanced(self):
         self.button_os_Upgrade.disable()
         self.button_shutdown.disable()
         self.button_update_datetime.disable()
+        self.button_lan_Upgrade.text = "Upgrade\nSoftware\nOver SMB"
+        self.button_online_Upgrade.text = "Upgrade\nSoftware\nOver HTTP"
 
     def upgrade_smb(self):
         """ Sends the upgrade by SMB command to the Sensor Units IP. """
-        app_logger.sensor_logger.debug("Sensor Upgrade - SMB")
-
         ip_list = self.ip_selection.get_verified_ip_list()
-        for ip in ip_list:
-            app_sensor_commands.upgrade_program_smb(ip)
-
+        if self.button_lan_Upgrade.text == "Clean\nUpgrade\nOver SMB":
+            app_logger.sensor_logger.debug("Clean Sensor Upgrade - SMB")
+            for ip in ip_list:
+                app_sensor_commands.clean_upgrade_smb(ip)
+        else:
+            app_logger.sensor_logger.debug("Sensor Upgrade - SMB")
+            for ip in ip_list:
+                app_sensor_commands.upgrade_program_smb(ip)
         info("Sensors Upgrading SMB", "Please wait up to 30 seconds for the Services to restart")
 
     def upgrade_http(self):
         """ Sends the upgrade by HTTP command to the Sensor Units IP. """
-        app_logger.sensor_logger.debug("Sensor Upgrade - HTTP")
-
         ip_list = self.ip_selection.get_verified_ip_list()
-        for ip in ip_list:
-            app_sensor_commands.upgrade_program_online(ip)
-
+        if self.button_online_Upgrade.text == "Clean\nUpgrade\nOver HTTP":
+            app_logger.sensor_logger.debug("Clean Sensor Upgrade - HTTP")
+            for ip in ip_list:
+                app_sensor_commands.clean_upgrade_online(ip)
+        else:
+            app_logger.sensor_logger.debug("Sensor Upgrade - HTTP")
+            for ip in ip_list:
+                app_sensor_commands.upgrade_program_online(ip)
         info("Sensors Upgrading HTTP", "Please wait up to 30 seconds for the Services to restart")
 
     def os_upgrade(self):
