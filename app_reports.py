@@ -18,6 +18,7 @@
 """
 import os
 import webbrowser
+from time import strftime
 
 import app_config
 import app_logger
@@ -47,6 +48,8 @@ class HTMLSystem:
                                   "{{Version}}",
                                   "{{LastUpdated}}"]
 
+        self.local_time_code = ["{{LocalDateTime}}"]
+
     def get_sensor_data(self, ip):
         sensor_data = app_sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
         # Convert the sensor's system uptime of minutes to human readable day/hour.min
@@ -67,6 +70,8 @@ class HTMLReadings:
                                   "{{IntervalReadings}}",
                                   "{{TriggerTypes}}",
                                   "{{TriggerReadings}}"]
+
+        self.local_time_code = ["{{LocalDateTime}}"]
 
     def get_sensor_data(self, ip):
         sensor_data = app_sensor_commands.get_sensor_readings(ip, self.config_settings.network_timeout_data)
@@ -92,6 +97,8 @@ class HTMLConfig:
                                   "{{CustomAcc}}",
                                   "{{CustomMag}}",
                                   "{{CustomGyro}}"]
+
+        self.local_time_code = ["{{LocalDateTime}}"]
 
     def get_sensor_data(self, ip):
         sensor_data = app_sensor_commands.get_sensor_config(ip, self.config_settings.network_timeout_data)
@@ -120,7 +127,11 @@ def sensor_html_report(report_configuration, ip_list):
             app_logger.app_logger.error("Report Failure: " + str(error))
 
     # Merge the result with the Final HTML Template file.
+    current_datetime = strftime("%Y-%m-%d %H:%M")
     template3 = _get_file_content(report_configuration.template3)
+    template3 = _replace_with_codes([current_datetime],
+                                    report_configuration.local_time_code,
+                                    template3)
     final_file = final_file + template3
 
     try:
