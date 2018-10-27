@@ -43,7 +43,9 @@ class HTMLSystem:
                                   "{{IntervalSize}}",
                                   "{{TriggerSize}}",
                                   "{{SQLWriteEnabled}}",
-                                  "{{CustomEnabled}}"]
+                                  "{{CustomEnabled}}",
+                                  "{{Version}}",
+                                  "{{LastUpdated}}"]
 
     def get_sensor_data(self, ip):
         sensor_data = app_sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
