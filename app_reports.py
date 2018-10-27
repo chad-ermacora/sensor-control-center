@@ -16,27 +16,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import sensor_commands
-import webbrowser
 import os
-import logging
+import webbrowser
+from time import strftime
+
 import app_config
-from logging.handlers import RotatingFileHandler
+import app_logger
+import app_sensor_commands
 
 script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
-
-file_handler = RotatingFileHandler(script_directory + '/logs/KootNet_log.txt', maxBytes=256000, backupCount=5)
-file_handler.setFormatter(formatter)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
 
 
 class HTMLSystem:
@@ -45,7 +33,7 @@ class HTMLSystem:
         self.template1 = script_directory + "/additional_files/html_template_system1.html"
         self.template2 = script_directory + "/additional_files/html_template_system2.html"
         self.template3 = script_directory + "/additional_files/html_template_system3.html"
-        self.file_output_name = "SensorsSystem.html"
+        self.file_output_name = "SensorsSystemReport.html"
 
         self.replacement_codes = ["{{HostName}}",
                                   "{{IP}}",
@@ -56,10 +44,14 @@ class HTMLSystem:
                                   "{{IntervalSize}}",
                                   "{{TriggerSize}}",
                                   "{{SQLWriteEnabled}}",
-                                  "{{CustomEnabled}}"]
+                                  "{{CustomEnabled}}",
+                                  "{{Version}}",
+                                  "{{LastUpdated}}"]
+
+        self.local_time_code = ["{{LocalDateTime}}"]
 
     def get_sensor_data(self, ip):
-        sensor_data = sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
+        sensor_data = app_sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
         # Convert the sensor's system uptime of minutes to human readable day/hour.min
         sensor_data[3] = _convert_minutes_string(sensor_data[3])
 
@@ -72,15 +64,17 @@ class HTMLReadings:
         self.template1 = script_directory + "/additional_files/html_template_readings1.html"
         self.template2 = script_directory + "/additional_files/html_template_readings2.html"
         self.template3 = script_directory + "/additional_files/html_template_readings3.html"
-        self.file_output_name = "SensorsSystem.html"
+        self.file_output_name = "SensorsReadingsReport.html"
 
         self.replacement_codes = ["{{IntervalTypes}}",
                                   "{{IntervalReadings}}",
                                   "{{TriggerTypes}}",
                                   "{{TriggerReadings}}"]
 
+        self.local_time_code = ["{{LocalDateTime}}"]
+
     def get_sensor_data(self, ip):
-        sensor_data = sensor_commands.get_sensor_readings(ip, self.config_settings.network_timeout_data)
+        sensor_data = app_sensor_commands.get_sensor_readings(ip, self.config_settings.network_timeout_data)
 
         return sensor_data
 
@@ -91,7 +85,7 @@ class HTMLConfig:
         self.template1 = script_directory + "/additional_files/html_template_config1.html"
         self.template2 = script_directory + "/additional_files/html_template_config2.html"
         self.template3 = script_directory + "/additional_files/html_template_config3.html"
-        self.file_output_name = "SensorsConfig.html"
+        self.file_output_name = "SensorsConfigReport.html"
 
         self.replacement_codes = ["{{HostName}}",
                                   "{{IP}}",
@@ -104,8 +98,10 @@ class HTMLConfig:
                                   "{{CustomMag}}",
                                   "{{CustomGyro}}"]
 
+        self.local_time_code = ["{{LocalDateTime}}"]
+
     def get_sensor_data(self, ip):
-        sensor_data = sensor_commands.get_sensor_config(ip, self.config_settings.network_timeout_data)
+        sensor_data = app_sensor_commands.get_sensor_config(ip, self.config_settings.network_timeout_data)
 
         return sensor_data
 
@@ -128,19 +124,24 @@ def sensor_html_report(report_configuration, ip_list):
 
             final_file = final_file + current_sensor_html
         except Exception as error:
-                logger.error("Report Failure: " + str(error))
+            app_logger.app_logger.error("Report Failure: " + str(error))
 
     # Merge the result with the Final HTML Template file.
+    current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
     template3 = _get_file_content(report_configuration.template3)
+    # Add Local computer's DateTime to 3rd template
+    template3 = _replace_with_codes([current_datetime],
+                                    report_configuration.local_time_code,
+                                    template3)
     final_file = final_file + template3
 
     try:
         save_to_location = str(report_configuration.config_settings.save_to + report_configuration.file_output_name)
         _save_data_to_file(final_file, save_to_location)
         _open_html(save_to_location)
-        logger.debug("Sensor Report - HTML Save File - OK")
+        app_logger.app_logger.debug("Sensor Report - HTML Save File - OK")
     except Exception as error:
-        logger.error("Sensor Report - HTML Save File - Failed: " + str(error))
+        app_logger.app_logger.error("Sensor Report - HTML Save File - Failed: " + str(error))
 
 
 def _get_file_content(file_location):
@@ -149,7 +150,7 @@ def _get_file_content(file_location):
         file_content = tmp_file.read()
         tmp_file.close()
     except Exception as error:
-        logger.error("Unable to get file contents: " + str(error))
+        app_logger.app_logger.error("Unable to get file contents: " + str(error))
         file_content = "Unable to get file contents: " + str(error)
 
     return file_content
@@ -162,7 +163,7 @@ def _convert_minutes_string(var_minutes):
         uptime_min = int(float(var_minutes) % 60)
         str_day_hour_min = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
     except Exception as error:
-        logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
+        app_logger.app_logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
         str_day_hour_min = var_minutes
 
     return str_day_hour_min
@@ -175,7 +176,7 @@ def _replace_with_codes(data, codes, template):
             replace_word = str(data[count])
         except Exception as error:
             replace_word = "No Data"
-            logger.error("Invalid Sensor Data: " + str(error))
+            app_logger.app_logger.error("Invalid Sensor Data: " + str(error))
 
         template = template.replace(code, replace_word)
         count = count + 1
@@ -189,13 +190,13 @@ def _save_data_to_file(data, file_location):
         file_out.write(data)
         file_out.close()
     except Exception as error:
-        logger.error("Unable to save file: " + str(error))
+        app_logger.app_logger.error("Unable to save file: " + str(error))
 
 
 def _open_html(outfile):
     """ Opens a HTML file in the default web browser. """
     try:
         webbrowser.open_new_tab("file:///" + outfile)
-        logger.debug("Graph HTML File Opened - OK")
+        app_logger.app_logger.debug("Graph HTML File Opened - OK")
     except Exception as error:
-        logger.error("Graph HTML File Opened - Failed - " + str(error))
+        app_logger.app_logger.error("Graph HTML File Opened - Failed - " + str(error))

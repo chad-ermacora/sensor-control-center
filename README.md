@@ -1,4 +1,4 @@
-# KootNet Sensors - PC Control Center
+# KootNet Sensors - Control Center
 A Python3 program made to interact with Raspberry Pi's running the Raspberry Pi Sensor Software.  More information about the Raspberry Pi Sensor Software can be found through the link below. 
 
 Installers for Windows are available as well as a installer script for Linux (WIP).  The software is in a alpha state and is prone to bugs and changes that may break backwards compatibility between releases.
@@ -10,7 +10,7 @@ Installers for Windows are available as well as a installer script for Linux (WI
 [Raspberry Pi Sensor Software](https://github.com/chad-ermacora/sensor-rp)
 
 
-PC Control Center - WIP
+Control Center - WIP
 -----------------------
 ### Some Features Include
 - Change sensor's configuration
@@ -25,4 +25,4 @@ PC Control Center - WIP
 - Restart sensor services
 - Reboot or Shutdown sensor
 
-![KootNet Sensors - PC Control Center](additional_files/KootNetSensorsControlCenter.png "PC Control Center")
+![KootNet Sensors - Control Center](additional_files/KootNetSensorsControlCenter.png "Control Center")
