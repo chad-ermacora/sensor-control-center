@@ -127,8 +127,9 @@ def sensor_html_report(report_configuration, ip_list):
             app_logger.app_logger.error("Report Failure: " + str(error))
 
     # Merge the result with the Final HTML Template file.
-    current_datetime = strftime("%Y-%m-%d %H:%M")
+    current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
     template3 = _get_file_content(report_configuration.template3)
+    # Add Local computer's DateTime to 3rd template
     template3 = _replace_with_codes([current_datetime],
                                     report_configuration.local_time_code,
                                     template3)
