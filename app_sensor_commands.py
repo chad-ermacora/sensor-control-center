@@ -44,6 +44,18 @@ def check_sensor_status(ip, net_timeout):
     return sensor_status
 
 
+def get_sensor_operations_log(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensors operations log. """
+    log = _get_data(ip, net_timeout, "GetOperationsLog")
+    return log
+
+
+def get_sensors_log(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensors log. """
+    log = _get_data(ip, net_timeout, "GetSensorsLog")
+    return log
+
+
 def get_sensor_system(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor system information. """
     var_data = _get_data(ip, net_timeout, "GetSystemData")
@@ -129,10 +141,36 @@ def get_sensor_config(ip, net_timeout):
     return final_sensor_config
 
 
+def download_operations_log(ip, download_to_location):
+    """ Socket connection to sensor IP. Download operations log. """
+    try:
+        remote_database = urlopen("http://" + ip + ":8009/logs/Operations_log.txt")
+        local_file = open(download_to_location + "/Operations_log" + ip[-3:] + ".txt", 'wb')
+        local_file.write(remote_database.read())
+        remote_database.close()
+        local_file.close()
+        app_logger.sensor_logger.info("Download operations log from " + ip + " Complete")
+    except Exception as error:
+        app_logger.sensor_logger.error("Download operations log from " + ip + " Failed: " + str(error))
+
+
+def download_sensors_log(ip, download_to_location):
+    """ Socket connection to sensor IP. Download sensors log. """
+    try:
+        remote_database = urlopen("http://" + ip + ":8009/logs/Sensor_readings_log.txt")
+        local_file = open(download_to_location + "/Sensor_readings_log" + ip[-3:] + ".txt", 'wb')
+        local_file.write(remote_database.read())
+        remote_database.close()
+        local_file.close()
+        app_logger.sensor_logger.info("Download sensors log from " + ip + " Complete")
+    except Exception as error:
+        app_logger.sensor_logger.error("Download sensors log from " + ip + " Failed: " + str(error))
+
+
 def download_interval_db(ip, download_to_location):
     """ Socket connection to sensor IP. Download Interval SQLite3 database. """
     try:
-        remote_database = urlopen("http://" + ip + ":8009/SensorIntervalDatabase.sqlite")
+        remote_database = urlopen("http://" + ip + ":8009/data/SensorIntervalDatabase.sqlite")
         local_file = open(download_to_location + "/SensorIntervalDatabase" + ip[-3:] + ".sqlite", 'wb')
         local_file.write(remote_database.read())
         remote_database.close()
@@ -145,7 +183,7 @@ def download_interval_db(ip, download_to_location):
 def download_trigger_db(ip, download_to_location):
     """ Socket connection to sensor IP. Download Trigger SQLite3 database. """
     try:
-        remote_database = urlopen("http://" + ip + ":8009/SensorTriggerDatabase.sqlite")
+        remote_database = urlopen("http://" + ip + ":8009/data/SensorTriggerDatabase.sqlite")
         local_file = open(download_to_location + "/SensorTriggerDatabase" + ip[-3:] + ".sqlite", 'wb')
         local_file.write(remote_database.read())
         remote_database.close()

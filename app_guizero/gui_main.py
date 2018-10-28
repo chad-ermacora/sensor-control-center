@@ -16,23 +16,26 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import webbrowser
-import platform
 import os
+import platform
 import subprocess
-import app_sensor_commands
-import app_logger
-import app_config
-from guizero import App, PushButton, MenuBar, info, warn, yesno
-from tkinter import filedialog
+import webbrowser
 from threading import Thread
-from app_guizero.gui_config import CreateConfigWindow
+from tkinter import filedialog
+
+from guizero import App, PushButton, MenuBar, info, warn, yesno
+
+import app_config
+import app_logger
+import app_sensor_commands
 from app_guizero.gui_about import CreateAboutWindow
-from app_guizero.gui_sensor_config import CreateSensorConfigWindow
-from app_guizero.gui_reports import CreateReportsWindow
-from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
+from app_guizero.gui_config import CreateConfigWindow
 from app_guizero.gui_graphing import CreateGraphingWindow, pyplot
 from app_guizero.gui_ip_selection import CreateIPSelector
+from app_guizero.gui_reports import CreateReportsWindow
+from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
+from app_guizero.gui_sensor_config import CreateSensorConfigWindow
+from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
 
 
 class CreateMainWindow:
@@ -48,9 +51,10 @@ class CreateMainWindow:
         self._set_ip_list()
 
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
+        self.window_reports = CreateReportsWindow(self.app, self.ip_selection)
         self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection)
         self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection)
-        self.window_reports = CreateReportsWindow(self.app, self.ip_selection)
+        self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
         self.window_about = CreateAboutWindow(self.app, self.current_config)
 
@@ -74,7 +78,9 @@ class CreateMainWindow:
                                              ["Send Commands",
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
-                                              self.window_sensor_config.window.show]],
+                                              self.window_sensor_config.window.show],
+                                            ["View & Download Sensor Logs",
+                                             self.window_sensor_logs.window.show]],
                                             [["Open Graph Window",
                                               self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
@@ -114,6 +120,7 @@ class CreateMainWindow:
         self.window_sensor_commands.window.tk.resizable(False, False)
         self.window_sensor_config.window.tk.resizable(False, False)
         self.window_reports.window.tk.resizable(False, False)
+        self.window_sensor_logs.window.tk.resizable(False, False)
         self.window_graph.window.tk.resizable(False, False)
         self.window_about.window.tk.resizable(False, False)
 
