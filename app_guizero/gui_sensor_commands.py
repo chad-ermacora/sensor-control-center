@@ -237,11 +237,13 @@ class CreateSensorCommandsWindow:
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            command = network_commands.set_host_name + app_sensor_commands.request_new_name(ip)
-            command_data = app_sensor_commands.CreateCommandData(ip,
-                                                                 self.current_config.network_timeout_data,
-                                                                 command)
-            app_sensor_commands.send_command(command_data)
+            new_hostname = app_sensor_commands.request_new_name(ip)
+            if new_hostname is not None and new_hostname is not "":
+                command = network_commands.set_host_name + new_hostname
+                command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                     self.current_config.network_timeout_data,
+                                                                     command)
+                app_sensor_commands.send_command(command_data)
 
     def datetime_update(self):
         """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
