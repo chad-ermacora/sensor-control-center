@@ -26,6 +26,15 @@ from urllib.request import urlopen
 import app_logger
 
 
+class CreateHTTPDownload:
+    def __init__(self):
+        self.ip = "127.0.0.1"
+        self.port = ":8009"
+        self.url = "/"
+        self.file_name = "wrong_file.default"
+        self.save_to_location = "/home/pi/"
+
+
 def check_sensor_status(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensor status. """
     socket.setdefaulttimeout(net_timeout)
@@ -147,76 +156,31 @@ def get_sensor_config(ip, net_timeout):
     return final_sensor_config
 
 
-def download_logs(ip, download_to_location):
-    """ Socket connection to sensor IP. Download 3 log files. """
+def download_logs(download_obj):
+    """ Download 3 log files. """
+    download_obj.file_name = "Primary_log.txt"
+    download_http_file(download_obj)
+
+    download_obj.file_name = "Sensors_log.txt"
+    download_http_file(download_obj)
+
+    download_obj.file_name = "Network_log.txt"
+    download_http_file(download_obj)
+
+
+def download_http_file(obj_download):
+    """ Download provided HTTP file to locally chosen directory. """
     try:
-        remote_database = urlopen("http://" + ip + ":8009/logs/Primary_log.txt")
-        local_file = open(download_to_location + "/Primary_log" + ip[-3:] + ".txt", 'wb')
-        local_file.write(remote_database.read())
-        remote_database.close()
+        http_file = urlopen(
+            "http://" + obj_download.ip + obj_download.port + obj_download.url + obj_download.file_name)
+        local_file = open(obj_download.save_to_location + "/_" + obj_download.ip[-3:] + obj_download.file_name, 'wb')
+        local_file.write(http_file.read())
+        http_file.close()
         local_file.close()
-        app_logger.sensor_logger.info("Download primary log from " + ip + " Complete")
+        app_logger.sensor_logger.info("Download " + obj_download.file_name + " from " + obj_download.ip + " Complete")
     except Exception as error:
-        app_logger.sensor_logger.error("Download primary log from " + ip + " Failed: " + str(error))
-
-    try:
-        remote_database = urlopen("http://" + ip + ":8009/logs/Sensors_log.txt")
-        local_file = open(download_to_location + "/Sensors_log" + ip[-3:] + ".txt", 'wb')
-        local_file.write(remote_database.read())
-        remote_database.close()
-        local_file.close()
-        app_logger.sensor_logger.info("Download sensors log from " + ip + " Complete")
-    except Exception as error:
-        app_logger.sensor_logger.error("Download sensors log from " + ip + " Failed: " + str(error))
-
-    try:
-        remote_database = urlopen("http://" + ip + ":8009/logs/Network_log.txt")
-        local_file = open(download_to_location + "/Network_log" + ip[-3:] + ".txt", 'wb')
-        local_file.write(remote_database.read())
-        remote_database.close()
-        local_file.close()
-        app_logger.sensor_logger.info("Download network log from " + ip + " Complete")
-    except Exception as error:
-        app_logger.sensor_logger.error("Download network log from " + ip + " Failed: " + str(error))
-
-
-def download_sensors_log(ip, download_to_location):
-    """ Socket connection to sensor IP. Download sensors log. """
-    try:
-        remote_database = urlopen("http://" + ip + ":8009/logs/Sensor_readings_log.txt")
-        local_file = open(download_to_location + "/Sensor_readings_log" + ip[-3:] + ".txt", 'wb')
-        local_file.write(remote_database.read())
-        remote_database.close()
-        local_file.close()
-        app_logger.sensor_logger.info("Download sensors log from " + ip + " Complete")
-    except Exception as error:
-        app_logger.sensor_logger.error("Download sensors log from " + ip + " Failed: " + str(error))
-
-
-def download_interval_db(ip, download_to_location):
-    """ Socket connection to sensor IP. Download Interval SQLite3 database. """
-    try:
-        remote_database = urlopen("http://" + ip + ":8009/data/SensorIntervalDatabase.sqlite")
-        local_file = open(download_to_location + "/SensorIntervalDatabase" + ip[-3:] + ".sqlite", 'wb')
-        local_file.write(remote_database.read())
-        remote_database.close()
-        local_file.close()
-        app_logger.sensor_logger.info("Download Interval DB from " + ip + " Complete")
-    except Exception as error:
-        app_logger.sensor_logger.error("Download Interval DB from " + ip + " Failed: " + str(error))
-
-
-def download_trigger_db(ip, download_to_location):
-    """ Socket connection to sensor IP. Download Trigger SQLite3 database. """
-    try:
-        remote_database = urlopen("http://" + ip + ":8009/data/SensorTriggerDatabase.sqlite")
-        local_file = open(download_to_location + "/SensorTriggerDatabase" + ip[-3:] + ".sqlite", 'wb')
-        local_file.write(remote_database.read())
-        remote_database.close()
-        local_file.close()
-        app_logger.sensor_logger.info("Download Trigger DB from " + ip + " Complete")
-    except Exception as error:
-        app_logger.sensor_logger.error("Download Trigger DB from " + ip + " Failed: " + str(error))
+        app_logger.sensor_logger.error(
+            "Download " + obj_download.file_name + " from " + obj_download.ip + " Failed: " + str(error))
 
 
 def upgrade_program_smb(ip):
