@@ -91,8 +91,13 @@ class CreateSensorLogsWindow:
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
+                    download_obj = app_sensor_commands.CreateHTTPDownload()
+                    download_obj.ip = ip
+                    download_obj.url = "/logs/"
+                    download_obj.save_to_location = download_to_location
+
                     threads.append(Thread(target=app_sensor_commands.download_logs,
-                                          args=[ip, download_to_location]))
+                                          args=[download_obj]))
 
                 for thread in threads:
                     thread.start()

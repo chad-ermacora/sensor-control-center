@@ -16,15 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
 import webbrowser
 from time import strftime
-
+from threading import Thread
+from queue import Queue
 import app_config
 import app_logger
 import app_sensor_commands
 
-script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
+script_directory = app_config.script_directory
+data_queue = Queue()
 
 
 class HTMLSystem:
@@ -55,7 +56,7 @@ class HTMLSystem:
         # Convert the sensor's system uptime of minutes to human readable day/hour.min
         sensor_data[3] = _convert_minutes_string(sensor_data[3])
 
-        return sensor_data
+        data_queue.put([ip, sensor_data])
 
 
 class HTMLReadings:
@@ -76,7 +77,7 @@ class HTMLReadings:
     def get_sensor_data(self, ip):
         sensor_data = app_sensor_commands.get_sensor_readings(ip, self.config_settings.network_timeout_data)
 
-        return sensor_data
+        data_queue.put([ip, sensor_data])
 
 
 class HTMLConfig:
@@ -103,7 +104,7 @@ class HTMLConfig:
     def get_sensor_data(self, ip):
         sensor_data = app_sensor_commands.get_sensor_config(ip, self.config_settings.network_timeout_data)
 
-        return sensor_data
+        data_queue.put([ip, sensor_data])
 
 
 def sensor_html_report(report_configuration, ip_list):
@@ -113,12 +114,29 @@ def sensor_html_report(report_configuration, ip_list):
 
     # Add first HTML Template file to final HTML output file
     # Insert each sensors data into final HTML output file through the 2nd template & replacement codes
+    report_data_pool = []
+    threads = []
+
     for ip in ip_list:
+        threads.append(Thread(target=report_configuration.get_sensor_data, args=[ip]))
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    while not data_queue.empty():
+        report_data_pool.append(data_queue.get())
+        data_queue.task_done()
+
+    report_data_pool.sort()
+
+    for sensor_data in report_data_pool:
         try:
             current_sensor_html = sensor_html_template
-            sensor_data = report_configuration.get_sensor_data(ip)
 
-            current_sensor_html = _replace_with_codes(sensor_data,
+            current_sensor_html = _replace_with_codes(sensor_data[1],
                                                       report_configuration.replacement_codes,
                                                       current_sensor_html)
 

@@ -79,8 +79,8 @@ class CreateMainWindow:
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
                                               self.window_sensor_config.window.show],
-                                            ["View & Download Logs",
-                                             self.window_sensor_logs.window.show]],
+                                             ["View & Download Logs",
+                                              self.window_sensor_logs.window.show]],
                                             [["Open Graph Window",
                                               self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
@@ -100,17 +100,17 @@ class CreateMainWindow:
                                                   grid=[1, 15, 2, 1],
                                                   align="left")
 
-        self.app_button_sensor_detail = PushButton(self.app,
-                                                   text="Download Sensor\nInterval Databases",
-                                                   command=self._app_menu_download_interval_db,
-                                                   grid=[2, 15, 2, 1],
-                                                   align="right")
+        self.app_button_download_interval = PushButton(self.app,
+                                                       text="Download Sensor\nInterval Databases",
+                                                       command=self._app_menu_download_interval_db,
+                                                       grid=[2, 15, 2, 1],
+                                                       align="right")
 
-        self.app_button_sensor_config = PushButton(self.app,
-                                                   text="Download Sensor\nTrigger Databases",
-                                                   command=self._app_menu_download_trigger_db,
-                                                   grid=[4, 15],
-                                                   align="right")
+        self.app_button_download_trigger = PushButton(self.app,
+                                                      text="Download Sensor\nTrigger Databases",
+                                                      command=self._app_menu_download_trigger_db,
+                                                      grid=[4, 15],
+                                                      align="right")
 
     def app_custom_configurations(self):
         """ Apply system & user specific settings to application.  Used just before application start. """
@@ -204,8 +204,14 @@ class CreateMainWindow:
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    threads.append(Thread(target=app_sensor_commands.download_interval_db,
-                                          args=[ip, download_to_location]))
+                    download_obj = app_sensor_commands.CreateHTTPDownload()
+                    download_obj.ip = ip
+                    download_obj.url = "/data/"
+                    download_obj.save_to_location = download_to_location
+                    download_obj.file_name = "SensorIntervalDatabase.sqlite"
+
+                    threads.append(Thread(target=app_sensor_commands.download_http_file,
+                                          args=[download_obj]))
 
                 for thread in threads:
                     thread.start()
@@ -228,8 +234,14 @@ class CreateMainWindow:
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    threads.append(Thread(target=app_sensor_commands.download_trigger_db,
-                                          args=[ip, download_to_location]))
+                    download_obj = app_sensor_commands.CreateHTTPDownload()
+                    download_obj.ip = ip
+                    download_obj.url = "/data/"
+                    download_obj.save_to_location = download_to_location
+                    download_obj.file_name = "SensorTriggerDatabase.sqlite"
+
+                    threads.append(Thread(target=app_sensor_commands.download_http_file,
+                                          args=[download_obj]))
 
                 for thread in threads:
                     thread.start()
