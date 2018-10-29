@@ -5,7 +5,7 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2018-10-25T18:27:44.726000000"/>
+	<meta name="changed" content="2018-10-28T21:45:49.184000000"/>
 	<style type="text/css">
 		h2.cjk { font-family: "NSimSun" }
 		h2.ctl { font-family: "Lucida Sans" }
@@ -32,40 +32,46 @@ Requirements</u></font></strong></h4>
 <p align="left">The User must know the following</p>
 <p align="left">1. Basic TCP/IP Version 4 concepts<br/>
 <em>IP
-Address, Gateway, DNS, etc.</em></p>
+Address, Gateway, DNS, etc</em></p>
 <p align="left">2. Basic operations of the terminal text editor
 &quot;nano&quot;<br/>
 <em>Use &quot;Ctrl + x&quot; to quit, entering
-&quot;y&quot; to save changes</em></p>
+&quot;y&quot; to save any changes (If you made any)</em></p>
 <p align="left">3. How to accesses a terminal in Raspbian<br/>
 <em>Raspberry
 Pi Menu -&gt; Accessories -&gt; Terminal</em></p>
 <h4 class="western" align="left"><strong><font size="4" style="font-size: 14pt"><u>Required
 Hardware</u></font></strong></h4>
 <p align="left"><strong><a href="https://www.raspberrypi.org/products/">Raspberry
-Pi</a></strong> - I have tested the 3B+ &amp; Zero W</p>
-<p align="left"><strong><em>Optional </em></strong>- additional
-sensors (see Currently Supported Sensor&rsquo;s above)</p>
+Pi</a></strong><strong> &ndash; </strong>I have tested the 3B+ &amp;
+Zero W</p>
+<p align="left"><strong><em>Optional</em></strong><strong><em> &ndash;
+</em></strong>additional sensors (see Currently Supported Sensor&rsquo;s
+above)</p>
 <h3 class="western" align="left"><strong><u>Install Instructions</u></strong></h3>
 <p><em><span style="font-variant: normal"><span style="font-style: normal">The
-installer script will modify /etc/network/interfaces &amp; replace
-the root users crontab. <br/>
-This command will automatically reboot
-the Raspberry Pi after completion.<br/>
-** Note: The installer can
-take awhile, especially on the Raspberry Pi Zero models (</span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">45</span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">
-minutes or more). This is mostly due to a required numpy update</span></span></em><em><span style="font-variant: normal">
+installer script will modify /etc/network/interfaces, replace the
+root users crontab &amp; reboot the Raspberry Pi. This installation
+also includes a copy of </span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">the
+</span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">Control
+Center </span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">program
+to manage your sensor(s)</span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">.
+<br/>
+** Note: The installer can take awhile, especially on the
+Raspberry Pi Zero models (60</span></span></em><em><span style="font-variant: normal">
+</span></em><em><span style="font-variant: normal"><span style="font-style: normal">minutes
+or more). This is mostly due to a required numpy </span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">rebuild</span></span></em><em><span style="font-variant: normal">
 </span></em><em><span style="font-variant: normal"><span style="font-style: normal">**</span></span></em></p>
 <p align="left"><strong>Step 1</strong>. Physically Install your
 Sensor(s) onto the Raspberry Pi<br/>
 <strong>Step 2</strong>. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install
-Raspbian OS</a> on your Raspberry Pi<br/>
-<strong>Step 3</strong>.
-Enable SPI and I2C in the Raspberry Pi Configuration window on the
-&quot;Interfaces&quot; tab<br/>
-<strong>Step 4</strong>. Make sure
-you are connected to the Internet with your Pi, then run the
-following command in a terminal to start the Installer<br/>
+Raspbian OS</a><br/>
+<strong>Step 3</strong>. Enable SPI and I2C in
+the Raspberry Pi Configuration window on the &quot;Interfaces&quot;
+tab<br/>
+<strong>Step 4</strong>. Make sure you are connected to the
+Internet with your Pi, then run the following command in a terminal
+to start the Installer<br/>
 <em><font size="2" style="font-size: 11pt"><br/>
 </font></em><span style="background: #dddddd">wget
 http://kootenay-networks.com/utils/koot_net_sensors/Installers/raspbian/update_programs_online.sh
@@ -78,7 +84,17 @@ after which it will continue to download program files, install
 necessary Python libraries, update Raspbian itself, and finally
 reboot the sensor<br/>
 Once the Raspberry Pi comes back up, your
-sensor should be ready!</p>
+sensor should be ready!<br/>
+<br/>
+<font size="4" style="font-size: 14pt"><u><b>Uninstall
+Sensor Software<br/>
+</b></u></font>This will remove all sensor
+software &amp; the control center, plus it will restore the
+<em><span style="font-variant: normal"><span style="font-style: normal">/etc/network/interfaces
+file. It will leave your data, logs and configurations (Not the
+control center configuration).</span></span></em></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><em><span style="font-variant: normal"><span style="text-decoration: none"><span style="font-style: normal"><span style="background: #dddddd">sudo
+bash /home/pi/KootNetSensors/zUninstall.sh</span></span></span></span></em></p>
 <p align="left"><br/>
 <br/>
 
