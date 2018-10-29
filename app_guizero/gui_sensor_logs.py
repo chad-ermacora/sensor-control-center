@@ -42,8 +42,14 @@ class CreateSensorLogsWindow:
                                    options=[[["Download All Sensors Logs",
                                               self._download_logs]]])
 
+        self.text_select_ip = Text(self.window,
+                                   text="Select Sensor IPs in the main window",
+                                   color="#CB0000",
+                                   grid=[1, 1],
+                                   align="left")
+
         self.text_choose = Text(self.window,
-                                text="Log Output",
+                                text="Last lines of selected log",
                                 color="blue",
                                 grid=[1, 1],
                                 align="top")
@@ -55,7 +61,10 @@ class CreateSensorLogsWindow:
                                           align="right")
 
         self.textbox_log = TextBox(self.window,
-                                   text="Sensor Log",
+                                   text="\nPlease select the log type in the top right" +
+                                        " and hit the 'Update Log View' in the bottom right\n" +
+                                        "You may also use the 'Download' menu in the top left to " +
+                                        "download ALL logs off ALL selected Sensors",
                                    grid=[1, 2],
                                    width=110,
                                    height=22,
@@ -63,7 +72,7 @@ class CreateSensorLogsWindow:
                                    align="left")
 
         self.button_get = PushButton(self.window,
-                                     text="View last few lines\nof first sensor's log",
+                                     text="Update Sensor\nLog View",
                                      command=self._get_log,
                                      grid=[1, 3],
                                      align="right")

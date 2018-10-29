@@ -145,6 +145,11 @@ class CreateMainWindow:
         self.window_sensor_config.recording_checkbox()
         self.window_sensor_config.custom_checkbox()
 
+        self.window_sensor_logs.textbox_log.bg = "black"
+        self.window_sensor_logs.textbox_log.text_color = "white"
+        self.window_about.about_textbox.bg = "black"
+        self.window_about.about_textbox.text_color = "white"
+
         # Platform specific adjustments
         if platform.system() == "Windows":
             self.app.tk.iconbitmap(self.current_config.additional_files_directory + "/icon.ico")
