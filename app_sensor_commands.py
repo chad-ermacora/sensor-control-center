@@ -44,14 +44,20 @@ def check_sensor_status(ip, net_timeout):
     return sensor_status
 
 
-def get_sensor_operations_log(ip, net_timeout):
+def get_network_log(ip, net_timeout):
+    """ Socket connection to sensor IP. Return sensors network log. """
+    log = _get_data(ip, net_timeout, "GetNetworkLog")
+    return log
+
+
+def get_sensor_primary_log(ip, net_timeout):
     """ Socket connection to sensor IP. Return sensors operations log. """
     log = _get_data(ip, net_timeout, "GetOperationsLog")
     return log
 
 
 def get_sensors_log(ip, net_timeout):
-    """ Socket connection to sensor IP. Return sensors log. """
+    """ Socket connection to sensor IP. Return sensors "sensors" log. """
     log = _get_data(ip, net_timeout, "GetSensorsLog")
     return log
 
@@ -141,17 +147,37 @@ def get_sensor_config(ip, net_timeout):
     return final_sensor_config
 
 
-def download_operations_log(ip, download_to_location):
-    """ Socket connection to sensor IP. Download operations log. """
+def download_logs(ip, download_to_location):
+    """ Socket connection to sensor IP. Download 3 log files. """
     try:
-        remote_database = urlopen("http://" + ip + ":8009/logs/Operations_log.txt")
-        local_file = open(download_to_location + "/Operations_log" + ip[-3:] + ".txt", 'wb')
+        remote_database = urlopen("http://" + ip + ":8009/logs/Primary_log.txt")
+        local_file = open(download_to_location + "/Primary_log" + ip[-3:] + ".txt", 'wb')
         local_file.write(remote_database.read())
         remote_database.close()
         local_file.close()
-        app_logger.sensor_logger.info("Download operations log from " + ip + " Complete")
+        app_logger.sensor_logger.info("Download primary log from " + ip + " Complete")
     except Exception as error:
-        app_logger.sensor_logger.error("Download operations log from " + ip + " Failed: " + str(error))
+        app_logger.sensor_logger.error("Download primary log from " + ip + " Failed: " + str(error))
+
+    try:
+        remote_database = urlopen("http://" + ip + ":8009/logs/Sensors_log.txt")
+        local_file = open(download_to_location + "/Sensors_log" + ip[-3:] + ".txt", 'wb')
+        local_file.write(remote_database.read())
+        remote_database.close()
+        local_file.close()
+        app_logger.sensor_logger.info("Download sensors log from " + ip + " Complete")
+    except Exception as error:
+        app_logger.sensor_logger.error("Download sensors log from " + ip + " Failed: " + str(error))
+
+    try:
+        remote_database = urlopen("http://" + ip + ":8009/logs/Network_log.txt")
+        local_file = open(download_to_location + "/Network_log" + ip[-3:] + ".txt", 'wb')
+        local_file.write(remote_database.read())
+        remote_database.close()
+        local_file.close()
+        app_logger.sensor_logger.info("Download network log from " + ip + " Complete")
+    except Exception as error:
+        app_logger.sensor_logger.error("Download network log from " + ip + " Failed: " + str(error))
 
 
 def download_sensors_log(ip, download_to_location):

@@ -79,7 +79,7 @@ class CreateMainWindow:
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
                                               self.window_sensor_config.window.show],
-                                            ["View & Download Sensor Logs",
+                                            ["View & Download Logs",
                                              self.window_sensor_logs.window.show]],
                                             [["Open Graph Window",
                                               self.window_graph.window.show]],

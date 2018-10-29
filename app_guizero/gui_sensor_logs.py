@@ -49,7 +49,7 @@ class CreateSensorLogsWindow:
                                 align="top")
 
         self.radio_log_type = ButtonGroup(self.window,
-                                          options=["Operations Log", "Sensors Log"],
+                                          options=["Network Log", "Primary Log", "Sensors Log"],
                                           horizontal="True",
                                           grid=[1, 1],
                                           align="right")
@@ -71,10 +71,15 @@ class CreateSensorLogsWindow:
     def _get_log(self):
         """ Select the remote sensor log you wish to view. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        if self.radio_log_type.value == "Sensors Log":
+        if self.radio_log_type.value == "Network Log":
+            log = app_sensor_commands.get_network_log(ip_list[0], self.current_config.network_timeout_data)
+        elif self.radio_log_type.value == "Primary Log":
+            log = app_sensor_commands.get_sensor_primary_log(ip_list[0], self.current_config.network_timeout_data)
+        elif self.radio_log_type.value == "Sensors Log":
             log = app_sensor_commands.get_sensors_log(ip_list[0], self.current_config.network_timeout_data)
         else:
-            log = app_sensor_commands.get_sensor_operations_log(ip_list[0], self.current_config.network_timeout_data)
+            log = "Bad Log Request"
+
         self.textbox_log.value = log
         app_logger.app_logger.info("Remote Sensor Log Retrieved")
 
@@ -86,9 +91,7 @@ class CreateSensorLogsWindow:
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    threads.append(Thread(target=app_sensor_commands.download_operations_log,
-                                          args=[ip, download_to_location]))
-                    threads.append(Thread(target=app_sensor_commands.download_sensors_log,
+                    threads.append(Thread(target=app_sensor_commands.download_logs,
                                           args=[ip, download_to_location]))
 
                 for thread in threads:
