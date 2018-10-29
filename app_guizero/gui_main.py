@@ -51,9 +51,9 @@ class CreateMainWindow:
         self._set_ip_list()
 
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
-        self.window_reports = CreateReportsWindow(self.app, self.ip_selection)
-        self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection)
-        self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection)
+        self.window_reports = CreateReportsWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
         self.window_about = CreateAboutWindow(self.app, self.current_config)

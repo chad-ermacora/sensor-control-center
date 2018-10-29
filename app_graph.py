@@ -18,7 +18,7 @@
 """
 import sqlite3
 from datetime import datetime, timedelta
-
+from app_useful import convert_minutes_string
 import plotly
 from guizero import warn
 from matplotlib import pyplot, animation, style
@@ -75,9 +75,10 @@ class CreateGraphData:
 
 class CreateLiveGraph:
     def __init__(self, sensor_type, ip, current_config):
-        self.current_config = current_config
         self.sensor_type = sensor_type
         self.ip = ip
+        self.current_config = current_config
+        self.get_commands = app_sensor_commands.CreateNetworkGetCommands()
         self.first_datetime = str(datetime.time(datetime.now()))[:8]
 
         self.fig = pyplot.figure()
@@ -93,17 +94,21 @@ class CreateLiveGraph:
 
     def _update_graph(self, x_frame):
         current_time = str(datetime.time(datetime.now()))[:8]
-        sensor_name = app_sensor_commands.get_sensor_hostname(self.ip,
-                                                              self.current_config.network_timeout_data)
+        command_data = app_sensor_commands.CreateCommandData(self.ip,
+                                                             self.current_config.network_timeout_data,
+                                                             "")
+
+        command_data.command = self.get_commands.sensor_name
+        sensor_name = app_sensor_commands.get_data(command_data)
         try:
             if self.sensor_type is "SensorUpTime":
-                sensor_reading = app_sensor_commands.get_sensor_uptime(self.ip,
-                                                                       self.current_config.network_timeout_data)
+                command_data.command = self.get_commands.system_uptime
+                sensor_reading = app_sensor_commands.get_data(command_data)
                 sensor_type_name = "Sensor Uptime"
                 measurement_type = ""
             elif self.sensor_type is "SystemTemp":
-                sensor_reading = app_sensor_commands.get_sensor_cpu_temperature(self.ip,
-                                                                                self.current_config.network_timeout_data)
+                command_data.command = self.get_commands.cpu_temp
+                sensor_reading = app_sensor_commands.get_data(command_data)
 
                 try:
                     sensor_reading = round(float(sensor_reading), 3)
@@ -113,8 +118,8 @@ class CreateLiveGraph:
                 sensor_type_name = "CPU Temperature"
                 measurement_type = " °C"
             elif self.sensor_type is "EnvironmentTemp":
-                sensor_reading = app_sensor_commands.get_sensor_temperature(self.ip,
-                                                                            self.current_config.network_timeout_data)
+                command_data.command = self.get_commands.environmental_temp
+                sensor_reading = app_sensor_commands.get_data(command_data)
 
                 try:
                     sensor_reading = round(float(sensor_reading) +
@@ -125,13 +130,13 @@ class CreateLiveGraph:
                 sensor_type_name = "Environmental Temperature"
                 measurement_type = " °C"
             elif self.sensor_type is "Pressure":
-                sensor_reading = app_sensor_commands.get_sensor_pressure(self.ip,
-                                                                         self.current_config.network_timeout_data)
+                command_data.command = self.get_commands.pressure
+                sensor_reading = app_sensor_commands.get_data(command_data)
                 sensor_type_name = "Pressure"
                 measurement_type = " hPa"
             elif self.sensor_type is "Humidity":
-                sensor_reading = app_sensor_commands.get_sensor_humidity(self.ip,
-                                                                         self.current_config.network_timeout_data)
+                command_data.command = self.get_commands.humidity
+                sensor_reading = app_sensor_commands.get_data(command_data)
 
                 try:
                     sensor_reading = int(round(float(sensor_reading), 0))
@@ -141,13 +146,13 @@ class CreateLiveGraph:
                 sensor_type_name = "Humidity"
                 measurement_type = " %RH"
             elif self.sensor_type is "Lumen":
-                sensor_reading = app_sensor_commands.get_sensor_lumen(self.ip,
-                                                                      self.current_config.network_timeout_data)
+                command_data.command = self.get_commands.lumen
+                sensor_reading = app_sensor_commands.get_data(command_data)
                 sensor_type_name = "Lumen"
                 measurement_type = " Lumen"
             elif self.sensor_type[0] == "Red":
-                sensor_reading = app_sensor_commands.get_sensor_rgb(self.ip,
-                                                                    self.current_config.network_timeout_data)
+                command_data.command = self.get_commands.rgb
+                sensor_reading = app_sensor_commands.get_data(command_data)
                 sensor_type_name = "RGB"
                 measurement_type = ""
             elif self.sensor_type[0] == "Acc_X":
@@ -173,14 +178,7 @@ class CreateLiveGraph:
             self.ax1.plot(self.x, self.y)
 
             if self.sensor_type is "SensorUpTime":
-                try:
-                    uptime_days = int(float(sensor_reading) // 1440)
-                    uptime_hours = int((float(sensor_reading) % 1440) // 60)
-                    uptime_min = int(float(sensor_reading) % 60)
-                    sensor_reading = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(
-                        uptime_min) + " Hours"
-                except Exception as error:
-                    app_logger.app_logger.warning(str(error))
+                sensor_reading = convert_minutes_string(sensor_reading)
 
             pyplot.title("Sensor: " + sensor_name + "  ||  IP: " + self.ip)
             pyplot.xlabel("Start Time: " + self.first_datetime +

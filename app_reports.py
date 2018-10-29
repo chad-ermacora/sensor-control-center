@@ -17,20 +17,22 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import webbrowser
-from time import strftime
-from threading import Thread
 from queue import Queue
+from threading import Thread
+from time import strftime
+
 import app_config
 import app_logger
 import app_sensor_commands
+from app_useful import convert_minutes_string
 
 script_directory = app_config.script_directory
 data_queue = Queue()
 
 
 class HTMLSystem:
-    def __init__(self):
-        self.config_settings = app_config.get_from_file()
+    def __init__(self, current_config):
+        self.config_settings = current_config
         self.template1 = script_directory + "/additional_files/html_template_system1.html"
         self.template2 = script_directory + "/additional_files/html_template_system2.html"
         self.template3 = script_directory + "/additional_files/html_template_system3.html"
@@ -52,16 +54,17 @@ class HTMLSystem:
         self.local_time_code = ["{{LocalDateTime}}"]
 
     def get_sensor_data(self, ip):
-        sensor_data = app_sensor_commands.get_sensor_system(ip, self.config_settings.network_timeout_data)
-        # Convert the sensor's system uptime of minutes to human readable day/hour.min
-        sensor_data[3] = _convert_minutes_string(sensor_data[3])
+        command_data = app_sensor_commands.CreateCommandData(ip, self.config_settings.network_timeout_data,
+                                                             "GetSystemData")
+        sensor_system = app_sensor_commands.get_data(command_data).split(",")
+        sensor_system[3] = convert_minutes_string(sensor_system[3])
 
-        data_queue.put([ip, sensor_data])
+        data_queue.put([ip, sensor_system])
 
 
 class HTMLReadings:
-    def __init__(self):
-        self.config_settings = app_config.get_from_file()
+    def __init__(self, current_config):
+        self.config_settings = current_config
         self.template1 = script_directory + "/additional_files/html_template_readings1.html"
         self.template2 = script_directory + "/additional_files/html_template_readings2.html"
         self.template3 = script_directory + "/additional_files/html_template_readings3.html"
@@ -75,14 +78,16 @@ class HTMLReadings:
         self.local_time_code = ["{{LocalDateTime}}"]
 
     def get_sensor_data(self, ip):
-        sensor_data = app_sensor_commands.get_sensor_readings(ip, self.config_settings.network_timeout_data)
-
+        command_data = app_sensor_commands.CreateCommandData(ip,
+                                                             self.config_settings.network_timeout_data,
+                                                             "GetSensorReadings")
+        sensor_data = app_sensor_commands.get_data(command_data)
         data_queue.put([ip, sensor_data])
 
 
 class HTMLConfig:
-    def __init__(self):
-        self.config_settings = app_config.get_from_file()
+    def __init__(self, current_config):
+        self.config_settings = current_config
         self.template1 = script_directory + "/additional_files/html_template_config1.html"
         self.template2 = script_directory + "/additional_files/html_template_config2.html"
         self.template3 = script_directory + "/additional_files/html_template_config3.html"
@@ -102,9 +107,26 @@ class HTMLConfig:
         self.local_time_code = ["{{LocalDateTime}}"]
 
     def get_sensor_data(self, ip):
-        sensor_data = app_sensor_commands.get_sensor_config(ip, self.config_settings.network_timeout_data)
+        command_data = app_sensor_commands.CreateCommandData(ip,
+                                                             self.config_settings.network_timeout_data,
+                                                             "GetSystemData")
+        sensor_system = app_sensor_commands.get_data(command_data).split(",")
+        sensor_system[3] = convert_minutes_string(sensor_system[3])
 
-        data_queue.put([ip, sensor_data])
+        command_data.command = "GetConfiguration"
+        sensor_config = app_sensor_commands.get_data(command_data).split(",")
+
+        final_sensor_config = [str(sensor_system[0]),
+                               str(sensor_system[1]),
+                               str(sensor_system[2]),
+                               str(sensor_config[0]),
+                               str(sensor_config[1]),
+                               str(sensor_config[2]),
+                               str(sensor_config[3]),
+                               str(sensor_config[4]),
+                               str(sensor_config[5]),
+                               str(sensor_config[6])]
+        data_queue.put([ip, final_sensor_config])
 
 
 def sensor_html_report(report_configuration, ip_list):
@@ -172,19 +194,6 @@ def _get_file_content(file_location):
         file_content = "Unable to get file contents: " + str(error)
 
     return file_content
-
-
-def _convert_minutes_string(var_minutes):
-    try:
-        uptime_days = int(float(var_minutes) // 1440)
-        uptime_hours = int((float(var_minutes) % 1440) // 60)
-        uptime_min = int(float(var_minutes) % 60)
-        str_day_hour_min = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
-    except Exception as error:
-        app_logger.app_logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
-        str_day_hour_min = var_minutes
-
-    return str_day_hour_min
 
 
 def _replace_with_codes(data, codes, template):

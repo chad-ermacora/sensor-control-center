@@ -18,12 +18,13 @@
 """
 from guizero import Window, CheckBox, PushButton, Text, TextBox, info
 
-from app_sensor_commands import set_sensor_config
+from app_sensor_commands import CreateCommandData, CreateNetworkSendCommands, send_command
 
 
 class CreateSensorConfigWindow:
-    def __init__(self, app, ip_selection):
+    def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
+        self.current_config = current_config
         self.window = Window(app,
                              title="Sensors Configuration Updater",
                              width=340,
@@ -137,6 +138,8 @@ class CreateSensorConfigWindow:
 
     def config_set(self):
         """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
+        network_commands = CreateNetworkSendCommands()
+
         config_settings_str = "," + str(self.checkbox_db_record.value) + "," + \
                               str(self.textbox_interval.value) + "," + \
                               str(self.textbox_trigger.value) + "," + \
@@ -147,6 +150,10 @@ class CreateSensorConfigWindow:
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            set_sensor_config(ip, config_settings_str)
+            command = network_commands.set_configuration + config_settings_str
+            command_data = CreateCommandData(ip,
+                                             self.current_config.network_timeout_data,
+                                             command)
+            send_command(command_data)
 
         info("Sensors Configuration Set", "Configurations set & Services restarted")

@@ -80,17 +80,21 @@ class CreateSensorLogsWindow:
     def _get_log(self):
         """ Select the remote sensor log you wish to view. """
         ip_list = self.ip_selection.get_verified_ip_list()
+        command_data = app_sensor_commands.CreateCommandData(ip_list[0],
+                                                             self.current_config.network_timeout_data,
+                                                             "GetNetworkLog")
         if self.radio_log_type.value == "Network Log":
-            log = app_sensor_commands.get_network_log(ip_list[0], self.current_config.network_timeout_data)
+            log = app_sensor_commands.get_data(command_data)
         elif self.radio_log_type.value == "Primary Log":
-            log = app_sensor_commands.get_sensor_primary_log(ip_list[0], self.current_config.network_timeout_data)
+            command_data.command = "GetPrimaryLog"
+            log = app_sensor_commands.get_data(command_data)
         elif self.radio_log_type.value == "Sensors Log":
-            log = app_sensor_commands.get_sensors_log(ip_list[0], self.current_config.network_timeout_data)
+            command_data.command = "GetSensorsLog"
+            log = app_sensor_commands.get_data(command_data)
         else:
+            app_logger.app_logger.error("Bad Log Request")
             log = "Bad Log Request"
-
         self.textbox_log.value = log
-        app_logger.app_logger.info("Remote Sensor Log Retrieved")
 
     def _download_logs(self):
         ip_list = self.ip_selection.get_verified_ip_list()

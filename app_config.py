@@ -65,6 +65,10 @@ class CreateDefaultConfigSettings:
         self.allow_config_reset = default_config.allow_config_reset
         self.ip_list = default_config.ip_list
 
+    @staticmethod
+    def get_str_datetime_now():
+        return datetime.now().strftime("%Y-%m-%d%H:%M:%S")
+
 
 def get_from_file():
     """ Loads the Control Center configurations from file and returns the Verified settings. """

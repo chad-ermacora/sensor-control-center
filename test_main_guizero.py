@@ -70,7 +70,7 @@ class TestAppConfig(unittest.TestCase):
 
     def test_app_reports(self):
         # This test section needs work
-        self.assertEqual(app_reports._convert_minutes_string(7634), "5 Days / 7.14 Hours")
+        self.assertEqual(app_reports.convert_minutes_string(7634), "5 Days / 7.14 Hours")
 
     def test_app_sensor_commands(self):
         # This test section needs work
