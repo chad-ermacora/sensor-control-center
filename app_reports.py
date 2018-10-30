@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import webbrowser
 from queue import Queue
 from threading import Thread
 from time import strftime
@@ -24,7 +23,7 @@ from time import strftime
 import app_config
 import app_logger
 import app_sensor_commands
-from app_useful import convert_minutes_string
+from app_useful import convert_minutes_string, get_file_content, save_data_to_file, open_html_file
 
 script_directory = app_config.script_directory
 data_queue = Queue()
@@ -131,8 +130,8 @@ class HTMLConfig:
 
 def sensor_html_report(report_configuration, ip_list):
     """ Creates and opens a HTML Report based on provided IP's and report configurations data. """
-    final_file = _get_file_content(report_configuration.template1)
-    sensor_html_template = _get_file_content(report_configuration.template2)
+    final_file = get_file_content(report_configuration.template1)
+    sensor_html_template = get_file_content(report_configuration.template2)
 
     # Add first HTML Template file to final HTML output file
     # Insert each sensors data into final HTML output file through the 2nd template & replacement codes
@@ -168,7 +167,7 @@ def sensor_html_report(report_configuration, ip_list):
 
     # Merge the result with the Final HTML Template file.
     current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
-    template3 = _get_file_content(report_configuration.template3)
+    template3 = get_file_content(report_configuration.template3)
     # Add Local computer's DateTime to 3rd template
     template3 = _replace_with_codes([current_datetime],
                                     report_configuration.local_time_code,
@@ -177,23 +176,11 @@ def sensor_html_report(report_configuration, ip_list):
 
     try:
         save_to_location = str(report_configuration.config_settings.save_to + report_configuration.file_output_name)
-        _save_data_to_file(final_file, save_to_location)
-        _open_html(save_to_location)
+        save_data_to_file(final_file, save_to_location)
+        open_html_file(save_to_location)
         app_logger.app_logger.debug("Sensor Report - HTML Save File - OK")
     except Exception as error:
         app_logger.app_logger.error("Sensor Report - HTML Save File - Failed: " + str(error))
-
-
-def _get_file_content(file_location):
-    try:
-        tmp_file = open(file_location, "r")
-        file_content = tmp_file.read()
-        tmp_file.close()
-    except Exception as error:
-        app_logger.app_logger.error("Unable to get file contents: " + str(error))
-        file_content = "Unable to get file contents: " + str(error)
-
-    return file_content
 
 
 def _replace_with_codes(data, codes, template):
@@ -209,21 +196,3 @@ def _replace_with_codes(data, codes, template):
         count = count + 1
 
     return template
-
-
-def _save_data_to_file(data, file_location):
-    try:
-        file_out = open(file_location, "w")
-        file_out.write(data)
-        file_out.close()
-    except Exception as error:
-        app_logger.app_logger.error("Unable to save file: " + str(error))
-
-
-def _open_html(outfile):
-    """ Opens a HTML file in the default web browser. """
-    try:
-        webbrowser.open_new_tab("file:///" + outfile)
-        app_logger.app_logger.debug("Graph HTML File Opened - OK")
-    except Exception as error:
-        app_logger.app_logger.error("Graph HTML File Opened - Failed - " + str(error))

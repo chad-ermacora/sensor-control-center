@@ -47,7 +47,7 @@ class CreateDefaultConfigSettings:
         self.ip_list = ["127.0.0.1", "192.168.10.12", "192.168.10.13", "192.168.10.14",
                         "192.168.10.15", "192.168.10.16", "192.168.10.17", "192.168.10.18",
                         "192.168.10.51", "192.168.10.52", "192.168.10.53", "192.168.10.54",
-                        "192.168.10.23", "192.168.10.24", "192.168.10.25", "192.168.10.26"]
+                        "192.168.10.55", "192.168.10.56", "192.168.10.57", "192.168.10.58"]
 
     def reset_to_defaults(self):
         """ Resets the User configurable options to a default state on object self. """
@@ -67,7 +67,8 @@ class CreateDefaultConfigSettings:
 
     @staticmethod
     def get_str_datetime_now():
-        return datetime.now().strftime("%Y-%m-%d%H:%M:%S")
+        """ Returns local computer time in YYYY-MM-DD HH:MM:SS. """
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def get_from_file():
