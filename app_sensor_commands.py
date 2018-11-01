@@ -35,19 +35,22 @@ class CreateCommandData:
 class CreateNetworkGetCommands:
     def __init__(self):
         self.sensor_configuration = "GetConfiguration"
-        self.rgb = "GetRGB"
-        self.lumen = "GetLumen"
-        self.humidity = "GetHumidity"
-        self.pressure = "GetPressure"
-        self.environmental_temp = "GetEnvTemperature"
-        self.cpu_temp = "GetCPUTemperature"
-        self.system_uptime = "GetSystemUptime"
-        self.sensor_name = "GetHostName"
-        self.sensor_readings = "GetSensorReadings"
         self.system_data = "GetSystemData"
         self.sensors_log = "GetSensorsLog"
         self.primary_log = "GetPrimaryLog"
         self.network_log = "GetNetworkLog"
+        self.sensor_readings = "GetSensorReadings"
+        self.sensor_name = "GetHostName"
+        self.system_uptime = "GetSystemUptime"
+        self.cpu_temp = "GetCPUTemperature"
+        self.environmental_temp = "GetEnvTemperature"
+        self.pressure = "GetPressure"
+        self.humidity = "GetHumidity"
+        self.lumen = "GetLumen"
+        self.rgb = "GetRGB"
+        self.accelerometer_xyz = "GetAccelerometerXYZ"
+        self.magnetometer_xyz = "GetMagnetometerXYZ"
+        self.gyroscope_xyz = "GetGyroscopeXYZ"
 
 
 class CreateNetworkSendCommands:

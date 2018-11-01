@@ -310,13 +310,13 @@ class CreateGraphingWindow:
             self.checkbox_humidity.value = 0
             self.checkbox_lumen.enable()
             self.checkbox_lumen.value = 0
-            self.checkbox_colour.disable()
+            self.checkbox_colour.enable()
             self.checkbox_colour.value = 0
-            self.checkbox_acc.disable()
+            self.checkbox_acc.enable()
             self.checkbox_acc.value = 0
-            self.checkbox_mag.disable()
+            self.checkbox_mag.enable()
             self.checkbox_mag.value = 0
-            self.checkbox_gyro.disable()
+            self.checkbox_gyro.enable()
             self.checkbox_gyro.value = 0
 
             self.button_live.enable()
@@ -383,22 +383,14 @@ class CreateGraphingWindow:
             if self.checkbox_lumen.value:
                 column_checkboxes.append("Lumen")
             if self.checkbox_colour.value:
-                column_checkboxes.append("Red")
-                column_checkboxes.append("Green")
-                column_checkboxes.append("Blue")
+                column_checkboxes.append("RGB")
         if data_source_radio == "Trigger SQL" or data_source_radio == "Live":
             if self.checkbox_acc.value:
-                column_checkboxes.append("Acc_X")
-                column_checkboxes.append("Acc_Y")
-                column_checkboxes.append("Acc_Z")
+                column_checkboxes.append("AccelerometerXYZ")
             if self.checkbox_mag.value:
-                column_checkboxes.append("Mag_X")
-                column_checkboxes.append("Mag_Y")
-                column_checkboxes.append("Mag_Z")
+                column_checkboxes.append("MagnetometerXYZ")
             if self.checkbox_gyro.value:
-                column_checkboxes.append("Gyro_X")
-                column_checkboxes.append("Gyro_Y")
-                column_checkboxes.append("Gyro_Z")
+                column_checkboxes.append("GyroscopeXYZ")
 
         app_logger.app_logger.debug(str(column_checkboxes))
         return column_checkboxes
@@ -457,26 +449,26 @@ class CreateGraphingWindow:
             else:
                 self.checkbox_lumen.disable()
                 self.checkbox_lumen.value = 0
-            # if var_checkbox is "RGB":
-            #     pass
-            # else:
-            #     self.checkbox_colour.disable()
-            #     self.checkbox_colour.value = 0
-            # if var_checkbox is "Accelerometer":
-            #     pass
-            # else:
-            #     self.checkbox_acc.disable()
-            #     self.checkbox_acc.value = 0
-            # if var_checkbox is "Magnetometer":
-            #     pass
-            # else:
-            #     self.checkbox_mag.disable()
-            #     self.checkbox_mag.value = 0
-            # if var_checkbox is "Gyroscopic":
-            #     pass
-            # else:
-            #     self.checkbox_gyro.disable()
-            #     self.checkbox_gyro.value = 0
+            if var_checkbox is "RGB":
+                pass
+            else:
+                self.checkbox_colour.disable()
+                self.checkbox_colour.value = 0
+            if var_checkbox is "Accelerometer":
+                pass
+            else:
+                self.checkbox_acc.disable()
+                self.checkbox_acc.value = 0
+            if var_checkbox is "Magnetometer":
+                pass
+            else:
+                self.checkbox_mag.disable()
+                self.checkbox_mag.value = 0
+            if var_checkbox is "Gyroscopic":
+                pass
+            else:
+                self.checkbox_gyro.disable()
+                self.checkbox_gyro.value = 0
 
             if var_checkbox is "Uptime":
                 if self.checkbox_up_time.value == 0:
@@ -514,36 +506,27 @@ class CreateGraphingWindow:
                 else:
                     self.checkbox_lumen.enable()
                     self.checkbox_lumen.value = 1
-            # elif var_checkbox is "RGB":
-            #     if self.checkbox_colour.value == 0:
-            #         _self.enable_all_checkboxes()
-            #     else:
-            #         self.checkbox_colour.enable()
-            #         self.checkbox_colour.value = 1
-            # elif var_checkbox is "Accelerometer":
-            #     if self.checkbox_acc.value == 0:
-            #         _self.enable_all_checkboxes()
-            #     else:
-            #         self.checkbox_acc.enable()
-            #         self.checkbox_acc.value = 1
-            # elif var_checkbox is "Magnetometer":
-            #     if self.checkbox_mag.value == 0:
-            #         _self.enable_all_checkboxes()
-            #     else:
-            #         self.checkbox_mag.enable()
-            #         self.checkbox_mag.value = 1
-            # elif var_checkbox is "Gyroscopic":
-            #     if self.checkbox_gyro.value == 0:
-            #         _self.enable_all_checkboxes()
-            #     else:
-            #         self.checkbox_gyro.enable()
-            #         self.checkbox_gyro.value = 1
-
-            self.checkbox_colour.disable()
-            self.checkbox_colour.value = 0
-            self.checkbox_acc.disable()
-            self.checkbox_acc.value = 0
-            self.checkbox_mag.disable()
-            self.checkbox_mag.value = 0
-            self.checkbox_gyro.disable()
-            self.checkbox_gyro.value = 0
+            elif var_checkbox is "RGB":
+                if self.checkbox_colour.value == 0:
+                    self._enable_all_checkboxes()
+                else:
+                    self.checkbox_colour.enable()
+                    self.checkbox_colour.value = 1
+            elif var_checkbox is "Accelerometer":
+                if self.checkbox_acc.value == 0:
+                    self._enable_all_checkboxes()
+                else:
+                    self.checkbox_acc.enable()
+                    self.checkbox_acc.value = 1
+            elif var_checkbox is "Magnetometer":
+                if self.checkbox_mag.value == 0:
+                    self._enable_all_checkboxes()
+                else:
+                    self.checkbox_mag.enable()
+                    self.checkbox_mag.value = 1
+            elif var_checkbox is "Gyroscopic":
+                if self.checkbox_gyro.value == 0:
+                    self._enable_all_checkboxes()
+                else:
+                    self.checkbox_gyro.enable()
+                    self.checkbox_gyro.value = 1

@@ -150,26 +150,58 @@ class CreateLiveGraph:
                 sensor_reading = app_sensor_commands.get_data(command_data)
                 sensor_type_name = "Lumen"
                 measurement_type = " Lumen"
-            elif self.sensor_type[0] == "Red":
-                command_data.command = self.get_commands.rgb
-                sensor_reading = app_sensor_commands.get_data(command_data)
-                sensor_type_name = "RGB"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Acc_X":
-                sensor_reading = 0
-                sensor_type_name = "Accelerometer XYZ"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Mag_X":
-                sensor_reading = 0
-                sensor_type_name = "Magnetometer XYZ"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Gyro_X":
-                sensor_reading = 0
-                sensor_type_name = "Gyroscope XYZ"
-                measurement_type = ""
+            elif self.sensor_type == "RGB":
+                try:
+                    command_data.command = self.get_commands.rgb
+                    red, green, blue = app_sensor_commands.get_data(command_data)
+                    sensor_reading = [round(red, 3), round(green, 3), round(blue, 3)]
+                    sensor_type_name = "RGB"
+                    measurement_type = " RGB"
+                except Exception as error:
+                    app_logger.app_logger.debug(str(error))
+                    sensor_reading = "NoSensor"
+                    sensor_type_name = "RGB"
+                    measurement_type = " RGB"
+
+            elif self.sensor_type == "AccelerometerXYZ":
+                try:
+                    command_data.command = self.get_commands.accelerometer_xyz
+                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
+                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
+                    sensor_type_name = "Accelerometer XYZ"
+                    measurement_type = " XYZ"
+                except Exception as error:
+                    app_logger.app_logger.debug(str(error))
+                    sensor_reading = "NoSensor"
+                    sensor_type_name = "Accelerometer XYZ"
+                    measurement_type = " XYZ"
+            elif self.sensor_type == "MagnetometerXYZ":
+                try:
+                    command_data.command = self.get_commands.magnetometer_xyz
+                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
+                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
+                    sensor_type_name = "Magnetometer XYZ"
+                    measurement_type = " XYZ"
+                except Exception as error:
+                    app_logger.app_logger.debug(str(error))
+                    sensor_reading = "NoSensor"
+                    sensor_type_name = "Magnetometer XYZ"
+                    measurement_type = " XYZ"
+            elif self.sensor_type == "GyroscopeXYZ":
+                try:
+                    command_data.command = self.get_commands.gyroscope_xyz
+                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
+                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
+                    sensor_type_name = "Gyroscope XYZ"
+                    measurement_type = " XYZ"
+                except Exception as error:
+                    app_logger.app_logger.debug(str(error))
+                    sensor_reading = "NoSensor"
+                    sensor_type_name = "Gyroscope XYZ"
+                    measurement_type = " XYZ"
             else:
-                sensor_reading = 0
-                sensor_type_name = "Invalid Sensor"
+                sensor_reading = "NoSensor"
+                sensor_type_name = " Invalid Sensor"
                 measurement_type = ""
 
             self.ax1.clear()
@@ -180,17 +212,15 @@ class CreateLiveGraph:
             if self.sensor_type is "SensorUpTime":
                 sensor_reading = convert_minutes_string(sensor_reading)
 
-            pyplot.title("Sensor: " + sensor_name + "  ||  IP: " + self.ip)
+            pyplot.title(sensor_name + "  ||  " + self.ip + "\n\n" + sensor_type_name)
             pyplot.xlabel("Start Time: " + self.first_datetime +
-                          "  ||  Last Updated: " + current_time +
-                          "  ||  Reading: " + str(sensor_reading) + measurement_type)
+                          "  ||  Updated: " + current_time +
+                          "  ||  " + str(sensor_reading) + measurement_type)
 
             if self.sensor_type is "SensorUpTime":
-                measurement_type = " in Minutes"
-            elif self.sensor_type is "Lumen":
-                measurement_type = ""
+                measurement_type = "Minutes"
 
-            pyplot.ylabel(sensor_type_name + measurement_type)
+            pyplot.ylabel(measurement_type)
             pyplot.xticks([])
         except Exception as error:
             app_logger.app_logger.error("Live Graph - Invalid Sensor Data: " + str(error))
@@ -259,12 +289,10 @@ def start_graph_interval(graph_data):
             graph_data.sql_data_humidity = sql_column_data
         elif str(var_column) == "Lumen":
             graph_data.sql_data_lumen = sql_column_data
-        elif str(var_column) == "Red":
-            graph_data.sql_data_red = sql_column_data
-        elif str(var_column) == "Green":
-            graph_data.sql_data_green = sql_column_data
-        elif str(var_column) == "Blue":
-            graph_data.sql_data_blue = sql_column_data
+        elif str(var_column) == "RGB":
+            graph_data.sql_data_red = sql_column_data[0]
+            graph_data.sql_data_green = sql_column_data[1]
+            graph_data.sql_data_blue = sql_column_data[2]
         else:
             app_logger.app_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
@@ -312,24 +340,18 @@ def start_graph_trigger(graph_data):
             graph_data.sql_data_host_name = sql_column_data
         elif str(var_column) == "IP":
             graph_data.sql_data_ip = sql_column_data
-        elif str(var_column) == "Acc_X":
-            graph_data.sql_data_acc_x = sql_column_data
-        elif str(var_column) == "Acc_Y":
-            graph_data.sql_data_acc_y = sql_column_data
-        elif str(var_column) == "Acc_Z":
-            graph_data.sql_data_acc_z = sql_column_data
-        elif str(var_column) == "Mag_X":
-            graph_data.sql_data_mg_x = sql_column_data
-        elif str(var_column) == "Mag_Y":
-            graph_data.sql_data_mg_y = sql_column_data
-        elif str(var_column) == "Mag_Z":
-            graph_data.sql_data_mg_z = sql_column_data
-        elif str(var_column) == "Gyro_X":
-            graph_data.sql_data_gyro_x = sql_column_data
-        elif str(var_column) == "Gyro_Y":
-            graph_data.sql_data_gyro_y = sql_column_data
-        elif str(var_column) == "Gyro_Z":
-            graph_data.sql_data_gyro_z = sql_column_data
+        elif str(var_column) == "AccelerometerXYZ":
+            graph_data.sql_data_acc_x = sql_column_data[0]
+            graph_data.sql_data_acc_y = sql_column_data[1]
+            graph_data.sql_data_acc_z = sql_column_data[2]
+        elif str(var_column) == "MagnetometerXYZ":
+            graph_data.sql_data_mg_x = sql_column_data[0]
+            graph_data.sql_data_mg_y = sql_column_data[1]
+            graph_data.sql_data_mg_z = sql_column_data[2]
+        elif str(var_column) == "GyroscopeXYZ":
+            graph_data.sql_data_gyro_x = sql_column_data[0]
+            graph_data.sql_data_gyro_y = sql_column_data[1]
+            graph_data.sql_data_gyro_z = sql_column_data[2]
         else:
             app_logger.app_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
