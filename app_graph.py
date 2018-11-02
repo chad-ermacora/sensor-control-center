@@ -18,7 +18,7 @@
 """
 import sqlite3
 from datetime import datetime, timedelta
-from app_useful import convert_minutes_string
+
 import plotly
 from guizero import warn
 from matplotlib import pyplot, animation, style
@@ -26,6 +26,7 @@ from plotly import tools, graph_objs as go
 
 import app_logger
 import app_sensor_commands
+from app_useful import convert_minutes_string
 
 style.use("dark_background")
 
@@ -289,10 +290,12 @@ def start_graph_interval(graph_data):
             graph_data.sql_data_humidity = sql_column_data
         elif str(var_column) == "Lumen":
             graph_data.sql_data_lumen = sql_column_data
-        elif str(var_column) == "RGB":
-            graph_data.sql_data_red = sql_column_data[0]
-            graph_data.sql_data_green = sql_column_data[1]
-            graph_data.sql_data_blue = sql_column_data[2]
+        elif str(var_column) == "Red":
+            graph_data.sql_data_red = sql_column_data
+        elif str(var_column) == "Green":
+            graph_data.sql_data_green = sql_column_data
+        elif str(var_column) == "Blue":
+            graph_data.sql_data_blue = sql_column_data
         else:
             app_logger.app_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
@@ -340,18 +343,24 @@ def start_graph_trigger(graph_data):
             graph_data.sql_data_host_name = sql_column_data
         elif str(var_column) == "IP":
             graph_data.sql_data_ip = sql_column_data
-        elif str(var_column) == "AccelerometerXYZ":
-            graph_data.sql_data_acc_x = sql_column_data[0]
-            graph_data.sql_data_acc_y = sql_column_data[1]
-            graph_data.sql_data_acc_z = sql_column_data[2]
-        elif str(var_column) == "MagnetometerXYZ":
-            graph_data.sql_data_mg_x = sql_column_data[0]
-            graph_data.sql_data_mg_y = sql_column_data[1]
-            graph_data.sql_data_mg_z = sql_column_data[2]
-        elif str(var_column) == "GyroscopeXYZ":
-            graph_data.sql_data_gyro_x = sql_column_data[0]
-            graph_data.sql_data_gyro_y = sql_column_data[1]
-            graph_data.sql_data_gyro_z = sql_column_data[2]
+        elif str(var_column) == "Acc_X":
+            graph_data.sql_data_acc_x = sql_column_data
+        elif str(var_column) == "Acc_Y":
+            graph_data.sql_data_acc_y = sql_column_data
+        elif str(var_column) == "Acc_Z":
+            graph_data.sql_data_acc_z = sql_column_data
+        elif str(var_column) == "Mag_X":
+            graph_data.sql_data_mg_x = sql_column_data
+        elif str(var_column) == "Mag_Y":
+            graph_data.sql_data_mg_y = sql_column_data
+        elif str(var_column) == "Mag_Z":
+            graph_data.sql_data_mg_z = sql_column_data
+        elif str(var_column) == "Gyro_X":
+            graph_data.sql_data_gyro_x = sql_column_data
+        elif str(var_column) == "Gyro_Y":
+            graph_data.sql_data_gyro_y = sql_column_data
+        elif str(var_column) == "Gyro_Z":
+            graph_data.sql_data_gyro_z = sql_column_data
         else:
             app_logger.app_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)

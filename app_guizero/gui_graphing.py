@@ -383,14 +383,34 @@ class CreateGraphingWindow:
             if self.checkbox_lumen.value:
                 column_checkboxes.append("Lumen")
             if self.checkbox_colour.value:
-                column_checkboxes.append("RGB")
+                if data_source_radio == "Interval SQL":
+                    column_checkboxes.append("Red")
+                    column_checkboxes.append("Green")
+                    column_checkboxes.append("Blue")
+                else:
+                    column_checkboxes.append("RGB")
         if data_source_radio == "Trigger SQL" or data_source_radio == "Live":
             if self.checkbox_acc.value:
-                column_checkboxes.append("AccelerometerXYZ")
+                if data_source_radio == "Trigger SQL":
+                    column_checkboxes.append("Acc_X")
+                    column_checkboxes.append("Acc_Y")
+                    column_checkboxes.append("Acc_Z")
+                else:
+                    column_checkboxes.append("AccelerometerXYZ")
             if self.checkbox_mag.value:
-                column_checkboxes.append("MagnetometerXYZ")
+                if data_source_radio == "Trigger SQL":
+                    column_checkboxes.append("Mag_X")
+                    column_checkboxes.append("Mag_Y")
+                    column_checkboxes.append("Mag_Z")
+                else:
+                    column_checkboxes.append("MagnetometerXYZ")
             if self.checkbox_gyro.value:
-                column_checkboxes.append("GyroscopeXYZ")
+                if data_source_radio == "Trigger SQL":
+                    column_checkboxes.append("Gyro_X")
+                    column_checkboxes.append("Gyro_Y")
+                    column_checkboxes.append("Gyro_Z")
+                else:
+                    column_checkboxes.append("GyroscopeXYZ")
 
         app_logger.app_logger.debug(str(column_checkboxes))
         return column_checkboxes

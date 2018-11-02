@@ -39,7 +39,7 @@ class CreateSensorLogsWindow:
 
         self.app_menubar = MenuBar(self.window,
                                    toplevel=[["Download"]],
-                                   options=[[["Download All Sensors Logs",
+                                   options=[[["Download All Selected Sensors Logs",
                                               self._download_logs]]])
 
         self.text_select_ip = Text(self.window,
