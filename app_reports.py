@@ -20,21 +20,19 @@ from queue import Queue
 from threading import Thread
 from time import strftime
 
-import app_config
 import app_logger
 import app_sensor_commands
 from app_useful import convert_minutes_string, get_file_content, save_data_to_file, open_html_file
 
-script_directory = app_config.script_directory
 data_queue = Queue()
 
 
-class HTMLSystem:
+class CreateHTMLSystemData:
     def __init__(self, current_config):
         self.config_settings = current_config
-        self.template1 = script_directory + "/additional_files/html_template_system1.html"
-        self.template2 = script_directory + "/additional_files/html_template_system2.html"
-        self.template3 = script_directory + "/additional_files/html_template_system3.html"
+        self.template1 = current_config.script_directory + "/additional_files/html_template_system1.html"
+        self.template2 = current_config.script_directory + "/additional_files/html_template_system2.html"
+        self.template3 = current_config.script_directory + "/additional_files/html_template_system3.html"
         self.file_output_name = "SensorsSystemReport.html"
 
         self.replacement_codes = ["{{HostName}}",
@@ -53,7 +51,8 @@ class HTMLSystem:
         self.local_time_code = ["{{LocalDateTime}}"]
 
     def get_sensor_data(self, ip):
-        command_data = app_sensor_commands.CreateCommandData(ip, self.config_settings.network_timeout_data,
+        command_data = app_sensor_commands.CreateCommandData(ip,
+                                                             self.config_settings.network_timeout_data,
                                                              "GetSystemData")
         sensor_system = app_sensor_commands.get_data(command_data).split(",")
         sensor_system[3] = convert_minutes_string(sensor_system[3])
@@ -61,12 +60,12 @@ class HTMLSystem:
         data_queue.put([ip, sensor_system])
 
 
-class HTMLReadings:
+class CreateHTMLReadingsData:
     def __init__(self, current_config):
         self.config_settings = current_config
-        self.template1 = script_directory + "/additional_files/html_template_readings1.html"
-        self.template2 = script_directory + "/additional_files/html_template_readings2.html"
-        self.template3 = script_directory + "/additional_files/html_template_readings3.html"
+        self.template1 = current_config.script_directory + "/additional_files/html_template_readings1.html"
+        self.template2 = current_config.script_directory + "/additional_files/html_template_readings2.html"
+        self.template3 = current_config.script_directory + "/additional_files/html_template_readings3.html"
         self.file_output_name = "SensorsReadingsReport.html"
 
         self.replacement_codes = ["{{IntervalTypes}}",
@@ -84,12 +83,12 @@ class HTMLReadings:
         data_queue.put([ip, sensor_data])
 
 
-class HTMLConfig:
+class CreateHTMLConfigData:
     def __init__(self, current_config):
         self.config_settings = current_config
-        self.template1 = script_directory + "/additional_files/html_template_config1.html"
-        self.template2 = script_directory + "/additional_files/html_template_config2.html"
-        self.template3 = script_directory + "/additional_files/html_template_config3.html"
+        self.template1 = current_config.script_directory + "/additional_files/html_template_config1.html"
+        self.template2 = current_config.script_directory + "/additional_files/html_template_config2.html"
+        self.template3 = current_config.script_directory + "/additional_files/html_template_config3.html"
         self.file_output_name = "SensorsConfigReport.html"
 
         self.replacement_codes = ["{{HostName}}",

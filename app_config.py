@@ -21,15 +21,14 @@ from datetime import datetime
 
 import app_logger
 
-script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
-
 
 class CreateDefaultConfigSettings:
     """ Creates a object holding all the Control Centers default configuration options. """
 
     def __init__(self):
+        # Script location information
         self.script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
-        self.logs_directory = script_directory + "/logs"
+        self.logs_directory = self.script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
         self.config_file = self.script_directory + "/config.txt"
 
