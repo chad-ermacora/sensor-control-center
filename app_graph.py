@@ -54,6 +54,7 @@ class CreateSQLColumnNames:
 
 class CreateSQLColumnsReadable:
     def __init__(self):
+        self.no_sensor = "No Sensor"
         self.date_time = "Date & Time"
         self.sensor_name = "Sensor Name"
         self.ip = "IP"
@@ -132,6 +133,7 @@ class CreateLiveGraph:
         self.current_config = current_config
         self.get_commands = app_sensor_commands.CreateNetworkGetCommands()
 
+        self.sql_column_names = CreateSQLColumnNames()
         self.readable_column_names = CreateSQLColumnsReadable()
         self.sensor_measurements = CreateMeasurementsTypes()
 
@@ -157,12 +159,12 @@ class CreateLiveGraph:
         command_data.command = self.get_commands.sensor_name
         sensor_name = app_sensor_commands.get_data(command_data)
         try:
-            if self.sensor_type is "SensorUpTime":
+            if self.sensor_type is self.sql_column_names.system_uptime:
                 command_data.command = self.get_commands.system_uptime
                 sensor_reading = app_sensor_commands.get_data(command_data)
                 sensor_type_name = self.readable_column_names.system_uptime
                 measurement_type = self.sensor_measurements.no_measurement
-            elif self.sensor_type is "SystemTemp":
+            elif self.sensor_type is self.sql_column_names.cpu_temp:
                 command_data.command = self.get_commands.cpu_temp
                 sensor_reading = app_sensor_commands.get_data(command_data)
 
@@ -173,7 +175,7 @@ class CreateLiveGraph:
 
                 sensor_type_name = self.readable_column_names.cpu_temp
                 measurement_type = self.sensor_measurements.celsius
-            elif self.sensor_type is "EnvironmentTemp":
+            elif self.sensor_type is self.sql_column_names.environmental_temp:
                 command_data.command = self.get_commands.environmental_temp
                 sensor_reading = app_sensor_commands.get_data(command_data)
 
@@ -185,12 +187,12 @@ class CreateLiveGraph:
 
                 sensor_type_name = self.readable_column_names.environmental_temp
                 measurement_type = self.sensor_measurements.celsius
-            elif self.sensor_type is "Pressure":
+            elif self.sensor_type is self.sql_column_names.pressure:
                 command_data.command = self.get_commands.pressure
                 sensor_reading = app_sensor_commands.get_data(command_data)
                 sensor_type_name = self.readable_column_names.pressure
                 measurement_type = self.sensor_measurements.pressure
-            elif self.sensor_type is "Humidity":
+            elif self.sensor_type is self.sql_column_names.humidity:
                 command_data.command = self.get_commands.humidity
                 sensor_reading = app_sensor_commands.get_data(command_data)
 
@@ -201,63 +203,63 @@ class CreateLiveGraph:
 
                 sensor_type_name = self.readable_column_names.humidity
                 measurement_type = self.sensor_measurements.humidity
-            elif self.sensor_type is "Lumen":
+            elif self.sensor_type is self.sql_column_names.lumen:
                 command_data.command = self.get_commands.lumen
                 sensor_reading = app_sensor_commands.get_data(command_data)
                 sensor_type_name = self.readable_column_names.lumen
                 measurement_type = self.sensor_measurements.lumen
-            elif self.sensor_type[0] == "Red":
+            elif self.sensor_type == self.sql_column_names.rgb[0]:
                 try:
                     command_data.command = self.get_commands.rgb
                     red, green, blue = app_sensor_commands.get_data(command_data)
                     sensor_reading = [round(red, 3), round(green, 3), round(blue, 3)]
-                    sensor_type_name = "RGB"
-                    measurement_type = " RGB"
+                    sensor_type_name = self.readable_column_names.rgb
+                    measurement_type = self.sensor_measurements.rgb
                 except Exception as error:
                     app_logger.app_logger.debug(str(error))
-                    sensor_reading = "NoSensor"
-                    sensor_type_name = "RGB"
-                    measurement_type = " RGB"
-            elif self.sensor_type[0] == "Acc_X":
+                    sensor_reading = self.readable_column_names.no_sensor
+                    sensor_type_name = self.readable_column_names.rgb
+                    measurement_type = self.sensor_measurements.rgb
+            elif self.sensor_type == self.sql_column_names.accelerometer_xyz[0]:
                 try:
                     command_data.command = self.get_commands.accelerometer_xyz
                     var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
                     sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
-                    sensor_type_name = "Accelerometer XYZ"
-                    measurement_type = " XYZ"
+                    sensor_type_name = self.readable_column_names.accelerometer_xyz
+                    measurement_type = self.sensor_measurements.xyz
                 except Exception as error:
                     app_logger.app_logger.debug(str(error))
-                    sensor_reading = "NoSensor"
-                    sensor_type_name = "Accelerometer XYZ"
-                    measurement_type = " XYZ"
-            elif self.sensor_type[0] == "Mag_X":
+                    sensor_reading = self.readable_column_names.no_sensor
+                    sensor_type_name = self.readable_column_names.accelerometer_xyz
+                    measurement_type = self.sensor_measurements.xyz
+            elif self.sensor_type == self.sql_column_names.magnetometer_xyz[0]:
                 try:
                     command_data.command = self.get_commands.magnetometer_xyz
                     var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
                     sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
-                    sensor_type_name = "Magnetometer XYZ"
-                    measurement_type = " XYZ"
+                    sensor_type_name = self.readable_column_names.magnetometer_xyz
+                    measurement_type = self.sensor_measurements.xyz
                 except Exception as error:
                     app_logger.app_logger.debug(str(error))
-                    sensor_reading = "NoSensor"
-                    sensor_type_name = "Magnetometer XYZ"
-                    measurement_type = " XYZ"
-            elif self.sensor_type[0] == "Gyro_X":
+                    sensor_reading = self.readable_column_names.no_sensor
+                    sensor_type_name = self.readable_column_names.magnetometer_xyz
+                    measurement_type = self.sensor_measurements.xyz
+            elif self.sensor_type == self.sql_column_names.gyroscope_xyz[0]:
                 try:
                     command_data.command = self.get_commands.gyroscope_xyz
                     var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
                     sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
-                    sensor_type_name = "Gyroscope XYZ"
-                    measurement_type = " XYZ"
+                    sensor_type_name = self.readable_column_names.gyroscope_xyz
+                    measurement_type = self.sensor_measurements.xyz
                 except Exception as error:
                     app_logger.app_logger.debug(str(error))
-                    sensor_reading = "NoSensor"
-                    sensor_type_name = "Gyroscope XYZ"
-                    measurement_type = " XYZ"
+                    sensor_reading = self.readable_column_names.no_sensor
+                    sensor_type_name = self.readable_column_names.gyroscope_xyz
+                    measurement_type = self.sensor_measurements.xyz
             else:
-                sensor_reading = "NoSensor"
-                sensor_type_name = " Invalid Sensor"
-                measurement_type = ""
+                sensor_reading = "N/A"
+                sensor_type_name = "Invalid Sensor"
+                measurement_type = " Missing Program Support"
 
             self.ax1.clear()
             self.y.append(sensor_reading)
