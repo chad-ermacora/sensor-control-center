@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import app_config
@@ -12,7 +13,24 @@ save_to = config_default.script_directory + "/test_files/"
 sensor_ip = "192.168.10.101"
 
 
-class TestAppConfig(unittest.TestCase):
+class TestApp(unittest.TestCase):
+
+    def test_1_clean_old_test_files(self):
+        try:
+            os.remove(config_default.script_directory + "/test_files/SensorIntervalGraph.html")
+            os.remove(config_default.script_directory + "/test_files/SensorTriggerGraph.html")
+            os.remove(config_default.script_directory + "/test_files/SensorsSystemReport.html")
+            os.remove(config_default.script_directory + "/test_files/SensorsConfigReport.html")
+            os.remove(config_default.script_directory + "/test_files/SensorsReadingsReport.html")
+            print("\nOld test files removed")
+        except FileNotFoundError:
+            print("\nOld test files not found, continuing with tests")
+
+        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorIntervalGraph.html"))
+        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorTriggerGraph.html"))
+        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsSystemReport.html"))
+        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsConfigReport.html"))
+        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsReadingsReport.html"))
 
     def test_app_config(self):
         # This test section should be complete
@@ -47,6 +65,7 @@ class TestAppConfig(unittest.TestCase):
         self.assertEqual(new_config.ip_list, config_test.ip_list)
 
         config_test.reset_to_defaults()
+
         self.assertEqual(config_default.save_to, config_test.save_to)
         self.assertEqual(config_default.graph_start, config_test.graph_start)
         self.assertEqual(config_default.graph_end, config_test.graph_end)
@@ -61,10 +80,12 @@ class TestAppConfig(unittest.TestCase):
         self.assertEqual(config_default.ip_list, config_test.ip_list)
 
         app_config.save_config_to_file(config_original)
+        print("Configuration tests Complete")
 
     def test_app_graph(self):
         # Interval & Trigger graph's and functions done.  Only Live Graph left to do.
         # Test Plotly graphs
+        print("\nPlease review the 2 opened graphs for errors.\n")
         test_graph_interval = app_graph.CreateGraphData()
         test_graph_interval.db_location = config_default.script_directory + "/test_files/SensorIntervalDatabase.sqlite"
         test_graph_interval.save_to = save_to
@@ -80,12 +101,15 @@ class TestAppConfig(unittest.TestCase):
 
         app_graph.start_graph_trigger(test_graph_trigger)
 
+        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorIntervalGraph.html"))
+        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorTriggerGraph.html"))
+
         self.assertEqual(app_graph._adjust_interval_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
         self.assertEqual(app_graph._adjust_trigger_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
 
     def test_app_reports(self):
         # Done, but requires an online sensor at provided IP & a quick glance at the generated reports and Graphs
-        print("This REQUIRES an online sensor @ " + sensor_ip)
+        print("\nThis REQUIRES an online sensor @ " + sensor_ip + "\nPlease review the 3 opened Reports for errors.")
         self.assertEqual(app_reports.convert_minutes_string(7634), "5 Days / 7.14 Hours")
 
         config_test.save_to = save_to
@@ -94,9 +118,13 @@ class TestAppConfig(unittest.TestCase):
         app_reports.sensor_html_report(app_reports.CreateHTMLConfigData(config_test), [sensor_ip])
         app_reports.sensor_html_report(app_reports.CreateHTMLReadingsData(config_test), [sensor_ip])
 
+        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorsSystemReport.html"))
+        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorsConfigReport.html"))
+        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorsReadingsReport.html"))
+
     def test_app_sensor_commands(self):
         # I need to figure out how to create a "Virtual" sensor, as I don't want to run all commands on a live one...
-        pass
+        print("\nNo sensor command tests yet ...")
 
 
 if __name__ == '__main__':
