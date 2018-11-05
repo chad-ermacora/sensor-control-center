@@ -100,7 +100,8 @@ class CreateHTMLConfigData:
                                   "{{CustomEnabled}}",
                                   "{{CustomAcc}}",
                                   "{{CustomMag}}",
-                                  "{{CustomGyro}}"]
+                                  "{{CustomGyro}}",
+                                  "{{InstalledSensors}}"]
 
         self.local_time_code = ["{{LocalDateTime}}"]
 
@@ -123,7 +124,8 @@ class CreateHTMLConfigData:
                                str(sensor_config[3]),
                                str(sensor_config[4]),
                                str(sensor_config[5]),
-                               str(sensor_config[6])]
+                               str(sensor_config[6]),
+                               str(sensor_config[7])]
         data_queue.put([ip, final_sensor_config])
 
 

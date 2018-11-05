@@ -21,6 +21,8 @@ from datetime import datetime
 
 import app_logger
 
+app_version = "Tested on Python 3.7 / KootNet Sensors - Control Center / Ver. Alpha.21.8"
+
 
 class CreateDefaultConfigSettings:
     """ Creates a object holding all the Control Centers default configuration options. """
@@ -43,8 +45,8 @@ class CreateDefaultConfigSettings:
         self.network_timeout_sensor_check = 3
         self.network_timeout_data = 5
         self.allow_config_reset = 0
-        self.ip_list = ["127.0.0.1", "192.168.10.12", "192.168.10.13", "192.168.10.14",
-                        "192.168.10.15", "192.168.10.16", "192.168.10.17", "192.168.10.18",
+        self.ip_list = ["127.0.0.1", "192.168.10.11", "192.168.10.12", "192.168.10.13",
+                        "192.168.10.14", "192.168.10.15", "192.168.10.16", "192.168.10.17",
                         "192.168.10.51", "192.168.10.52", "192.168.10.53", "192.168.10.54",
                         "192.168.10.55", "192.168.10.56", "192.168.10.57", "192.168.10.58"]
 

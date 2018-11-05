@@ -17,9 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from guizero import Window, Text, TextBox
-import app_logger
 
-app_version = "Tested on Python 3.7 / KootNet Sensors - Control Center / Ver. Alpha.21.7"
+import app_logger
+from app_config import app_version
 
 
 class CreateAboutWindow:
