@@ -33,7 +33,7 @@ class TestApp(unittest.TestCase):
         self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsReadingsReport.html"))
 
     def test_app_config(self):
-        # This test section should be complete
+        # Initial setup complete
         config_test.graph_start = "1984-11-01 11:22:12"
         config_test.graph_end = "3333-04-04 11:22:12"
         config_test.datetime_offset = 4.0
@@ -84,7 +84,6 @@ class TestApp(unittest.TestCase):
 
     def test_app_graph(self):
         # Interval & Trigger graph's and functions done.  Only Live Graph left to do.
-        # Test Plotly graphs
         print("\nPlease review the 2 opened graphs for errors.\n")
         test_graph_interval = app_graph.CreateGraphData()
         test_graph_interval.db_location = config_default.script_directory + "/test_files/SensorIntervalDatabase.sqlite"
@@ -108,7 +107,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(app_graph._adjust_trigger_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
 
     def test_app_reports(self):
-        # Done, but requires an online sensor at provided IP & a quick glance at the generated reports and Graphs
+        # # Initial setup complete - Requires a look over the generated reports by human
         print("\nThis REQUIRES an online sensor @ " + sensor_ip + "\nPlease review the 3 opened Reports for errors.")
         self.assertEqual(app_reports.convert_minutes_string(7634), "5 Days / 7.14 Hours")
 
