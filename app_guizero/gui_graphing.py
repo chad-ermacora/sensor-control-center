@@ -351,19 +351,22 @@ class CreateGraphingWindow:
             app_graph.start_graph_trigger(new_data)
 
     def live_button(self):
-        ip = self.ip_selection.get_verified_ip_list()[0]
         pyplot.close()
         try:
+            ip = self.ip_selection.get_verified_ip_list()[0]
             checkbox = self._get_column_checkboxes()[3]
+        except IndexError:
+            ip = "Invalid"
+            checkbox = "Invalid"
 
+        if ip is not "Invalid":
             self.current_config.live_refresh = self.textbox_refresh_time.value
             self.current_config.temperature_offset = self.textbox_temperature_offset.value
             app_config.check_config(self.current_config)
             self.set_config()
 
             app_graph.CreateLiveGraph(checkbox, ip, self.current_config)
-        except Exception as error:
-            app_logger.app_logger.warning("No sensors selected in the main window - " + str(error))
+        else:
             warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
                                   "& Sensor Type from the Graph window")
 
