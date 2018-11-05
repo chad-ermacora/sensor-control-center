@@ -100,17 +100,11 @@ class CreateMainWindow:
                                                   grid=[1, 15, 2, 1],
                                                   align="left")
 
-        self.app_button_download_interval = PushButton(self.app,
-                                                       text="Download Sensor\nInterval Databases",
-                                                       command=self._app_menu_download_interval_db,
-                                                       grid=[2, 15, 2, 1],
-                                                       align="right")
-
-        self.app_button_download_trigger = PushButton(self.app,
-                                                      text="Download Sensor\nTrigger Databases",
-                                                      command=self._app_menu_download_trigger_db,
-                                                      grid=[4, 15],
-                                                      align="right")
+        self.app_button_download_sql_db = PushButton(self.app,
+                                                     text="Download Sensors\nDatabase",
+                                                     command=self._app_menu_download_sql_db,
+                                                     grid=[4, 15],
+                                                     align="right")
 
     def app_custom_configurations(self):
         """ Apply system & user specific settings to application.  Used just before application start. """
@@ -200,7 +194,7 @@ class CreateMainWindow:
         else:
             subprocess.Popen(["xdg-open", self.current_config.logs_directory])
 
-    def _app_menu_download_interval_db(self):
+    def _app_menu_download_sql_db(self):
         """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) >= 1:
@@ -213,7 +207,7 @@ class CreateMainWindow:
                     download_obj.ip = ip
                     download_obj.url = "/data/"
                     download_obj.save_to_location = download_to_location
-                    download_obj.file_name = "SensorIntervalDatabase.sqlite"
+                    download_obj.file_name = "SensorRecordingDatabase.sqlite"
 
                     threads.append(Thread(target=app_sensor_commands.download_http_file,
                                           args=[download_obj]))
@@ -225,36 +219,6 @@ class CreateMainWindow:
                     thread.join()
 
                 info("Downloads", "Interval Database Downloads Complete")
-            else:
-                warn("Warning", "User Cancelled Download Operation")
-        else:
-            warn("No IP Selected", "Please Select at least 1 Sensor IP")
-
-    def _app_menu_download_trigger_db(self):
-        """ Downloads the Trigger SQLite3 database to the chosen location, from the selected sensors. """
-        ip_list = self.ip_selection.get_verified_ip_list()
-        if len(ip_list) >= 1:
-            threads = []
-            download_to_location = filedialog.askdirectory()
-
-            if download_to_location is not "" and download_to_location is not None:
-                for ip in ip_list:
-                    download_obj = app_sensor_commands.CreateHTTPDownload()
-                    download_obj.ip = ip
-                    download_obj.url = "/data/"
-                    download_obj.save_to_location = download_to_location
-                    download_obj.file_name = "SensorTriggerDatabase.sqlite"
-
-                    threads.append(Thread(target=app_sensor_commands.download_http_file,
-                                          args=[download_obj]))
-
-                for thread in threads:
-                    thread.start()
-
-                for thread in threads:
-                    thread.join()
-
-                info("Downloads", "Trigger Database Downloads Complete")
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:
