@@ -91,8 +91,8 @@ class TestApp(unittest.TestCase):
 
         test_graph.graph_columns = ["DateTime", "SensorName", "IP", "SensorUpTime", "SystemTemp",
                                     "EnvironmentTemp", "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue",
-                                    "DateTime", "Acc_X", "Acc_Y", "Acc_Z", "DateTime", "SensorName", "IP",
-                                    "Mag_X", "Mag_Y", "Mag_Z", "Gyro_X", "Gyro_Y", "Gyro_Z"]
+                                    "Acc_X", "Acc_Y", "Acc_Z", "Mag_X", "Mag_Y", "Mag_Z",
+                                    "Gyro_X", "Gyro_Y", "Gyro_Z", "DateTime", "SensorName", "IP"]
 
         app_graph.start_plotly_graph(test_graph)
 
