@@ -15,10 +15,10 @@ sensor_ip = "192.168.10.101"
 
 class TestApp(unittest.TestCase):
 
+    # has _1_ to make sure it runs first
     def test_1_clean_old_test_files(self):
         try:
-            os.remove(config_default.script_directory + "/test_files/SensorIntervalGraph.html")
-            os.remove(config_default.script_directory + "/test_files/SensorTriggerGraph.html")
+            os.remove(config_default.script_directory + "/test_files/PlotlySensorGraph.html")
             os.remove(config_default.script_directory + "/test_files/SensorsSystemReport.html")
             os.remove(config_default.script_directory + "/test_files/SensorsConfigReport.html")
             os.remove(config_default.script_directory + "/test_files/SensorsReadingsReport.html")
@@ -26,8 +26,7 @@ class TestApp(unittest.TestCase):
         except FileNotFoundError:
             print("\nOld test files not found, continuing with tests")
 
-        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorIntervalGraph.html"))
-        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorTriggerGraph.html"))
+        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/PlotlySensorGraph.html"))
         self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsSystemReport.html"))
         self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsConfigReport.html"))
         self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsReadingsReport.html"))
@@ -84,27 +83,23 @@ class TestApp(unittest.TestCase):
 
     def test_app_graph(self):
         # Interval & Trigger graph's and functions done.  Only Live Graph left to do.
-        print("\nPlease review the 2 opened graphs for errors.\n")
-        test_graph_interval = app_graph.CreateGraphData()
-        test_graph_interval.db_location = config_default.script_directory + "/test_files/SensorIntervalDatabase.sqlite"
-        test_graph_interval.save_to = save_to
-        test_graph_interval.sql_queries_skip = 0
+        print("\nPlease review the opened graph for errors.\n")
+        test_graph = app_graph.CreateGraphData()
+        test_graph.db_location = config_default.script_directory + "/test_files/SensorRecordingDatabase.sqlite"
+        test_graph.save_to = save_to
+        test_graph.sql_queries_skip = 0
 
-        app_graph.start_graph_interval(test_graph_interval)
+        test_graph.graph_columns = ["DateTime", "SensorName", "IP", "SensorUpTime", "SystemTemp",
+                                    "EnvironmentTemp", "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue",
+                                    "DateTime", "Acc_X", "Acc_Y", "Acc_Z", "DateTime", "SensorName", "IP",
+                                    "Mag_X", "Mag_Y", "Mag_Z", "Gyro_X", "Gyro_Y", "Gyro_Z"]
 
-        test_graph_trigger = app_graph.CreateGraphData()
-        test_graph_trigger.save_to = save_to
-        test_graph_trigger.db_location = config_default.script_directory + "/test_files/SensorTriggerDatabase.sqlite"
-        test_graph_trigger.graph_columns = ["DateTime", "SensorName", "IP", "Acc_X", "Acc_Y", "Acc_Z",
-                                            "Mag_X", "Mag_Y", "Mag_Z", "Gyro_X", "Gyro_Y", "Gyro_Z"]
+        app_graph.start_plotly_graph(test_graph)
 
-        app_graph.start_graph_trigger(test_graph_trigger)
+        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/PlotlySensorGraph.html"))
 
-        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorIntervalGraph.html"))
-        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorTriggerGraph.html"))
-
-        self.assertEqual(app_graph._adjust_interval_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
-        self.assertEqual(app_graph._adjust_trigger_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
+        self.assertEqual(app_graph._adjust_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
+        self.assertEqual(app_graph._adjust_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
 
     def test_app_reports(self):
         # # Initial setup complete - Requires a look over the generated reports by human
