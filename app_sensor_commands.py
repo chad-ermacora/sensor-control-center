@@ -160,6 +160,6 @@ def get_data(command_data):
         sock_g.close()
         app_logger.sensor_logger.debug(command_data.command + " to " + command_data.ip + " - OK")
     except Exception as error:
-        var_data = "N/A"
+        var_data = ""
         app_logger.sensor_logger.warning(command_data.command + " to " + command_data.ip + " - Failed: " + str(error))
     return var_data
