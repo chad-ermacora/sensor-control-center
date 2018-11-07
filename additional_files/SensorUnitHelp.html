@@ -5,7 +5,7 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
 	<meta name="created" content="2018-10-01T11:14:17.608000000"/>
-	<meta name="changed" content="2018-10-28T20:15:59.072000000"/>
+	<meta name="changed" content="2018-11-06T19:17:42.059000000"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.1in; background: transparent; line-height: 115% }
@@ -104,7 +104,8 @@ sensors readings to the screen.
 <p style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b><span style="background: transparent">Program
 Auto Start</span></b></u></font></p>
 <p style="margin-bottom: 0in; line-height: 100%">The sensor programs
-automatically start and restart them selves through systemd services.
+automatically start and restart them selves through systemd as
+services. 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%">Run one or more of
 the following commands. Each line disables the corresponding service
@@ -120,17 +121,17 @@ SensorHTTP</span></p>
 systemctl disable SensorCommands &amp;&amp; sudo systemctl stop
 SensorCommands</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
-systemctl disable SensorInterval &amp;&amp; sudo systemctl stop
-SensorInterval</span></p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
-systemctl disable SensorTrigger &amp;&amp; sudo systemctl stop
-SensorTrigger</span></p>
+systemctl disable SensorRecording &amp;&amp; sudo systemctl stop
+SensorRecording</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%">To re-enable and
-start the services, run this command. * Note: You don&rsquo;t
-actually have to change anything *</p>
+start the services, run this command. 
+</p>
+<p style="margin-bottom: 0in; line-height: 100%">* Note: You do not
+have to change anything, the script re-enables and starts all sensor
+services *</p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 <span style="background: #dddddd">sudo
 bash /home/pi/edit_sensor_config.sh</span></p>
@@ -165,7 +166,7 @@ sensors</span></p>
 
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Clean
-Upgrade Scripts</b></u></font></p>
+Upgrade Service Scripts</b></u></font></p>
 <p style="margin-bottom: 0in; font-variant: normal; font-style: normal; line-height: 100%">
 These 2x Upgrade scripts delete the sensor &amp; control center
 program directories<span style="text-decoration: none">
@@ -179,48 +180,49 @@ is restored to defaults.
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>upgrade_online_clean.sh</b>
+<p style="margin-bottom: 0in; line-height: 100%"><b><span style="background: #dddddd">sudo
+systemctl </span></b><b><span style="background: #dddddd">start</span></b><b><span style="background: #dddddd">
+</span></b><b><span style="background: #dddddd">SensorCleanUpgradeOnline</span></b>
 <span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
 Clean HTTP upgrade</p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><span style="font-style: normal"><b>/home/pi/KootNetSensors/</b></span></span></span><span style="font-variant: normal"><span style="font-style: normal"><b>upgrade_smb_clean.sh</b></span></span>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: #dddddd">sudo
+systemctl </span></b></span></span><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: #dddddd">start</span></b></span></span><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: #dddddd">
+</span></b></span></span><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: #dddddd">SensorCleanUpgradeSMB</span></b></span></span>
 <span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
 Clean SMB (Windows share) upgrade</p>
-<p style="margin-bottom: 0in; line-height: 100%"><i>**
-</i><i><b>upgrade_smb_clean.sh</b></i> <i>** </i><i><u>Requires:</u></i>
-<i>Configuration in </i><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">/home/pi/KootNetSensors/</span></span></font></span></span><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">update_programs_smb.sh</span></i></font></span></p>
+<p style="margin-bottom: 0in; line-height: 100%; background: transparent">
+<i>** </i><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: transparent">SensorCleanUpgradeSMB</span></b></span></span>
+<i><u>Requires:</u></i> <i>Configuration in
+</i><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">/opt/kootnet-sensors/upgrade/update_programs_smb.sh</span></i></font></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
-</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>upgrade_online_clean.sh</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
-</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
-</span></span></font></span></span><font size="3" style="font-size: 12pt"><i><u><span style="font-weight: normal">Optional:</span></u></i></font><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b><span style="background: transparent">SensorCleanUpgradeOnline</span></b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><font size="3" style="font-size: 12pt"><i><u><span style="font-weight: normal">Optional:</span></u></i></font><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">modify</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
-</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">/home/pi/KootNetSensors/update_programs_online.sh
-to use your own HTTP Server</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
-</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**</span></span></font></span></span></p>
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">/opt/kootnet-sensors/upgrade/</span></i></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">update_programs_online.sh
+to use your own HTTP Server</span></span></font></span></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>SQLite3
-Database Files</b></u></font></p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/data/</b></span><b>SensorIntervalDatabase.sqlite</b>
+Database</b></u></font></p>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/data/</b></span><b>Sensor</b><b>Recodring</b><b>Database.sqlite</b>
 <span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
-Interval Recordings</p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/data/</b></span><b>SensorTriggerDatabase.sqlite</b>
-<span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
-Trigger Recordings</p>
+SQLite3 database holding sensor readings</p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Log
 Files</b></u></font></p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/logs/</b></span><span style="text-decoration: none"><b>Primary</b></span><span style="text-decoration: none"><b>_log.txt</b></span>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/logs/Primary_log.txt</b></span>
 <span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
 Contains sensor program logs</p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/logs/Sensor</b></span><span style="text-decoration: none"><b>s</b></span><span style="text-decoration: none"><b>_log.txt</b></span>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/logs/Sensors_log.txt</b></span>
 <span style="font-variant: normal"><span style="text-decoration: none">&ndash;
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Contains
-sensor hardware </span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">errors</span></span></font></span></span></p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>/home/pi/KootNetSensors/logs/Network_log.txt</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">
-&ndash; Contains network command logs &amp; history</span></span></font></span></span></p>
+sensor hardware errors</span></span></font></span></span></p>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>/home/pi/KootNetSensors/logs/Network_log.txt</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+&ndash; </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Contains
+network command logs &amp; history</span></span></font></span></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
