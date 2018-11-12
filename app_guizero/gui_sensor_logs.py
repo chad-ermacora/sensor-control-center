@@ -62,7 +62,7 @@ class CreateSensorLogsWindow:
 
         self.textbox_log = TextBox(self.window,
                                    text="\nPlease select the log type in the top right" +
-                                        " and hit the 'Update Log View' in the bottom right\n" +
+                                        " and press the button 'Update Sensor Log View' in the bottom right\n\n" +
                                         "You may also use the 'Download' menu in the top left to " +
                                         "download ALL logs off ALL selected Sensors",
                                    grid=[1, 2],
