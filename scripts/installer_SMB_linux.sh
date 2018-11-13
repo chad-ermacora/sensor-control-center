@@ -61,7 +61,10 @@ Categories=Utility;Science;
 EOF
 cp -f ${USER_DIR}/Desktop/KootNet-Sensor-Config.desktop /usr/share/applications/KootNet-Sensor-Config.desktop
 # Make sure log files exist to set permissions
+touch /opt/kootnet-control-center/config.txt
 touch /opt/kootnet-control-center/logs/KootNet_log.txt
 touch /opt/kootnet-control-center/logs/Sensor_Commands_log.txt
+chmod 766 /opt/kootnet-control-center/config.txt
 chmod 775 /opt/kootnet-control-center -R
-chmod 777 /opt/kootnet-control-center/logs/*.txt
+chmod 766 /opt/kootnet-control-center/logs/*.txt
+chmod 766 ${USER_DIR}/Desktop/*.desktop
