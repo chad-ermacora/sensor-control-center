@@ -205,7 +205,7 @@ class CreateMainWindow:
                 for ip in ip_list:
                     download_obj = app_sensor_commands.CreateHTTPDownload()
                     download_obj.ip = ip
-                    download_obj.url = "/data/"
+                    download_obj.url = "/"
                     download_obj.save_to_location = download_to_location
                     download_obj.file_name = "SensorRecordingDatabase.sqlite"
 
@@ -218,7 +218,7 @@ class CreateMainWindow:
                 for thread in threads:
                     thread.join()
 
-                info("Downloads", "Interval Database Downloads Complete")
+                info("Downloads", "SQL Database Downloads Complete")
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:
