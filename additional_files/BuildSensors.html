@@ -3,70 +3,78 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
 	<title></title>
-	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
+	<meta name="generator" content="LibreOffice 6.1.3.2 (Windows)"/>
 	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2018-11-06T19:08:15.137000000"/>
+	<meta name="changed" content="2018-11-13T22:21:09.054000000"/>
 	<style type="text/css">
 		h2.cjk { font-family: "NSimSun" }
 		h2.ctl { font-family: "Lucida Sans" }
-		h3.cjk { font-family: "NSimSun" }
-		h3.ctl { font-family: "Lucida Sans" }
 		h4.cjk { font-family: "NSimSun" }
 		h4.ctl { font-family: "Lucida Sans" }
 	</style>
 </head>
 <body lang="en-US" dir="ltr"><h2 class="western" align="center"><strong><u>Building
-a Sensor Unit to work with KootNet Sensors</u></strong></h2>
-<p align="center"><em>** WIP: This will be updated with better
-instructions as time goes on **</em></p>
+a Kootnet Sensor Unit<br/>
+</u></strong><em><font size="3" style="font-size: 12pt"><span style="font-weight: normal">**
+WIP: This will be updated with better instructions as time goes on **</span></font></em></h2>
 <p align="left"><strong><font size="4" style="font-size: 14pt"><u>Currently
-Supported Sensor&rsquo;s</u></font></strong></p>
-<p align="left"><a href="https://www.raspberrypi.org/products/">Raspberry
-Pi products</a>: Sense HAT<br/>
-<a href="https://shop.pimoroni.com/">Pimoroni
-products</a>: BH1745, BME680, Enviro pHAT, LSM303D, VL53L1X</p>
-<p align="left"><em>Note: Additional sensors can be added fairly
-easily, so long as they support the Raspberry Pi and Python3</em></p>
+Supported Add-On Sensor&rsquo;s<br/>
+</u></font></strong><a href="https://www.raspberrypi.org/products/" target="_blank">Raspberry
+Pi products</a>: SenseHAT<br/>
+<a href="https://shop.pimoroni.com/" target="_blank">Pimoroni
+products</a>: BH1745, BME680, EnviroPHAT, LSM303D, VL53L1X<br/>
+<br/>
+**
+<em>Note: You can send me a message to add new sensor support, so
+long as the sensor supports the Raspberry Pi and has a Python3
+library **</em></p>
 <h4 class="western" align="left"><strong><font size="4" style="font-size: 14pt"><u>User
-Requirements</u></font></strong></h4>
-<p align="left">The User must know the following</p>
-<p align="left">1. Basic TCP/IP Version 4 concepts<br/>
-<em>IP
-Address, Gateway, DNS, etc</em></p>
-<p align="left">2. Basic operations of the terminal text editor
-&quot;nano&quot;<br/>
-<em>Use &quot;Ctrl + x&quot; to quit, entering
-&quot;y&quot; to save any changes (If you made any)</em></p>
-<p align="left">3. How to accesses a terminal in Raspbian<br/>
-<em>Raspberry
-Pi Menu -&gt; Accessories -&gt; Terminal</em></p>
+Requirements<br/>
+</u></font></strong><span style="font-weight: normal">1.
+Basic TCP/IP Version 4 concepts<br/>
+- </span><em><span style="font-weight: normal">IP
+Address, Subnet, Gateway<br/>
+<br/>
+</span></em><span style="font-weight: normal">2.
+Basic operations of the Gnu/Linux terminal text editor &quot;nano&quot;<br/>
+-
+Press </span>&ldquo;<em><span style="font-weight: normal">Ctrl + x&quot;
+to quit<br/>
+<br/>
+</span></em><span style="font-weight: normal">3.
+How to accesses a terminal in Raspbian<br/>
+- </span><em><span style="font-weight: normal">Raspberry
+Pi Menu -&gt; Accessories -&gt; Terminal</span></em></h4>
 <h4 class="western" align="left"><strong><font size="4" style="font-size: 14pt"><u>Required
-Hardware</u></font></strong></h4>
-<p align="left"><strong><a href="https://www.raspberrypi.org/products/">Raspberry
-Pi</a> &ndash; </strong>I have tested the 3B+ &amp; Zero W</p>
-<p align="left"><strong><em>Optional &ndash; </em></strong>additional
-sensors (see Currently Supported Sensor&rsquo;s above)</p>
-<h3 class="western" align="left"><strong><u>Install Instructions</u></strong></h3>
-<p><em><span style="font-variant: normal"><span style="font-style: normal">The
+Hardware<br/>
+</u></font></strong><strong><a href="https://www.raspberrypi.org/products/" target="_blank"><span style="text-decoration: none"><b>Raspberry
+Pi</b></span></a></strong><strong> &ndash; </strong><strong><span style="font-weight: normal">The
+Raspberry Pi </span></strong><span style="font-weight: normal">3B+ &amp;
+Zero W have been tested, but it should also work on earlier
+models</span><br/>
+<strong><em>Optional &ndash; </em></strong><span style="font-weight: normal">additional
+sensors (See currently supported sensor&rsquo;s above)</span></h4>
+<p align="left"><strong><font size="4" style="font-size: 14pt"><u>Install
+Instructions</u></font></strong><strong><u><br/>
+</u></strong><em><span style="font-variant: normal"><span style="font-style: normal">The
 installer script will modify /etc/network/interfaces, replace the
 root users crontab &amp; reboot the Raspberry Pi. This installation
-also includes a copy of the Control Center program to manage your
-sensor(s). <br/>
-** Note: The installer can take awhile, especially
-on the Raspberry Pi Zero models (60</span></span></em><em><span style="font-variant: normal">
-</span></em><em><span style="font-variant: normal"><span style="font-style: normal">minutes
-or more). This is mostly due to a required numpy rebuild</span></span></em><em><span style="font-variant: normal">
-</span></em><em><span style="font-variant: normal"><span style="font-style: normal">**</span></span></em></p>
+also includes a copy of the Control Center program to manage up to 16</span></span></em><em><span style="font-variant: normal">
+</span></em><em><span style="font-variant: normal"><span style="font-style: normal">sensors.<br/>
+</span></span></em><em><span style="font-variant: normal"><i>**
+Note: The installer can take awhile, especially on the Raspberry Pi
+Zero models (60 minutes or more). This is mostly due to a required
+numpy rebuild **</i></span></em></p>
 <p align="left"><strong>Step 1</strong>. Physically Install your
 Sensor(s) onto the Raspberry Pi<br/>
-<strong>Step 2</strong>. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Install
+<strong>Step 2</strong>. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/" target="_blank">Install
 Raspbian OS</a><br/>
 <strong>Step 3</strong>. Enable SPI and I2C in
 the Raspberry Pi Configuration window on the &quot;Interfaces&quot;
 tab<br/>
 <strong>Step 4</strong>. Make sure you are connected to the
 Internet with your Pi, then run the following command in a terminal
-to start the Installer<br/>
+to start the installer<br/>
 <em><font size="2" style="font-size: 11pt"><br/>
 </font></em><span style="background: #dddddd">wget
 http://kootenay-networks.com/utils/koot_net_sensors/Installers/raspbian/update_programs_online.sh
@@ -77,19 +85,25 @@ The
 installer will open default configuration files to be configured,
 after which it will continue to download program files, install
 necessary Python libraries, update Raspbian itself, and finally
-reboot the sensor<br/>
-Once the Raspberry Pi comes back up, your
-sensor should be ready!<br/>
+reboot the sensor.<br/>
+<br/>
+Once the Raspberry Pi comes back up,
+your sensor should be ready!<br/>
 <br/>
 <font size="4" style="font-size: 14pt"><u><b>Uninstall
 Sensor Software<br/>
-</b></u></font>This will remove all sensor
-software &amp; the control center, plus it will restore the
-<em><span style="font-variant: normal"><span style="font-style: normal">/etc/network/interfaces
-file. It will leave your data, logs and configurations (Not the
-control center configuration).</span></span></em></p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><em><span style="font-variant: normal"><span style="text-decoration: none"><span style="font-style: normal"><span style="background: #dddddd">sudo
-bash /home/pi/KootNetSensors/zUninstall.sh</span></span></span></span></em></p>
+</b></u></font><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">This
+will remove all sensor software including Kootnet Sensors &ndash;
+Control Center, after which it will restore /etc/network/interfaces &amp;
+/etc/wpa_supplicant/wpa_supplicant.conf. Sensor data, logs and
+configurations are untouched, with the exception of the Control
+Center configuration, which is removed.</span></span></span></font></span></span></em></p>
+<p align="left"><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">sudo
+bash /home/kootnet_data/</span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">scripts</span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">/uninstall.sh</span></span></span></font></span></span></em></p>
+<p align="left"><br/>
+<br/>
+
+</p>
 <p align="left"><br/>
 <br/>
 

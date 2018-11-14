@@ -3,9 +3,9 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
 	<title></title>
-	<meta name="generator" content="LibreOffice 6.1.2.1 (Windows)"/>
+	<meta name="generator" content="LibreOffice 6.1.3.2 (Windows)"/>
 	<meta name="created" content="2018-10-01T11:14:17.608000000"/>
-	<meta name="changed" content="2018-11-06T19:17:42.059000000"/>
+	<meta name="changed" content="2018-11-13T22:24:31.849000000"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.1in; background: transparent; line-height: 115% }
@@ -15,18 +15,12 @@
 <body lang="en-US" dir="ltr"><p align="center" style="margin-bottom: 0in; line-height: 100%">
 <font size="4" style="font-size: 16pt"><u><b>Help Document for
 KootNet Sensor Units</b></u></font></p>
-<p align="center" style="margin-bottom: 0in; line-height: 100%"><br/>
-
-</p>
 <p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
 <font size="3" style="font-size: 12pt">As of right now, a Raspberry
 Pi is required with the option of adding one or more supported
 sensors.</font></p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
-
-</p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">To
-make your own sensor, find the instructions on the </span></span></font></span></span><a href="http://kootenay-networks.com/?page_id=236">Programs
+make your own sensor, find the instructions on the </span></span></font></span></span><a href="http://kootenay-networks.com/?page_id=236" target="_blank">Programs
 Website</a><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">or
 in the Help menu of Kootnet Sensors &ndash; Control Center. </span></span></font></span></span>
@@ -34,70 +28,65 @@ in the Help menu of Kootnet Sensors &ndash; Control Center. </span></span></font
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Manage
-Sensor with Control Center</b></u></font></p>
-<p style="margin-bottom: 0in; line-height: 100%">There is a shortcut
-on the pi users desktop to open the Control Center OR you can use the
-command bellow to open it from terminal.<br/>
-The first IP is a local
-loop back address (127.0.0.1) to manage the local unit. 
+<p style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Managing
+Sensor Units from Raspbian</b></u></font></p>
+<p style="margin-bottom: 0in; line-height: 100%">The shortcut
+&ldquo;Kootnet Sensors - Control Center&rdquo; opens a GUI Python
+program to manage up to 16 sensors at a time. See the &ldquo;Help&rdquo;
+menu in the Control Center for more information.</p>
+<p style="margin-bottom: 0in; line-height: 100%">The first IP in
+Kootnet Sensors - Control Center is a local loop back address
+(127.0.0.1) to manage the local unit.</p>
+<p style="margin-bottom: 0in; line-height: 100%">The shortcut
+&ldquo;Kootnet Sensors &ndash; Configuration &amp; Test&rdquo; opens
+up the following in order, one after another to change or not. At the
+end of the reconfiguration, it displays the new configuration and
+current sensor readings on the screen. 
 </p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
-
-</p>
-<p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; line-height: 100%">
-<span style="background: #dddddd">python3 /home/pi/control-center.py</span></p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Re-Configure
-the Sensor</b></u></font></p>
-<p style="margin-bottom: 0in; line-height: 100%">This will open and
-allow you to edit all the configuration files, one after another,
-then it restarts the sensor services and runs a sensor test (See
-Sensor Test below). 
-</p>
-<p style="margin-bottom: 0in; line-height: 100%"><font size="2" style="font-size: 11pt"><i>Note:
-You can type in part of a command, then hit the &lsquo;tab&rsquo; key
-on your keyboard to auto complete the command. For example, type sudo
-./edit</i> <i>then hit the &lsquo;tab&rsquo; key to complete the
-line. </i></font>
-</p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
-bash /home/pi/edit_sensor_config.sh</span></p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
+<ul>
+	<li><p style="margin-bottom: 0in; line-height: 100%">Installed
+	Sensors &ndash; Enable or disable supported sensors</p>
+	<li><p style="margin-bottom: 0in; line-height: 100%">Sensor
+	Configuration &ndash; Adjust SQL recording settings</p>
+	<li><p style="margin-bottom: 0in; line-height: 100%">interfaces &ndash;
+	Adjust IP settings</p>
+	<li><p style="margin-bottom: 0in; line-height: 100%">wpa_supplicant.conf
+	&ndash; Adjust automatic wireless connections</p>
+</ul>
+<p style="margin-bottom: 0in; line-height: 100%"><i>** Note:
+Microsoft Windows installers are available </i><i>for</i><i> Kootnet
+Sensors &ndash; Control Center </i><i>on t</i><i>he <a href="http://kootenay-networks.com/?page_id=236" target="_blank">website'</a></i><a href="http://kootenay-networks.com/?page_id=236" target="_blank"><i>s</i><i>
+download</i></a><i>s</i><i> page **</i></p>
+<p style="margin-bottom: 0in; line-height: 100%; background: transparent">
+<img src="SensorShortcuts.png" name="Image1" align="left" width="648" height="902">
+  <br clear="left"/>
+</img>
+<br/>
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%; background: transparent">
 <font size="4" style="font-size: 14pt"><u><b>Uninstall Sensor
 Software</b></u></font></p>
 <p style="margin-bottom: 0in; line-height: 100%">This will remove all
-sensor software &amp; the control center, plus it will restore the
-<em><span style="font-variant: normal"><span style="font-style: normal">/etc/network/interfaces
-file. It will leave your data, logs and configurations (Not the
-control center configuration).</span></span></em></p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
-
-</p>
+sensor software including Kootnet Sensors &ndash; Control Center,
+after which it will restore <em><span style="font-variant: normal"><span style="font-style: normal">/etc/network/interfaces
+&amp; /etc/wpa_supplicant/wpa_supplicant.conf. Sensor</span></span></em><em><span style="font-variant: normal">
+</span></em><em><span style="font-variant: normal"><span style="font-style: normal">data,
+logs and configurations are untouched, with the exception of the
+Control Center configuration, which is removed.</span></span></em></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
-bash /home/pi/KootNetSensors/zUninstall.sh</span></p>
+bash /home/kootnet_data/</span><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">scripts/</span></span></span></font></span></span></em><span style="background: #dddddd">uninstall.sh</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Sensor
 Test</b></u></font></p>
 <p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
-This will print your configuration settings and a snapshot of the
-sensors readings to the screen. 
-</p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
-
+This will print the current configuration &amp; sensor readings to
+the screen. 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">python3
-/home/pi/test_sensors.py</span></p>
+/opt/</span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">kootnet-sensors</span></span></span></font></span></span><span style="background: #dddddd">/test_sensors.py</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
@@ -108,11 +97,8 @@ automatically start and restart them selves through systemd as
 services. 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%">Run one or more of
-the following commands. Each line disables the corresponding service
-and stops it. 
-</p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
-
+the following commands to disable the corresponding service and stop
+it. 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
 systemctl disable SensorHTTP &amp;&amp; sudo systemctl stop
@@ -127,102 +113,125 @@ SensorRecording</span></p>
 
 </p>
 <p style="margin-bottom: 0in; line-height: 100%">To re-enable and
-start the services, run this command. 
+start the services, run the following command. 
 </p>
-<p style="margin-bottom: 0in; line-height: 100%">* Note: You do not
-have to change anything, the script re-enables and starts all sensor
-services *</p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
-<span style="background: #dddddd">sudo
-bash /home/pi/edit_sensor_config.sh</span></p>
+<p style="margin-bottom: 0in; line-height: 100%"><i>* Note: You do
+not have to change anything, the script automatically re-enables and
+starts all sensor services *</i></p>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="background: #dddddd">sudo
+bash /opt/kootnet-sensors/upgrade/edit_sensor_config.sh</span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Configuration
 &amp; File Locations</b></u></font></p>
 <p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; background: transparent; text-decoration: none">
-<font size="3" style="font-size: 12pt"><b>KootNet Control Center </b>&ndash;
+<font size="3" style="font-size: 12pt"><b>KootNet Sensors - Control
+Center (program &amp; configuration)</b> &ndash;
 <span style="background: #dddddd">/opt/kootnet-control-center/</span></font></p>
 <p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><b>KootNet Sensor </b>&ndash;
+<font size="3" style="font-size: 12pt"><b>KootNet sensor programs </b>&ndash;
 <span style="background: #dddddd">/opt/kootnet-sensors/</span></font></p>
 <p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
-<font size="3" style="font-size: 12pt"><b>KootNet Sensor
-configuration files &amp; data </b>&ndash; <span style="background: #dddddd">/home/pi/KootNetSensors/</span></font></p>
+<font size="3" style="font-size: 12pt"><b>KootNet sensor
+configuration </b>&ndash; <span style="background: #dddddd">/etc/kootnet/</span></font></p>
+<p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
+<font size="3" style="font-size: 12pt"><b>KootNet sensor data &amp;
+logs </b>&ndash; <span style="background: #dddddd">/home/kootnet_data/</span></font></p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>zInstalled.txt</b>
-&ndash; <span style="font-weight: normal">Sensor installed date &amp;
-time</span></p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>LastUpdated.txt</b>
-&ndash; <span style="font-weight: normal">Sensor last updated + how</span></p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>installed_sensors.txt</b>
-&ndash; <span style="font-weight: normal">Supported &amp; enabled
-sensors</span></p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/</b></span><b>config.txt</b>
-&ndash; Sensor configuration file</p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="3" style="font-size: 12pt"><u><b>SQLite3
+Database</b></u></font></p>
+<p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
+<font size="3" style="font-size: 12pt"><b><span style="background: transparent">Location:</span></b><span style="background: transparent">
+</span><span style="background: #cccccc">/home/kootnet_data/</span></font></p>
+<p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
+<font size="3" style="font-size: 12pt"><b><span style="background: transparent">SensorRecodringDatabase.sqlite</span></b><span style="background: transparent">
+&ndash; </span>SQLite3 database holding all recorded sensor readings</font></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
+
+</p>
+<p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; line-height: 100%; text-decoration: none">
+<font size="3" style="font-size: 12pt"><u><b>Configuration Files</b></u></font></p>
+<p align="left" style="margin-bottom: 0in; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
+<font size="3" style="font-size: 12pt"><b>Location:</b> <span style="background: #cccccc">/etc/kootnet/</span></font></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="background: transparent"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>installed_datetime.txt</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+&ndash; </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Sensor
+installed date &amp; time</span></span></font></span></span></span></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="background: transparent"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>last_updated.txt</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+&ndash; </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Sensor
+last updated &amp;</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">how</span></span></font></span></span></span></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="background: transparent"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>installed_sensors.conf</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+&ndash; </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Supported
+&amp; enabled sensors</span></span></font></span></span></span></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><span style="background: transparent"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>sql_recording.conf</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+&ndash; </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Sensor
+configuration file</span></span></font></span></span></span></p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
+
+</p>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="3" style="font-size: 12pt"><u><b>Log
+Files</b></u></font></p>
+<p align="left" style="margin-bottom: 0in; font-weight: normal; line-height: 100%; background: transparent; text-decoration: none">
+<font size="3" style="font-size: 12pt"><b>Location:</b>
+<span style="background: #cccccc">/home/kootnet_data/logs/</span></font></p>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>Primary_log.txt
+</b></span><span style="text-decoration: none">&ndash; </span>Contains
+sensor program logs</p>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>Sensors_log.txt
+</b></span><span style="text-decoration: none">&ndash;</span><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Contains
+sensor hardware errors</span></span></font></span></span></p>
+<p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>Network_log.txt
+</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">&ndash;
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Contains
+network sent commands &amp; errors</span></span></font></span></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Clean
 Upgrade Service Scripts</b></u></font></p>
 <p style="margin-bottom: 0in; font-variant: normal; font-style: normal; line-height: 100%">
-These 2x Upgrade scripts delete the sensor &amp; control center
-program directories<span style="text-decoration: none">
-</span><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/opt/kootnet-sensors/
-&amp; /opt/kootnet-control-center, then</span></font></span> scripts
-in <span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">/</span></font></span>home/pi/.
-Programs are then re-installed. The configuration and data files
-remain untouched, except for the control center configuration, which
-is restored to defaults. 
-</p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
-
-</p>
-<p style="margin-bottom: 0in; line-height: 100%"><b><span style="background: #dddddd">sudo
-systemctl </span></b><b><span style="background: #dddddd">start</span></b><b><span style="background: #dddddd">
-</span></b><b><span style="background: #dddddd">SensorCleanUpgradeOnline</span></b>
-<span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
-Clean HTTP upgrade</p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: #dddddd">sudo
-systemctl </span></b></span></span><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: #dddddd">start</span></b></span></span><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: #dddddd">
-</span></b></span></span><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: #dddddd">SensorCleanUpgradeSMB</span></b></span></span>
-<span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
-Clean SMB (Windows share) upgrade</p>
+These 2x Upgrade scripts uninstall all other systemd services,
+deletes both Kootnet Sensors &amp; KootNet Sensors - Control Center
+programs &amp; shortcuts then finally re-installs the program by the
+chosen method. The configuration and data files remain untouched,
+except for the control center configuration, which is restored to
+defaults.</p>
+<p style="margin-bottom: 0in; font-variant: normal; font-style: normal; line-height: 100%">
+The following SensorCleanUpgradeOnline command upgrades online
+through HTTP &amp; SensorCleanUpgradeSMB upgrades through a windows
+share.</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%">
+<span style="background: #dddddd">sudo systemctl start
+SensorCleanUpgradeOnline</span></p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%">
+<span style="font-variant: normal"><span style="font-style: normal"><span style="background: #dddddd">sudo
+systemctl start</span></span></span><span style="font-variant: normal"><span style="background: #dddddd">
+</span></span><span style="font-variant: normal"><span style="font-style: normal"><span style="background: #dddddd">SensorCleanUpgradeSMB</span></span></span><span style="font-variant: normal"><span style="background: transparent">
+</span></span><span style="font-variant: normal"><font color="#ce181e"><i><span style="background: transparent">**
+DO NOT USE UNTIL YOU SETUP THE OPTIONS IN
+</span></i></font></span><span style="font-variant: normal"><font color="#ce181e"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="background: transparent">/opt/kootnet-sensors/upgrade/update_programs_smb.sh
+**</span></i></font></span></font></span></p>
 <p style="margin-bottom: 0in; line-height: 100%; background: transparent">
 <i>** </i><span style="font-variant: normal"><span style="font-style: normal"><b><span style="background: transparent">SensorCleanUpgradeSMB</span></b></span></span>
-<i><u>Requires:</u></i> <i>Configuration in
+<font color="#ce181e"><i><u>Requires</u></i></font><font color="#000000"><i><u>:</u></i></font>
+<i>Configuration in
 </i><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">/opt/kootnet-sensors/upgrade/update_programs_smb.sh</span></i></font></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">**
 </span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b><span style="background: transparent">SensorCleanUpgradeOnline</span></b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
-</span></span><font size="3" style="font-size: 12pt"><i><u><span style="font-weight: normal">Optional:</span></u></i></font><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><font color="#2a6099"><font size="3" style="font-size: 12pt"><i><u><span style="font-weight: normal">Optional</span></u></i></font></font><font size="3" style="font-size: 12pt"><i><u><span style="font-weight: normal">:</span></u></i></font><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">modify</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
 </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">/opt/kootnet-sensors/upgrade/</span></i></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">update_programs_online.sh
 to use your own HTTP Server</span></span></font></span></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>SQLite3
-Database</b></u></font></p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/data/</b></span><b>Sensor</b><b>Recodring</b><b>Database.sqlite</b>
-<span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
-SQLite3 database holding sensor readings</p>
-<p style="margin-bottom: 0in; line-height: 100%"><br/>
+<p align="left" style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p align="left" style="margin-bottom: 0in; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b>Log
-Files</b></u></font></p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/logs/Primary_log.txt</b></span>
-<span style="font-variant: normal"><span style="text-decoration: none">&ndash;</span></span>
-Contains sensor program logs</p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="text-decoration: none"><b>/home/pi/KootNetSensors/logs/Sensors_log.txt</b></span>
-<span style="font-variant: normal"><span style="text-decoration: none">&ndash;
-</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Contains
-sensor hardware errors</span></span></font></span></span></p>
-<p style="margin-bottom: 0in; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>/home/pi/KootNetSensors/logs/Network_log.txt</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
-&ndash; </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Contains
-network command logs &amp; history</span></span></font></span></span></p>
 <p style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
