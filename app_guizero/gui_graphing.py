@@ -30,6 +30,9 @@ class CreateGraphingWindow:
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
+        self.readable_column_names = app_graph.CreateSQLColumnsReadable()
+        self.sql_columns = app_graph.CreateSQLColumnNames()
+
         self.window = Window(app,
                              title="Graphing",
                              width=275,
@@ -44,7 +47,7 @@ class CreateGraphingWindow:
                                           align="top")
 
         self.radio_sensor_type = ButtonGroup(self.window,
-                                             options=["Live", "Interval SQL", "Trigger SQL"],
+                                             options=["Live", "SQL Database"],
                                              horizontal="True",
                                              command=self._radio_selection,
                                              grid=[1, 2, 2, 1],
@@ -141,51 +144,51 @@ class CreateGraphingWindow:
                                           align="top")
 
         self.checkbox_up_time = CheckBox(self.window,
-                                         text="System Uptime",
+                                         text=self.readable_column_names.system_uptime,
                                          command=self._disable_other_checkboxes,
-                                         args=["Uptime"],
+                                         args=[self.sql_columns.system_uptime],
                                          grid=[1, 16],
                                          align="left")
 
         self.checkbox_cpu_temp = CheckBox(self.window,
-                                          text="CPU Temperature",
+                                          text=self.readable_column_names.cpu_temp,
                                           command=self._disable_other_checkboxes,
-                                          args=["CPUTemperature"],
+                                          args=[self.sql_columns.cpu_temp],
                                           grid=[1, 17],
                                           align="left")
 
         self.checkbox_temperature = CheckBox(self.window,
-                                             text="Env Temperature",
+                                             text=self.readable_column_names.environmental_temp,
                                              command=self._disable_other_checkboxes,
-                                             args=["Temperature"],
+                                             args=[self.sql_columns.environmental_temp],
                                              grid=[1, 18],
                                              align="left")
 
         self.checkbox_pressure = CheckBox(self.window,
-                                          text="Pressure",
+                                          text=self.readable_column_names.pressure,
                                           command=self._disable_other_checkboxes,
-                                          args=["Pressure"],
+                                          args=[self.sql_columns.pressure],
                                           grid=[1, 19],
                                           align="left")
 
         self.checkbox_humidity = CheckBox(self.window,
-                                          text="Humidity",
+                                          text=self.readable_column_names.humidity,
                                           command=self._disable_other_checkboxes,
-                                          args=["Humidity"],
+                                          args=[self.sql_columns.humidity],
                                           grid=[2, 16],
                                           align="left")
 
         self.checkbox_lumen = CheckBox(self.window,
-                                       text="Lumen",
+                                       text=self.readable_column_names.lumen,
                                        command=self._disable_other_checkboxes,
-                                       args=["Lumen"],
+                                       args=[self.sql_columns.lumen],
                                        grid=[2, 17],
                                        align="left")
 
         self.checkbox_colour = CheckBox(self.window,
-                                        text="Colour RGB",
+                                        text=self.readable_column_names.rgb,
                                         command=self._disable_other_checkboxes,
-                                        args=["RGB"],
+                                        args=[self.sql_columns.rgb],
                                         grid=[2, 18],
                                         align="left")
 
@@ -196,23 +199,23 @@ class CreateGraphingWindow:
                                            align="bottom")
 
         self.checkbox_acc = CheckBox(self.window,
-                                     text="Accelerometer XYZ",
+                                     text=self.readable_column_names.accelerometer_xyz,
                                      command=self._disable_other_checkboxes,
-                                     args=["Accelerometer"],
+                                     args=[self.sql_columns.accelerometer_xyz],
                                      grid=[1, 25],
                                      align="left")
 
         self.checkbox_mag = CheckBox(self.window,
-                                     text="Magnetometer XYZ",
+                                     text=self.readable_column_names.magnetometer_xyz,
                                      command=self._disable_other_checkboxes,
-                                     args=["Magnetometer"],
+                                     args=[self.sql_columns.magnetometer_xyz],
                                      grid=[2, 25],
                                      align="left")
 
         self.checkbox_gyro = CheckBox(self.window,
-                                      text="Gyroscopic XYZ",
+                                      text=self.readable_column_names.gyroscope_xyz,
                                       command=self._disable_other_checkboxes,
-                                      args=["Gyroscopic"],
+                                      args=[self.sql_columns.gyroscope_xyz],
                                       grid=[1, 26],
                                       align="left")
 
@@ -248,45 +251,36 @@ class CreateGraphingWindow:
     def _radio_selection(self):
         """ Enables or disables the Graph Window selections, based on graph type selected. """
         self._enable_all_checkboxes()
-        if self.radio_sensor_type.get() == "Interval SQL":
-            self.checkbox_acc.disable()
-            self.checkbox_mag.disable()
-            self.checkbox_gyro.disable()
+        if self.radio_sensor_type.get() == "SQL Database":
             self.button_live.disable()
             self.textbox_refresh_time.disable()
 
-            self.checkbox_cpu_temp.enable()
-            self.textbox_temperature_offset.enable()
-            self.checkbox_temperature.enable()
-            self.checkbox_pressure.enable()
-            self.checkbox_humidity.enable()
-            self.checkbox_lumen.enable()
-            self.checkbox_colour.enable()
-            self.checkbox_up_time.enable()
             self.textbox_start.enable()
             self.textbox_end.enable()
             self.textbox_sql_skip.enable()
-            self.button_database.enable()
+            self.textbox_temperature_offset.enable()
 
-        if self.radio_sensor_type.get() == "Trigger SQL":
-            self.textbox_sql_skip.disable()
-            self.textbox_temperature_offset.disable()
-            self.checkbox_cpu_temp.disable()
-            self.checkbox_temperature.disable()
-            self.checkbox_pressure.disable()
-            self.checkbox_humidity.disable()
-            self.checkbox_lumen.disable()
-            self.checkbox_colour.disable()
-            self.checkbox_up_time.disable()
-            self.button_live.disable()
-            self.textbox_refresh_time.disable()
-
+            self.checkbox_up_time.enable()
+            self.checkbox_up_time.value = 1
+            self.checkbox_cpu_temp.enable()
+            self.checkbox_cpu_temp.value = 1
+            self.checkbox_temperature.enable()
+            self.checkbox_temperature.value = 1
+            self.checkbox_pressure.enable()
+            self.checkbox_pressure.value = 1
+            self.checkbox_humidity.enable()
+            self.checkbox_humidity.value = 1
+            self.checkbox_lumen.enable()
+            self.checkbox_lumen.value = 1
+            self.checkbox_colour.enable()
+            self.checkbox_colour.value = 1
             self.checkbox_acc.enable()
+            self.checkbox_acc.value = 1
             self.checkbox_mag.enable()
+            self.checkbox_mag.value = 1
             self.checkbox_gyro.enable()
-            self.textbox_start.enable()
-            self.textbox_end.enable()
-            self.textbox_sql_skip.disable()
+            self.checkbox_gyro.value = 1
+
             self.button_database.enable()
 
         if self.radio_sensor_type.get() == "Live":
@@ -295,7 +289,6 @@ class CreateGraphingWindow:
             self.textbox_start.disable()
             self.textbox_end.disable()
 
-            self.textbox_temperature_offset.enable()
             self.textbox_refresh_time.enable()
 
             self.checkbox_up_time.enable()
@@ -310,13 +303,13 @@ class CreateGraphingWindow:
             self.checkbox_humidity.value = 0
             self.checkbox_lumen.enable()
             self.checkbox_lumen.value = 0
-            self.checkbox_colour.disable()
+            self.checkbox_colour.enable()
             self.checkbox_colour.value = 0
-            self.checkbox_acc.disable()
+            self.checkbox_acc.enable()
             self.checkbox_acc.value = 0
-            self.checkbox_mag.disable()
+            self.checkbox_mag.enable()
             self.checkbox_mag.value = 0
-            self.checkbox_gyro.disable()
+            self.checkbox_gyro.enable()
             self.checkbox_gyro.value = 0
 
             self.button_live.enable()
@@ -342,63 +335,66 @@ class CreateGraphingWindow:
         new_data.temperature_offset = self.current_config.temperature_offset
         new_data.graph_columns = self._get_column_checkboxes()
 
-        if self.radio_sensor_type.get() == "Interval SQL":
-            app_graph.start_graph_interval(new_data)
-        elif self.radio_sensor_type.get() == "Trigger SQL":
-            app_graph.start_graph_trigger(new_data)
+        app_graph.start_plotly_graph(new_data)
 
     def live_button(self):
-        ip = self.ip_selection.get_verified_ip_list()[0]
         pyplot.close()
         try:
+            ip = self.ip_selection.get_verified_ip_list()[0]
             checkbox = self._get_column_checkboxes()[3]
+        except IndexError:
+            ip = "Invalid"
+            checkbox = "Invalid"
 
+        if ip is not "Invalid":
             self.current_config.live_refresh = self.textbox_refresh_time.value
             self.current_config.temperature_offset = self.textbox_temperature_offset.value
             app_config.check_config(self.current_config)
             self.set_config()
 
             app_graph.CreateLiveGraph(checkbox, ip, self.current_config)
-        except Exception as error:
-            app_logger.app_logger.warning("No sensors selected in the main window - " + str(error))
+        else:
             warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
                                   "& Sensor Type from the Graph window")
 
     def _get_column_checkboxes(self):
         """ Returns selected SQL Columns from the Graph Window, depending on the Data Source Selected. """
-        column_checkboxes = ["DateTime", "SensorName", "IP"]
+        sql_columns = app_graph.CreateSQLColumnNames()
+        column_checkboxes = [sql_columns.date_time, sql_columns.sensor_name, sql_columns.ip]
 
-        data_source_radio = self.radio_sensor_type.get()
-        if data_source_radio == "Interval SQL" or data_source_radio == "Live":
-            if self.checkbox_up_time.value:
-                column_checkboxes.append("SensorUpTime")
-            if self.checkbox_cpu_temp.value:
-                column_checkboxes.append("SystemTemp")
-            if self.checkbox_temperature.value:
-                column_checkboxes.append("EnvironmentTemp")
-            if self.checkbox_pressure.value:
-                column_checkboxes.append("Pressure")
-            if self.checkbox_humidity.value:
-                column_checkboxes.append("Humidity")
-            if self.checkbox_lumen.value:
-                column_checkboxes.append("Lumen")
-            if self.checkbox_colour.value:
-                column_checkboxes.append("Red")
-                column_checkboxes.append("Green")
-                column_checkboxes.append("Blue")
-        if data_source_radio == "Trigger SQL" or data_source_radio == "Live":
-            if self.checkbox_acc.value:
-                column_checkboxes.append("Acc_X")
-                column_checkboxes.append("Acc_Y")
-                column_checkboxes.append("Acc_Z")
-            if self.checkbox_mag.value:
-                column_checkboxes.append("Mag_X")
-                column_checkboxes.append("Mag_Y")
-                column_checkboxes.append("Mag_Z")
-            if self.checkbox_gyro.value:
-                column_checkboxes.append("Gyro_X")
-                column_checkboxes.append("Gyro_Y")
-                column_checkboxes.append("Gyro_Z")
+        if self.checkbox_up_time.value:
+            column_checkboxes.append(sql_columns.system_uptime)
+        if self.checkbox_cpu_temp.value:
+            column_checkboxes.append(sql_columns.cpu_temp)
+        if self.checkbox_temperature.value:
+            column_checkboxes.append(sql_columns.environmental_temp)
+        if self.checkbox_pressure.value:
+            column_checkboxes.append(sql_columns.pressure)
+        if self.checkbox_humidity.value:
+            column_checkboxes.append(sql_columns.humidity)
+        if self.checkbox_lumen.value:
+            column_checkboxes.append(sql_columns.lumen)
+        if self.checkbox_colour.value:
+            column_checkboxes.append(sql_columns.rgb[0])
+            column_checkboxes.append(sql_columns.rgb[1])
+            column_checkboxes.append(sql_columns.rgb[2])
+        if self.checkbox_acc.value:
+            column_checkboxes.append(sql_columns.accelerometer_xyz[0])
+            column_checkboxes.append(sql_columns.accelerometer_xyz[1])
+            column_checkboxes.append(sql_columns.accelerometer_xyz[2])
+        if self.checkbox_mag.value:
+            column_checkboxes.append(sql_columns.magnetometer_xyz[0])
+            column_checkboxes.append(sql_columns.magnetometer_xyz[1])
+            column_checkboxes.append(sql_columns.magnetometer_xyz[2])
+        if self.checkbox_gyro.value:
+            column_checkboxes.append(sql_columns.gyroscope_xyz[0])
+            column_checkboxes.append(sql_columns.gyroscope_xyz[1])
+            column_checkboxes.append(sql_columns.gyroscope_xyz[2])
+
+        if self.checkbox_gyro.value or self.checkbox_mag.value or self.checkbox_acc.value:
+            column_checkboxes.append(sql_columns.date_time)
+            column_checkboxes.append(sql_columns.ip)
+            column_checkboxes.append(sql_columns.sensor_name)
 
         app_logger.app_logger.debug(str(column_checkboxes))
         return column_checkboxes
@@ -427,123 +423,67 @@ class CreateGraphingWindow:
 
     def _disable_other_checkboxes(self, var_checkbox):
         if self.radio_sensor_type.value == "Live":
-            if var_checkbox is "Uptime":
-                pass
+            unchecked = False
+            if var_checkbox is self.sql_columns.system_uptime:
+                if self.checkbox_up_time.value == 0:
+                    unchecked = True
             else:
                 self.checkbox_up_time.disable()
                 self.checkbox_up_time.value = 0
-            if var_checkbox is "Temperature":
-                pass
-            else:
-                self.checkbox_temperature.disable()
-                self.checkbox_temperature.value = 0
-            if var_checkbox is "CPUTemperature":
-                pass
+            if var_checkbox is self.sql_columns.cpu_temp:
+                if self.checkbox_cpu_temp.value == 0:
+                    unchecked = True
             else:
                 self.checkbox_cpu_temp.disable()
                 self.checkbox_cpu_temp.value = 0
-            if var_checkbox is "Pressure":
-                pass
+            if var_checkbox is self.sql_columns.environmental_temp:
+                if self.checkbox_temperature.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_temperature.disable()
+                self.checkbox_temperature.value = 0
+            if var_checkbox is self.sql_columns.pressure:
+                if self.checkbox_pressure.value == 0:
+                    unchecked = True
             else:
                 self.checkbox_pressure.disable()
                 self.checkbox_pressure.value = 0
-            if var_checkbox is "Humidity":
-                pass
+            if var_checkbox is self.sql_columns.humidity:
+                if self.checkbox_humidity.value == 0:
+                    unchecked = True
             else:
                 self.checkbox_humidity.disable()
                 self.checkbox_humidity.value = 0
-            if var_checkbox is "Lumen":
-                pass
+            if var_checkbox is self.sql_columns.lumen:
+                if self.checkbox_lumen.value == 0:
+                    unchecked = True
             else:
                 self.checkbox_lumen.disable()
                 self.checkbox_lumen.value = 0
-            # if var_checkbox is "RGB":
-            #     pass
-            # else:
-            #     self.checkbox_colour.disable()
-            #     self.checkbox_colour.value = 0
-            # if var_checkbox is "Accelerometer":
-            #     pass
-            # else:
-            #     self.checkbox_acc.disable()
-            #     self.checkbox_acc.value = 0
-            # if var_checkbox is "Magnetometer":
-            #     pass
-            # else:
-            #     self.checkbox_mag.disable()
-            #     self.checkbox_mag.value = 0
-            # if var_checkbox is "Gyroscopic":
-            #     pass
-            # else:
-            #     self.checkbox_gyro.disable()
-            #     self.checkbox_gyro.value = 0
+            if var_checkbox is self.sql_columns.rgb:
+                if self.checkbox_colour.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_colour.disable()
+                self.checkbox_colour.value = 0
+            if var_checkbox is self.sql_columns.accelerometer_xyz:
+                if self.checkbox_acc.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_acc.disable()
+                self.checkbox_acc.value = 0
+            if var_checkbox is self.sql_columns.magnetometer_xyz:
+                if self.checkbox_mag.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_mag.disable()
+                self.checkbox_mag.value = 0
+            if var_checkbox is self.sql_columns.gyroscope_xyz:
+                if self.checkbox_gyro.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_gyro.disable()
+                self.checkbox_gyro.value = 0
 
-            if var_checkbox is "Uptime":
-                if self.checkbox_up_time.value == 0:
-                    self._enable_all_checkboxes()
-                else:
-                    self.checkbox_up_time.enable()
-                    self.checkbox_up_time.value = 1
-            elif var_checkbox is "Temperature":
-                if self.checkbox_temperature.value == 0:
-                    self._enable_all_checkboxes()
-                else:
-                    self.checkbox_temperature.enable()
-                    self.checkbox_temperature.value = 1
-            elif var_checkbox is "CPUTemperature":
-                if self.checkbox_cpu_temp.value == 0:
-                    self._enable_all_checkboxes()
-                else:
-                    self.checkbox_cpu_temp.enable()
-                    self.checkbox_cpu_temp.value = 1
-            elif var_checkbox is "Pressure":
-                if self.checkbox_pressure.value == 0:
-                    self._enable_all_checkboxes()
-                else:
-                    self.checkbox_pressure.enable()
-                    self.checkbox_pressure.value = 1
-            elif var_checkbox is "Humidity":
-                if self.checkbox_humidity.value == 0:
-                    self._enable_all_checkboxes()
-                else:
-                    self.checkbox_humidity.enable()
-                    self.checkbox_humidity.value = 1
-            elif var_checkbox is "Lumen":
-                if self.checkbox_lumen.value == 0:
-                    self._enable_all_checkboxes()
-                else:
-                    self.checkbox_lumen.enable()
-                    self.checkbox_lumen.value = 1
-            # elif var_checkbox is "RGB":
-            #     if self.checkbox_colour.value == 0:
-            #         _self.enable_all_checkboxes()
-            #     else:
-            #         self.checkbox_colour.enable()
-            #         self.checkbox_colour.value = 1
-            # elif var_checkbox is "Accelerometer":
-            #     if self.checkbox_acc.value == 0:
-            #         _self.enable_all_checkboxes()
-            #     else:
-            #         self.checkbox_acc.enable()
-            #         self.checkbox_acc.value = 1
-            # elif var_checkbox is "Magnetometer":
-            #     if self.checkbox_mag.value == 0:
-            #         _self.enable_all_checkboxes()
-            #     else:
-            #         self.checkbox_mag.enable()
-            #         self.checkbox_mag.value = 1
-            # elif var_checkbox is "Gyroscopic":
-            #     if self.checkbox_gyro.value == 0:
-            #         _self.enable_all_checkboxes()
-            #     else:
-            #         self.checkbox_gyro.enable()
-            #         self.checkbox_gyro.value = 1
-
-            self.checkbox_colour.disable()
-            self.checkbox_colour.value = 0
-            self.checkbox_acc.disable()
-            self.checkbox_acc.value = 0
-            self.checkbox_mag.disable()
-            self.checkbox_mag.value = 0
-            self.checkbox_gyro.disable()
-            self.checkbox_gyro.value = 0
+            if unchecked:
+                self._enable_all_checkboxes()

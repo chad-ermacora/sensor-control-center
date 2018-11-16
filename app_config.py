@@ -21,15 +21,16 @@ from datetime import datetime
 
 import app_logger
 
-script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
+app_version = "Tested on Python 3.5 / KootNet Sensors - Control Center / Ver. Alpha.21.18"
 
 
 class CreateDefaultConfigSettings:
     """ Creates a object holding all the Control Centers default configuration options. """
 
     def __init__(self):
+        # Script location information
         self.script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
-        self.logs_directory = script_directory + "/logs"
+        self.logs_directory = self.script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
         self.config_file = self.script_directory + "/config.txt"
 
@@ -44,10 +45,10 @@ class CreateDefaultConfigSettings:
         self.network_timeout_sensor_check = 3
         self.network_timeout_data = 5
         self.allow_config_reset = 0
-        self.ip_list = ["127.0.0.1", "192.168.10.12", "192.168.10.14", "192.168.10.15",
-                        "192.168.10.16", "192.168.10.17", "192.168.10.51", "192.168.10.52",
-                        "192.168.10.19", "192.168.10.20", "192.168.10.21", "192.168.10.22",
-                        "192.168.10.23", "192.168.10.24", "192.168.10.25", "192.168.10.26"]
+        self.ip_list = ["127.0.0.1", "192.168.10.11", "192.168.10.12", "192.168.10.13",
+                        "192.168.10.14", "192.168.10.15", "192.168.10.16", "192.168.10.17",
+                        "192.168.10.51", "192.168.10.52", "192.168.10.53", "192.168.10.54",
+                        "192.168.10.55", "192.168.10.56", "192.168.10.57", "192.168.10.58"]
 
     def reset_to_defaults(self):
         """ Resets the User configurable options to a default state on object self. """
@@ -64,6 +65,11 @@ class CreateDefaultConfigSettings:
         self.network_timeout_data = default_config.network_timeout_data
         self.allow_config_reset = default_config.allow_config_reset
         self.ip_list = default_config.ip_list
+
+    @staticmethod
+    def get_str_datetime_now():
+        """ Returns local computer time in YYYY-MM-DD HH:MM:SS. """
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def get_from_file():

@@ -16,23 +16,26 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import webbrowser
-import platform
 import os
+import platform
 import subprocess
-import app_sensor_commands
-import app_logger
-import app_config
-from guizero import App, PushButton, MenuBar, info, warn, yesno
-from tkinter import filedialog
+import webbrowser
 from threading import Thread
-from app_guizero.gui_config import CreateConfigWindow
+from tkinter import filedialog
+
+from guizero import App, PushButton, MenuBar, info, warn, yesno
+
+import app_config
+import app_logger
+import app_sensor_commands
 from app_guizero.gui_about import CreateAboutWindow
-from app_guizero.gui_sensor_config import CreateSensorConfigWindow
-from app_guizero.gui_reports import CreateReportsWindow
-from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
+from app_guizero.gui_config import CreateConfigWindow
 from app_guizero.gui_graphing import CreateGraphingWindow, pyplot
 from app_guizero.gui_ip_selection import CreateIPSelector
+from app_guizero.gui_reports import CreateReportsWindow
+from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
+from app_guizero.gui_sensor_config import CreateSensorConfigWindow
+from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
 
 
 class CreateMainWindow:
@@ -48,9 +51,10 @@ class CreateMainWindow:
         self._set_ip_list()
 
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
-        self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection)
-        self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection)
-        self.window_reports = CreateReportsWindow(self.app, self.ip_selection)
+        self.window_reports = CreateReportsWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
         self.window_about = CreateAboutWindow(self.app, self.current_config)
 
@@ -74,7 +78,9 @@ class CreateMainWindow:
                                              ["Send Commands",
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
-                                              self.window_sensor_config.window.show]],
+                                              self.window_sensor_config.window.show],
+                                             ["View & Download Logs",
+                                              self.window_sensor_logs.window.show]],
                                             [["Open Graph Window",
                                               self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
@@ -94,17 +100,11 @@ class CreateMainWindow:
                                                   grid=[1, 15, 2, 1],
                                                   align="left")
 
-        self.app_button_sensor_detail = PushButton(self.app,
-                                                   text="Download Sensor\nInterval Databases",
-                                                   command=self._app_menu_download_interval_db,
-                                                   grid=[2, 15, 2, 1],
-                                                   align="right")
-
-        self.app_button_sensor_config = PushButton(self.app,
-                                                   text="Download Sensor\nTrigger Databases",
-                                                   command=self._app_menu_download_trigger_db,
-                                                   grid=[4, 15],
-                                                   align="right")
+        self.app_button_download_sql_db = PushButton(self.app,
+                                                     text="Download Sensors\nDatabase",
+                                                     command=self._app_menu_download_sql_db,
+                                                     grid=[4, 15],
+                                                     align="right")
 
     def app_custom_configurations(self):
         """ Apply system & user specific settings to application.  Used just before application start. """
@@ -114,6 +114,7 @@ class CreateMainWindow:
         self.window_sensor_commands.window.tk.resizable(False, False)
         self.window_sensor_config.window.tk.resizable(False, False)
         self.window_reports.window.tk.resizable(False, False)
+        self.window_sensor_logs.window.tk.resizable(False, False)
         self.window_graph.window.tk.resizable(False, False)
         self.window_about.window.tk.resizable(False, False)
 
@@ -138,6 +139,11 @@ class CreateMainWindow:
         self.window_sensor_config.recording_checkbox()
         self.window_sensor_config.custom_checkbox()
 
+        self.window_sensor_logs.textbox_log.bg = "black"
+        self.window_sensor_logs.textbox_log.text_color = "white"
+        self.window_about.about_textbox.bg = "black"
+        self.window_about.about_textbox.text_color = "white"
+
         # Platform specific adjustments
         if platform.system() == "Windows":
             self.app.tk.iconbitmap(self.current_config.additional_files_directory + "/icon.ico")
@@ -154,6 +160,8 @@ class CreateMainWindow:
             self.window_sensor_config.window.height = 230
             self.window_sensor_commands.window.width = 295
             self.window_sensor_commands.window.height = 255
+            self.window_sensor_logs.window.width = 785
+            self.window_sensor_logs.window.height = 400
             self.window_about.window.width = 535
             self.window_about.window.height = 285
 
@@ -186,7 +194,7 @@ class CreateMainWindow:
         else:
             subprocess.Popen(["xdg-open", self.current_config.logs_directory])
 
-    def _app_menu_download_interval_db(self):
+    def _app_menu_download_sql_db(self):
         """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) >= 1:
@@ -195,8 +203,14 @@ class CreateMainWindow:
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    threads.append(Thread(target=app_sensor_commands.download_interval_db,
-                                          args=[ip, download_to_location]))
+                    download_obj = app_sensor_commands.CreateHTTPDownload()
+                    download_obj.ip = ip
+                    download_obj.url = "/"
+                    download_obj.save_to_location = download_to_location
+                    download_obj.file_name = "SensorRecordingDatabase.sqlite"
+
+                    threads.append(Thread(target=app_sensor_commands.download_http_file,
+                                          args=[download_obj]))
 
                 for thread in threads:
                     thread.start()
@@ -204,31 +218,7 @@ class CreateMainWindow:
                 for thread in threads:
                     thread.join()
 
-                info("Downloads", "Interval Database Downloads Complete")
-            else:
-                warn("Warning", "User Cancelled Download Operation")
-        else:
-            warn("No IP Selected", "Please Select at least 1 Sensor IP")
-
-    def _app_menu_download_trigger_db(self):
-        """ Downloads the Trigger SQLite3 database to the chosen location, from the selected sensors. """
-        ip_list = self.ip_selection.get_verified_ip_list()
-        if len(ip_list) >= 1:
-            threads = []
-            download_to_location = filedialog.askdirectory()
-
-            if download_to_location is not "" and download_to_location is not None:
-                for ip in ip_list:
-                    threads.append(Thread(target=app_sensor_commands.download_trigger_db,
-                                          args=[ip, download_to_location]))
-
-                for thread in threads:
-                    thread.start()
-
-                for thread in threads:
-                    thread.join()
-
-                info("Downloads", "Trigger Database Downloads Complete")
+                info("Downloads", "SQL Database Downloads Complete")
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:

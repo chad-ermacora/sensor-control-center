@@ -21,10 +21,13 @@ from guizero import Window, PushButton, Text, info, MenuBar
 import app_logger
 import app_sensor_commands
 
+network_commands = app_sensor_commands.CreateNetworkSendCommands()
+
 
 class CreateSensorCommandsWindow:
-    def __init__(self, app, ip_selection):
+    def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
+        self.current_config = current_config
         self.window = Window(app,
                              title="Sensor Commands",
                              width=290,
@@ -132,11 +135,19 @@ class CreateSensorCommandsWindow:
         if self.button_lan_Upgrade.text == "Clean\nUpgrade\nOver SMB":
             app_logger.sensor_logger.debug("Clean Sensor Upgrade - SMB")
             for ip in ip_list:
-                app_sensor_commands.clean_upgrade_smb(ip)
+                command = network_commands.clean_upgrade_smb
+                command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                     self.current_config.network_timeout_data,
+                                                                     command)
+                app_sensor_commands.send_command(command_data)
         else:
             app_logger.sensor_logger.debug("Sensor Upgrade - SMB")
             for ip in ip_list:
-                app_sensor_commands.upgrade_program_smb(ip)
+                command = network_commands.upgrade_smb
+                command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                     self.current_config.network_timeout_data,
+                                                                     command)
+                app_sensor_commands.send_command(command_data)
         info("Sensors Upgrading SMB", "Please wait up to 30 seconds for the Services to restart")
 
     def upgrade_http(self):
@@ -145,11 +156,19 @@ class CreateSensorCommandsWindow:
         if self.button_online_Upgrade.text == "Clean\nUpgrade\nOver HTTP":
             app_logger.sensor_logger.debug("Clean Sensor Upgrade - HTTP")
             for ip in ip_list:
-                app_sensor_commands.clean_upgrade_online(ip)
+                command = network_commands.clean_upgrade_online
+                command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                     self.current_config.network_timeout_data,
+                                                                     command)
+                app_sensor_commands.send_command(command_data)
         else:
             app_logger.sensor_logger.debug("Sensor Upgrade - HTTP")
             for ip in ip_list:
-                app_sensor_commands.upgrade_program_online(ip)
+                command = network_commands.upgrade_online
+                command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                     self.current_config.network_timeout_data,
+                                                                     command)
+                app_sensor_commands.send_command(command_data)
         info("Sensors Upgrading HTTP", "Please wait up to 30 seconds for the Services to restart")
 
     def os_upgrade(self):
@@ -158,7 +177,11 @@ class CreateSensorCommandsWindow:
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            app_sensor_commands.upgrade_os_linux(ip)
+            command = network_commands.upgrade_system_os
+            command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                 self.current_config.network_timeout_data,
+                                                                 command)
+            app_sensor_commands.send_command(command_data)
 
         info("Sensors Operating System Upgrade Started",
              "Once complete, the sensors will automatically reboot\n\n"
@@ -171,7 +194,11 @@ class CreateSensorCommandsWindow:
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            app_sensor_commands.reboot_sensor(ip)
+            command = network_commands.reboot_system
+            command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                 self.current_config.network_timeout_data,
+                                                                 command)
+            app_sensor_commands.send_command(command_data)
 
         info("Sensors Rebooting", "Allow up to 3 Min to reboot")
 
@@ -181,7 +208,11 @@ class CreateSensorCommandsWindow:
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            app_sensor_commands.shutdown_sensor(ip)
+            command = network_commands.shutdown_system
+            command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                 self.current_config.network_timeout_data,
+                                                                 command)
+            app_sensor_commands.send_command(command_data)
 
         info("Sensors Shutting Down", "Allow up to 15 seconds to fully shutdown")
 
@@ -192,7 +223,11 @@ class CreateSensorCommandsWindow:
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            app_sensor_commands.restart_services(ip)
+            command = network_commands.restart_services
+            command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                 self.current_config.network_timeout_data,
+                                                                 command)
+            app_sensor_commands.send_command(command_data)
 
         info("Sensors Services Restarting", "Please allow up to 20 seconds to restart Services")
 
@@ -202,7 +237,13 @@ class CreateSensorCommandsWindow:
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            app_sensor_commands.set_hostname(ip)
+            new_hostname = app_sensor_commands.request_new_name(ip)
+            if new_hostname is not None and new_hostname is not "":
+                command = network_commands.set_host_name + new_hostname
+                command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                     self.current_config.network_timeout_data,
+                                                                     command)
+                app_sensor_commands.send_command(command_data)
 
     def datetime_update(self):
         """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
@@ -210,6 +251,10 @@ class CreateSensorCommandsWindow:
 
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
-            app_sensor_commands.set_datetime(ip)
+            command = network_commands.set_datetime + self.current_config.get_str_datetime_now()
+            command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                 self.current_config.network_timeout_data,
+                                                                 command)
+            app_sensor_commands.send_command(command_data)
 
         info("Sensors DateTime Set", "Sensors Date & Time synchronized with local computer's")

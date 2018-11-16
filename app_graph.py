@@ -26,8 +26,60 @@ from plotly import tools, graph_objs as go
 
 import app_logger
 import app_sensor_commands
+from app_useful import convert_minutes_string
 
 style.use("dark_background")
+
+
+# I would like to merge the Interval and Trigger databases into one but the Triggers are more time sensitive
+# Getting other readings with trigger readings, can often slow down the whole process by seconds
+# Since Triggers are measured in milliseconds, not seconds, I'm keeping things separate
+
+
+class CreateSQLColumnNames:
+    def __init__(self):
+        self.date_time = "DateTime"
+        self.sensor_name = "SensorName"
+        self.ip = "IP"
+        self.system_uptime = "SensorUpTime"
+        self.cpu_temp = "SystemTemp"
+        self.environmental_temp = "EnvironmentTemp"
+        self.pressure = "Pressure"
+        self.humidity = "Humidity"
+        self.lumen = "Lumen"
+        self.rgb = ["Red", "Green", "Blue"]
+        self.accelerometer_xyz = ["Acc_X", "Acc_Y", "Acc_Z"]
+        self.magnetometer_xyz = ["Mag_X", "Mag_Y", "Mag_Z"]
+        self.gyroscope_xyz = ["Gyro_X", "Gyro_Y", "Gyro_Z"]
+
+
+class CreateSQLColumnsReadable:
+    def __init__(self):
+        self.no_sensor = "No Sensor"
+        self.date_time = "Date & Time"
+        self.sensor_name = "Sensor Name"
+        self.ip = "IP"
+        self.system_uptime = "System Uptime"
+        self.cpu_temp = "CPU Temperature"
+        self.environmental_temp = "Enviro Temperature"
+        self.pressure = "Pressure"
+        self.humidity = "Humidity"
+        self.lumen = "Lumen"
+        self.rgb = "RGB"
+        self.accelerometer_xyz = "Accelerometer XYZ"
+        self.magnetometer_xyz = "Magnetometer XYZ"
+        self.gyroscope_xyz = "Gyroscope XYZ"
+
+
+class CreateMeasurementsTypes:
+    def __init__(self):
+        self.no_measurement = ""
+        self.celsius = " °C"
+        self.pressure = " hPa"
+        self.humidity = " %RH"
+        self.lumen = " Lumen"
+        self.rgb = " RGB"
+        self.xyz = " XYZ"
 
 
 class CreateGraphData:
@@ -41,6 +93,7 @@ class CreateGraphData:
         self.graph_end = "9999-01-01 00:00:01"
         self.datetime_offset = 0.0
         self.sql_queries_skip = 12
+        self.bypass_sql_skip = False
         self.temperature_offset = -4.5
 
         self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
@@ -48,36 +101,47 @@ class CreateGraphData:
         self.max_sql_queries = 200000
 
         # Graph data holders for SQL DataBase
-        self.sql_data_time = []
-        self.sql_data_host_name = []
-        self.sql_data_up_time = []
-        self.sql_data_ip = []
-        self.sql_data_cpu_temp = []
+        self.sql_interval_time = []
+        self.sql_interval_ip = []
+        self.sql_interval_host_name = []
 
-        self.sql_data_hat_temp = []
-        self.sql_data_pressure = []
-        self.sql_data_humidity = []
-        self.sql_data_lumen = []
-        self.sql_data_red = []
-        self.sql_data_green = []
-        self.sql_data_blue = []
+        self.sql_up_time = []
+        self.sql_cpu_temp = []
+        self.sql_hat_temp = []
+        self.sql_pressure = []
+        self.sql_humidity = []
+        self.sql_lumen = []
+        self.sql_red = []
+        self.sql_green = []
+        self.sql_blue = []
 
-        self.sql_data_acc_x = []
-        self.sql_data_acc_y = []
-        self.sql_data_acc_z = []
-        self.sql_data_mg_x = []
-        self.sql_data_mg_y = []
-        self.sql_data_mg_z = []
-        self.sql_data_gyro_x = []
-        self.sql_data_gyro_y = []
-        self.sql_data_gyro_z = []
+        self.sql_trigger_time = []
+        self.sql_trigger_ip = []
+        self.sql_trigger_host_name = []
+        self.sql_acc_x = []
+        self.sql_acc_y = []
+        self.sql_acc_z = []
+        self.sql_mg_x = []
+        self.sql_mg_y = []
+        self.sql_mg_z = []
+        self.sql_gyro_x = []
+        self.sql_gyro_y = []
+        self.sql_gyro_z = []
 
 
 class CreateLiveGraph:
     def __init__(self, sensor_type, ip, current_config):
-        self.current_config = current_config
         self.sensor_type = sensor_type
+        self.sensor_type_name = ""
+        self.measurement_type = ""
         self.ip = ip
+        self.current_config = current_config
+        self.get_commands = app_sensor_commands.CreateNetworkGetCommands()
+
+        self.sql_column_names = CreateSQLColumnNames()
+        self.readable_column_names = CreateSQLColumnsReadable()
+        self.sensor_measurements = CreateMeasurementsTypes()
+
         self.first_datetime = str(datetime.time(datetime.now()))[:8]
 
         self.fig = pyplot.figure()
@@ -93,28 +157,32 @@ class CreateLiveGraph:
 
     def _update_graph(self, x_frame):
         current_time = str(datetime.time(datetime.now()))[:8]
-        sensor_name = app_sensor_commands.get_sensor_hostname(self.ip,
-                                                              self.current_config.network_timeout_data)
+        command_data = app_sensor_commands.CreateCommandData(self.ip,
+                                                             self.current_config.network_timeout_data,
+                                                             "")
+
+        command_data.command = self.get_commands.sensor_name
+        sensor_name = app_sensor_commands.get_data(command_data)
         try:
-            if self.sensor_type is "SensorUpTime":
-                sensor_reading = app_sensor_commands.get_sensor_uptime(self.ip,
-                                                                       self.current_config.network_timeout_data)
-                sensor_type_name = "Sensor Uptime"
-                measurement_type = ""
-            elif self.sensor_type is "SystemTemp":
-                sensor_reading = app_sensor_commands.get_sensor_cpu_temperature(self.ip,
-                                                                                self.current_config.network_timeout_data)
+            if self.sensor_type is self.sql_column_names.system_uptime:
+                command_data.command = self.get_commands.system_uptime
+                sensor_reading = app_sensor_commands.get_data(command_data)
+                sensor_type_name = self.readable_column_names.system_uptime
+                measurement_type = self.sensor_measurements.no_measurement
+            elif self.sensor_type is self.sql_column_names.cpu_temp:
+                command_data.command = self.get_commands.cpu_temp
+                sensor_reading = app_sensor_commands.get_data(command_data)
 
                 try:
                     sensor_reading = round(float(sensor_reading), 3)
                 except Exception as error:
                     app_logger.app_logger.warning(str(error))
 
-                sensor_type_name = "CPU Temperature"
-                measurement_type = " °C"
-            elif self.sensor_type is "EnvironmentTemp":
-                sensor_reading = app_sensor_commands.get_sensor_temperature(self.ip,
-                                                                            self.current_config.network_timeout_data)
+                sensor_type_name = self.readable_column_names.cpu_temp
+                measurement_type = self.sensor_measurements.celsius
+            elif self.sensor_type is self.sql_column_names.environmental_temp:
+                command_data.command = self.get_commands.environmental_temp
+                sensor_reading = app_sensor_commands.get_data(command_data)
 
                 try:
                     sensor_reading = round(float(sensor_reading) +
@@ -122,50 +190,81 @@ class CreateLiveGraph:
                 except Exception as error:
                     app_logger.app_logger.warning(str(error))
 
-                sensor_type_name = "Environmental Temperature"
-                measurement_type = " °C"
-            elif self.sensor_type is "Pressure":
-                sensor_reading = app_sensor_commands.get_sensor_pressure(self.ip,
-                                                                         self.current_config.network_timeout_data)
-                sensor_type_name = "Pressure"
-                measurement_type = " hPa"
-            elif self.sensor_type is "Humidity":
-                sensor_reading = app_sensor_commands.get_sensor_humidity(self.ip,
-                                                                         self.current_config.network_timeout_data)
+                sensor_type_name = self.readable_column_names.environmental_temp
+                measurement_type = self.sensor_measurements.celsius
+            elif self.sensor_type is self.sql_column_names.pressure:
+                command_data.command = self.get_commands.pressure
+                sensor_reading = app_sensor_commands.get_data(command_data)
+                sensor_type_name = self.readable_column_names.pressure
+                measurement_type = self.sensor_measurements.pressure
+            elif self.sensor_type is self.sql_column_names.humidity:
+                command_data.command = self.get_commands.humidity
+                sensor_reading = app_sensor_commands.get_data(command_data)
 
                 try:
                     sensor_reading = int(round(float(sensor_reading), 0))
                 except Exception as error:
                     app_logger.app_logger.warning(str(error))
 
-                sensor_type_name = "Humidity"
-                measurement_type = " %RH"
-            elif self.sensor_type is "Lumen":
-                sensor_reading = app_sensor_commands.get_sensor_lumen(self.ip,
-                                                                      self.current_config.network_timeout_data)
-                sensor_type_name = "Lumen"
-                measurement_type = " Lumen"
-            elif self.sensor_type[0] == "Red":
-                sensor_reading = app_sensor_commands.get_sensor_rgb(self.ip,
-                                                                    self.current_config.network_timeout_data)
-                sensor_type_name = "RGB"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Acc_X":
-                sensor_reading = 0
-                sensor_type_name = "Accelerometer XYZ"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Mag_X":
-                sensor_reading = 0
-                sensor_type_name = "Magnetometer XYZ"
-                measurement_type = ""
-            elif self.sensor_type[0] == "Gyro_X":
-                sensor_reading = 0
-                sensor_type_name = "Gyroscope XYZ"
-                measurement_type = ""
+                sensor_type_name = self.readable_column_names.humidity
+                measurement_type = self.sensor_measurements.humidity
+            elif self.sensor_type is self.sql_column_names.lumen:
+                command_data.command = self.get_commands.lumen
+                sensor_reading = app_sensor_commands.get_data(command_data)
+                sensor_type_name = self.readable_column_names.lumen
+                measurement_type = self.sensor_measurements.lumen
+            elif self.sensor_type == self.sql_column_names.rgb[0]:
+                try:
+                    command_data.command = self.get_commands.rgb
+                    red, green, blue = app_sensor_commands.get_data(command_data)
+                    sensor_reading = [round(red, 3), round(green, 3), round(blue, 3)]
+                    sensor_type_name = self.readable_column_names.rgb
+                    measurement_type = self.sensor_measurements.rgb
+                except Exception as error:
+                    app_logger.app_logger.debug(str(error))
+                    sensor_reading = self.readable_column_names.no_sensor
+                    sensor_type_name = self.readable_column_names.rgb
+                    measurement_type = self.sensor_measurements.rgb
+            elif self.sensor_type == self.sql_column_names.accelerometer_xyz[0]:
+                try:
+                    command_data.command = self.get_commands.accelerometer_xyz
+                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
+                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
+                    sensor_type_name = self.readable_column_names.accelerometer_xyz
+                    measurement_type = self.sensor_measurements.xyz
+                except Exception as error:
+                    app_logger.app_logger.debug(str(error))
+                    sensor_reading = self.readable_column_names.no_sensor
+                    sensor_type_name = self.readable_column_names.accelerometer_xyz
+                    measurement_type = self.sensor_measurements.xyz
+            elif self.sensor_type == self.sql_column_names.magnetometer_xyz[0]:
+                try:
+                    command_data.command = self.get_commands.magnetometer_xyz
+                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
+                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
+                    sensor_type_name = self.readable_column_names.magnetometer_xyz
+                    measurement_type = self.sensor_measurements.xyz
+                except Exception as error:
+                    app_logger.app_logger.debug(str(error))
+                    sensor_reading = self.readable_column_names.no_sensor
+                    sensor_type_name = self.readable_column_names.magnetometer_xyz
+                    measurement_type = self.sensor_measurements.xyz
+            elif self.sensor_type == self.sql_column_names.gyroscope_xyz[0]:
+                try:
+                    command_data.command = self.get_commands.gyroscope_xyz
+                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
+                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
+                    sensor_type_name = self.readable_column_names.gyroscope_xyz
+                    measurement_type = self.sensor_measurements.xyz
+                except Exception as error:
+                    app_logger.app_logger.debug(str(error))
+                    sensor_reading = self.readable_column_names.no_sensor
+                    sensor_type_name = self.readable_column_names.gyroscope_xyz
+                    measurement_type = self.sensor_measurements.xyz
             else:
-                sensor_reading = 0
+                sensor_reading = "N/A"
                 sensor_type_name = "Invalid Sensor"
-                measurement_type = ""
+                measurement_type = " Missing Program Support"
 
             self.ax1.clear()
             self.y.append(sensor_reading)
@@ -173,32 +272,23 @@ class CreateLiveGraph:
             self.ax1.plot(self.x, self.y)
 
             if self.sensor_type is "SensorUpTime":
-                try:
-                    uptime_days = int(float(sensor_reading) // 1440)
-                    uptime_hours = int((float(sensor_reading) % 1440) // 60)
-                    uptime_min = int(float(sensor_reading) % 60)
-                    sensor_reading = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(
-                        uptime_min) + " Hours"
-                except Exception as error:
-                    app_logger.app_logger.warning(str(error))
+                sensor_reading = convert_minutes_string(sensor_reading)
 
-            pyplot.title("Sensor: " + sensor_name + "  ||  IP: " + self.ip)
+            pyplot.title(sensor_name + "  ||  " + self.ip + "\n\n" + sensor_type_name)
             pyplot.xlabel("Start Time: " + self.first_datetime +
-                          "  ||  Last Updated: " + current_time +
-                          "  ||  Reading: " + str(sensor_reading) + measurement_type)
+                          "  ||  Updated: " + current_time +
+                          "  ||  " + str(sensor_reading) + measurement_type)
 
             if self.sensor_type is "SensorUpTime":
-                measurement_type = " in Minutes"
-            elif self.sensor_type is "Lumen":
-                measurement_type = ""
+                measurement_type = "Minutes"
 
-            pyplot.ylabel(sensor_type_name + measurement_type)
+            pyplot.ylabel(measurement_type)
             pyplot.xticks([])
         except Exception as error:
             app_logger.app_logger.error("Live Graph - Invalid Sensor Data: " + str(error))
 
 
-def start_graph_interval(graph_data):
+def start_plotly_graph(graph_data):
     graph_data.graph_table = "IntervalData"
     app_logger.app_logger.debug("SQL Columns: " + str(graph_data.graph_columns))
     app_logger.app_logger.debug("SQL Table(s): " + str(graph_data.graph_table))
@@ -208,9 +298,13 @@ def start_graph_interval(graph_data):
 
     # Adjust dates to Database timezone in UTC 0
     new_time_offset = int(graph_data.datetime_offset) * -1
-    get_sql_graph_start = _adjust_interval_datetime(graph_data.graph_start, new_time_offset)
-    get_sql_graph_end = _adjust_interval_datetime(graph_data.graph_end, new_time_offset)
+    get_sql_graph_start = _adjust_datetime(graph_data.graph_start, new_time_offset)
+    get_sql_graph_end = _adjust_datetime(graph_data.graph_end, new_time_offset)
     for var_column in graph_data.graph_columns:
+        if var_column == "Acc_X":
+            graph_data.graph_table = "TriggerData"
+            graph_data.bypass_sql_skip = True
+
         var_sql_query = "SELECT " + \
                         str(var_column) + \
                         " FROM " + \
@@ -230,19 +324,27 @@ def start_graph_interval(graph_data):
         if str(var_column) == "DateTime":
             count = 0
             for data in sql_column_data:
-                sql_column_data[count] = _adjust_interval_datetime(data, int(graph_data.datetime_offset))
+                sql_column_data[count] = _adjust_datetime(data, int(graph_data.datetime_offset))
                 count = count + 1
+            if graph_data.graph_table == "TriggerData":
+                graph_data.sql_trigger_time = sql_column_data
+            else:
+                graph_data.sql_interval_time = sql_column_data
 
-            graph_data.sql_data_time = sql_column_data
-
-        elif str(var_column) == "SensorName":
-            graph_data.sql_data_host_name = sql_column_data
-        elif str(var_column) == "SensorUpTime":
-            graph_data.sql_data_up_time = sql_column_data
         elif str(var_column) == "IP":
-            graph_data.sql_data_ip = sql_column_data
+            if graph_data.graph_table == "TriggerData":
+                graph_data.sql_trigger_ip = sql_column_data
+            else:
+                graph_data.sql_interval_ip = sql_column_data
+        elif str(var_column) == "SensorName":
+            if graph_data.graph_table == "TriggerData":
+                graph_data.sql_trigger_host_name = sql_column_data
+            else:
+                graph_data.sql_interval_host_name = sql_column_data
+        elif str(var_column) == "SensorUpTime":
+            graph_data.sql_up_time = sql_column_data
         elif str(var_column) == "SystemTemp":
-            graph_data.sql_data_cpu_temp = sql_column_data
+            graph_data.sql_cpu_temp = sql_column_data
         elif str(var_column) == "EnvironmentTemp":
             count = 0
             for data in sql_column_data:
@@ -253,113 +355,46 @@ def start_graph_interval(graph_data):
                     count = count + 1
                     app_logger.app_logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
 
-            graph_data.sql_data_hat_temp = sql_column_data
+            graph_data.sql_hat_temp = sql_column_data
 
         elif str(var_column) == "Pressure":
-            graph_data.sql_data_pressure = sql_column_data
+            graph_data.sql_pressure = sql_column_data
         elif str(var_column) == "Humidity":
-            graph_data.sql_data_humidity = sql_column_data
+            graph_data.sql_humidity = sql_column_data
         elif str(var_column) == "Lumen":
-            graph_data.sql_data_lumen = sql_column_data
+            graph_data.sql_lumen = sql_column_data
         elif str(var_column) == "Red":
-            graph_data.sql_data_red = sql_column_data
+            graph_data.sql_red = sql_column_data
         elif str(var_column) == "Green":
-            graph_data.sql_data_green = sql_column_data
+            graph_data.sql_green = sql_column_data
         elif str(var_column) == "Blue":
-            graph_data.sql_data_blue = sql_column_data
+            graph_data.sql_blue = sql_column_data
+
+        elif str(var_column) == "Acc_X":
+            graph_data.sql_acc_x = sql_column_data
+        elif str(var_column) == "Acc_Y":
+            graph_data.sql_acc_y = sql_column_data
+        elif str(var_column) == "Acc_Z":
+            graph_data.sql_acc_z = sql_column_data
+        elif str(var_column) == "Mag_X":
+            graph_data.sql_mg_x = sql_column_data
+        elif str(var_column) == "Mag_Y":
+            graph_data.sql_mg_y = sql_column_data
+        elif str(var_column) == "Mag_Z":
+            graph_data.sql_mg_z = sql_column_data
+        elif str(var_column) == "Gyro_X":
+            graph_data.sql_gyro_x = sql_column_data
+        elif str(var_column) == "Gyro_Y":
+            graph_data.sql_gyro_y = sql_column_data
+        elif str(var_column) == "Gyro_Z":
+            graph_data.sql_gyro_z = sql_column_data
         else:
             app_logger.app_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
     app_logger.app_logger.debug("Interval DB Graph Complete")
 
 
-def start_graph_trigger(graph_data):
-    graph_data.graph_table = "TriggerData"
-    app_logger.app_logger.debug("SQL Columns: " + str(graph_data.graph_columns))
-    app_logger.app_logger.debug("SQL Table(s): " + str(graph_data.graph_table))
-    app_logger.app_logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
-    app_logger.app_logger.debug("SQL End DateTime: " + str(graph_data.graph_end))
-    app_logger.app_logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
-
-    # Adjust dates to Database timezone in UTC 0
-    new_time_offset = int(graph_data.datetime_offset) * -1
-    get_sql_graph_start = _adjust_interval_datetime(graph_data.graph_start, new_time_offset)
-    get_sql_graph_end = _adjust_interval_datetime(graph_data.graph_end, new_time_offset)
-
-    for var_column in graph_data.graph_columns:
-        var_sql_query = "SELECT " + \
-                        str(var_column) + \
-                        " FROM " + \
-                        str(graph_data.graph_table) + \
-                        " WHERE " + \
-                        var_column + \
-                        " IS NOT NULL AND DateTime BETWEEN datetime('" + \
-                        str(get_sql_graph_start) + \
-                        ".000') AND datetime('" + \
-                        str(get_sql_graph_end) + \
-                        ".000') LIMIT " + \
-                        str(graph_data.max_sql_queries)
-
-        sql_column_data = _get_sql_data(graph_data, var_sql_query)
-
-        if str(var_column) == "DateTime":
-            count = 0
-            for data in sql_column_data:
-                sql_column_data[count] = _adjust_trigger_datetime(data, int(graph_data.datetime_offset))
-                count = count + 1
-
-            graph_data.sql_data_time = sql_column_data
-
-        elif str(var_column) == "SensorName":
-            graph_data.sql_data_host_name = sql_column_data
-        elif str(var_column) == "IP":
-            graph_data.sql_data_ip = sql_column_data
-        elif str(var_column) == "Acc_X":
-            graph_data.sql_data_acc_x = sql_column_data
-        elif str(var_column) == "Acc_Y":
-            graph_data.sql_data_acc_y = sql_column_data
-        elif str(var_column) == "Acc_Z":
-            graph_data.sql_data_acc_z = sql_column_data
-        elif str(var_column) == "Mag_X":
-            graph_data.sql_data_mg_x = sql_column_data
-        elif str(var_column) == "Mag_Y":
-            graph_data.sql_data_mg_y = sql_column_data
-        elif str(var_column) == "Mag_Z":
-            graph_data.sql_data_mg_z = sql_column_data
-        elif str(var_column) == "Gyro_X":
-            graph_data.sql_data_gyro_x = sql_column_data
-        elif str(var_column) == "Gyro_Y":
-            graph_data.sql_data_gyro_y = sql_column_data
-        elif str(var_column) == "Gyro_Z":
-            graph_data.sql_data_gyro_z = sql_column_data
-        else:
-            app_logger.app_logger.error(var_column + " - Does Not Exist")
-    _plotly_graph(graph_data)
-    app_logger.app_logger.debug("Trigger DB Graph Complete")
-
-
-def _adjust_interval_datetime(var_datetime, datetime_offset):
-    """
-    Adjusts the provided datetime by the provided hour offset and returns the result.
-
-    Used for graph datetime's accurate to 1 second
-    """
-    try:
-        var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
-    except Exception as error:
-        app_logger.app_logger.error("Unable to Convert datetime string to datetime format - " + str(error))
-
-    try:
-        new_time = var_datetime + timedelta(hours=datetime_offset)
-    except Exception as error:
-        app_logger.app_logger.error("Unable to convert Hour Offset to int - " + str(error))
-        new_time = var_datetime
-
-    app_logger.app_logger.debug("Adjusted datetime: " + str(new_time))
-    return str(new_time)
-
-
-def _adjust_trigger_datetime(var_datetime, datetime_offset):
+def _adjust_datetime(var_datetime, datetime_offset):
     """
     Adjusts the provided datetime by the provided hour offset and returns the result.
 
@@ -401,7 +436,8 @@ def _get_sql_data(graph_interval_data, sql_command):
         count = 0
         skip_count = 0
         for data in sql_column_data:
-            if skip_count >= int(graph_interval_data.sql_queries_skip):
+            if skip_count >= int(graph_interval_data.sql_queries_skip) \
+                    or graph_interval_data.bypass_sql_skip:
                 return_data.append(str(data)[2:-3])
                 skip_count = 0
 
@@ -418,13 +454,13 @@ def _get_sql_data(graph_interval_data, sql_command):
     return return_data
 
 
-def _plotly_graph(graph_interval_data):
+def _plotly_graph(graph_data):
     """ Create and open a HTML offline Plotly graph with the data provided. """
     sub_plots = []
     row_count = 0
     graph_collection = []
 
-    if len(graph_interval_data.sql_data_time) > 1:
+    if len(graph_data.sql_interval_time) > 1 or len(graph_data.sql_trigger_time) > 1:
         mark_red = dict(size=10,
                         color='rgba(255, 0, 0, .9)',
                         line=dict(width=2, color='rgb(0, 0, 0)'))
@@ -441,40 +477,54 @@ def _plotly_graph(graph_interval_data):
                            color='rgba(255, 80, 80, .9)',
                            line=dict(width=2, color='rgb(0, 0, 0)'))
 
-        if len(graph_interval_data.sql_data_host_name) > 1:
+        if len(graph_data.sql_interval_host_name) > 1:
             row_count = row_count + 1
-            first_hostname = graph_interval_data.sql_data_host_name[0]
-            last_hostname = graph_interval_data.sql_data_host_name[-1]
+            first_hostname = graph_data.sql_interval_host_name[0]
+            last_hostname = graph_data.sql_interval_host_name[-1]
             tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
 
-            trace_sensor_name = go.Scatter(x=graph_interval_data.sql_data_time,
-                                           y=graph_interval_data.sql_data_host_name,
+            trace_sensor_name = go.Scatter(x=graph_data.sql_interval_time,
+                                           y=graph_data.sql_interval_host_name,
                                            name="Sensor Name")
 
             graph_collection.append([trace_sensor_name, row_count, 1])
             sub_plots.append(tmp_sensor_name)
             app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
+        else:
+            if len(graph_data.sql_trigger_host_name) > 1:
+                row_count = row_count + 1
+                first_hostname = graph_data.sql_trigger_host_name[0]
+                last_hostname = graph_data.sql_trigger_host_name[-1]
+                tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
 
-        if len(graph_interval_data.sql_data_up_time) > 1:
+                trace_sensor_name = go.Scatter(x=graph_data.sql_trigger_time,
+                                               y=graph_data.sql_trigger_host_name,
+                                               name="Sensor Name")
+
+                graph_collection.append([trace_sensor_name, row_count, 1])
+                sub_plots.append(tmp_sensor_name)
+                app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
+
+        if len(graph_data.sql_up_time) > 1:
             row_count = row_count + 1
 
-            trace_uptime = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_up_time,
+            trace_uptime = go.Scatter(x=graph_data.sql_interval_time,
+                                      y=graph_data.sql_up_time,
                                       name="Sensor Uptime")
 
             graph_collection.append([trace_uptime, row_count, 1])
             sub_plots.append('Sensor Uptime')
             app_logger.app_logger.debug("Graph Sensor Uptime Added")
 
-        if len(graph_interval_data.sql_data_cpu_temp) > 1 or len(graph_interval_data.sql_data_hat_temp) > 1:
+        if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
             row_count = row_count + 1
 
-            trace_cpu_temp = go.Scatter(x=graph_interval_data.sql_data_time,
-                                        y=graph_interval_data.sql_data_cpu_temp,
+            trace_cpu_temp = go.Scatter(x=graph_data.sql_interval_time,
+                                        y=graph_data.sql_cpu_temp,
                                         name="CPU Temp")
 
-            trace_hat_temp = go.Scatter(x=graph_interval_data.sql_data_time,
-                                        y=graph_interval_data.sql_data_hat_temp,
+            trace_hat_temp = go.Scatter(x=graph_data.sql_interval_time,
+                                        y=graph_data.sql_hat_temp,
                                         name="Environmental Temp")
 
             graph_collection.append([trace_cpu_temp, row_count, 1])
@@ -482,33 +532,33 @@ def _plotly_graph(graph_interval_data):
             sub_plots.append('CPU / Environmental Temp')
             app_logger.app_logger.debug("Graph CPU / Environmental Temp Added")
 
-        if len(graph_interval_data.sql_data_pressure) > 2:
+        if len(graph_data.sql_pressure) > 2:
             row_count = row_count + 1
 
-            trace_pressure = go.Scatter(x=graph_interval_data.sql_data_time,
-                                        y=graph_interval_data.sql_data_pressure,
+            trace_pressure = go.Scatter(x=graph_data.sql_interval_time,
+                                        y=graph_data.sql_pressure,
                                         name="Pressure hPa")
 
             graph_collection.append([trace_pressure, row_count, 1])
             sub_plots.append('Pressure hPa')
             app_logger.app_logger.debug("Graph Pressure hPa Added")
 
-        if len(graph_interval_data.sql_data_humidity) > 2:
+        if len(graph_data.sql_humidity) > 2:
             row_count = row_count + 1
 
-            trace_humidity = go.Scatter(x=graph_interval_data.sql_data_time,
-                                        y=graph_interval_data.sql_data_humidity,
+            trace_humidity = go.Scatter(x=graph_data.sql_interval_time,
+                                        y=graph_data.sql_humidity,
                                         name="Humidity %")
 
             graph_collection.append([trace_humidity, row_count, 1])
             sub_plots.append('Humidity')
             app_logger.app_logger.debug("Graph Humidity Added")
 
-        if len(graph_interval_data.sql_data_lumen) > 2:
+        if len(graph_data.sql_lumen) > 2:
             row_count = row_count + 1
 
-            trace_lumen = go.Scatter(x=graph_interval_data.sql_data_time,
-                                     y=graph_interval_data.sql_data_lumen,
+            trace_lumen = go.Scatter(x=graph_data.sql_interval_time,
+                                     y=graph_data.sql_lumen,
                                      name="Lumen",
                                      marker=mark_yellow)
 
@@ -516,21 +566,21 @@ def _plotly_graph(graph_interval_data):
             sub_plots.append('Lumen')
             app_logger.app_logger.debug("Graph Lumen Added")
 
-        if len(graph_interval_data.sql_data_red) > 2:
+        if len(graph_data.sql_red) > 2:
             row_count = row_count + 1
 
-            trace_red = go.Scatter(x=graph_interval_data.sql_data_time,
-                                   y=graph_interval_data.sql_data_red,
+            trace_red = go.Scatter(x=graph_data.sql_interval_time,
+                                   y=graph_data.sql_red,
                                    name="Red",
                                    marker=mark_red)
 
-            trace_green = go.Scatter(x=graph_interval_data.sql_data_time,
-                                     y=graph_interval_data.sql_data_green,
+            trace_green = go.Scatter(x=graph_data.sql_interval_time,
+                                     y=graph_data.sql_green,
                                      name="Green",
                                      marker=mark_green)
 
-            trace_blue = go.Scatter(x=graph_interval_data.sql_data_time,
-                                    y=graph_interval_data.sql_data_blue,
+            trace_blue = go.Scatter(x=graph_data.sql_interval_time,
+                                    y=graph_data.sql_blue,
                                     name="Blue",
                                     marker=mark_blue)
 
@@ -540,21 +590,21 @@ def _plotly_graph(graph_interval_data):
             sub_plots.append('Colour RGB')
             app_logger.app_logger.debug("Graph Colour RGB Added")
 
-        if len(graph_interval_data.sql_data_acc_x) > 2:
+        if len(graph_data.sql_acc_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_acc_x,
+            trace_gyro_x = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_acc_x,
                                       name="Accelerometer X",
                                       mode='markers')
 
-            trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_acc_y,
+            trace_gyro_y = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_acc_y,
                                       name="Accelerometer Y",
                                       mode='markers')
 
-            trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_acc_z,
+            trace_gyro_z = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_acc_z,
                                       name="Accelerometer Z",
                                       mode='markers')
 
@@ -564,21 +614,21 @@ def _plotly_graph(graph_interval_data):
             sub_plots.append('Accelerometer XYZ')
             app_logger.app_logger.debug("Graph Accelerometer XYZ Added")
 
-        if len(graph_interval_data.sql_data_mg_x) > 2:
+        if len(graph_data.sql_mg_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_mg_x,
+            trace_gyro_x = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_mg_x,
                                       name="Magnetic X",
                                       mode='markers')
 
-            trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_mg_y,
+            trace_gyro_y = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_mg_y,
                                       name="Magnetic Y",
                                       mode='markers')
 
-            trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_mg_z,
+            trace_gyro_z = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_mg_z,
                                       name="Magnetic Z",
                                       mode='markers')
 
@@ -588,21 +638,21 @@ def _plotly_graph(graph_interval_data):
             sub_plots.append('Magnetic XYZ')
             app_logger.app_logger.debug("Graph Magnetic XYZ Added")
 
-        if len(graph_interval_data.sql_data_gyro_x) > 2:
+        if len(graph_data.sql_gyro_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_gyro_x,
+            trace_gyro_x = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_gyro_x,
                                       name="Gyroscopic X",
                                       mode='markers')
 
-            trace_gyro_y = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_gyro_y,
+            trace_gyro_y = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_gyro_y,
                                       name="Gyroscopic Y",
                                       mode='markers')
 
-            trace_gyro_z = go.Scatter(x=graph_interval_data.sql_data_time,
-                                      y=graph_interval_data.sql_data_gyro_z,
+            trace_gyro_z = go.Scatter(x=graph_data.sql_trigger_time,
+                                      y=graph_data.sql_gyro_z,
                                       name="Gyroscopic Z",
                                       mode='markers')
 
@@ -617,20 +667,22 @@ def _plotly_graph(graph_interval_data):
                                   subplot_titles=sub_plots)
 
         for graph in graph_collection:
-            fig.append_trace(graph[0], graph[1], graph[2])
-
-        fig['layout'].update(title="Sensor IP: " + str(graph_interval_data.sql_data_ip[0]))
+            fig.add_trace(graph[0], graph[1], graph[2])
+        if len(graph_data.sql_interval_ip) > 1:
+            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_interval_ip[0]))
+        else:
+            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_trigger_ip[0]))
 
         if row_count > 4:
             fig['layout'].update(height=2048)
 
         try:
-            plotly.offline.plot(fig, filename=graph_interval_data.save_to + 'SensorGraph.html', auto_open=True)
-            app_logger.app_logger.debug("Graph Creation - OK")
+            plotly.offline.plot(fig, filename=graph_data.save_to + 'PlotlySensorGraph.html', auto_open=True)
+            app_logger.app_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
-            app_logger.app_logger.error("Graph Creation - Failed - " + str(error))
+            app_logger.app_logger.error("Plotly Graph Creation - Failed - " + str(error))
             warn("Graph Failed", str(error))
     else:
         app_logger.app_logger.error(
-            "Interval Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
+            "Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
         warn("Error", "No SQL Data to Graph")
