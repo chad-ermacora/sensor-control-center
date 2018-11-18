@@ -24,6 +24,7 @@ The software is in an alpha state, prone to changes that may break backwards com
 - Sync Date & Time with the local computer's Date & Time
 - [Instructions](http://kootenay-networks.com/?page_id=236) on making sensor units with a Raspberry Pi
 
-[Pictures of graphs and reports can be found here](http://kootenay-networks.com/?page_id=511)
+[Click here for Pictures of graphs and reports](http://kootenay-networks.com/?page_id=511)
 
+Main program with most windows open
 ![KootNet Sensors - Control Center](additional_files/KootNetSensorsControlCenter.png "Control Center")
