@@ -8,7 +8,5 @@ if [[ $EUID != 0 ]]; then
   exit $?
 fi
 rm -f ${USER_DIR}/Desktop/KootNet-Control-Center.desktop
-rm -f ${USER_DIR}/Desktop/KootNet-Sensor-Config.desktop
 rm -f /usr/share/applications/KootNet-Control-Center.desktop
-rm -f /usr/share/applications/KootNet-Sensor-Config.desktop
 rm -f -R /opt/kootnet-control-center
