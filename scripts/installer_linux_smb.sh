@@ -5,8 +5,8 @@ SMB_SHARE="/PyCharmProjects"
 SMB_SENSOR="/sensor-rp"
 SMB_CONTROL_CENTER="/sensor-control-center"
 CIFS_OPTIONS="username=myself,password='123'"
-RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude config.txt" +
- " --exclude test_files/SensorIntervalGraph.html --exclude test_files/SensorTriggerGraph.html"
+RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude config.txt \
+--exclude test_files/SensorIntervalGraph.html --exclude test_files/SensorTriggerGraph.html"
 # Make sure its running with root
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
