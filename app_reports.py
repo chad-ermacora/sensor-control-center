@@ -67,10 +67,8 @@ class CreateHTMLReadingsData:
         self.template3 = current_config.script_directory + "/additional_files/html_template_readings3.html"
         self.file_output_name = "SensorsReadingsReport.html"
 
-        self.replacement_codes = ["{{IntervalTypes}}",
-                                  "{{IntervalReadings}}",
-                                  "{{TriggerTypes}}",
-                                  "{{TriggerReadings}}"]
+        self.replacement_codes = ["{{SensorTypes}}",
+                                  "{{SensorReadings}}"]
 
         self.local_time_code = ["{{LocalDateTime}}"]
 
@@ -130,7 +128,12 @@ class CreateHTMLConfigData:
 
 def sensor_html_report(report_configuration, ip_list):
     """ Creates and opens a HTML Report based on provided IP's and report configurations data. """
-    final_file = get_file_content(report_configuration.template1)
+    template1 = get_file_content(report_configuration.template1)
+    # Add Local computer's DateTime to 3rd template
+    current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
+    final_file = _replace_with_codes([current_datetime],
+                                     report_configuration.local_time_code,
+                                     template1)
     sensor_html_template = get_file_content(report_configuration.template2)
 
     # Add first HTML Template file to final HTML output file
@@ -166,12 +169,8 @@ def sensor_html_report(report_configuration, ip_list):
             app_logger.app_logger.error("Report Failure: " + str(error))
 
     # Merge the result with the Final HTML Template file.
-    current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
+
     template3 = get_file_content(report_configuration.template3)
-    # Add Local computer's DateTime to 3rd template
-    template3 = _replace_with_codes([current_datetime],
-                                    report_configuration.local_time_code,
-                                    template3)
     final_file = final_file + template3
 
     try:

@@ -156,7 +156,14 @@ def get_data(command_data):
     try:
         sock_g.connect((command_data.ip, 10065))
         sock_g.send(command_data.command.encode())
-        var_data = pickle.loads(sock_g.recv(4096))
+
+        all_data = b""
+        while True:
+            packet = sock_g.recv(4096)
+            if not packet:
+                break
+            all_data = all_data + packet
+        var_data = pickle.loads(all_data)
         sock_g.close()
         app_logger.sensor_logger.debug(command_data.command + " to " + command_data.ip + " - OK")
     except Exception as error:
