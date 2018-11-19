@@ -32,7 +32,7 @@ class CreateSensorLogsWindow:
 
         self.window = Window(app,
                              title="Sensor Logs",
-                             width=895,
+                             width=975,
                              height=450,
                              layout="grid",
                              visible=False)
@@ -62,13 +62,14 @@ class CreateSensorLogsWindow:
 
         self.textbox_log = TextBox(self.window,
                                    text="\nPlease select the log type in the top right" +
-                                        " and press the button 'Update Sensor Log View' in the bottom right\n\n" +
+                                        " and press 'Update Sensor Log View' in the bottom right\n\n" +
                                         "You may also use the 'Download' menu in the top left to " +
-                                        "download ALL logs off ALL selected Sensors",
+                                        "download ALL logs from selected sensors to a chosen folder",
                                    grid=[1, 2],
-                                   width=110,
+                                   width=118,
                                    height=22,
                                    multiline=True,
+                                   scrollbar=True,
                                    align="left")
 
         self.button_get = PushButton(self.window,

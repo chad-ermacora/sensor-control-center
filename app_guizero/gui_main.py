@@ -160,8 +160,8 @@ class CreateMainWindow:
             self.window_sensor_config.window.height = 230
             self.window_sensor_commands.window.width = 295
             self.window_sensor_commands.window.height = 255
-            self.window_sensor_logs.window.width = 785
-            self.window_sensor_logs.window.height = 400
+            self.window_sensor_logs.window.width = 850
+            self.window_sensor_logs.window.height = 395
             self.window_about.window.width = 535
             self.window_about.window.height = 285
 
