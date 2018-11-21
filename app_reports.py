@@ -54,7 +54,11 @@ class CreateHTMLSystemData:
                                                              self.config_settings.network_timeout_data,
                                                              "GetSystemData")
         sensor_system = app_sensor_commands.get_data(command_data).split(",")
-        sensor_system[3] = convert_minutes_string(sensor_system[3])
+
+        try:
+            sensor_system[3] = convert_minutes_string(sensor_system[3])
+        except Exception as error:
+            app_logger.app_logger.error("Sensor System Report: " + str(error))
 
         data_queue.put([ip, sensor_system])
 
@@ -107,7 +111,10 @@ class CreateHTMLConfigData:
                                                              self.config_settings.network_timeout_data,
                                                              "GetSystemData")
         sensor_system = app_sensor_commands.get_data(command_data).split(",")
-        sensor_system[3] = convert_minutes_string(sensor_system[3])
+        try:
+            sensor_system[3] = convert_minutes_string(sensor_system[3])
+        except Exception as error:
+            app_logger.app_logger.error("Sensor Config Report: " + str(error))
 
         command_data.command = "GetConfiguration"
         sensor_config = app_sensor_commands.get_data(command_data).split(",")
@@ -158,12 +165,10 @@ def sensor_html_report(report_configuration, ip_list):
 
     for sensor_data in report_data_pool:
         try:
-            current_sensor_html = sensor_html_template
-
+            blank_sensor_html = sensor_html_template
             current_sensor_html = _replace_with_codes(sensor_data[1],
                                                       report_configuration.replacement_codes,
-                                                      current_sensor_html)
-
+                                                      blank_sensor_html)
             final_file = final_file + current_sensor_html
         except Exception as error:
             app_logger.app_logger.error("Report Failure: " + str(error))
@@ -171,7 +176,7 @@ def sensor_html_report(report_configuration, ip_list):
     # Merge the result with the Final HTML Template file.
 
     template3 = get_file_content(report_configuration.template3)
-    final_file = final_file + template3
+    final_file += template3
 
     try:
         save_to_location = str(report_configuration.config_settings.save_to + report_configuration.file_output_name)
@@ -192,6 +197,6 @@ def _replace_with_codes(data, codes, template):
             app_logger.app_logger.error("Invalid Sensor Data: " + str(error))
 
         template = template.replace(code, replace_word)
-        count = count + 1
+        count += 1
 
     return template

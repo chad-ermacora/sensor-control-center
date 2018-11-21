@@ -140,7 +140,7 @@ class CreateSensorConfigWindow:
         """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
         network_commands = CreateNetworkSendCommands()
 
-        config_settings_str = "," + str(self.checkbox_db_record.value) + "," + \
+        config_settings_str = str(self.checkbox_db_record.value) + "," + \
                               str(self.textbox_interval.value) + "," + \
                               str(self.textbox_trigger.value) + "," + \
                               str(self.checkbox_custom.value) + "," + \
@@ -151,9 +151,7 @@ class CreateSensorConfigWindow:
         ip_list = self.ip_selection.get_verified_ip_list()
         for ip in ip_list:
             command = network_commands.set_configuration + config_settings_str
-            command_data = CreateCommandData(ip,
-                                             self.current_config.network_timeout_data,
-                                             command)
+            command_data = CreateCommandData(ip, self.current_config.network_timeout_data, command)
             send_command(command_data)
 
         info("Sensors Configuration Set", "Configurations set & Services restarted")

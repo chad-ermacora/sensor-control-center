@@ -19,7 +19,6 @@
 import pickle
 import re
 import socket
-from tkinter import simpledialog
 from urllib.request import urlopen
 
 import app_logger
@@ -44,6 +43,7 @@ class CreateNetworkGetCommands:
         self.system_uptime = "GetSystemUptime"
         self.cpu_temp = "GetCPUTemperature"
         self.environmental_temp = "GetEnvTemperature"
+        self.env_temp_offset = "GetTempOffsetEnv"
         self.pressure = "GetPressure"
         self.humidity = "GetHumidity"
         self.lumen = "GetLumen"
@@ -110,8 +110,7 @@ def download_logs(download_obj):
 def download_http_file(obj_download):
     """ Download provided HTTP file to locally chosen directory. """
     try:
-        http_file = urlopen(
-            "http://" + obj_download.ip + obj_download.port + obj_download.url + obj_download.file_name)
+        http_file = urlopen("http://" + obj_download.ip + obj_download.port + obj_download.url + obj_download.file_name)
         local_file = open(obj_download.save_to_location + "/_" + obj_download.ip[-3:] + obj_download.file_name, 'wb')
         local_file.write(http_file.read())
         http_file.close()
@@ -122,16 +121,14 @@ def download_http_file(obj_download):
             "Download " + obj_download.file_name + " from " + obj_download.ip + " Failed: " + str(error))
 
 
-def request_new_name(ip):
-    tmp_hostname = simpledialog.askstring(ip, "New Hostname: ")
-    app_logger.sensor_logger.debug(tmp_hostname)
-
-    if tmp_hostname is not None and tmp_hostname is not "":
-        new_hostname = re.sub('\W', '_', tmp_hostname)
-        app_logger.sensor_logger.debug(new_hostname)
-        return new_hostname
+def get_validated_hostname(hostname):
+    if hostname is not None and hostname is not "":
+        final_hostname = re.sub('\W', '_', hostname)
+        app_logger.sensor_logger.debug(final_hostname)
+        return final_hostname
     else:
         app_logger.sensor_logger.warning("Hostname Cancelled or blank")
+        return "Cancelled"
 
 
 def send_command(command_data):
@@ -162,7 +159,7 @@ def get_data(command_data):
             packet = sock_g.recv(4096)
             if not packet:
                 break
-            all_data = all_data + packet
+            all_data += packet
         var_data = pickle.loads(all_data)
         sock_g.close()
         app_logger.sensor_logger.debug(command_data.command + " to " + command_data.ip + " - OK")

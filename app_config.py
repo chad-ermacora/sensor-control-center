@@ -21,7 +21,7 @@ from datetime import datetime
 
 import app_logger
 
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Ver. Alpha.22.4"
+app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Ver. Alpha.22.8"
 
 
 class CreateDefaultConfigSettings:
@@ -40,7 +40,8 @@ class CreateDefaultConfigSettings:
         self.graph_end = "2200-01-01 00:00:01"
         self.datetime_offset = -7.0
         self.sql_queries_skip = 6
-        self.temperature_offset = -4.5
+        self.enable_custom_temp_offset = True
+        self.temperature_offset = 0.0
         self.live_refresh = 3
         self.network_timeout_sensor_check = 3
         self.network_timeout_data = 5

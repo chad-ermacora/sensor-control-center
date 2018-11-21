@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from tkinter import simpledialog
+
 from guizero import Window, PushButton, Text, info, MenuBar
 
 import app_logger
@@ -234,16 +236,22 @@ class CreateSensorCommandsWindow:
     def hostname_change(self):
         """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
         app_logger.sensor_logger.debug("Change Sensor Hostname")
-
         ip_list = self.ip_selection.get_verified_ip_list()
-        for ip in ip_list:
-            new_hostname = app_sensor_commands.request_new_name(ip)
-            if new_hostname is not None and new_hostname is not "":
-                command = network_commands.set_host_name + new_hostname
-                command_data = app_sensor_commands.CreateCommandData(ip,
-                                                                     self.current_config.network_timeout_data,
-                                                                     command)
-                app_sensor_commands.send_command(command_data)
+        if len(ip_list) > 0:
+            for ip in ip_list:
+                new_hostname = simpledialog.askstring(ip, "New Hostname: ")
+                app_logger.sensor_logger.debug("Sent Hostname: " + str(new_hostname))
+                validated_hostname = app_sensor_commands.get_validated_hostname(new_hostname)
+                app_logger.sensor_logger.debug("Validated Hostname: " + validated_hostname)
+
+                if validated_hostname is not "Cancelled":
+                    command = network_commands.set_host_name + validated_hostname
+                    command_data = app_sensor_commands.CreateCommandData(ip,
+                                                                         self.current_config.network_timeout_data,
+                                                                         command)
+                    app_sensor_commands.send_command(command_data)
+                else:
+                    info(ip, "Hostname Cancelled or blank for " + ip)
 
     def datetime_update(self):
         """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """

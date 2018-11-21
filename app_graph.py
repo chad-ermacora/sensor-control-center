@@ -44,6 +44,7 @@ class CreateSQLColumnNames:
         self.system_uptime = "SensorUpTime"
         self.cpu_temp = "SystemTemp"
         self.environmental_temp = "EnvironmentTemp"
+        self.environmental_temp_offset = "EnvTempOffset"
         self.pressure = "Pressure"
         self.humidity = "Humidity"
         self.lumen = "Lumen"
@@ -94,10 +95,11 @@ class CreateGraphData:
         self.datetime_offset = 0.0
         self.sql_queries_skip = 12
         self.bypass_sql_skip = False
-        self.temperature_offset = -4.5
+        self.enable_custom_temp_offset = True
+        self.temperature_offset = 0.0
 
         self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
-                              "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
+                              "EnvTempOffset", "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
         self.max_sql_queries = 200000
 
         # Graph data holders for SQL DataBase
@@ -108,6 +110,7 @@ class CreateGraphData:
         self.sql_up_time = []
         self.sql_cpu_temp = []
         self.sql_hat_temp = []
+        self.sql_temp_offset = []
         self.sql_pressure = []
         self.sql_humidity = []
         self.sql_lumen = []
@@ -182,12 +185,19 @@ class CreateLiveGraph:
                 measurement_type = self.sensor_measurements.celsius
             elif self.sensor_type is self.sql_column_names.environmental_temp:
                 command_data.command = self.get_commands.environmental_temp
-                sensor_reading = app_sensor_commands.get_data(command_data)
+                temp_reading = app_sensor_commands.get_data(command_data)
 
                 try:
-                    sensor_reading = round(float(sensor_reading) +
-                                           float(self.current_config.temperature_offset), 3)
+                    if self.current_config.enable_custom_temp_offset:
+                        # Temp offset is set to programs when initiating Live Graph
+                        pass
+                    else:
+                        command_data.command = self.get_commands.env_temp_offset
+                        self.current_config.temperature_offset = float(app_sensor_commands.get_data(command_data))
+
+                    sensor_reading = round(float(temp_reading) + float(self.current_config.temperature_offset), 3)
                 except Exception as error:
+                    sensor_reading = ""
                     app_logger.app_logger.warning(str(error))
 
                 sensor_type_name = self.readable_column_names.environmental_temp
@@ -347,16 +357,39 @@ def start_plotly_graph(graph_data):
             graph_data.sql_cpu_temp = sql_column_data
         elif str(var_column) == "EnvironmentTemp":
             count = 0
-            for data in sql_column_data:
-                try:
-                    sql_column_data[count] = str(float(data) + float(graph_data.temperature_offset))
-                    count = count + 1
-                except Exception as error:
-                    count = count + 1
-                    app_logger.app_logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
+            if graph_data.enable_custom_temp_offset:
+                for data in sql_column_data:
+                    try:
+                        sql_column_data[count] = str(float(data) + float(graph_data.temperature_offset))
+                        count = count + 1
+                    except Exception as error:
+                        count = count + 1
+                        app_logger.app_logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
+            else:
+                graph_data.bypass_sql_skip = False
+                graph_data.graph_table = "IntervalData"
+                get_sql_temp_offset_command = "SELECT EnvTempOffset FROM IntervalData WHERE EnvTempOffset" + \
+                                              " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                                              str(get_sql_graph_start) + \
+                                              "') AND datetime('" + \
+                                              str(get_sql_graph_end) + \
+                                              "') LIMIT " + \
+                                              str(graph_data.max_sql_queries)
+                sql_temp_offset_data = _get_sql_data(graph_data, get_sql_temp_offset_command)
+
+                warn_message = False
+                for data in sql_column_data:
+                    try:
+                        sql_column_data[count] = str(float(data) + float(sql_temp_offset_data[count]))
+                        count = count + 1
+                    except IndexError:
+                        count = count + 1
+                        warn_message = True
+
+                if warn_message:
+                    app_logger.app_logger.warning("One or more missing entries in 'EnvironmentTemp' or 'EnvTempOffset'")
 
             graph_data.sql_hat_temp = sql_column_data
-
         elif str(var_column) == "Pressure":
             graph_data.sql_pressure = sql_column_data
         elif str(var_column) == "Humidity":
