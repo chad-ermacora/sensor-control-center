@@ -45,7 +45,7 @@ class CreateAboutWindow:
                                      width=75,
                                      height=18,
                                      multiline=True,
-                                     align="right")
+                                     align="left")
         self._set_about_text()
         self.about_textbox.disable()
 

@@ -18,9 +18,10 @@
 """
 import app_guizero.gui_main
 import app_logger
+import app_guizero.gui_platform_tweaks
 
 guizero_app = app_guizero.gui_main.CreateMainWindow()
-guizero_app.app_custom_configurations()
+app_guizero.gui_platform_tweaks.app_custom_configurations(guizero_app)
 
 # Start the App
 app_logger.app_logger.info('KootNet Sensors - Control Center - Started')

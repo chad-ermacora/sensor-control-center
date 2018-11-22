@@ -36,6 +36,7 @@ from app_guizero.gui_reports import CreateReportsWindow
 from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
 from app_guizero.gui_sensor_config import CreateSensorConfigWindow
 from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
+from app_guizero.gui_sql_notes import CreateSQLNotesWindow
 
 
 class CreateMainWindow:
@@ -47,12 +48,15 @@ class CreateMainWindow:
                        height=295,
                        layout="grid")
 
+        self.app.on_close(self._app_exit)
+
         self.ip_selection = CreateIPSelector(self.app, self.current_config)
         self._set_ip_list()
 
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
         self.window_reports = CreateReportsWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_sql_notes = CreateSQLNotesWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
@@ -80,7 +84,9 @@ class CreateMainWindow:
                                              ["Update Configurations",
                                               self.window_sensor_config.window.show],
                                              ["View & Download Logs",
-                                              self.window_sensor_logs.window.show]],
+                                              self.window_sensor_logs.window.show],
+                                             ["Add Note to SQL Database",
+                                              self.window_sensor_sql_notes.window.show]],
                                             [["Open Graph Window",
                                               self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
@@ -105,70 +111,6 @@ class CreateMainWindow:
                                                      command=self._app_menu_download_sql_db,
                                                      grid=[4, 15],
                                                      align="right")
-
-    def app_custom_configurations(self):
-        """ Apply system & user specific settings to application.  Used just before application start. """
-        # Add extra tk options to guizero windows
-        self.app.tk.resizable(False, False)
-        self.window_control_center_config.window.tk.resizable(False, False)
-        self.window_sensor_commands.window.tk.resizable(False, False)
-        self.window_sensor_config.window.tk.resizable(False, False)
-        self.window_reports.window.tk.resizable(False, False)
-        self.window_sensor_logs.window.tk.resizable(False, False)
-        self.window_graph.window.tk.resizable(False, False)
-        self.window_about.window.tk.resizable(False, False)
-
-        # Add custom selections and GUI settings
-        self.app.on_close(self._app_exit)
-
-        self.ip_selection.app_checkbox_all_column1.value = 0
-        self.ip_selection.app_checkbox_all_column2.value = 0
-        self.ip_selection.app_check_all_ip1()
-        self.ip_selection.app_check_all_ip2()
-        self.ip_selection.app_checkbox_ip1.value = 1
-
-        self.window_graph.checkbox_up_time.value = 0
-        self.window_graph.checkbox_temperature.value = 0
-        self.window_graph.checkbox_pressure.value = 0
-        self.window_graph.checkbox_humidity.value = 0
-        self.window_graph.checkbox_lumen.value = 0
-        self.window_graph.checkbox_colour.value = 0
-
-        self.window_sensor_config.checkbox_db_record.value = 1
-        self.window_sensor_config.checkbox_custom.value = 0
-        self.window_sensor_config.recording_checkbox()
-        self.window_sensor_config.custom_checkbox()
-
-        self.window_sensor_logs.textbox_log.bg = "black"
-        self.window_sensor_logs.textbox_log.text_color = "white"
-        self.window_about.about_textbox.bg = "black"
-        self.window_about.about_textbox.text_color = "white"
-
-        # Platform specific adjustments
-        if platform.system() == "Windows":
-            self.app.tk.iconbitmap(self.current_config.additional_files_directory + "/icon.ico")
-        elif platform.system() == "Linux":
-            self.app.width = 490
-            self.app.height = 240
-            self.window_control_center_config.window.width = 675
-            self.window_control_center_config.window.height = 275
-            self.window_reports.window.width = 460
-            self.window_reports.window.height = 85
-            self.window_graph.window.width = 320
-            self.window_graph.window.height = 420
-            self.window_sensor_config.window.width = 350
-            self.window_sensor_config.window.height = 230
-            self.window_sensor_commands.window.width = 295
-            self.window_sensor_commands.window.height = 255
-            self.window_sensor_logs.window.width = 850
-            self.window_sensor_logs.window.height = 395
-            self.window_about.window.width = 535
-            self.window_about.window.height = 285
-
-        # If no config file, create and save it
-        if not os.path.isfile(self.current_config.config_file):
-            app_logger.app_logger.info('No Configuration File Found - Saving Default')
-            app_config.save_config_to_file(self.current_config)
 
     def _app_exit(self):
         """ Closes log handlers & matplotlib before closing the application. """

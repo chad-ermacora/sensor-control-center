@@ -66,6 +66,7 @@ class CreateNetworkSendCommands:
         self.set_host_name = "ChangeHostName"
         self.set_datetime = "SetDateTime"
         self.set_configuration = "SetConfiguration"
+        self.put_sql_note = "PutDatabaseNote"
 
 
 class CreateHTTPDownload:
