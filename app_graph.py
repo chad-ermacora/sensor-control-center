@@ -338,7 +338,7 @@ def start_plotly_graph(graph_data):
     get_sql_graph_start = _adjust_datetime(graph_data.graph_start, new_time_offset)
     get_sql_graph_end = _adjust_datetime(graph_data.graph_end, new_time_offset)
     for var_column in graph_data.graph_columns:
-        if var_column == "Acc_X":
+        if var_column == "Acc_X" or var_column == "Mag_X" or var_column == "Gyro_X":
             graph_data.graph_table = "TriggerData"
             graph_data.bypass_sql_skip = True
 
