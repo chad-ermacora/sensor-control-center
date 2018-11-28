@@ -126,7 +126,7 @@ class CreateConfigWindow:
                                        align="top")
 
         self.text_time_offset2 = Text(self.window,
-                                      text="Graph DateTime Offset in Hours",
+                                      text="DateTime Offset in Hours",
                                       color='blue',
                                       grid=[2, 1],
                                       align="bottom")

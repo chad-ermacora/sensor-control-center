@@ -139,6 +139,7 @@ class CreateLiveGraph:
         self.measurement_type = ""
         self.ip = ip
         self.current_config = current_config
+        self.temperature_offset = self.current_config.temperature_offset
         self.get_commands = app_sensor_commands.CreateNetworkGetCommands()
 
         self.sql_column_names = CreateSQLColumnNames()
@@ -160,122 +161,14 @@ class CreateLiveGraph:
 
     def _update_graph(self, x_frame):
         current_time = str(datetime.time(datetime.now()))[:8]
-        command_data = app_sensor_commands.CreateCommandData(self.ip,
-                                                             self.current_config.network_timeout_data,
-                                                             "")
+        network_timeout = self.current_config.network_timeout_data
+        command_data = app_sensor_commands.CreateSensorNetworkCommand(self.ip, network_timeout, "")
 
         command_data.command = self.get_commands.sensor_name
         sensor_name = app_sensor_commands.get_data(command_data)
+
+        sensor_reading, sensor_type_name, measurement_type = self._get_sensor_reading_name_unit(command_data)
         try:
-            if self.sensor_type is self.sql_column_names.system_uptime:
-                command_data.command = self.get_commands.system_uptime
-                sensor_reading = app_sensor_commands.get_data(command_data)
-                sensor_type_name = self.readable_column_names.system_uptime
-                measurement_type = self.sensor_measurements.no_measurement
-            elif self.sensor_type is self.sql_column_names.cpu_temp:
-                command_data.command = self.get_commands.cpu_temp
-                sensor_reading = app_sensor_commands.get_data(command_data)
-
-                try:
-                    sensor_reading = round(float(sensor_reading), 3)
-                except Exception as error:
-                    app_logger.app_logger.warning(str(error))
-
-                sensor_type_name = self.readable_column_names.cpu_temp
-                measurement_type = self.sensor_measurements.celsius
-            elif self.sensor_type is self.sql_column_names.environmental_temp:
-                command_data.command = self.get_commands.environmental_temp
-                temp_reading = app_sensor_commands.get_data(command_data)
-
-                try:
-                    if self.current_config.enable_custom_temp_offset:
-                        # Temp offset is set to programs when initiating Live Graph
-                        pass
-                    else:
-                        command_data.command = self.get_commands.env_temp_offset
-                        self.current_config.temperature_offset = float(app_sensor_commands.get_data(command_data))
-
-                    sensor_reading = round(float(temp_reading) + float(self.current_config.temperature_offset), 3)
-                except Exception as error:
-                    sensor_reading = ""
-                    app_logger.app_logger.warning(str(error))
-
-                sensor_type_name = self.readable_column_names.environmental_temp
-                measurement_type = self.sensor_measurements.celsius
-            elif self.sensor_type is self.sql_column_names.pressure:
-                command_data.command = self.get_commands.pressure
-                sensor_reading = app_sensor_commands.get_data(command_data)
-                sensor_type_name = self.readable_column_names.pressure
-                measurement_type = self.sensor_measurements.pressure
-            elif self.sensor_type is self.sql_column_names.humidity:
-                command_data.command = self.get_commands.humidity
-                sensor_reading = app_sensor_commands.get_data(command_data)
-
-                try:
-                    sensor_reading = int(round(float(sensor_reading), 0))
-                except Exception as error:
-                    app_logger.app_logger.warning(str(error))
-
-                sensor_type_name = self.readable_column_names.humidity
-                measurement_type = self.sensor_measurements.humidity
-            elif self.sensor_type is self.sql_column_names.lumen:
-                command_data.command = self.get_commands.lumen
-                sensor_reading = app_sensor_commands.get_data(command_data)
-                sensor_type_name = self.readable_column_names.lumen
-                measurement_type = self.sensor_measurements.lumen
-            elif self.sensor_type == self.sql_column_names.rgb[0]:
-                try:
-                    command_data.command = self.get_commands.rgb
-                    red, green, blue = app_sensor_commands.get_data(command_data)
-                    sensor_reading = [round(red, 3), round(green, 3), round(blue, 3)]
-                    sensor_type_name = self.readable_column_names.rgb
-                    measurement_type = self.sensor_measurements.rgb
-                except Exception as error:
-                    app_logger.app_logger.debug(str(error))
-                    sensor_reading = self.readable_column_names.no_sensor
-                    sensor_type_name = self.readable_column_names.rgb
-                    measurement_type = self.sensor_measurements.rgb
-            elif self.sensor_type == self.sql_column_names.accelerometer_xyz[0]:
-                try:
-                    command_data.command = self.get_commands.accelerometer_xyz
-                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
-                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
-                    sensor_type_name = self.readable_column_names.accelerometer_xyz
-                    measurement_type = self.sensor_measurements.xyz
-                except Exception as error:
-                    app_logger.app_logger.debug(str(error))
-                    sensor_reading = self.readable_column_names.no_sensor
-                    sensor_type_name = self.readable_column_names.accelerometer_xyz
-                    measurement_type = self.sensor_measurements.xyz
-            elif self.sensor_type == self.sql_column_names.magnetometer_xyz[0]:
-                try:
-                    command_data.command = self.get_commands.magnetometer_xyz
-                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
-                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
-                    sensor_type_name = self.readable_column_names.magnetometer_xyz
-                    measurement_type = self.sensor_measurements.xyz
-                except Exception as error:
-                    app_logger.app_logger.debug(str(error))
-                    sensor_reading = self.readable_column_names.no_sensor
-                    sensor_type_name = self.readable_column_names.magnetometer_xyz
-                    measurement_type = self.sensor_measurements.xyz
-            elif self.sensor_type == self.sql_column_names.gyroscope_xyz[0]:
-                try:
-                    command_data.command = self.get_commands.gyroscope_xyz
-                    var_x, var_y, var_z = app_sensor_commands.get_data(command_data)
-                    sensor_reading = [round(var_x, 3), round(var_y, 3), round(var_z, 3)]
-                    sensor_type_name = self.readable_column_names.gyroscope_xyz
-                    measurement_type = self.sensor_measurements.xyz
-                except Exception as error:
-                    app_logger.app_logger.debug(str(error))
-                    sensor_reading = self.readable_column_names.no_sensor
-                    sensor_type_name = self.readable_column_names.gyroscope_xyz
-                    measurement_type = self.sensor_measurements.xyz
-            else:
-                sensor_reading = "N/A"
-                sensor_type_name = "Invalid Sensor"
-                measurement_type = " Missing Program Support"
-
             self.ax1.clear()
             self.y.append(sensor_reading)
             self.x.append(x_frame)
@@ -296,6 +189,140 @@ class CreateLiveGraph:
             pyplot.xticks([])
         except Exception as error:
             app_logger.app_logger.error("Live Graph - Invalid Sensor Data: " + str(error))
+
+    def _get_sensor_reading_name_unit(self, command_data):
+        """ Returns the sensors reading(s), name and unit type based on the provided command_data object. """
+        if self.sensor_type is self.sql_column_names.system_uptime:
+            command_data.command = self.get_commands.system_uptime
+            try:
+                sensor_reading = int(round(float(app_sensor_commands.get_data(command_data)), 0))
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+
+            sensor_type_name = self.readable_column_names.system_uptime
+            measurement_type = self.sensor_measurements.no_measurement
+        elif self.sensor_type is self.sql_column_names.cpu_temp:
+            command_data.command = self.get_commands.cpu_temp
+            try:
+                sensor_reading = round(float(app_sensor_commands.get_data(command_data)), 3)
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+
+            sensor_type_name = self.readable_column_names.cpu_temp
+            measurement_type = self.sensor_measurements.celsius
+        elif self.sensor_type is self.sql_column_names.environmental_temp:
+            try:
+                if self.current_config.enable_custom_temp_offset:
+                    # Temp offset is set to programs when initiating Live Graph
+                    pass
+                else:
+                    command_data.command = self.get_commands.env_temp_offset
+                    try:
+                        self.temperature_offset = float(app_sensor_commands.get_data(command_data))
+                    except Exception as error:
+                        app_logger.app_logger.warning("Live Graph - Invalid Sensor provided temp offset: " + str(error))
+                        self.temperature_offset = 0.0
+
+                command_data.command = self.get_commands.environmental_temp
+                try:
+                    sensor_reading = round(float(app_sensor_commands.get_data(command_data)) +
+                                           float(self.temperature_offset), 3)
+                except Exception as error:
+                    app_logger.app_logger.warning("Live Graph - Invalid Env Temperature: " + str(error))
+                    sensor_reading = 0.0
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+
+            sensor_type_name = self.readable_column_names.environmental_temp
+            measurement_type = self.sensor_measurements.celsius
+        elif self.sensor_type is self.sql_column_names.pressure:
+            command_data.command = self.get_commands.pressure
+            try:
+                sensor_reading = int(round(float(app_sensor_commands.get_data(command_data)), 0))
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+
+            sensor_type_name = self.readable_column_names.pressure
+            measurement_type = self.sensor_measurements.pressure
+        elif self.sensor_type is self.sql_column_names.humidity:
+            command_data.command = self.get_commands.humidity
+
+            try:
+                sensor_reading = int(round(float(app_sensor_commands.get_data(command_data)), 0))
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+
+            sensor_type_name = self.readable_column_names.humidity
+            measurement_type = self.sensor_measurements.humidity
+        elif self.sensor_type is self.sql_column_names.lumen:
+            command_data.command = self.get_commands.lumen
+            try:
+                sensor_reading = int(round(float(app_sensor_commands.get_data(command_data)), 0))
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+
+            sensor_type_name = self.readable_column_names.lumen
+            measurement_type = self.sensor_measurements.lumen
+        elif self.sensor_type == self.sql_column_names.rgb[0]:
+            try:
+                command_data.command = self.get_commands.rgb
+                red, green, blue = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+                sensor_reading = [round(float(red), 3), round(float(green), 3), round(float(blue), 3)]
+                sensor_type_name = self.readable_column_names.rgb
+                measurement_type = self.sensor_measurements.rgb
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+                sensor_type_name = self.readable_column_names.rgb
+                measurement_type = self.sensor_measurements.rgb
+        elif self.sensor_type == self.sql_column_names.accelerometer_xyz[0]:
+            try:
+                command_data.command = self.get_commands.accelerometer_xyz
+                var_x, var_y, var_z = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+                sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
+                sensor_type_name = self.readable_column_names.accelerometer_xyz
+                measurement_type = self.sensor_measurements.xyz
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+                sensor_type_name = self.readable_column_names.accelerometer_xyz
+                measurement_type = self.sensor_measurements.xyz
+        elif self.sensor_type == self.sql_column_names.magnetometer_xyz[0]:
+            try:
+                command_data.command = self.get_commands.magnetometer_xyz
+                var_x, var_y, var_z = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+                sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
+                sensor_type_name = self.readable_column_names.magnetometer_xyz
+                measurement_type = self.sensor_measurements.xyz
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+                sensor_type_name = self.readable_column_names.magnetometer_xyz
+                measurement_type = self.sensor_measurements.xyz
+        elif self.sensor_type == self.sql_column_names.gyroscope_xyz[0]:
+            try:
+                command_data.command = self.get_commands.gyroscope_xyz
+                var_x, var_y, var_z = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+                sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
+                sensor_type_name = self.readable_column_names.gyroscope_xyz
+                measurement_type = self.sensor_measurements.xyz
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+                sensor_type_name = self.readable_column_names.gyroscope_xyz
+                measurement_type = self.sensor_measurements.xyz
+        else:
+            sensor_reading = "N/A"
+            sensor_type_name = "Invalid Sensor"
+            measurement_type = " Missing Program Support"
+
+        return sensor_reading, sensor_type_name, measurement_type
 
 
 def start_plotly_graph(graph_data):

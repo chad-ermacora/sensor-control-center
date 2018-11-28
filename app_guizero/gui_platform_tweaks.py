@@ -37,7 +37,6 @@ def app_custom_configurations(main_app):
     main_app.window_about.window.tk.resizable(False, False)
 
     # Add custom selections and GUI settings
-
     main_app.ip_selection.app_checkbox_all_column1.value = 0
     main_app.ip_selection.app_checkbox_all_column2.value = 0
     main_app.ip_selection.app_check_all_ip1()
@@ -64,6 +63,9 @@ def app_custom_configurations(main_app):
     main_app.window_sensor_sql_notes.note_textbox.bg = "black"
     main_app.window_sensor_sql_notes.note_textbox.text_color = "white"
     main_app.window_sensor_sql_notes.note_textbox.tk.config(insertbackground="red")
+    main_app.window_sensor_sql_notes.note_datetime_checkbox.value = 1
+    main_app.window_sensor_sql_notes.reset_datetime()
+    main_app.window_sensor_sql_notes.button_undo_clear_note.disable()
 
     # Platform specific adjustments
     if platform.system() == "Windows":

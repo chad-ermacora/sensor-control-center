@@ -125,14 +125,15 @@ class TestApp(unittest.TestCase):
         print("\nThis REQUIRES an online sensor @ " + sensor_ip)
         get_network_commands = app_sensor_commands.CreateNetworkGetCommands()
         send_network_commands = app_sensor_commands.CreateNetworkSendCommands()
-        command_data = app_sensor_commands.CreateCommandData(sensor_ip, 5, "")
+        network_timeout = config_default.network_timeout_data
+        sensor_command = app_sensor_commands.CreateSensorNetworkCommand(sensor_ip, network_timeout, "")
 
         http_log_download = app_sensor_commands.CreateHTTPDownload()
         http_log_download.ip = sensor_ip
         http_log_download.url = "/logs/"
         http_log_download.save_to_location = save_to
 
-        sensor_status = app_sensor_commands.check_sensor_status(sensor_ip, 3)
+        sensor_status = app_sensor_commands.check_sensor_status(sensor_ip, network_timeout)
         self.assertEqual(sensor_status, "Online")
 
         app_sensor_commands.download_logs(http_log_download)
@@ -140,21 +141,21 @@ class TestApp(unittest.TestCase):
         self.assertTrue(os.path.isfile(save_to + "_" + sensor_ip[-3:] + "Sensors_log.txt"))
         self.assertTrue(os.path.isfile(save_to + "_" + sensor_ip[-3:] + "Network_log.txt"))
 
-        command_data.command = get_network_commands.sensor_name
-        old_hostname = app_sensor_commands.get_data(command_data)
+        sensor_command.command = get_network_commands.sensor_name
+        old_hostname = app_sensor_commands.get_data(sensor_command)
         good_hostname = app_sensor_commands.get_validated_hostname("^^$##_###This.is$NOT-Good!**")
         self.assertEqual(good_hostname, "_________This_is_NOT_Good___")
 
-        command_data.command = send_network_commands.set_host_name + good_hostname
-        app_sensor_commands.send_command(command_data)
-        command_data.command = get_network_commands.sensor_name
-        verify_hostname = app_sensor_commands.get_data(command_data)
+        sensor_command.command = send_network_commands.set_host_name + good_hostname
+        app_sensor_commands.send_command(sensor_command)
+        sensor_command.command = get_network_commands.sensor_name
+        verify_hostname = app_sensor_commands.get_data(sensor_command)
         self.assertEqual(verify_hostname, good_hostname)
 
-        command_data.command = send_network_commands.set_host_name + old_hostname
-        app_sensor_commands.send_command(command_data)
-        command_data.command = get_network_commands.sensor_name
-        verify_hostname = app_sensor_commands.get_data(command_data)
+        sensor_command.command = send_network_commands.set_host_name + old_hostname
+        app_sensor_commands.send_command(sensor_command)
+        sensor_command.command = get_network_commands.sensor_name
+        verify_hostname = app_sensor_commands.get_data(sensor_command)
         self.assertEqual(verify_hostname, old_hostname)
 
 

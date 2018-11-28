@@ -6,5 +6,6 @@ name = "pypi"
 [packages]
 guizero = "*"
 request = "*"
+requests = "*"
 matplotlib = "*"
 plotly = "*"

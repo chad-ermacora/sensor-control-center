@@ -81,9 +81,8 @@ class CreateSensorLogsWindow:
     def _get_log(self):
         """ Select the remote sensor log you wish to view. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        command_data = app_sensor_commands.CreateCommandData(ip_list[0],
-                                                             self.current_config.network_timeout_data,
-                                                             "GetNetworkLog")
+        network_timeout = self.current_config.network_timeout_data
+        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0], network_timeout, "GetNetworkLog")
         if self.radio_log_type.value == "Network Log":
             log = app_sensor_commands.get_data(command_data)
         elif self.radio_log_type.value == "Primary Log":
@@ -102,16 +101,13 @@ class CreateSensorLogsWindow:
         if len(ip_list) >= 1:
             threads = []
             download_to_location = filedialog.askdirectory()
+            network_timeout = self.current_config.network_timeout_data
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    download_obj = app_sensor_commands.CreateHTTPDownload()
-                    download_obj.ip = ip
-                    download_obj.url = "/logs/"
-                    download_obj.save_to_location = download_to_location
-
-                    threads.append(Thread(target=app_sensor_commands.download_logs,
-                                          args=[download_obj]))
+                    sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, "")
+                    sensor_command.save_to_location = download_to_location
+                    threads.append(Thread(target=app_sensor_commands.download_logs, args=[sensor_command]))
 
                 for thread in threads:
                     thread.start()

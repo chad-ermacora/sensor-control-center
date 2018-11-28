@@ -79,14 +79,14 @@ class CreateMainWindow:
                                               self._app_exit]],
                                             [["Create Reports",
                                               self.window_reports.window.show],
+                                             ["View & Download Logs",
+                                              self.window_sensor_logs.window.show],
+                                             ["Add Note to Database",
+                                              self.window_sensor_sql_notes.window.show],
                                              ["Send Commands",
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
-                                              self.window_sensor_config.window.show],
-                                             ["View & Download Logs",
-                                              self.window_sensor_logs.window.show],
-                                             ["Add Note to SQL Database",
-                                              self.window_sensor_sql_notes.window.show]],
+                                              self.window_sensor_config.window.show]],
                                             [["Open Graph Window",
                                               self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
@@ -136,31 +136,38 @@ class CreateMainWindow:
         else:
             subprocess.Popen(["xdg-open", self.current_config.logs_directory])
 
+    @staticmethod
+    def _download_sql_finished_message(threads):
+        for thread in threads:
+            thread.join()
+
+        info("Downloads", "SQL database downloads complete")
+
     def _app_menu_download_sql_db(self):
         """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
         ip_list = self.ip_selection.get_verified_ip_list()
+        network_commands = app_sensor_commands.CreateNetworkGetCommands()
+
         if len(ip_list) >= 1:
             threads = []
             download_to_location = filedialog.askdirectory()
+            network_timeout = self.current_config.network_timeout_data
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    download_obj = app_sensor_commands.CreateHTTPDownload()
-                    download_obj.ip = ip
-                    download_obj.url = "/"
-                    download_obj.save_to_location = download_to_location
-                    download_obj.file_name = "SensorRecordingDatabase.sqlite"
+                    senor_command = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                                   network_timeout,
+                                                                                   network_commands.sensor_sql_database)
+                    senor_command.save_to_location = download_to_location
 
-                    threads.append(Thread(target=app_sensor_commands.download_http_file,
-                                          args=[download_obj]))
+                    threads.append(Thread(target=app_sensor_commands.download_sensor_database,
+                                          args=[senor_command]))
 
                 for thread in threads:
                     thread.start()
 
-                for thread in threads:
-                    thread.join()
-
-                info("Downloads", "SQL Database Downloads Complete")
+                download_message_thread = Thread(target=self._download_sql_finished_message, args=[threads])
+                download_message_thread.start()
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:

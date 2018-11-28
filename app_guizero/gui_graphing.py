@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from tkinter import filedialog
-
 from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
 from matplotlib import pyplot
 
@@ -114,11 +113,11 @@ class CreateGraphingWindow:
                                                   grid=[2, 9],
                                                   align="left")
 
-        self.checkbox_temperature_offset = CheckBox(self.window,
-                                                    text="Use Default",
-                                                    command=self.click_checkbox_offset,
-                                                    grid=[2, 9],
-                                                    align="right")
+        self.checkbox_default_offset = CheckBox(self.window,
+                                                text="Use Default",
+                                                command=self.click_checkbox_offset,
+                                                grid=[2, 9],
+                                                align="right")
 
         self.text_refresh_time = Text(self.window,
                                       text="Live refresh (Sec):",
@@ -242,7 +241,7 @@ class CreateGraphingWindow:
                                       grid=[2, 36],
                                       align="left")
 
-        self.checkbox_temperature_offset.value = 1
+        self.checkbox_default_offset.value = 1
         self.set_config()
         self._radio_selection()
         self.click_checkbox_offset()
@@ -254,12 +253,18 @@ class CreateGraphingWindow:
             self._disable_all_checkboxes()
 
     def click_checkbox_offset(self):
-        if self.checkbox_temperature_offset.value:
+        if self.checkbox_default_offset.value:
             self.textbox_temperature_offset.disable()
             self.current_config.enable_custom_temp_offset = False
         else:
             self.textbox_temperature_offset.enable()
             self.current_config.enable_custom_temp_offset = True
+            try:
+                self.current_config.temperature_offset = float(self.textbox_temperature_offset.value)
+            except Exception as error:
+                self.current_config.temperature_offset = 0
+                warn("Invalid Temperature Offset", "Please check and correct 'Env Temp Offset'")
+                app_logger.app_logger.warning("Invalid Graph 'Env Temp Offset': " + str(error))
 
     def set_config(self):
         """ Sets the programs Configuration to the provided settings. """
@@ -281,7 +286,7 @@ class CreateGraphingWindow:
             self.textbox_end.enable()
             self.textbox_sql_skip.enable()
 
-            if not self.checkbox_temperature_offset.value:
+            if not self.checkbox_default_offset.value:
                 self.textbox_temperature_offset.enable()
 
             self.checkbox_master.enable()
