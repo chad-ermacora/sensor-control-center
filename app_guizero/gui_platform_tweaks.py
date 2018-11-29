@@ -32,7 +32,7 @@ def app_custom_configurations(main_app):
     main_app.window_sensor_config.window.tk.resizable(False, False)
     main_app.window_reports.window.tk.resizable(False, False)
     main_app.window_sensor_logs.window.tk.resizable(False, False)
-    main_app.window_sensor_sql_notes.window.tk.resizable(False, False)
+    # main_app.window_sensor_sql_notes.window.tk.resizable(False, False)
     main_app.window_graph.window.tk.resizable(False, False)
     main_app.window_about.window.tk.resizable(False, False)
 
@@ -85,7 +85,10 @@ def app_custom_configurations(main_app):
         main_app.window_sensor_commands.window.height = 255
         main_app.window_sensor_logs.window.width = 850
         main_app.window_sensor_logs.window.height = 395
-        main_app.window_about.window.width = 575
+        main_app.window_sensor_sql_notes.window.height = 340
+        main_app.window_sensor_sql_notes.window.width = 750
+        main_app.window_sensor_sql_notes.note_textbox.width = 105
+        main_app.window_about.window.width = 540
         main_app.window_about.window.height = 285
 
     # If no config file, create and save it

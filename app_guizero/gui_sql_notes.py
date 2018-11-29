@@ -33,7 +33,7 @@ class CreateSQLNotesWindow:
         self.window = Window(app,
                              title="Insert Note into Live Sensors SQL Database",
                              width=615,
-                             height=405,
+                             height=385,
                              layout="grid",
                              visible=False)
 
@@ -43,23 +43,23 @@ class CreateSQLNotesWindow:
                                     grid=[1, 1, 3, 1],
                                     align="left")
 
-        self.note_text2 = Text(self.window,
-                               text="Enter at Date & Time",
-                               color="blue",
-                               grid=[3, 1, 2, 1],
-                               align="top")
+        # self.note_text2 = Text(self.window,
+        #                        text="Enter at Date & Time",
+        #                        color="blue",
+        #                        grid=[3, 1],
+        #                        align="top")
 
         self.note_datetime_checkbox = CheckBox(self.window,
                                                text="Use current Date & Time",
                                                command=self.reset_datetime,
-                                               grid=[3, 2],
-                                               align="right")
+                                               grid=[3, 1, 5, 1],
+                                               align="left")
 
         self.note_datetime_textbox = TextBox(self.window,
                                              text=current_config.get_str_datetime_now(),
-                                             grid=[4, 2],
+                                             grid=[4, 1, 5, 1],
                                              width=21,
-                                             align="left")
+                                             align="right")
 
         self.note_textbox = TextBox(self.window,
                                     text="Press the button in the bottom left to clear the note window\n" +
@@ -84,8 +84,8 @@ class CreateSQLNotesWindow:
         self.button_undo_clear_note = PushButton(self.window,
                                                  text="Undo Clear Note",
                                                  command=self.undue_clear_note,
-                                                 grid=[2, 9],
-                                                 align="left")
+                                                 grid=[1, 9],
+                                                 align="right")
 
         self.button_send_note = PushButton(self.window,
                                            text="Attach Note to\nSensor DataBase",

@@ -39,12 +39,12 @@ class CreateHTMLSystemData:
                                   "{{IP}}",
                                   "{{DateTime}}",
                                   "{{UpTime}}",
+                                  "{{Version}}",
                                   "{{CPUTemp}}",
                                   "{{FreeDisk}}",
                                   "{{SQLDBSize}}",
                                   "{{SQLWriteEnabled}}",
                                   "{{CustomEnabled}}",
-                                  "{{Version}}",
                                   "{{LastUpdated}}"]
 
         self.local_time_code = ["{{LocalDateTime}}"]
