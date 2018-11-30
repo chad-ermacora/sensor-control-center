@@ -56,7 +56,7 @@ class CreateSQLColumnNames:
 
 class CreateSQLColumnsReadable:
     def __init__(self):
-        self.no_sensor = "No Sensor"
+        self.no_sensor = ""
         self.date_time = "Date & Time"
         self.sensor_name = "Sensor Name"
         self.ip = "IP"
@@ -231,7 +231,7 @@ class CreateLiveGraph:
                                            float(self.temperature_offset), 3)
                 except Exception as error:
                     app_logger.app_logger.warning("Live Graph - Invalid Env Temperature: " + str(error))
-                    sensor_reading = 0.0
+                    sensor_reading = self.readable_column_names.no_sensor
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor

@@ -1,5 +1,32 @@
-import app_logger
 import webbrowser
+
+import app_logger
+
+default_installed_sensors_text = """
+Change the number in front of each line. Enable = 1 & Disable = 0
+1 = Gnu/Linux System (Raspbian, Debian, etc)
+0 = Raspberry Pi Zero W
+0 = Raspberry Pi 3BPlus
+0 = Raspberry Pi Sense HAT
+0 = Pimoroni BH1745
+0 = Pimoroni BME680
+0 = Pimoroni EnviroPHAT
+0 = Pimoroni LSM303D
+0 = Pimoroni VL53L1X
+"""
+
+default_sensor_config_text = """
+Enable = 1 & Disable = 0 (Recommended: Don't change anything)
+1 = Record Sensors to SQL Database
+300 = Duration between Interval readings in Seconds
+0.15 = Duration between Trigger readings in Seconds
+0 = Enable Custom Settings
+0.0 = Custom Accelerometer variance
+0.0 = Custom Magnetometer variance
+0.0 = Custom Gyroscope variance
+0 = Enable Custom Temperature Offset
+0.0 = Current Temperature Offset
+"""
 
 
 def convert_minutes_string(var_minutes):

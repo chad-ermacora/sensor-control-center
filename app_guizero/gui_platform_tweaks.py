@@ -32,7 +32,7 @@ def app_custom_configurations(main_app):
     main_app.window_sensor_config.window.tk.resizable(False, False)
     main_app.window_reports.window.tk.resizable(False, False)
     main_app.window_sensor_logs.window.tk.resizable(False, False)
-    # main_app.window_sensor_sql_notes.window.tk.resizable(False, False)
+    main_app.window_sensor_sql_notes.window.tk.resizable(False, False)
     main_app.window_graph.window.tk.resizable(False, False)
     main_app.window_about.window.tk.resizable(False, False)
 
@@ -50,14 +50,12 @@ def app_custom_configurations(main_app):
     main_app.window_graph.checkbox_lumen.value = 0
     main_app.window_graph.checkbox_colour.value = 0
 
-    main_app.window_sensor_config.checkbox_db_record.value = 1
-    main_app.window_sensor_config.checkbox_custom.value = 0
-    main_app.window_sensor_config.recording_checkbox()
-    main_app.window_sensor_config.custom_checkbox()
-
     main_app.window_sensor_logs.textbox_log.bg = "black"
     main_app.window_sensor_logs.textbox_log.text_color = "white"
     main_app.window_sensor_logs.textbox_log.tk.config(insertbackground="red")
+    main_app.window_sensor_config.textbox_config.bg = "black"
+    main_app.window_sensor_config.textbox_config.text_color = "white"
+    main_app.window_sensor_config.textbox_config.tk.config(insertbackground="red")
     main_app.window_about.about_textbox.bg = "black"
     main_app.window_about.about_textbox.text_color = "white"
     main_app.window_sensor_sql_notes.note_textbox.bg = "black"

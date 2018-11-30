@@ -28,9 +28,10 @@ from guizero import App, PushButton, MenuBar, info, warn, yesno
 import app_config
 import app_logger
 import app_sensor_commands
+from matplotlib import pyplot
 from app_guizero.gui_about import CreateAboutWindow
 from app_guizero.gui_config import CreateConfigWindow
-from app_guizero.gui_graphing import CreateGraphingWindow, pyplot
+from app_guizero.gui_graphing import CreateGraphingWindow
 from app_guizero.gui_ip_selection import CreateIPSelector
 from app_guizero.gui_reports import CreateReportsWindow
 from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow

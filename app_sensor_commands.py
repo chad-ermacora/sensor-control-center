@@ -36,7 +36,9 @@ class CreateSensorNetworkCommand:
 class CreateNetworkGetCommands:
     def __init__(self):
         self.sensor_sql_database = "DownloadSQLDatabase"
-        self.sensor_configuration = "GetConfiguration"
+        self.sensor_configuration = "GetConfigurationReport"
+        self.sensor_configuration_file = "GetConfiguration"
+        self.installed_sensors_file = "GetInstalledSensors"
         self.system_data = "GetSystemData"
         self.sensors_log = "GetSensorsLog"
         self.primary_log = "GetPrimaryLog"
@@ -69,6 +71,7 @@ class CreateNetworkSendCommands:
         self.set_host_name = "SetHostName"
         self.set_datetime = "SetDateTime"
         self.set_configuration = "SetConfiguration"
+        self.set_installed_sensors = "SetInstalledSensors"
         self.put_sql_note = "PutDatabaseNote"
 
 
@@ -96,7 +99,7 @@ def download_logs(sensor_command):
         log_file.write(log_file_data)
         log_file.close()
     except Exception as error:
-        print(error)
+        app_logger.sensor_logger.error("PrimaryLog Failed: " + str(error))
 
     sensor_command.command = "DownloadNetworkLog"
     log_file_data = get_data(sensor_command)
@@ -105,7 +108,7 @@ def download_logs(sensor_command):
         log_file.write(log_file_data)
         log_file.close()
     except Exception as error:
-        print(error)
+        app_logger.sensor_logger.error("NetworkLog Failed: " + str(error))
 
     sensor_command.command = "DownloadSensorsLog"
     log_file_data = get_data(sensor_command)
@@ -114,7 +117,7 @@ def download_logs(sensor_command):
         log_file.write(log_file_data)
         log_file.close()
     except Exception as error:
-        print(error)
+        app_logger.sensor_logger.error("SensorsLog Failed: " + str(error))
 
 
 def get_validated_hostname(hostname):
@@ -148,8 +151,8 @@ def put_command(sensor_command):
         requests.put(url, timeout=sensor_command.network_timeout, data={'command_data': sensor_command.command_data})
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
-        app_logger.sensor_logger.warning(sensor_command.command + " to " + sensor_command.ip + " - Failed")
-        app_logger.sensor_logger.debug(str(error))
+        app_logger.sensor_logger.error(sensor_command.command + " to " + sensor_command.ip + " - Failed")
+        app_logger.sensor_logger.error(str(error))
 
 
 def get_data(sensor_command):
