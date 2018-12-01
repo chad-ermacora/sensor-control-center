@@ -21,6 +21,8 @@ import app_logger
 import app_sensor_commands
 from app_useful import default_installed_sensors_text, default_sensor_config_text
 
+from threading import Thread
+
 
 class CreateSensorConfigWindow:
     def __init__(self, app, ip_selection, current_config):
@@ -34,7 +36,7 @@ class CreateSensorConfigWindow:
                              width=615,
                              height=385,
                              layout="grid",
-                             visible=True)
+                             visible=False)
 
         self.text_select = Text(self.window,
                                 text="Select Sensor IPs in the main window",
@@ -109,6 +111,7 @@ class CreateSensorConfigWindow:
         """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
         network_commands = app_sensor_commands.CreateNetworkSendCommands()
         ip_list = self.ip_selection.get_verified_ip_list()
+        threads = []
 
         if len(ip_list) > 0:
             for ip in ip_list:
@@ -121,10 +124,14 @@ class CreateSensorConfigWindow:
                         command = app_sensor_commands.CreateSensorNetworkCommand(ip,
                                                                                  self.current_config.network_timeout_data,
                                                                                  network_commands.set_configuration)
-                    command.command_data = self.textbox_config.value
-                    app_sensor_commands.put_command(command)
+                    command.command_data = self.textbox_config.value.strip()
+
+                    threads.append(Thread(target=app_sensor_commands.put_command, args=[command]))
                 except Exception as error:
                     app_logger.sensor_logger.error(str(error))
 
+            for thread in threads:
+                thread.start()
+
             info("Sensors " + self.combo_dropdown_selection.value + " Set",
-                 self.combo_dropdown_selection.value + " set & Services restarted on:\n" + str(ip_list))
+                 self.combo_dropdown_selection.value + " set & services restarted on:\n" + str(ip_list)[1:-1])
