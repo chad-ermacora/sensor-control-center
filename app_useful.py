@@ -4,7 +4,7 @@ import app_logger
 
 default_installed_sensors_text = """
 Change the number in front of each line. Enable = 1 & Disable = 0
-1 = Gnu/Linux System (Raspbian, Debian, etc)
+1 = Gnu/Linux - Raspbian
 0 = Raspberry Pi Zero W
 0 = Raspberry Pi 3BPlus
 0 = Raspberry Pi Sense HAT
@@ -25,7 +25,7 @@ Enable = 1 & Disable = 0 (Recommended: Don't change anything)
 0.0 = Custom Magnetometer variance
 0.0 = Custom Gyroscope variance
 0 = Enable Custom Temperature Offset
-0.0 = Current Temperature Offset
+0.0 = Custom Temperature Offset
 """
 
 

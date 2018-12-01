@@ -21,7 +21,7 @@ from datetime import datetime
 
 import app_logger
 
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.22.16"
+app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.22.17"
 
 
 class CreateDefaultConfigSettings:

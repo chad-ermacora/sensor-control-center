@@ -138,9 +138,7 @@ def send_command(sensor_command):
         requests.get(url, timeout=sensor_command.network_timeout, headers={'Connection': 'close'})
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
-        if sensor_command.command != "RestartServices":
-            app_logger.sensor_logger.warning(sensor_command.command + " to " + sensor_command.ip + " - Failed")
-            app_logger.sensor_logger.debug(str(error))
+        app_logger.sensor_logger.debug(str(error))
 
 
 def put_command(sensor_command):
@@ -149,10 +147,9 @@ def put_command(sensor_command):
 
     try:
         requests.put(url, timeout=sensor_command.network_timeout, data={'command_data': sensor_command.command_data})
-        app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
+        app_logger.sensor_logger.info(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
-        app_logger.sensor_logger.error(sensor_command.command + " to " + sensor_command.ip + " - Failed")
-        app_logger.sensor_logger.error(str(error))
+        app_logger.sensor_logger.debug(str(error))
 
 
 def get_data(sensor_command):
@@ -165,9 +162,8 @@ def get_data(sensor_command):
         return_data = tmp_return_data.text
     except Exception as error:
         return_data = "Sensor Offline"
-        app_logger.sensor_logger.warning(sensor_command.command + " to " + sensor_command.ip + " - Failed")
+        app_logger.sensor_logger.warning("Sensor " + str(sensor_command.ip) + " Error")
         app_logger.sensor_logger.debug(str(error))
-
     return return_data
 
 
@@ -185,5 +181,5 @@ def download_sensor_database(sensor_command):
         copyfileobj(return_data.raw, sensor_database)
         sensor_database.close()
     except Exception as error:
-        app_logger.sensor_logger.warning(sensor_command.command + " to " + sensor_command.ip + " - Failed")
+        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(sensor_command.ip))
         app_logger.sensor_logger.debug(str(error))

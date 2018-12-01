@@ -75,18 +75,18 @@ class CreateReportsWindow:
 
     def app_sensor_readings_report(self):
         """ Create a HTML sensor Readings Report containing each IP selected and online. """
-        readings_config = app_reports.CreateHTMLReadingsData(self.current_config)
+        sensor_readings_report = app_reports.CreateHTMLReadingsData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
-        app_reports.sensor_html_report(readings_config, ip_list)
+        app_reports.sensor_html_report(sensor_readings_report, ip_list)
 
     def app_sensor_system_report(self):
         """ Create a HTML sensor System Report containing each IP selected and online. """
-        system_config = app_reports.CreateHTMLSystemData(self.current_config)
+        sensor_system_report = app_reports.CreateHTMLSystemData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
-        app_reports.sensor_html_report(system_config, ip_list)
+        app_reports.sensor_html_report(sensor_system_report, ip_list)
 
     def app_sensor_config_report(self):
         """ Create a HTML sensor Configuration Report containing each IP selected and online. """
-        sensor_config_config = app_reports.CreateHTMLConfigData(self.current_config)
+        sensor_config_report = app_reports.CreateHTMLConfigData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
-        app_reports.sensor_html_report(sensor_config_config, ip_list)
+        app_reports.sensor_html_report(sensor_config_report, ip_list)

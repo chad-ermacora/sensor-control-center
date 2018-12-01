@@ -25,6 +25,7 @@ import app_sensor_commands
 from app_useful import convert_minutes_string, get_file_content, save_data_to_file, open_html_file
 
 data_queue = Queue()
+network_get_commands = app_sensor_commands.CreateNetworkGetCommands()
 
 
 class CreateHTMLSystemData:
@@ -51,7 +52,9 @@ class CreateHTMLSystemData:
 
     def get_sensor_data(self, ip):
         network_timeout = self.config_settings.network_timeout_data
-        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, "GetSystemData")
+        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                      network_timeout,
+                                                                      network_get_commands.system_data)
         sensor_system = app_sensor_commands.get_data(command_data).split(",")
 
         try:
@@ -77,7 +80,9 @@ class CreateHTMLReadingsData:
 
     def get_sensor_data(self, ip):
         network_timeout = self.config_settings.network_timeout_data
-        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, "GetSensorReadings")
+        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                      network_timeout,
+                                                                      network_get_commands.sensor_readings)
         sensor_data = app_sensor_commands.get_data(command_data).split(",")
         data_queue.put([ip, sensor_data])
 
@@ -106,14 +111,16 @@ class CreateHTMLConfigData:
 
     def get_sensor_data(self, ip):
         network_timeout = self.config_settings.network_timeout_data
-        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, "GetSystemData")
+        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                      network_timeout,
+                                                                      network_get_commands.system_data)
         sensor_system = app_sensor_commands.get_data(command_data).split(",")
         try:
             sensor_system[3] = convert_minutes_string(sensor_system[3])
         except Exception as error:
             app_logger.app_logger.error("Sensor Config Report: " + str(error))
 
-        command_data.command = "GetConfiguration"
+        command_data.command = network_get_commands.sensor_configuration
         sensor_config = app_sensor_commands.get_data(command_data).split(",")
 
         final_sensor_config = [str(sensor_system[0]),
