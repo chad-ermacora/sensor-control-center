@@ -76,6 +76,12 @@ class CreateSensorConfigWindow:
                                             grid=[1, 10],
                                             align="right")
 
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
+        self.textbox_config.bg = "black"
+        self.textbox_config.text_color = "white"
+        self.textbox_config.tk.config(insertbackground="red")
+
     def combo_selection(self):
         if self.combo_dropdown_selection.value == "Installed Sensors":
             self.button_get_config.text = "Get Installed\nSensors"

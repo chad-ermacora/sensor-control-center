@@ -16,9 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 from tkinter import filedialog
+
 from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
-from matplotlib import pyplot
 
 import app_config
 import app_graph
@@ -115,7 +116,7 @@ class CreateGraphingWindow:
 
         self.checkbox_default_offset = CheckBox(self.window,
                                                 text="Use Default",
-                                                command=self.click_checkbox_offset,
+                                                command=self._click_checkbox_offset,
                                                 grid=[2, 9],
                                                 align="right")
 
@@ -241,10 +242,18 @@ class CreateGraphingWindow:
                                       grid=[2, 36],
                                       align="left")
 
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
         self.checkbox_default_offset.value = 1
-        self.set_config()
+        self._set_config()
         self._radio_selection()
-        self.click_checkbox_offset()
+        self._click_checkbox_offset()
+        self.checkbox_up_time.value = 0
+        self.checkbox_temperature.value = 0
+        self.checkbox_pressure.value = 0
+        self.checkbox_humidity.value = 0
+        self.checkbox_lumen.value = 0
+        self.checkbox_colour.value = 0
 
     def _master_checkbox(self):
         if self.checkbox_master.value:
@@ -252,7 +261,7 @@ class CreateGraphingWindow:
         else:
             self._disable_all_checkboxes()
 
-    def click_checkbox_offset(self):
+    def _click_checkbox_offset(self):
         if self.checkbox_default_offset.value:
             self.textbox_temperature_offset.disable()
             self.current_config.enable_custom_temp_offset = False
@@ -266,7 +275,7 @@ class CreateGraphingWindow:
                 warn("Invalid Temperature Offset", "Please check and correct 'Env Temp Offset'")
                 app_logger.app_logger.warning("Invalid Graph 'Env Temp Offset': " + str(error))
 
-    def set_config(self):
+    def _set_config(self):
         """ Sets the programs Configuration to the provided settings. """
 
         self.textbox_start.value = self.current_config.graph_start
@@ -358,7 +367,7 @@ class CreateGraphingWindow:
         self.current_config.temperature_offset = self.textbox_temperature_offset.value
 
         app_config.check_config(self.current_config)
-        self.set_config()
+        self._set_config()
 
         new_data.save_to = self.current_config.save_to
         new_data.graph_start = self.current_config.graph_start
@@ -372,7 +381,7 @@ class CreateGraphingWindow:
         app_graph.start_plotly_graph(new_data)
 
     def live_button(self):
-        pyplot.close()
+        app_graph.pyplot.close()
         try:
             ip = self.ip_selection.get_verified_ip_list()[0]
             checkbox = self._get_column_checkboxes()[3]
@@ -384,9 +393,9 @@ class CreateGraphingWindow:
             self.current_config.live_refresh = self.textbox_refresh_time.value
             self.current_config.temperature_offset = self.textbox_temperature_offset.value
             app_config.check_config(self.current_config)
-            self.set_config()
-
+            self._set_config()
             app_graph.CreateLiveGraph(checkbox, ip, self.current_config)
+            # Thread(target=app_graph.CreateLiveGraph, args=[checkbox, ip, self.current_config]).start()
         else:
             warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
                                   "& Sensor Type from the Graph window")

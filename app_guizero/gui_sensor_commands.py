@@ -116,6 +116,9 @@ class CreateSensorCommandsWindow:
                                                  command=self.datetime_update,
                                                  grid=[3, 7],
                                                  align="left")
+
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
         self.disable_advanced()
 
     def enable_advanced(self):

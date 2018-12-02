@@ -73,6 +73,10 @@ class CreateReportsWindow:
                                                grid=[3, 7],
                                                align="top")
 
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
+
+
     def app_sensor_readings_report(self):
         """ Create a HTML sensor Readings Report containing each IP selected and online. """
         sensor_readings_report = app_reports.CreateHTMLReadingsData(self.current_config)

@@ -16,11 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import CheckBox, TextBox
-from threading import Thread
 from queue import Queue
-import app_sensor_commands
+from threading import Thread
+
+from guizero import CheckBox, TextBox
+
 import app_logger
+import app_sensor_commands
 
 
 class CreateIPSelector:
@@ -31,7 +33,7 @@ class CreateIPSelector:
         # Sensor's Online / Offline IP List Selection 1
         self.app_checkbox_all_column1 = CheckBox(app,
                                                  text="Check ALL Column 1",
-                                                 command=self.app_check_all_ip1,
+                                                 command=self._app_check_all_ip1,
                                                  grid=[1, 1, 3, 1],
                                                  align="left")
 
@@ -126,7 +128,7 @@ class CreateIPSelector:
         # Sensor's Online / Offline IP List Selection 2
         self.app_checkbox_all_column2 = CheckBox(app,
                                                  text="Check ALL Column 2",
-                                                 command=self.app_check_all_ip2,
+                                                 command=self._app_check_all_ip2,
                                                  grid=[3, 1, 3, 1],
                                                  align="left")
 
@@ -218,7 +220,14 @@ class CreateIPSelector:
                                         grid=[4, 9],
                                         align="left")
 
-    def app_check_all_ip1(self):
+        # Window Tweaks
+        self.app_checkbox_all_column1.value = 0
+        self.app_checkbox_all_column2.value = 0
+        self._app_check_all_ip1()
+        self._app_check_all_ip2()
+        self.app_checkbox_ip1.value = 1
+
+    def _app_check_all_ip1(self):
         """ Check or uncheck all IP checkboxes on the 1st column. """
         if self.app_checkbox_all_column1.value == 1:
             self.app_checkbox_ip1.value = 1
@@ -239,7 +248,7 @@ class CreateIPSelector:
             self.app_checkbox_ip7.value = 0
             self.app_checkbox_ip8.value = 0
 
-    def app_check_all_ip2(self):
+    def _app_check_all_ip2(self):
         """ Check or uncheck all IP checkboxes on the 2nd column. """
         if self.app_checkbox_all_column2.value == 1:
             self.app_checkbox_ip9.value = 1

@@ -35,7 +35,7 @@ class CreateConfigWindow:
 
         self.button_reset = PushButton(self.window,
                                        text="Reset to\nDefaults",
-                                       command=self.reset_to_defaults,
+                                       command=self._reset_to_defaults,
                                        grid=[1, 1],
                                        align="right")
 
@@ -191,6 +191,8 @@ class CreateConfigWindow:
                                                grid=[2, 10],
                                                align="top")
 
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
         self.set_config(self.current_config)
         self.textbox_save_to.disable()
         self._enable_config_reset()
@@ -225,7 +227,7 @@ class CreateConfigWindow:
         self.textbox_network_details.value = new_config.network_timeout_data
         self.checkbox_power_controls.value = new_config.allow_config_reset
 
-    def reset_to_defaults(self):
+    def _reset_to_defaults(self):
         """ Resets all Control Center Configurations to default. """
         app_logger.app_logger.info("Resetting Configuration to Defaults")
         default_config = app_config.CreateDefaultConfigSettings()

@@ -25,46 +25,6 @@ import app_logger
 
 def app_custom_configurations(main_app):
     """ Apply system & user specific settings to application.  Used just before application start. """
-    # Add extra tk options to guizero windows
-    main_app.app.tk.resizable(False, False)
-    main_app.window_control_center_config.window.tk.resizable(False, False)
-    main_app.window_sensor_commands.window.tk.resizable(False, False)
-    main_app.window_sensor_config.window.tk.resizable(False, False)
-    main_app.window_reports.window.tk.resizable(False, False)
-    main_app.window_sensor_logs.window.tk.resizable(False, False)
-    main_app.window_sensor_sql_notes.window.tk.resizable(False, False)
-    main_app.window_graph.window.tk.resizable(False, False)
-    main_app.window_about.window.tk.resizable(False, False)
-
-    # Add custom selections and GUI settings
-    main_app.ip_selection.app_checkbox_all_column1.value = 0
-    main_app.ip_selection.app_checkbox_all_column2.value = 0
-    main_app.ip_selection.app_check_all_ip1()
-    main_app.ip_selection.app_check_all_ip2()
-    main_app.ip_selection.app_checkbox_ip1.value = 1
-
-    main_app.window_graph.checkbox_up_time.value = 0
-    main_app.window_graph.checkbox_temperature.value = 0
-    main_app.window_graph.checkbox_pressure.value = 0
-    main_app.window_graph.checkbox_humidity.value = 0
-    main_app.window_graph.checkbox_lumen.value = 0
-    main_app.window_graph.checkbox_colour.value = 0
-
-    main_app.window_sensor_logs.textbox_log.bg = "black"
-    main_app.window_sensor_logs.textbox_log.text_color = "white"
-    main_app.window_sensor_logs.textbox_log.tk.config(insertbackground="red")
-    main_app.window_sensor_config.textbox_config.bg = "black"
-    main_app.window_sensor_config.textbox_config.text_color = "white"
-    main_app.window_sensor_config.textbox_config.tk.config(insertbackground="red")
-    main_app.window_about.about_textbox.bg = "black"
-    main_app.window_about.about_textbox.text_color = "white"
-    main_app.window_sensor_sql_notes.note_textbox.bg = "black"
-    main_app.window_sensor_sql_notes.note_textbox.text_color = "white"
-    main_app.window_sensor_sql_notes.note_textbox.tk.config(insertbackground="red")
-    main_app.window_sensor_sql_notes.note_datetime_checkbox.value = 1
-    main_app.window_sensor_sql_notes.reset_datetime()
-    main_app.window_sensor_sql_notes.button_undo_clear_note.disable()
-
     # Platform specific adjustments
     if platform.system() == "Windows":
         main_app.app.tk.iconbitmap(main_app.current_config.additional_files_directory + "/icon.ico")

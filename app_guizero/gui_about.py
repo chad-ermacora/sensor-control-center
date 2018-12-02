@@ -46,8 +46,13 @@ class CreateAboutWindow:
                                      height=18,
                                      multiline=True,
                                      align="left")
+
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
         self._set_about_text()
         self.about_textbox.disable()
+        self.about_textbox.bg = "black"
+        self.about_textbox.text_color = "white"
 
     def _set_about_text(self):
         """ Loads and sets the about text from file. """

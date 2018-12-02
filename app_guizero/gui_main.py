@@ -24,11 +24,11 @@ from threading import Thread
 from tkinter import filedialog
 
 from guizero import App, PushButton, MenuBar, info, warn, yesno
+from matplotlib import pyplot
 
 import app_config
 import app_logger
 import app_sensor_commands
-from matplotlib import pyplot
 from app_guizero.gui_about import CreateAboutWindow
 from app_guizero.gui_config import CreateConfigWindow
 from app_guizero.gui_graphing import CreateGraphingWindow
@@ -112,6 +112,8 @@ class CreateMainWindow:
                                                      command=self._app_menu_download_sql_db,
                                                      grid=[4, 15],
                                                      align="right")
+        # Window Tweaks
+        self.app.tk.resizable(False, False)
 
     def _app_exit(self):
         """ Closes log handlers & matplotlib before closing the application. """

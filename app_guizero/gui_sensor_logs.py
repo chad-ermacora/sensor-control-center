@@ -78,6 +78,12 @@ class CreateSensorLogsWindow:
                                      grid=[1, 3],
                                      align="right")
 
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
+        self.textbox_log.bg = "black"
+        self.textbox_log.text_color = "white"
+        self.textbox_log.tk.config(insertbackground="red")
+
     def _get_log(self):
         """ Select the remote sensor log you wish to view. """
         ip_list = self.ip_selection.get_verified_ip_list()
