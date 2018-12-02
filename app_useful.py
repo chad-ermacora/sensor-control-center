@@ -16,7 +16,7 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 """
 
 default_sensor_config_text = """
-Enable = 1 & Disable = 0 (Recommended: Don't change anything)
+Enable = 1 & Disable = 0 (Recommended: Don't change if you are unsure)
 1 = Record Sensors to SQL Database
 300 = Duration between Interval readings in Seconds
 0.15 = Duration between Trigger readings in Seconds
@@ -27,6 +27,19 @@ Enable = 1 & Disable = 0 (Recommended: Don't change anything)
 0 = Enable Custom Temperature Offset
 0.0 = Custom Temperature Offset
 """
+
+sql_default_textbox_note = """Use this textbox to create a note to enter into one or more sensor
+SQL Databases.  Use the Date & Time in the top right to enter the note
+beside corresponding sensor data.
+
+Example Notes:
+The increase in temperature is due to the approaching wildfire.
+  - Generic Worker SN:33942
+
+The increase in lumen at night, may be an indication of the rare 
+laser emitting sheep in the area.  
+Notice how it only shows in the infrared spectrum. 
+  - Random Zoologist"""
 
 
 def convert_minutes_string(var_minutes):

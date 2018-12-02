@@ -31,11 +31,6 @@ from app_useful import convert_minutes_string
 style.use("dark_background")
 
 
-# I would like to merge the Interval and Trigger databases into one but the Triggers are more time sensitive
-# Getting other readings with trigger readings, can often slow down the whole process by seconds
-# Since Triggers are measured in milliseconds, not seconds, I'm keeping things separate
-
-
 class CreateSQLColumnNames:
     def __init__(self):
         self.date_time = "DateTime"

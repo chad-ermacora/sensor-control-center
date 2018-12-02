@@ -89,6 +89,23 @@ def check_sensor_status(ip, network_timeout):
     return sensor_status
 
 
+def download_sensor_database(sensor_command):
+    """ Returns requested sensor file (based on the provided command data). """
+    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+
+    try:
+        return_data = requests.get(url, timeout=sensor_command.network_timeout, stream=True)
+        app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
+        sensor_database = open(sensor_command.save_to_location + "/" +
+                               sensor_command.ip[-3:] + "SensorRecordingDatabase" +
+                               ".sqlite", "wb")
+        copyfileobj(return_data.raw, sensor_database)
+        sensor_database.close()
+    except Exception as error:
+        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(sensor_command.ip))
+        app_logger.sensor_logger.debug(str(error))
+
+
 def download_logs(sensor_command):
     """ Download 3 log files. """
     sensor_command.command = "DownloadPrimaryLog"
@@ -162,24 +179,9 @@ def get_data(sensor_command):
         return_data = tmp_return_data.text
     except Exception as error:
         return_data = "Sensor Offline"
-        app_logger.sensor_logger.warning("Sensor " + str(sensor_command.ip) + " Error")
+        if sensor_command.command == "CheckOnlineStatus":
+            app_logger.sensor_logger.warning("Sensor " + str(sensor_command.ip) + " Offline")
+        else:
+            app_logger.sensor_logger.warning("Sensor " + str(sensor_command.ip) + " Error")
         app_logger.sensor_logger.debug(str(error))
     return return_data
-
-
-# Edit this for downloading Logs and SQL
-def download_sensor_database(sensor_command):
-    """ Returns requested sensor file (based on the provided command data). """
-    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
-
-    try:
-        return_data = requests.get(url, timeout=sensor_command.network_timeout, stream=True)
-        app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
-        sensor_database = open(sensor_command.save_to_location + "/" +
-                               sensor_command.ip[-3:] + "SensorRecordingDatabase" +
-                               ".sqlite", "wb")
-        copyfileobj(return_data.raw, sensor_database)
-        sensor_database.close()
-    except Exception as error:
-        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(sensor_command.ip))
-        app_logger.sensor_logger.debug(str(error))
