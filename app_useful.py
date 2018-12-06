@@ -28,7 +28,8 @@ Enable = 1 & Disable = 0 (Recommended: Don't change if you are unsure)
 0.0 = Custom Temperature Offset
 """
 
-sql_default_textbox_note = """Use this textbox to create a note to enter into one or more sensor
+sql_default_textbox_note = """
+Use this textbox to create a note to enter into one or more sensor
 SQL Databases.  Use the Date & Time in the top right to enter the note
 beside corresponding sensor data.
 
@@ -39,7 +40,8 @@ The increase in temperature is due to the approaching wildfire.
 The increase in lumen at night, may be an indication of the rare 
 laser emitting sheep in the area.  
 Notice how it only shows in the infrared spectrum. 
-  - Random Zoologist"""
+  - Random Zoologist
+"""
 
 
 def convert_minutes_string(var_minutes):

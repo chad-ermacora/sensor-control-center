@@ -57,7 +57,7 @@ class CreateSQLNotesWindow:
                                         align="right")
 
         self.textbox_main_note = TextBox(self.window,
-                                         text=sql_default_textbox_note,
+                                         text=sql_default_textbox_note.strip(),
                                          grid=[1, 6, 4, 3],
                                          width=75,
                                          height=18,
