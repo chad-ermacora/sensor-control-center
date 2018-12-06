@@ -341,9 +341,7 @@ def start_plotly_graph(graph_data):
                         str(var_column) + \
                         " FROM " + \
                         str(graph_data.graph_table) + \
-                        " WHERE " + \
-                        var_column + \
-                        " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                        " WHERE DateTime BETWEEN datetime('" + \
                         str(get_sql_graph_start) + \
                         "') AND datetime('" + \
                         str(get_sql_graph_end) + \
@@ -390,8 +388,8 @@ def start_plotly_graph(graph_data):
             else:
                 graph_data.bypass_sql_skip = False
                 graph_data.graph_table = "IntervalData"
-                get_sql_temp_offset_command = "SELECT EnvTempOffset FROM IntervalData WHERE EnvTempOffset" + \
-                                              " IS NOT NULL AND DateTime BETWEEN datetime('" + \
+                get_sql_temp_offset_command = "SELECT EnvTempOffset FROM IntervalData " + \
+                                              "WHERE DateTime BETWEEN datetime('" + \
                                               str(get_sql_graph_start) + \
                                               "') AND datetime('" + \
                                               str(get_sql_graph_end) + \
@@ -405,6 +403,9 @@ def start_plotly_graph(graph_data):
                         sql_column_data[count] = str(float(data) + float(sql_temp_offset_data[count]))
                         count = count + 1
                     except IndexError:
+                        count = count + 1
+                        warn_message = True
+                    except ValueError:
                         count = count + 1
                         warn_message = True
 
@@ -483,26 +484,25 @@ def _get_sql_data(graph_interval_data, sql_command):
     return_data = []
 
     try:
-        conn = sqlite3.connect(str(graph_interval_data.db_location))
-        c = conn.cursor()
-        c.execute(sql_command)
-        sql_column_data = c.fetchall()
-
-        count = 0
-        skip_count = 0
-        for data in sql_column_data:
-            if skip_count >= int(graph_interval_data.sql_queries_skip) \
-                    or graph_interval_data.bypass_sql_skip:
-                return_data.append(str(data)[2:-3])
-                skip_count = 0
-
-            skip_count = skip_count + 1
-            count = count + 1
-
-        c.close()
-        conn.close()
+        database_connection = sqlite3.connect(str(graph_interval_data.db_location))
+        sqlite_database = database_connection.cursor()
+        sqlite_database.execute(sql_command)
+        sql_column_data = sqlite_database.fetchall()
+        sqlite_database.close()
+        database_connection.close()
     except Exception as error:
         app_logger.app_logger.error("DB Error: " + str(error))
+        sql_column_data = []
+
+    count = 0
+    skip_count = 0
+    for data in sql_column_data:
+        if skip_count >= int(graph_interval_data.sql_queries_skip) or graph_interval_data.bypass_sql_skip:
+            return_data.append(str(data)[2:-3])
+            skip_count = 0
+
+        skip_count = skip_count + 1
+        count = count + 1
 
     app_logger.app_logger.debug("SQL execute Command: " + str(sql_command))
     app_logger.app_logger.debug("SQL Column Data Length: " + str(len(return_data)))
