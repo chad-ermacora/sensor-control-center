@@ -25,7 +25,7 @@ import app_logger
 
 def app_custom_configurations(main_app):
     """ Apply system & user specific settings to application.  Used just before application start. """
-    # Platform specific adjustments
+
     if platform.system() == "Windows":
         main_app.app.tk.iconbitmap(main_app.current_config.additional_files_directory + "/icon.ico")
     elif platform.system() == "Linux":
@@ -37,15 +37,15 @@ def app_custom_configurations(main_app):
         main_app.window_reports.window.height = 85
         main_app.window_graph.window.width = 320
         main_app.window_graph.window.height = 420
-        main_app.window_sensor_config.window.width = 350
-        main_app.window_sensor_config.window.height = 230
+        main_app.window_sensor_config.window.width = 535
+        main_app.window_sensor_config.window.height = 345
         main_app.window_sensor_commands.window.width = 295
         main_app.window_sensor_commands.window.height = 255
         main_app.window_sensor_logs.window.width = 850
         main_app.window_sensor_logs.window.height = 395
         main_app.window_sensor_sql_notes.window.height = 340
         main_app.window_sensor_sql_notes.window.width = 750
-        main_app.window_sensor_sql_notes.note_textbox.width = 105
+        main_app.window_sensor_sql_notes.textbox_main_note.width = 105
         main_app.window_about.window.width = 540
         main_app.window_about.window.height = 285
 
