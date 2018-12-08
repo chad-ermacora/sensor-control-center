@@ -84,8 +84,8 @@ class CreateSQLNotesWindow:
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
-        self._reset_datetime()
         self.checkbox_datetime.value = 1
+        self._reset_datetime()
         self.button_undo_clear_note.disable()
         self.textbox_main_note.bg = "black"
         self.textbox_main_note.text_color = "white"
