@@ -52,7 +52,7 @@ class CreateNetworkGetCommands:
         self.pressure = "GetPressure"
         self.humidity = "GetHumidity"
         self.lumen = "GetLumen"
-        self.rgb = "GetRGB"
+        self.rgb = "GetEMS"
         self.accelerometer_xyz = "GetAccelerometerXYZ"
         self.magnetometer_xyz = "GetMagnetometerXYZ"
         self.gyroscope_xyz = "GetGyroscopeXYZ"
@@ -139,7 +139,7 @@ def download_logs(sensor_command):
 
 def get_validated_hostname(hostname):
     if hostname is not None and hostname is not "":
-        final_hostname = re.sub('\W', '_', hostname)
+        final_hostname = re.sub("[^A-Za-z0-9_]", "_", hostname)
         app_logger.sensor_logger.debug(final_hostname)
         return final_hostname
     else:

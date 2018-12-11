@@ -9,10 +9,12 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 0 = Raspberry Pi 3BPlus
 0 = Raspberry Pi Sense HAT
 0 = Pimoroni BH1745
+0 = Pimoroni AS7262
 0 = Pimoroni BME680
 0 = Pimoroni EnviroPHAT
 0 = Pimoroni LSM303D
 0 = Pimoroni VL53L1X
+0 = Pimoroni LTR-559
 """
 
 default_sensor_config_text = """
@@ -39,7 +41,7 @@ The increase in temperature is due to the approaching wildfire.
 
 The increase in lumen at night, may be an indication of the rare 
 laser emitting sheep in the area.  
-Notice how it only shows in the infrared spectrum. 
+Notice how it only shows in the Near-Infrared spectrum. 
   - Random Zoologist
 """
 

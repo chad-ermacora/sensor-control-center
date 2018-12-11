@@ -44,6 +44,7 @@ class CreateSQLColumnNames:
         self.humidity = "Humidity"
         self.lumen = "Lumen"
         self.rgb = ["Red", "Green", "Blue"]
+        self.six_chan_color = ["Red", "Orange", "Yellow", "Green", "Blue", "Violet"]
         self.accelerometer_xyz = ["Acc_X", "Acc_Y", "Acc_Z"]
         self.magnetometer_xyz = ["Mag_X", "Mag_Y", "Mag_Z"]
         self.gyroscope_xyz = ["Gyro_X", "Gyro_Y", "Gyro_Z"]
@@ -61,7 +62,8 @@ class CreateSQLColumnsReadable:
         self.pressure = "Pressure"
         self.humidity = "Humidity"
         self.lumen = "Lumen"
-        self.rgb = "RGB"
+        self.rgb = "Colours"
+        self.six_chan_color = "6 Channel Colour"
         self.accelerometer_xyz = "Accelerometer XYZ"
         self.magnetometer_xyz = "Magnetometer XYZ"
         self.gyroscope_xyz = "Gyroscope XYZ"
@@ -75,6 +77,7 @@ class CreateMeasurementsTypes:
         self.humidity = " %RH"
         self.lumen = " Lumen"
         self.rgb = " RGB"
+        self.six_chan_color = " ROYGBV"
         self.xyz = " XYZ"
 
 
@@ -267,10 +270,28 @@ class CreateLiveGraph:
         elif self.sensor_type == self.sql_column_names.rgb[0]:
             try:
                 command_data.command = self.get_commands.rgb
-                red, green, blue = app_sensor_commands.get_data(command_data)[1:-1].split(",")
-                sensor_reading = [round(float(red), 3), round(float(green), 3), round(float(blue), 3)]
-                sensor_type_name = self.readable_column_names.rgb
-                measurement_type = self.sensor_measurements.rgb
+                ems_colors = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+
+                colors = []
+                for color in ems_colors:
+                    colors.append(color)
+
+                if len(colors) > 3:
+                    sensor_reading = [round(float(colors[0]), 3),
+                                      round(float(colors[1]), 3),
+                                      round(float(colors[2]), 3),
+                                      round(float(colors[3]), 3),
+                                      round(float(colors[4]), 3),
+                                      round(float(colors[5]), 3)]
+                    sensor_type_name = self.readable_column_names.six_chan_color
+                    measurement_type = self.sensor_measurements.six_chan_color
+                else:
+                    sensor_reading = [round(float(colors[0]), 3),
+                                      round(float(colors[1]), 3),
+                                      round(float(colors[2]), 3)]
+                    sensor_type_name = self.readable_column_names.rgb
+                    measurement_type = self.sensor_measurements.rgb
+
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
