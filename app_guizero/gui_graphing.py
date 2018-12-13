@@ -47,7 +47,7 @@ class CreateGraphingWindow:
                                           align="top")
 
         self.radio_sensor_type = ButtonGroup(self.window,
-                                             options=["Live", "SQL Database"],
+                                             options=["Live Sensor", "SQL Database"],
                                              horizontal="True",
                                              command=self._radio_selection,
                                              grid=[1, 2, 2, 1],
@@ -85,10 +85,10 @@ class CreateGraphingWindow:
                                    align="left")
 
         self.text_sql_skip = Text(self.window,
-                                  text="Add row every:",
+                                  text="Add one every ",
                                   color='green',
                                   grid=[1, 8],
-                                  align="left")
+                                  align="right")
 
         self.textbox_sql_skip = TextBox(self.window,
                                         text="",
@@ -97,7 +97,7 @@ class CreateGraphingWindow:
                                         align="left")
 
         self.text_sql_skip2 = Text(self.window,
-                                   text="rows    ",
+                                   text=" entries    ",
                                    color='green',
                                    grid=[2, 8],
                                    align="right")
@@ -115,7 +115,7 @@ class CreateGraphingWindow:
                                                   align="left")
 
         self.checkbox_default_offset = CheckBox(self.window,
-                                                text="Use Default",
+                                                text="Use Sensor\nDefault",
                                                 command=self._click_checkbox_offset,
                                                 grid=[2, 9],
                                                 align="right")
@@ -323,12 +323,11 @@ class CreateGraphingWindow:
 
             self.button_database.enable()
 
-        if self.radio_sensor_type.get() == "Live":
+        if self.radio_sensor_type.get() == "Live Sensor":
             self.button_database.disable()
             self.textbox_sql_skip.disable()
             self.textbox_start.disable()
             self.textbox_end.disable()
-
             self.textbox_refresh_time.enable()
 
             self.checkbox_master.disable()
@@ -489,7 +488,7 @@ class CreateGraphingWindow:
         self.checkbox_gyro.value = 0
 
     def _disable_other_checkboxes(self, var_checkbox):
-        if self.radio_sensor_type.value == "Live":
+        if self.radio_sensor_type.value == "Live Sensor":
             unchecked = False
             if var_checkbox is self.sql_columns.system_uptime:
                 if self.checkbox_up_time.value == 0:
