@@ -517,7 +517,10 @@ def _get_sql_data(graph_interval_data, sql_command):
 
     count = 0
     skip_count = 0
+    null_data_entries = 0
     for data in sql_column_data:
+        if str(data) == "(None,)":
+            null_data_entries += 1
         if skip_count >= int(graph_interval_data.sql_queries_skip) or graph_interval_data.bypass_sql_skip:
             return_data.append(str(data)[2:-3])
             skip_count = 0
@@ -527,7 +530,11 @@ def _get_sql_data(graph_interval_data, sql_command):
 
     app_logger.app_logger.debug("SQL execute Command: " + str(sql_command))
     app_logger.app_logger.debug("SQL Column Data Length: " + str(len(return_data)))
-    return return_data
+    if null_data_entries == len(sql_column_data):
+        # Skip if all NULL
+        return []
+    else:
+        return return_data
 
 
 def _plotly_graph(graph_data):
