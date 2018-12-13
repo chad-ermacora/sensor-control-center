@@ -40,7 +40,7 @@ class CreateSQLNotesWindow:
 
         self.text_ip_select = Text(self.window,
                                    text="Select Sensor IPs in the main window",
-                                   color="red",
+                                   color="#CB0000",
                                    grid=[1, 1, 3, 1],
                                    align="left")
 
@@ -77,7 +77,7 @@ class CreateSQLNotesWindow:
                                                  align="right")
 
         self.button_send_note = PushButton(self.window,
-                                           text="Attach Note to\nSensor DataBase",
+                                           text="Attach Note to\nSensors DataBase",
                                            command=self._send_note,
                                            grid=[4, 9],
                                            align="right")

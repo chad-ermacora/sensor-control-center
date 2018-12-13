@@ -40,19 +40,19 @@ class CreateConfigWindow:
                                        align="right")
 
         self.checkbox_power_controls = CheckBox(self.window,
-                                                text="Enable Reset to Defaults",
+                                                text="Enable 'Reset to Defaults'",
                                                 command=self._enable_config_reset,
                                                 grid=[1, 1],
                                                 align="top")
 
         self.button_save_apply = PushButton(self.window,
-                                            text="Save &\nApply",
+                                            text="Save",
                                             command=self._button_save_apply,
                                             grid=[1, 1],
                                             align="left")
 
         self.text3 = Text(self.window,
-                          text="Save Files To",
+                          text="Save files to",
                           color='blue',
                           grid=[1, 2],
                           align="top")
@@ -70,7 +70,7 @@ class CreateConfigWindow:
                                           align="bottom")
 
         self.text_info = Text(self.window,
-                              text="Default Graph Date Range",
+                              text="Default graph date range",
                               color='blue',
                               grid=[1, 6],
                               align="top")
@@ -107,7 +107,7 @@ class CreateConfigWindow:
                                    align="right")
 
         self.text_live_refresh = Text(self.window,
-                                      text="Live Refresh in Seconds: ",
+                                      text="Live graph refresh in seconds: ",
                                       color='green',
                                       grid=[1, 10],
                                       align="left")
@@ -119,14 +119,14 @@ class CreateConfigWindow:
                                             align="right")
 
         self.text_database_time = Text(self.window,
-                                       text="Sensor Databases\nSaved in UTC 0",
+                                       text="Sensor Databases are\nsaved in UTC 0",
                                        size=10,
                                        grid=[2, 1],
                                        color='#CB0000',
                                        align="top")
 
         self.text_time_offset2 = Text(self.window,
-                                      text="DateTime Offset in Hours",
+                                      text="DateTime offset in hours",
                                       color='blue',
                                       grid=[2, 1],
                                       align="bottom")
@@ -138,7 +138,7 @@ class CreateConfigWindow:
                                            align="bottom")
 
         self.text_sql_skip = Text(self.window,
-                                  text="Add SQL row to Graph every 'X' rows",
+                                  text="Graph sensor data ever 'X' entries",
                                   color='blue',
                                   grid=[2, 3],
                                   align="top")
@@ -150,7 +150,7 @@ class CreateConfigWindow:
                                         align="top")
 
         self.text_temperature_offset = Text(self.window,
-                                            text="Environment Temperature Offset in °C",
+                                            text="Manual temperature offset in °C",
                                             color='blue',
                                             grid=[2, 4],
                                             align="bottom")
@@ -162,13 +162,13 @@ class CreateConfigWindow:
                                                   align="bottom")
 
         self.text_network_timeouts = Text(self.window,
-                                          text="Network Timeouts in Seconds",
+                                          text="Network timeouts in seconds",
                                           color='blue',
                                           grid=[2, 6],
                                           align="top")
 
         self.text_network_timeouts1 = Text(self.window,
-                                           text="Sensor Status",
+                                           text="Sensor checks",
                                            color='green',
                                            grid=[2, 7],
                                            align="top")
@@ -180,7 +180,7 @@ class CreateConfigWindow:
                                              align="top")
 
         self.text_network_timeouts2 = Text(self.window,
-                                           text="Sensor Reports",
+                                           text="Sensor data",
                                            color='green',
                                            grid=[2, 9],
                                            align="top")
