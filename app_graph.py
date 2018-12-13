@@ -175,10 +175,10 @@ class CreateLiveGraph:
             if self.sensor_type is "SensorUpTime":
                 sensor_reading = convert_minutes_string(sensor_reading)
 
-            pyplot.title(sensor_name + "  ||  " + self.ip + "\n\n" + sensor_type_name)
+            pyplot.title(sensor_name + "  ||  " + self.ip + "\n" + sensor_type_name)
             pyplot.xlabel("Start Time: " + self.first_datetime +
                           "  ||  Updated: " + current_time +
-                          "  ||  " + str(sensor_reading) + measurement_type)
+                          "\nCurrent Reading: " + str(sensor_reading) + measurement_type)
 
             if self.sensor_type is "SensorUpTime":
                 measurement_type = "Minutes"
