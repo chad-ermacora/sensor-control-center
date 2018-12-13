@@ -36,9 +36,9 @@ def app_custom_configurations(main_app):
         main_app.window_reports.window.width = 460
         main_app.window_reports.window.height = 85
         main_app.window_graph.window.width = 320
-        main_app.window_graph.window.height = 420
+        main_app.window_graph.window.height = 435
         main_app.window_sensor_config.window.width = 535
-        main_app.window_sensor_config.window.height = 345
+        main_app.window_sensor_config.window.height = 340
         main_app.window_sensor_commands.window.width = 295
         main_app.window_sensor_commands.window.height = 255
         main_app.window_sensor_logs.window.width = 850
