@@ -36,7 +36,7 @@ class CreateGraphingWindow:
         self.window = Window(app,
                              title="Graphing",
                              width=275,
-                             height=505,
+                             height=545,
                              layout="grid",
                              visible=False)
 
@@ -53,11 +53,17 @@ class CreateGraphingWindow:
                                              grid=[1, 2, 2, 1],
                                              align="top")
 
-        self.text_space1 = Text(self.window,
+        self.text_sensor_type_name = Text(self.window,
+                                          text="Graph Options",
+                                          color='blue',
+                                          grid=[1, 4, 2, 1],
+                                          align="top")
+
+        self.text_space2 = Text(self.window,
                                 text="YYYY-MM-DD HH:MM:SS",
                                 size=7,
                                 color='#CB0000',
-                                grid=[2, 3, 2, 1],
+                                grid=[2, 5, 2, 1],
                                 align="left")
 
         self.text_start = Text(self.window,
@@ -85,7 +91,7 @@ class CreateGraphingWindow:
                                    align="left")
 
         self.text_sql_skip = Text(self.window,
-                                  text="Add one every ",
+                                  text="Add one every:  ",
                                   color='green',
                                   grid=[1, 8],
                                   align="right")
@@ -97,7 +103,7 @@ class CreateGraphingWindow:
                                         align="left")
 
         self.text_sql_skip2 = Text(self.window,
-                                   text=" entries    ",
+                                   text="entries    ",
                                    color='green',
                                    grid=[2, 8],
                                    align="right")
@@ -132,7 +138,7 @@ class CreateGraphingWindow:
                                             grid=[2, 10],
                                             align="left")
 
-        self.text_space2 = Text(self.window,
+        self.text_space3 = Text(self.window,
                                 text=" ",
                                 grid=[1, 11],
                                 align="right")
@@ -225,7 +231,7 @@ class CreateGraphingWindow:
                                       grid=[1, 26],
                                       align="left")
 
-        self.text_space3 = Text(self.window,
+        self.text_space4 = Text(self.window,
                                 text=" ",
                                 grid=[1, 35],
                                 align="right")

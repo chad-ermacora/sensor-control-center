@@ -18,9 +18,9 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 """
 
 default_sensor_config_text = """
-Enable = 1 & Disable = 0 (Recommended: Don't change if you are unsure)
+Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
 1 = Record Sensors to SQL Database
-300 = Duration between Interval readings in Seconds
+300.0 = Duration between Interval readings in Seconds
 0.15 = Duration between Trigger readings in Seconds
 0 = Enable Custom Settings
 0.0 = Custom Accelerometer variance
@@ -48,11 +48,25 @@ Notice how it only shows in the Near-Infrared spectrum.
 
 def convert_minutes_string(var_minutes):
     """ Converts provided minutes into a human readable string. """
+    str_day_hour_min = ""
+
     try:
         uptime_days = int(float(var_minutes) // 1440)
         uptime_hours = int((float(var_minutes) % 1440) // 60)
         uptime_min = int(float(var_minutes) % 60)
-        str_day_hour_min = str(uptime_days) + " Days / " + str(uptime_hours) + "." + str(uptime_min) + " Hours"
+        if uptime_days:
+            if uptime_days > 1:
+                str_day_hour_min = str(uptime_days) + " Days, "
+            else:
+                str_day_hour_min = str(uptime_days) + " Day, "
+        if uptime_hours:
+            if uptime_hours > 1:
+                str_day_hour_min += str(uptime_hours) + " Hours & "
+            else:
+                str_day_hour_min += str(uptime_hours) + " Hour & "
+
+        str_day_hour_min += str(uptime_min) + " Min"
+
     except Exception as error:
         app_logger.app_logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
         str_day_hour_min = var_minutes

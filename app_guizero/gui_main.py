@@ -88,7 +88,7 @@ class CreateMainWindow:
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
                                               self.window_sensor_config.window.show]],
-                                            [["Open Graph Window",
+                                            [["Create Graphs",
                                               self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
                                               self.window_about.window.show],
