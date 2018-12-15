@@ -87,24 +87,27 @@ class CreateSensorLogsWindow:
     def _get_log(self):
         """ Select the remote sensor log you wish to view. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        network_timeout = self.current_config.network_timeout_data
-        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0], network_timeout, "GetNetworkLog")
-        if self.radio_log_type.value == "Network Log":
-            log = app_sensor_commands.get_data(command_data)
-        elif self.radio_log_type.value == "Primary Log":
-            command_data.command = "GetPrimaryLog"
-            log = app_sensor_commands.get_data(command_data)
-        elif self.radio_log_type.value == "Sensors Log":
-            command_data.command = "GetSensorsLog"
-            log = app_sensor_commands.get_data(command_data)
+        if len(ip_list) > 0:
+            network_timeout = self.current_config.network_timeout_data
+            command_data = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0], network_timeout, "GetNetworkLog")
+            if self.radio_log_type.value == "Network Log":
+                log = app_sensor_commands.get_data(command_data)
+            elif self.radio_log_type.value == "Primary Log":
+                command_data.command = "GetPrimaryLog"
+                log = app_sensor_commands.get_data(command_data)
+            elif self.radio_log_type.value == "Sensors Log":
+                command_data.command = "GetSensorsLog"
+                log = app_sensor_commands.get_data(command_data)
+            else:
+                app_logger.app_logger.error("Bad Log Request")
+                log = "Bad Log Request"
+            self.textbox_log.value = log
         else:
-            app_logger.app_logger.error("Bad Log Request")
-            log = "Bad Log Request"
-        self.textbox_log.value = log
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def _download_logs(self):
         ip_list = self.ip_selection.get_verified_ip_list()
-        if len(ip_list) >= 1:
+        if len(ip_list) > 0:
             threads = []
             download_to_location = filedialog.askdirectory()
             network_timeout = self.current_config.network_timeout_data
@@ -125,4 +128,4 @@ class CreateSensorLogsWindow:
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:
-            warn("No IP Selected", "Please Select at least 1 Sensor IP")
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")

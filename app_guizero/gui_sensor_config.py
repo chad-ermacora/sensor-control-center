@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, PushButton, Text, TextBox, info, Combo
+from guizero import Window, PushButton, Text, TextBox, info, Combo, warn
 import app_logger
 import app_sensor_commands
 from app_useful import default_installed_sensors_text, default_sensor_config_text
@@ -94,10 +94,9 @@ class CreateSensorConfigWindow:
             self.textbox_config.value = self.config_sensor_text.strip()
 
     def button_get(self):
-        network_commands = app_sensor_commands.CreateNetworkGetCommands()
         ip_list = self.ip_selection.get_verified_ip_list()
-
         if len(ip_list) > 0:
+            network_commands = app_sensor_commands.CreateNetworkGetCommands()
             try:
                 if self.combo_dropdown_selection.value == "Installed Sensors":
                     command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
@@ -112,6 +111,8 @@ class CreateSensorConfigWindow:
 
             except Exception as error:
                 app_logger.sensor_logger.error(str(error))
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def button_set(self):
         """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
@@ -141,3 +142,5 @@ class CreateSensorConfigWindow:
 
             info("Sensors " + self.combo_dropdown_selection.value + " Set",
                  self.combo_dropdown_selection.value + " set & services restarted on:\n" + str(ip_list)[1:-1])
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")

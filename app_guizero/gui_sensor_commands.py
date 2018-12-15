@@ -187,8 +187,10 @@ class CreateSensorCommandsWindow:
                 else:
                     info(ip, "Hostname Cancelled or blank for " + ip)
 
-        for thread in threads:
-            thread.start()
+            for thread in threads:
+                thread.start()
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def datetime_update(self):
         """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
@@ -197,13 +199,16 @@ class CreateSensorCommandsWindow:
 
         network_timeout = self.current_config.network_timeout_data
         ip_list = self.ip_selection.get_verified_ip_list()
-        command = network_commands.set_datetime
-        for ip in ip_list:
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            sensor_command.command_data = self.current_config.get_str_datetime_now()
-            threads.append(Thread(target=app_sensor_commands.put_command, args=[sensor_command]))
+        if len(ip_list) > 0:
+            command = network_commands.set_datetime
+            for ip in ip_list:
+                sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
+                sensor_command.command_data = self.current_config.get_str_datetime_now()
+                threads.append(Thread(target=app_sensor_commands.put_command, args=[sensor_command]))
 
-        for thread in threads:
-            thread.start()
+            for thread in threads:
+                thread.start()
 
-        info("Sensors DateTime Set", "Sensors Date & Time synchronized with local computer's")
+            info("Sensors DateTime Set", "Sensors Date & Time synchronized with local computer's")
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")

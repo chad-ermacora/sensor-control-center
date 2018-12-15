@@ -151,7 +151,7 @@ class CreateMainWindow:
         ip_list = self.ip_selection.get_verified_ip_list()
         network_commands = app_sensor_commands.CreateNetworkGetCommands()
 
-        if len(ip_list) >= 1:
+        if len(ip_list) > 0:
             threads = []
             download_to_location = filedialog.askdirectory()
             network_timeout = self.current_config.network_timeout_data

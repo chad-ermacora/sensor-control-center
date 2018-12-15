@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, Text, TextBox, PushButton, info, CheckBox
+from guizero import Window, Text, TextBox, PushButton, info, CheckBox, warn
 
 import app_logger
 import app_sensor_commands
@@ -104,25 +104,30 @@ class CreateSQLNotesWindow:
         if self.checkbox_datetime.value:
             self._reset_datetime()
         ip_list = self.ip_selection.get_verified_ip_list()
-        message_ip_addresses = ""
-        datetime = self.textbox_datetime.value
-        utc_0_datetime = _adjust_datetime(datetime, self.current_config.datetime_offset * -1)
-        command = self.network_send_commands.put_sql_note
-        command_data = utc_0_datetime + ".000" + self.textbox_main_note.value
+        if len(ip_list) > 0:
+            message_ip_addresses = ""
+            datetime = self.textbox_datetime.value
+            utc_0_datetime = _adjust_datetime(datetime, self.current_config.datetime_offset * -1)
+            command = self.network_send_commands.put_sql_note
+            command_data = utc_0_datetime + ".000" + self.textbox_main_note.value
 
-        for ip in ip_list:
-            message_ip_addresses += ip + ", "
-            network_timeout = self.current_config.network_timeout_data
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            sensor_command.command_data = command_data
-            app_sensor_commands.put_command(sensor_command)
-        message_ip_addresses = message_ip_addresses[:-2]
-        if message_ip_addresses == "":
-            message_ip_addresses = "None"
+            for ip in ip_list:
+                message_ip_addresses += ip + ", "
+                network_timeout = self.current_config.network_timeout_data
+                sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
+                sensor_command.command_data = command_data
+                app_sensor_commands.put_command(sensor_command)
 
-        info("Note Inserted into Sensors Database", "Inserted with DateTime: " + datetime +
-             "\n\nNote sent to the following sensor IP Addresses\n\n" + message_ip_addresses)
-        app_logger.sensor_logger.info("Inserted note into " + str(len(ip_list)) + " sensors with DateTime " + datetime)
+            message_ip_addresses = message_ip_addresses[:-2]
+
+            if message_ip_addresses == "":
+                message_ip_addresses = "None"
+
+            info("Note Inserted into Sensors Database", "Inserted with DateTime: " + datetime +
+                 "\n\nNote sent to the following sensor IP Addresses\n\n" + message_ip_addresses)
+            app_logger.sensor_logger.info("Inserted note into " + str(len(ip_list)) + " sensors with DateTime " + datetime)
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def _reset_datetime(self):
         self.textbox_datetime.value = self.current_config.get_str_datetime_now()
