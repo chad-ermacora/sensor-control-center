@@ -25,6 +25,8 @@ from app_useful import sql_default_textbox_note
 
 
 class CreateSQLNotesWindow:
+    """ Creates a GUI window to inject a note into 1 or more online sensors databases. """
+
     def __init__(self, app, ip_selection, current_config):
         self.current_config = current_config
         self.ip_selection = ip_selection
@@ -92,15 +94,20 @@ class CreateSQLNotesWindow:
         self.textbox_main_note.tk.config(insertbackground="red")
 
     def _clear_note(self):
-        self.undo_note = self.textbox_main_note.value
-        self.textbox_main_note.clear()
-        self.button_undo_clear_note.enable()
+        """ Delete all text in the Note textbox. """
+        self.textbox_main_note.value = self.textbox_main_note.value.strip()
+        if self.textbox_main_note.value.strip() is not "":
+            self.undo_note = self.textbox_main_note.value
+            self.textbox_main_note.clear()
+            self.button_undo_clear_note.enable()
 
     def _undue_clear_note(self):
+        """ Undue the last cleared note. """
         self.textbox_main_note.value = self.undo_note
         self.button_undo_clear_note.disable()
 
     def _send_note(self):
+        """ Send the note to selected sensors. """
         if self.checkbox_datetime.value:
             self._reset_datetime()
         ip_list = self.ip_selection.get_verified_ip_list()
@@ -125,11 +132,15 @@ class CreateSQLNotesWindow:
 
             info("Note Inserted into Sensors Database", "Inserted with DateTime: " + datetime +
                  "\n\nNote sent to the following sensor IP Addresses\n\n" + message_ip_addresses)
-            app_logger.sensor_logger.info("Inserted note into " + str(len(ip_list)) + " sensors with DateTime " + datetime)
+            app_logger.sensor_logger.info("Inserted note into " +
+                                          str(len(ip_list)) +
+                                          " sensors with DateTime " +
+                                          datetime)
         else:
             warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def _reset_datetime(self):
+        """ Reset note Date & Time stamp. """
         self.textbox_datetime.value = self.current_config.get_str_datetime_now()
         if self.checkbox_datetime.value:
             self.textbox_datetime.disable()
