@@ -19,7 +19,7 @@
 from threading import Thread
 from tkinter import simpledialog
 
-from guizero import Window, PushButton, Text, info, MenuBar
+from guizero import Window, PushButton, Text, info, MenuBar, warn
 
 import app_logger
 import app_sensor_commands
@@ -59,19 +59,22 @@ class CreateSensorCommandsWindow:
 
         self.button_lan_Upgrade = PushButton(self.window,
                                              text="Upgrade\nSoftware\nOver SMB",
-                                             command=self.upgrade_smb,
+                                             command=self.send_commands,
+                                             args=[network_commands.upgrade_smb],
                                              grid=[1, 3],
                                              align="left")
 
         self.button_online_Upgrade = PushButton(self.window,
                                                 text="Upgrade\nSoftware\nOver HTTP",
-                                                command=self.upgrade_http,
+                                                command=self.send_commands,
+                                                args=[network_commands.upgrade_online],
                                                 grid=[2, 3],
                                                 align="left")
 
         self.button_os_Upgrade = PushButton(self.window,
                                             text="Upgrade\nOperating\nSystem",
-                                            command=self.os_upgrade,
+                                            command=self.send_commands,
+                                            args=[network_commands.upgrade_system_os],
                                             grid=[3, 3],
                                             align="left")
 
@@ -83,13 +86,15 @@ class CreateSensorCommandsWindow:
 
         self.button_reboot = PushButton(self.window,
                                         text="Reboot",
-                                        command=self.sensor_reboot,
+                                        command=self.send_commands,
+                                        args=[network_commands.reboot_system],
                                         grid=[1, 5],
                                         align="left")
 
         self.button_shutdown = PushButton(self.window,
                                           text="Shutdown",
-                                          command=self.sensor_shutdown,
+                                          command=self.send_commands,
+                                          args=[network_commands.shutdown_system],
                                           grid=[2, 5],
                                           align="left")
 
@@ -101,7 +106,8 @@ class CreateSensorCommandsWindow:
 
         self.button_terminate = PushButton(self.window,
                                            text="Restart\nServices",
-                                           command=self.restart_services,
+                                           command=self.send_commands,
+                                           args=[network_commands.restart_services],
                                            grid=[1, 7],
                                            align="left")
 
@@ -127,6 +133,8 @@ class CreateSensorCommandsWindow:
         self.button_update_datetime.enable()
         self.button_lan_Upgrade.text = "Clean\nUpgrade\nOver SMB"
         self.button_online_Upgrade.text = "Clean\nUpgrade\nOver HTTP"
+        self.button_online_Upgrade.update_command(self.send_commands, [network_commands.clean_upgrade_online])
+        self.button_lan_Upgrade.update_command(self.send_commands, [network_commands.clean_upgrade_smb])
 
     def disable_advanced(self):
         self.button_os_Upgrade.disable()
@@ -134,122 +142,28 @@ class CreateSensorCommandsWindow:
         self.button_update_datetime.disable()
         self.button_lan_Upgrade.text = "Upgrade\nSoftware\nOver SMB"
         self.button_online_Upgrade.text = "Upgrade\nSoftware\nOver HTTP"
+        self.button_online_Upgrade.update_command(self.send_commands, [network_commands.upgrade_online])
+        self.button_lan_Upgrade.update_command(self.send_commands, [network_commands.upgrade_smb])
 
-    def upgrade_smb(self):
-        """ Sends the upgrade by SMB command to the Sensor Units IP. """
+    def send_commands(self, command):
+        """ Sends provided command to the Sensor Units IP's. """
         threads = []
 
         ip_list = self.ip_selection.get_verified_ip_list()
         network_timeout = self.current_config.network_timeout_data
-        if self.button_lan_Upgrade.text == "Clean\nUpgrade\nOver SMB":
-            app_logger.sensor_logger.debug("Clean Sensor Upgrade - SMB")
-            command = network_commands.clean_upgrade_smb
+
+        for ip in ip_list:
+            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
+            threads.append(Thread(target=app_sensor_commands.send_command, args=[sensor_command]))
+
+        for thread in threads:
+            thread.start()
+
+        if len(ip_list) > 0:
+            message = command + " sent OK to " + str(len(ip_list)) + " Sensors"
+            info("Sensors Command Sent", message)
         else:
-            app_logger.sensor_logger.debug("Sensor Upgrade - SMB")
-            command = network_commands.upgrade_smb
-
-        for ip in ip_list:
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            threads.append(Thread(target=app_sensor_commands.send_command, args=[sensor_command]))
-
-        for thread in threads:
-            thread.start()
-
-        info("Sensors Upgrading SMB", "Please wait up to 30 seconds for the Services to restart")
-
-    def upgrade_http(self):
-        """ Sends the upgrade by HTTP command to the Sensor Units IP. """
-        threads = []
-
-        network_timeout = self.current_config.network_timeout_data
-        ip_list = self.ip_selection.get_verified_ip_list()
-        if self.button_online_Upgrade.text == "Clean\nUpgrade\nOver HTTP":
-            app_logger.sensor_logger.debug("Clean Sensor Upgrade - HTTP")
-            command = network_commands.clean_upgrade_online
-        else:
-            app_logger.sensor_logger.debug("Sensor Upgrade - HTTP")
-            command = network_commands.upgrade_online
-
-        for ip in ip_list:
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            threads.append(Thread(target=app_sensor_commands.send_command, args=[sensor_command]))
-
-        for thread in threads:
-            thread.start()
-
-        info("Sensors Upgrading HTTP", "Please wait up to 30 seconds for the Services to restart")
-
-    def os_upgrade(self):
-        """ Sends the upgrade Operating System command to the Sensor Units IP. """
-        app_logger.sensor_logger.debug("Sensor OS Upgrade")
-        threads = []
-
-        network_timeout = self.current_config.network_timeout_data
-        ip_list = self.ip_selection.get_verified_ip_list()
-        for ip in ip_list:
-            command = network_commands.upgrade_system_os
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            threads.append(Thread(target=app_sensor_commands.send_command, args=[sensor_command]))
-
-        for thread in threads:
-            thread.start()
-
-        info("Sensors Operating System Upgrade Started",
-             "Once complete, the sensors will automatically reboot\n\n"
-             "During the upgrade process, the sensors should continue to Operate\n\n"
-             "This process can take anywhere from 5 Min to 1 Hour")
-
-    def sensor_reboot(self):
-        """ Sends the reboot system command to the Sensor Units IP. """
-        app_logger.sensor_logger.debug("Sensor Reboot")
-        threads = []
-
-        network_timeout = self.current_config.network_timeout_data
-        ip_list = self.ip_selection.get_verified_ip_list()
-        for ip in ip_list:
-            command = network_commands.reboot_system
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            threads.append(Thread(target=app_sensor_commands.send_command, args=[sensor_command]))
-
-        for thread in threads:
-            thread.start()
-
-        info("Sensors Rebooting", "Allow up to 3 Min to reboot")
-
-    def sensor_shutdown(self):
-        """ Sends the shutdown system command to the Sensor Units IP. """
-        app_logger.sensor_logger.debug("Sensor Shutdown")
-        threads = []
-
-        network_timeout = self.current_config.network_timeout_data
-        ip_list = self.ip_selection.get_verified_ip_list()
-        for ip in ip_list:
-            command = network_commands.shutdown_system
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            threads.append(Thread(target=app_sensor_commands.send_command, args=[sensor_command]))
-
-        for thread in threads:
-            thread.start()
-
-        info("Sensors Shutting Down", "Allow up to 15 seconds to fully shutdown")
-
-    def restart_services(self):
-        """ Sends the restart services command to the Sensor Units IP. """
-        app_logger.sensor_logger.info("Sensor(s) Services Restarting - " +
-                                      "Please allow up to 20 seconds to restart")
-        threads = []
-
-        network_timeout = self.current_config.network_timeout_sensor_check
-        ip_list = self.ip_selection.get_verified_ip_list()
-        command = network_commands.restart_services
-        for ip in ip_list:
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            threads.append(Thread(target=app_sensor_commands.send_command, args=[sensor_command]))
-
-        for thread in threads:
-            thread.start()
-
-        info("Sensors Services Restarting", "Please allow up to 10 seconds for the services to restart")
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def hostname_change(self):
         """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
