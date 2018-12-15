@@ -17,10 +17,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from guizero import Window, PushButton, Text, warn
+
 import app_reports
 
 
 class CreateReportsWindow:
+    """ Creates a GUI window for creating sensor reports. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config

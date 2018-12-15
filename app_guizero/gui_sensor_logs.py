@@ -26,6 +26,8 @@ import app_sensor_commands
 
 
 class CreateSensorLogsWindow:
+    """ Creates a GUI window for viewing and or downloading sensor logs. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
@@ -85,7 +87,7 @@ class CreateSensorLogsWindow:
         self.textbox_log.tk.config(insertbackground="red")
 
     def _get_log(self):
-        """ Select the remote sensor log you wish to view. """
+        """ Displays the chosen remote sensor log. """
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
             network_timeout = self.current_config.network_timeout_data
@@ -106,6 +108,7 @@ class CreateSensorLogsWindow:
             warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def _download_logs(self):
+        """ Download all selected and online sensors logs. """
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
             threads = []

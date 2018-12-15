@@ -16,15 +16,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from threading import Thread
+
 from guizero import Window, PushButton, Text, TextBox, info, Combo, warn
+
 import app_logger
 import app_sensor_commands
 from app_useful import default_installed_sensors_text, default_sensor_config_text
 
-from threading import Thread
-
 
 class CreateSensorConfigWindow:
+    """ Creates a GUI window for changing 1 or more sensor's configuration or installed sensors file. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
@@ -83,6 +86,7 @@ class CreateSensorConfigWindow:
         self.textbox_config.tk.config(insertbackground="red")
 
     def combo_selection(self):
+        """ Select sensor 'Configuration' or 'Installed Sensors'. """
         if self.combo_dropdown_selection.value == "Installed Sensors":
             self.button_get_config.text = "Get Installed\nSensors"
             self.button_set_config.text = "Set Installed\nSensors"
@@ -94,6 +98,7 @@ class CreateSensorConfigWindow:
             self.textbox_config.value = self.config_sensor_text.strip()
 
     def button_get(self):
+        """ Displays the selected configuration of the first selected and online sensor. """
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
             network_commands = app_sensor_commands.CreateNetworkGetCommands()

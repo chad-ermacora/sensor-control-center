@@ -32,6 +32,7 @@ style.use("dark_background")
 
 
 class CreateSQLColumnNames:
+    """ Creates an object to hold all SQL column names. """
     def __init__(self):
         self.date_time = "DateTime"
         self.sensor_name = "SensorName"
@@ -51,6 +52,7 @@ class CreateSQLColumnNames:
 
 
 class CreateSQLColumnsReadable:
+    """ Creates an object to hold all human readable SQL column names. """
     def __init__(self):
         self.no_sensor = ""
         self.date_time = "Date & Time"
@@ -70,6 +72,7 @@ class CreateSQLColumnsReadable:
 
 
 class CreateMeasurementsTypes:
+    """ Creates an object to hold all sensor measurement types. """
     def __init__(self):
         self.no_measurement = ""
         self.celsius = " °C"
@@ -131,6 +134,7 @@ class CreateGraphData:
 
 
 class CreateLiveGraph:
+    """ Creates an object that starts a Live Graph. """
     def __init__(self, sensor_type, ip, current_config):
         self.sensor_type = sensor_type
         self.sensor_type_name = ""
@@ -158,6 +162,7 @@ class CreateLiveGraph:
         pyplot.show()
 
     def _update_graph(self, x_frame):
+        """ Update the Live Graph Instance. """
         current_time = str(datetime.time(datetime.now()))[:8]
         network_timeout = self.current_config.network_timeout_data
         command_data = app_sensor_commands.CreateSensorNetworkCommand(self.ip, network_timeout, "")
@@ -342,6 +347,7 @@ class CreateLiveGraph:
 
 
 def start_plotly_graph(graph_data):
+    """ Creates a Offline Plotly graph from a SQL database. """
     graph_data.graph_table = "IntervalData"
     app_logger.app_logger.debug("SQL Columns: " + str(graph_data.graph_columns))
     app_logger.app_logger.debug("SQL Table(s): " + str(graph_data.graph_table))

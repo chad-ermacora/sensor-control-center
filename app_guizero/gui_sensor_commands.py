@@ -28,6 +28,8 @@ network_commands = app_sensor_commands.CreateNetworkSendCommands()
 
 
 class CreateSensorCommandsWindow:
+    """ Creates a GUI window for sending sensor commands. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
@@ -128,6 +130,7 @@ class CreateSensorCommandsWindow:
         self.disable_advanced()
 
     def enable_advanced(self):
+        """ Enables advanced commands & changes software upgrades to 'Clean' upgrades. """
         self.button_os_Upgrade.enable()
         self.button_shutdown.enable()
         self.button_update_datetime.enable()
@@ -137,6 +140,7 @@ class CreateSensorCommandsWindow:
         self.button_lan_Upgrade.update_command(self.send_commands, [network_commands.clean_upgrade_smb])
 
     def disable_advanced(self):
+        """ Disables advanced commands & changes software upgrades to normal upgrades. """
         self.button_os_Upgrade.disable()
         self.button_shutdown.disable()
         self.button_update_datetime.disable()

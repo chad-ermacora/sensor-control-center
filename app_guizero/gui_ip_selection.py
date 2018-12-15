@@ -26,6 +26,8 @@ import app_sensor_commands
 
 
 class CreateIPSelector:
+    """ Creates the main window IP selections section. """
+
     def __init__(self, app, current_config):
         self.current_config = current_config
         self.data_queue = Queue()

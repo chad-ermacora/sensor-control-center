@@ -41,6 +41,8 @@ from app_guizero.gui_sql_notes import CreateSQLNotesWindow
 
 
 class CreateMainWindow:
+    """ Creates the main GUI window for the program. """
+
     def __init__(self):
         self.current_config = app_config.get_from_file()
 
@@ -141,6 +143,7 @@ class CreateMainWindow:
 
     @staticmethod
     def _download_sql_finished_message(threads):
+        """ Shows a message when provided threads are finished. """
         for thread in threads:
             thread.join()
 
@@ -192,6 +195,7 @@ class CreateMainWindow:
         webbrowser.open_new_tab(help_file_location)
 
     def _set_ip_list(self):
+        """ Sets the main window IP's to the ones provided in the current configuration. """
         self.ip_selection.app_textbox_ip1.value = self.current_config.ip_list[0]
         self.ip_selection.app_textbox_ip2.value = self.current_config.ip_list[1]
         self.ip_selection.app_textbox_ip3.value = self.current_config.ip_list[2]
@@ -210,6 +214,7 @@ class CreateMainWindow:
         self.ip_selection.app_textbox_ip16.value = self.current_config.ip_list[15]
 
     def _reset_ip_list(self):
+        """ Reset main window IP's to default. """
         default_config = app_config.CreateDefaultConfigSettings()
         if yesno("Reset IP List to Default", "Are you sure you want to reset the IP list to Defaults?"):
             self.current_config.ip_list = default_config.ip_list

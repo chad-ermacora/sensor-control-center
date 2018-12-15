@@ -16,13 +16,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, CheckBox, PushButton, Text, TextBox
 from tkinter import filedialog
+
+from guizero import Window, CheckBox, PushButton, Text, TextBox
+
 import app_config
 import app_logger
 
 
 class CreateConfigWindow:
+    """ Creates a GUI window to configure the program. """
+
     def __init__(self, app, current_config, ip_selection):
         self.current_config = current_config
         self.ip_selection = ip_selection
@@ -198,6 +202,7 @@ class CreateConfigWindow:
         self._enable_config_reset()
 
     def get_config(self):
+        """ Returns the current set configuration options. """
         new_config = self.current_config
 
         new_config.save_to = self.textbox_save_to.value
@@ -234,6 +239,7 @@ class CreateConfigWindow:
         self.set_config(default_config)
 
     def save_ip_list(self):
+        """ Saves the current configuration, which includes the main window IP addresses. """
         self.current_config.ip_list = self.ip_selection.get_all_ip_list()
         app_config.save_config_to_file(self.current_config)
 

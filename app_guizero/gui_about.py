@@ -23,6 +23,8 @@ from app_config import app_version
 
 
 class CreateAboutWindow:
+    """ Creates a GUI window for program & license information. """
+
     def __init__(self, app, current_config):
         self.current_config = current_config
         self.about_text = self.current_config.additional_files_directory + "/about_text.txt"

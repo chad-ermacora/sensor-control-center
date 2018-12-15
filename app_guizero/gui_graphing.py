@@ -27,6 +27,8 @@ import app_logger
 
 
 class CreateGraphingWindow:
+    """ Creates a GUI window for creating Plotly or Live graphs. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
@@ -262,12 +264,14 @@ class CreateGraphingWindow:
         self.checkbox_colour.value = 0
 
     def _master_checkbox(self):
+        """ Checks all sensor selection checkboxes. """
         if self.checkbox_master.value:
             self._enable_all_checkboxes()
         else:
             self._disable_all_checkboxes()
 
     def _click_checkbox_offset(self):
+        """ Enable or disable custom Env temperature offset for a graph. """
         if self.checkbox_default_offset.value:
             self.textbox_temperature_offset.disable()
             self.current_config.enable_custom_temp_offset = False
@@ -386,6 +390,7 @@ class CreateGraphingWindow:
         app_graph.start_plotly_graph(new_data)
 
     def live_button(self):
+        """ Creates and starts a 'Live Graph' based on graph selections & the first checked and online IP. """
         app_graph.pyplot.close()
         try:
             ip = self.ip_selection.get_verified_ip_list()[0]
@@ -448,6 +453,7 @@ class CreateGraphingWindow:
         return column_checkboxes
 
     def _enable_all_for_live(self):
+        """ Uncheck and allows all possible 'Live Graph' sensor type checkboxes. """
         self.checkbox_up_time.enable()
         self.checkbox_up_time.value = 0
         self.checkbox_cpu_temp.enable()
@@ -470,6 +476,7 @@ class CreateGraphingWindow:
         self.checkbox_gyro.value = 0
 
     def _enable_all_checkboxes(self):
+        """ Check all sensor type checkboxes. """
         self.checkbox_up_time.value = 1
         self.checkbox_cpu_temp.value = 1
         self.checkbox_temperature.value = 1
@@ -482,6 +489,7 @@ class CreateGraphingWindow:
         self.checkbox_gyro.value = 1
 
     def _disable_all_checkboxes(self):
+        """ Uncheck all sensor type checkboxes. """
         self.checkbox_up_time.value = 0
         self.checkbox_cpu_temp.value = 0
         self.checkbox_temperature.value = 0
@@ -494,6 +502,7 @@ class CreateGraphingWindow:
         self.checkbox_gyro.value = 0
 
     def _disable_other_checkboxes(self, var_checkbox):
+        """ Disable all unselected sensor type checkboxes. """
         if self.radio_sensor_type.value == "Live Sensor":
             unchecked = False
             if var_checkbox is self.sql_columns.system_uptime:
