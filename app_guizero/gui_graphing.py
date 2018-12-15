@@ -370,24 +370,27 @@ class CreateGraphingWindow:
         new_data = app_graph.CreateGraphData()
         new_data.db_location = filedialog.askopenfilename()
 
-        self.current_config.graph_start = self.textbox_start.value
-        self.current_config.graph_end = self.textbox_end.value
-        self.current_config.sql_queries_skip = self.textbox_sql_skip.value
-        self.current_config.temperature_offset = self.textbox_temperature_offset.value
+        if new_data.db_location.strip() is not "":
+            self.current_config.graph_start = self.textbox_start.value
+            self.current_config.graph_end = self.textbox_end.value
+            self.current_config.sql_queries_skip = self.textbox_sql_skip.value
+            self.current_config.temperature_offset = self.textbox_temperature_offset.value
 
-        app_config.check_config(self.current_config)
-        self._set_config()
+            app_config.check_config(self.current_config)
+            self._set_config()
 
-        new_data.save_to = self.current_config.save_to
-        new_data.graph_start = self.current_config.graph_start
-        new_data.graph_end = self.current_config.graph_end
-        new_data.datetime_offset = self.current_config.datetime_offset
-        new_data.sql_queries_skip = self.current_config.sql_queries_skip
-        new_data.graph_columns = self._get_column_checkboxes()
-        new_data.enable_custom_temp_offset = self.current_config.enable_custom_temp_offset
-        new_data.temperature_offset = self.current_config.temperature_offset
+            new_data.save_to = self.current_config.save_to
+            new_data.graph_start = self.current_config.graph_start
+            new_data.graph_end = self.current_config.graph_end
+            new_data.datetime_offset = self.current_config.datetime_offset
+            new_data.sql_queries_skip = self.current_config.sql_queries_skip
+            new_data.graph_columns = self._get_column_checkboxes()
+            new_data.enable_custom_temp_offset = self.current_config.enable_custom_temp_offset
+            new_data.temperature_offset = self.current_config.temperature_offset
 
-        app_graph.start_plotly_graph(new_data)
+            app_graph.start_plotly_graph(new_data)
+        else:
+            app_logger.app_logger.warning("Plotly Graph: No Database Selected")
 
     def live_button(self):
         """ Creates and starts a 'Live Graph' based on graph selections & the first checked and online IP. """
