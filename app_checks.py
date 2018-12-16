@@ -16,13 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import app_logger
 import os
+
 import app_config
+import app_logger
 
 current_config = app_config.CreateDefaultConfigSettings()
-
-important_files = []
 important_folders = [current_config.save_to,
                      current_config.logs_directory,
                      current_config.config_folder]
@@ -30,12 +29,6 @@ important_folders = [current_config.save_to,
 
 def run_pre_checks():
     """ Creates missing folders, files & configuration on program start. """
-    if os.path.isfile(current_config.config_file):
-        pass
-    else:
-        app_logger.app_logger.warning("No configuration file found, creating and saving default")
-        app_config.save_config_to_file(current_config)
-
     for folder in important_folders:
         if os.path.isdir(folder):
             pass
@@ -43,11 +36,8 @@ def run_pre_checks():
             app_logger.app_logger.warning("Added missing folder: " + folder)
             os.mkdir(folder)
 
-    for file in important_files:
-        if os.path.isfile(file):
-            pass
-        else:
-            app_logger.app_logger.warning("Added missing file: " + file)
-            open_file = open(file, "w")
-            open_file.write("")
-            open_file.close()
+    if os.path.isfile(current_config.config_file):
+        pass
+    else:
+        app_logger.app_logger.warning("No configuration file found, creating and saving default")
+        app_config.save_config_to_file(current_config)

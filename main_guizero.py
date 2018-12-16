@@ -19,6 +19,9 @@
 import app_guizero.gui_main
 import app_logger
 import app_guizero.gui_platform_tweaks
+import app_checks
+
+app_checks.run_pre_checks()
 
 guizero_app = app_guizero.gui_main.CreateMainWindow()
 app_guizero.gui_platform_tweaks.app_custom_configurations(guizero_app)
