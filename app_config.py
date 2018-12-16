@@ -17,11 +17,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import platform
 from datetime import datetime
 
 import app_logger
 
 app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.22.24"
+current_platform = platform.system()
 
 
 class CreateDefaultConfigSettings:
@@ -32,10 +34,19 @@ class CreateDefaultConfigSettings:
         self.script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
         self.logs_directory = self.script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
-        self.config_file = self.script_directory + "/config.txt"
+        if current_platform == "Linux":
+            self.config_file = "/etc/kootnet/control_center_config.conf"
+            self.config_folder = "/etc/kootnet/"
+        else:
+            self.config_file = self.script_directory + "/config.txt"
+            self.config_folder = self.script_directory
 
         # Start of user configurable options
-        self.save_to = str(os.path.expanduser('~/Desktop/')).replace('\\', '/')
+        if current_platform == "Windows":
+            self.save_to = str(os.path.expanduser('~/Documents/KootNetSensors/')).replace('\\', '/')
+        else:
+            self.save_to = str(os.path.expanduser('~/KootNetSensors/')).replace('\\', '/')
+
         self.graph_start = "2018-10-15 15:00:01"
         self.graph_end = "2200-01-01 00:00:01"
         self.datetime_offset = -7.0
@@ -97,7 +108,8 @@ def get_from_file():
         try:
             config_settings.allow_config_reset = int(tmp_config_settings[10])
         except Exception as error:
-            app_logger.app_logger.error("Setting Enable Sensor Shutdown/Reboot - Using Default: " + str(error))
+            app_logger.app_logger.error("Setting 'Enable Sensor Shutdown/Reboot' Invalid - Using Default")
+            app_logger.app_logger.debug(str(error))
 
         count = 0
         while count < 16:
@@ -112,7 +124,8 @@ def get_from_file():
         app_logger.app_logger.debug("Configuration File Load - OK")
 
     except Exception as error:
-        app_logger.app_logger.warning("Configuration File Load Failed - Using All or Some Defaults: " + str(error))
+        app_logger.app_logger.warning("Configuration File Load Failed or Invalid Settings - Using Defaults")
+        app_logger.app_logger.debug(str(error))
 
     check_config(config_settings)
     return config_settings
@@ -124,6 +137,7 @@ def check_config(config_settings):
 
     Invalid options are replaced with defaults.
     """
+    bad_settings = False
     app_logger.app_logger.debug("Checking Configuration Settings")
     default_settings = CreateDefaultConfigSettings()
 
@@ -132,6 +146,7 @@ def check_config(config_settings):
     else:
         app_logger.app_logger.error("Setting Save to Folder - BAD - Using Default")
         config_settings.save_to = default_settings.save_to
+        bad_settings = True
 
     try:
         datetime.strptime(config_settings.graph_start, "%Y-%m-%d %H:%M:%S")
@@ -139,6 +154,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Graph Start Date Range - BAD - Using Default - " + str(error))
         config_settings.graph_start = default_settings.graph_start
+        bad_settings = True
 
     try:
         datetime.strptime(config_settings.graph_end, "%Y-%m-%d %H:%M:%S")
@@ -146,6 +162,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Graph End Date Range - BAD - Using Default - " + str(error))
         config_settings.graph_end = default_settings.graph_end
+        bad_settings = True
 
     try:
         config_settings.live_refresh = int(config_settings.live_refresh)
@@ -153,6 +170,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Graph End Date Range - BAD - Using Default - " + str(error))
         config_settings.live_refresh = default_settings.live_refresh
+        bad_settings = True
 
     try:
         config_settings.datetime_offset = float(config_settings.datetime_offset)
@@ -160,6 +178,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting DataBase Hours Offset - BAD - Using Default: " + str(error))
         config_settings.datetime_offset = default_settings.datetime_offset
+        bad_settings = True
 
     try:
         config_settings.sql_queries_skip = int(config_settings.sql_queries_skip)
@@ -167,6 +186,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Skip SQL Queries - BAD - Using Default: " + str(error))
         config_settings.sql_queries_skip = default_settings.sql_queries_skip
+        bad_settings = True
 
     try:
         config_settings.temperature_offset = float(config_settings.temperature_offset)
@@ -174,6 +194,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Temperature Offset - BAD - Using Default: " + str(error))
         config_settings.temperature_offset = default_settings.temperature_offset
+        bad_settings = True
 
     try:
         config_settings.live_refresh = int(config_settings.live_refresh)
@@ -181,6 +202,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Live Refresh - BAD - Using Default: " + str(error))
         config_settings.live_refresh = default_settings.live_refresh
+        bad_settings = True
 
     try:
         config_settings.network_timeout_sensor_check = int(config_settings.network_timeout_sensor_check)
@@ -188,6 +210,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Sensor Check Timeout - BAD - Using Default: " + str(error))
         config_settings.network_timeout_sensor_check = default_settings.network_timeout_sensor_check
+        bad_settings = True
 
     try:
         config_settings.network_timeout_data = int(config_settings.network_timeout_data)
@@ -195,6 +218,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Get Details Timeout - BAD - Using Default: " + str(error))
         config_settings.network_timeout_data = default_settings.network_timeout_data
+        bad_settings = True
 
     try:
         config_settings.allow_config_reset = int(config_settings.allow_config_reset)
@@ -203,6 +227,7 @@ def check_config(config_settings):
     except Exception as error:
         app_logger.app_logger.error("Setting Enable Sensor Shutdown/Reboot - BAD - Using Default: " + str(error))
         config_settings.allow_config_reset = default_settings.allow_config_reset
+        bad_settings = True
 
     count = 0
     while count < 16:
@@ -212,6 +237,11 @@ def check_config(config_settings):
             app_logger.app_logger.error("Setting IP List - BAD - Using Default: Bad IP #" + str(count))
             config_settings.ip_list[count] = default_settings.ip_list[count]
             count = count + 1
+            bad_settings = True
+
+    if bad_settings:
+        app_logger.app_logger.warning("One or more invalid settings have been reset to default and saved")
+        save_config_to_file(config_settings)
 
 
 def save_config_to_file(config_settings):
