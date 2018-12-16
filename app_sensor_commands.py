@@ -96,9 +96,8 @@ def download_sensor_database(sensor_command):
     try:
         return_data = requests.get(url, timeout=sensor_command.network_timeout, stream=True)
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
-        sensor_database = open(sensor_command.save_to_location + "/" +
-                               sensor_command.ip[-3:] + "SensorRecordingDatabase" +
-                               ".sqlite", "wb")
+        sensor_database = open(sensor_command.save_to_location + "/" + sensor_command.ip[-3:].replace(".", "_") +
+                               "SensorRecordingDatabase" + ".sqlite", "wb")
         copyfileobj(return_data.raw, sensor_database)
         sensor_database.close()
     except Exception as error:
@@ -108,36 +107,33 @@ def download_sensor_database(sensor_command):
 
 def download_logs(sensor_command):
     """ Download 3 log files. """
-    sensor_command.command = "DownloadPrimaryLog"
+    sensor_get_commands = CreateNetworkGetCommands()
 
+    sensor_command.command = sensor_get_commands.primary_log
+    _get_logs(sensor_command, "PrimaryLog.txt")
+
+    sensor_command.command = sensor_get_commands.network_log
+    _get_logs(sensor_command, "NetworkLog.txt")
+
+    sensor_command.command = sensor_get_commands.sensors_log
+    _get_logs(sensor_command, "SensorsLog.txt")
+
+
+def _get_logs(sensor_command, log_name):
+    """ Download and save specified log file with given name. """
     log_file_data = get_data(sensor_command)
+    log_file_location = sensor_command.save_to_location + "/" + sensor_command.ip[-3:].replace(".", "_") + log_name
+
     try:
-        log_file = open(sensor_command.save_to_location + "/_" + sensor_command.ip[-3:] + "PrimaryLog.txt", "w")
+        log_file = open(log_file_location, "w")
         log_file.write(log_file_data)
         log_file.close()
     except Exception as error:
-        app_logger.sensor_logger.error("PrimaryLog Failed: " + str(error))
-
-    sensor_command.command = "DownloadNetworkLog"
-    log_file_data = get_data(sensor_command)
-    try:
-        log_file = open(sensor_command.save_to_location + "/_" + sensor_command.ip[-3:] + "NetworkLog.txt", "w")
-        log_file.write(log_file_data)
-        log_file.close()
-    except Exception as error:
-        app_logger.sensor_logger.error("NetworkLog Failed: " + str(error))
-
-    sensor_command.command = "DownloadSensorsLog"
-    log_file_data = get_data(sensor_command)
-    try:
-        log_file = open(sensor_command.save_to_location + "/_" + sensor_command.ip[-3:] + "SensorsLog.txt", "w")
-        log_file.write(log_file_data)
-        log_file.close()
-    except Exception as error:
-        app_logger.sensor_logger.error("SensorsLog Failed: " + str(error))
+        app_logger.sensor_logger.error("Log Save Failed: " + str(error))
 
 
 def get_validated_hostname(hostname):
+    """ Return validated hostname. """
     if hostname is not None and hostname is not "":
         final_hostname = re.sub("[^A-Za-z0-9_]", "_", hostname)
         app_logger.sensor_logger.debug(final_hostname)

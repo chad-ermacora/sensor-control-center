@@ -28,7 +28,6 @@ from matplotlib import pyplot
 
 import app_config
 import app_logger
-import app_sensor_commands
 from app_guizero.gui_about import CreateAboutWindow
 from app_guizero.gui_config import CreateConfigWindow
 from app_guizero.gui_graphing import CreateGraphingWindow
@@ -38,6 +37,7 @@ from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
 from app_guizero.gui_sensor_config import CreateSensorConfigWindow
 from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
 from app_guizero.gui_sql_notes import CreateSQLNotesWindow
+from app_sensor_commands import CreateNetworkGetCommands, CreateSensorNetworkCommand, download_sensor_database
 
 
 class CreateMainWindow:
@@ -152,21 +152,21 @@ class CreateMainWindow:
     def _app_menu_download_sql_db(self):
         """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        network_commands = app_sensor_commands.CreateNetworkGetCommands()
+        network_commands = CreateNetworkGetCommands()
+        network_timeout = self.current_config.network_timeout_data
 
         if len(ip_list) > 0:
             threads = []
             download_to_location = filedialog.askdirectory()
-            network_timeout = self.current_config.network_timeout_data
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    senor_command = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                                   network_timeout,
-                                                                                   network_commands.sensor_sql_database)
+                    senor_command = CreateSensorNetworkCommand(ip,
+                                                               network_timeout,
+                                                               network_commands.sensor_sql_database)
                     senor_command.save_to_location = download_to_location
 
-                    threads.append(Thread(target=app_sensor_commands.download_sensor_database,
+                    threads.append(Thread(target=download_sensor_database,
                                           args=[senor_command]))
 
                 for thread in threads:
