@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-
 from tkinter import filedialog
 
 from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
