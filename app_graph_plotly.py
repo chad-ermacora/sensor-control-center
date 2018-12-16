@@ -192,7 +192,7 @@ def _get_sql_data(graph_interval_data, sql_command):
     app_logger.app_logger.debug("SQL execute Command: " + str(sql_command))
     app_logger.app_logger.debug("SQL Column Data Length: " + str(len(return_data)))
     if null_data_entries == len(sql_column_data):
-        # Skip if all NULL
+        # Skip if all None
         return []
     else:
         return return_data
