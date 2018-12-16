@@ -48,8 +48,3 @@ def app_custom_configurations(main_app):
         main_app.window_sensor_sql_notes.textbox_main_note.width = 105
         main_app.window_about.window.width = 540
         main_app.window_about.window.height = 285
-
-    # If no config file, create and save it
-    if not os.path.isfile(main_app.current_config.config_file):
-        app_logger.app_logger.info('No Configuration File Found - Saving Default')
-        app_config.save_config_to_file(main_app.current_config)
