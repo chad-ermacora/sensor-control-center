@@ -18,7 +18,7 @@
 """
 from guizero import Window, PushButton, Text, warn
 
-import app_reports
+import app_modules.app_reports as app_reports
 
 
 class CreateReportsWindow:

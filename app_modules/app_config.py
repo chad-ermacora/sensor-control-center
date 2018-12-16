@@ -17,12 +17,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import sys
 import platform
 from datetime import datetime
 
-import app_logger
+import app_modules.app_logger as app_logger
 
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.23.0"
+app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.23.1"
 current_platform = platform.system()
 
 
@@ -31,7 +32,7 @@ class CreateDefaultConfigSettings:
 
     def __init__(self):
         # Script location information
-        self.script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
+        self.script_directory = str(sys.path[0]).replace("\\", "/")
         self.logs_directory = self.script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
         if current_platform == "Linux":

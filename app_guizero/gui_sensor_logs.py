@@ -21,8 +21,8 @@ from tkinter import filedialog
 
 from guizero import Window, Text, TextBox, ButtonGroup, PushButton, MenuBar, info, warn
 
-import app_logger
-import app_sensor_commands
+import app_modules.app_logger as app_logger
+import app_modules.app_sensor_commands as app_sensor_commands
 
 
 class CreateSensorLogsWindow:

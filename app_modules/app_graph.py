@@ -18,7 +18,7 @@
 """
 from datetime import datetime, timedelta
 
-import app_logger
+import app_modules.app_logger as app_logger
 
 
 class CreateSQLColumnsReadable:

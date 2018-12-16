@@ -22,8 +22,8 @@ import plotly
 from guizero import warn
 from plotly import tools, graph_objs as go
 
-import app_logger
-from app_graph import CreateSQLColumnNames, adjust_datetime
+import app_modules.app_logger as app_logger
+from app_modules.app_graph import CreateSQLColumnNames, adjust_datetime
 
 
 def start_plotly_graph(graph_data):

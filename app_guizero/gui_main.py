@@ -26,8 +26,8 @@ from tkinter import filedialog
 from guizero import App, PushButton, MenuBar, info, warn, yesno
 from matplotlib import pyplot
 
-import app_config
-import app_logger
+import app_modules.app_config as app_config
+import app_modules.app_logger as app_logger
 from app_guizero.gui_about import CreateAboutWindow
 from app_guizero.gui_config import CreateConfigWindow
 from app_guizero.gui_graphing import CreateGraphingWindow
@@ -37,7 +37,7 @@ from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
 from app_guizero.gui_sensor_config import CreateSensorConfigWindow
 from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
 from app_guizero.gui_sql_notes import CreateSQLNotesWindow
-from app_sensor_commands import CreateNetworkGetCommands, CreateSensorNetworkCommand, download_sensor_database
+from app_modules.app_sensor_commands import CreateNetworkGetCommands, CreateSensorNetworkCommand, download_sensor_database
 
 
 class CreateMainWindow:

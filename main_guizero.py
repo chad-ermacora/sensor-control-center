@@ -17,9 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import app_guizero.gui_main
-import app_logger
+import app_modules.app_logger as app_logger
 import app_guizero.gui_platform_tweaks
-import app_checks
+import app_modules.app_checks as app_checks
 
 app_checks.run_pre_checks()
 

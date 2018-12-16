@@ -20,9 +20,9 @@ from queue import Queue
 from threading import Thread
 from time import strftime
 
-import app_logger
-import app_sensor_commands
-from app_useful import convert_minutes_string, get_file_content, save_data_to_file, open_html_file
+import app_modules.app_logger as app_logger
+import app_modules.app_sensor_commands as app_sensor_commands
+from app_modules.app_useful import convert_minutes_string, get_file_content, save_data_to_file, open_html_file
 
 data_queue = Queue()
 network_get_commands = app_sensor_commands.CreateNetworkGetCommands()

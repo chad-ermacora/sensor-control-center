@@ -20,9 +20,9 @@ from threading import Thread
 
 from guizero import Window, PushButton, Text, TextBox, info, Combo, warn
 
-import app_logger
-import app_sensor_commands
-from app_useful import default_installed_sensors_text, default_sensor_config_text
+import app_modules.app_logger as app_logger
+import app_modules.app_sensor_commands as app_sensor_commands
+from app_modules.app_useful import default_installed_sensors_text, default_sensor_config_text
 
 
 class CreateSensorConfigWindow:

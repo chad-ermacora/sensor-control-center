@@ -20,10 +20,10 @@ from datetime import datetime
 
 from matplotlib import pyplot, animation, style
 
-import app_logger
-import app_sensor_commands
-from app_graph import CreateMeasurementsTypes, CreateSQLColumnsReadable, CreateSQLColumnNames
-from app_useful import convert_minutes_string
+import app_modules.app_logger as app_logger
+import app_modules.app_sensor_commands as app_sensor_commands
+from app_modules.app_graph import CreateMeasurementsTypes, CreateSQLColumnsReadable, CreateSQLColumnNames
+from app_modules.app_useful import convert_minutes_string
 
 style.use("dark_background")
 

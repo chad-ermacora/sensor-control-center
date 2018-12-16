@@ -18,7 +18,7 @@
 """
 import webbrowser
 
-import app_logger
+import app_modules.app_logger as app_logger
 
 default_installed_sensors_text = """
 Change the number in front of each line. Enable = 1 & Disable = 0

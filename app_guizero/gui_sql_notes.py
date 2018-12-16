@@ -18,10 +18,10 @@
 """
 from guizero import Window, Text, TextBox, PushButton, info, CheckBox, warn
 
-import app_logger
-import app_sensor_commands
-from app_graph import adjust_datetime
-from app_useful import sql_default_textbox_note
+import app_modules.app_logger as app_logger
+import app_modules.app_sensor_commands as app_sensor_commands
+from app_modules.app_graph import adjust_datetime
+from app_modules.app_useful import sql_default_textbox_note
 
 
 class CreateSQLNotesWindow:

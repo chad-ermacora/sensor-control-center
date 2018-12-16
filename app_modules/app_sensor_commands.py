@@ -21,7 +21,7 @@ from shutil import copyfileobj
 
 import requests
 
-import app_logger
+import app_modules.app_logger as app_logger
 
 
 class CreateSensorNetworkCommand:
