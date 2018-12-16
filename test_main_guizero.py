@@ -2,7 +2,7 @@ import os
 import unittest
 from time import sleep
 import app_config
-import app_graph
+import app_graph_live
 import app_reports
 import app_sensor_commands
 
@@ -89,7 +89,7 @@ class TestApp(unittest.TestCase):
     def test_app_graph(self):
         # Interval & Trigger graph's and functions done.  Only Live Graph left to do.
         print("\nPlease review the opened graph for errors.\n")
-        test_graph = app_graph.CreateGraphData()
+        test_graph = app_graph_live.CreateGraphData()
         test_graph.db_location = config_default.script_directory + "/test_files/SensorRecordingDatabase.sqlite"
         test_graph.save_to = save_to
         test_graph.sql_queries_skip = 0
@@ -99,12 +99,12 @@ class TestApp(unittest.TestCase):
                                     "Acc_X", "Acc_Y", "Acc_Z", "Mag_X", "Mag_Y", "Mag_Z",
                                     "Gyro_X", "Gyro_Y", "Gyro_Z", "DateTime", "SensorName", "IP"]
 
-        app_graph.start_plotly_graph(test_graph)
+        app_graph_live.start_plotly_graph(test_graph)
 
         self.assertTrue(os.path.isfile(save_to + "PlotlySensorGraph.html"))
 
-        self.assertEqual(app_graph._adjust_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
-        self.assertEqual(app_graph._adjust_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
+        self.assertEqual(app_graph_live._adjust_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
+        self.assertEqual(app_graph_live._adjust_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
 
     def test_app_reports(self):
         # # Initial setup complete - Requires a look over the generated reports by human

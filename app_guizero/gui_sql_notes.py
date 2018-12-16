@@ -20,7 +20,7 @@ from guizero import Window, Text, TextBox, PushButton, info, CheckBox, warn
 
 import app_logger
 import app_sensor_commands
-from app_graph import _adjust_datetime
+from app_graph import adjust_datetime
 from app_useful import sql_default_textbox_note
 
 
@@ -114,7 +114,7 @@ class CreateSQLNotesWindow:
         if len(ip_list) > 0:
             message_ip_addresses = ""
             datetime = self.textbox_datetime.value
-            utc_0_datetime = _adjust_datetime(datetime, self.current_config.datetime_offset * -1)
+            utc_0_datetime = adjust_datetime(datetime, self.current_config.datetime_offset * -1)
             command = self.network_send_commands.put_sql_note
             command_data = utc_0_datetime + ".000" + self.textbox_main_note.value
 
