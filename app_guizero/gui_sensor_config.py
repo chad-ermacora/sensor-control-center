@@ -16,19 +16,28 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, CheckBox, PushButton, Text, TextBox, info
+from threading import Thread
 
-from app_sensor_commands import CreateCommandData, CreateNetworkSendCommands, send_command
+from guizero import Window, PushButton, Text, TextBox, info, Combo, warn
+
+import app_logger
+import app_sensor_commands
+from app_useful import default_installed_sensors_text, default_sensor_config_text
 
 
 class CreateSensorConfigWindow:
+    """ Creates a GUI window for changing 1 or more sensor's configuration or installed sensors file. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
+        self.installed_sensor_text = default_installed_sensors_text
+        self.config_sensor_text = default_sensor_config_text
+
         self.window = Window(app,
-                             title="Sensors Configuration Updater",
-                             width=340,
-                             height=265,
+                             title="Sensors Configuration",
+                             width=615,
+                             height=385,
                              layout="grid",
                              visible=False)
 
@@ -38,122 +47,105 @@ class CreateSensorConfigWindow:
                                 color='#CB0000',
                                 align="left")
 
-        self.checkbox_db_record = CheckBox(self.window,
-                                           text="Enable Database Recording",
-                                           command=self.recording_checkbox,
-                                           grid=[1, 2, 2, 1],
-                                           align="left")
+        self.textbox_config = TextBox(self.window,
+                                      text=self.config_sensor_text.strip(),
+                                      grid=[1, 2],
+                                      width=75,
+                                      height=18,
+                                      multiline=True,
+                                      align="right")
 
-        self.textbox_interval = TextBox(self.window,
-                                        text='300',
-                                        width=10,
-                                        grid=[1, 3],
-                                        align="left")
+        self.button_get_config = PushButton(self.window,
+                                            text="Get Sensor\nConfiguration",
+                                            command=self.button_get,
+                                            grid=[1, 10],
+                                            align="left")
 
-        self.text_interval = Text(self.window,
-                                  text="Seconds between Interval recording",
-                                  color='green',
-                                  grid=[2, 3],
-                                  align="left")
+        self.text_select_combo = Text(self.window,
+                                      text="Select Configuration File to Edit",
+                                      grid=[1, 10],
+                                      color='blue',
+                                      align="top")
 
-        self.textbox_trigger = TextBox(self.window,
-                                       text='0.15',
-                                       width=10,
-                                       grid=[1, 4],
-                                       align="left")
-
-        self.text_trigger = Text(self.window,
-                                 text="Seconds between Trigger readings",
-                                 color='green',
-                                 grid=[2, 4],
-                                 align="left")
-
-        self.checkbox_custom = CheckBox(self.window,
-                                        text="Enable Custom Variances",
-                                        command=self.custom_checkbox,
-                                        grid=[1, 5, 2, 1],
-                                        align="left")
-
-        self.textbox_custom_acc = TextBox(self.window,
-                                          text='0.05',
-                                          width=10,
-                                          grid=[1, 6],
-                                          align="left")
-
-        self.text_custom_acc = Text(self.window,
-                                    text="Accelerometer Variance",
-                                    color='green',
-                                    grid=[2, 6],
-                                    align="left")
-
-        self.textbox_custom_mag = TextBox(self.window,
-                                          text='300',
-                                          width=10,
-                                          grid=[1, 7],
-                                          align="left")
-
-        self.text_custom_mag = Text(self.window,
-                                    text="Magnetometer Variance",
-                                    color='green',
-                                    grid=[2, 7],
-                                    align="left")
-
-        self.textbox_custom_gyro = TextBox(self.window,
-                                           text='0.05',
-                                           width=10,
-                                           grid=[1, 8],
-                                           align="left")
-
-        self.text_custom_gyro = Text(self.window,
-                                     text="Gyroscopic Variance",
-                                     color='green',
-                                     grid=[2, 8],
-                                     align="left")
+        self.combo_dropdown_selection = Combo(self.window,
+                                              options=["Configuration", "Installed Sensors"],
+                                              grid=[1, 10],
+                                              command=self.combo_selection,
+                                              align="bottom")
 
         self.button_set_config = PushButton(self.window,
-                                            text="Apply Sensor\nConfiguration",
-                                            command=self.config_set,
-                                            grid=[2, 14],
+                                            text="Set Sensor\nConfiguration",
+                                            command=self.button_set,
+                                            grid=[1, 10],
                                             align="right")
 
-    def recording_checkbox(self):
-        """ Enables or disables the timing Sensor Configuration Window text boxes. """
-        if self.checkbox_db_record.value:
-            self.textbox_interval.enable()
-            self.textbox_trigger.enable()
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
+        self.textbox_config.bg = "black"
+        self.textbox_config.text_color = "white"
+        self.textbox_config.tk.config(insertbackground="red")
+
+    def combo_selection(self):
+        """ Select sensor 'Configuration' or 'Installed Sensors'. """
+        if self.combo_dropdown_selection.value == "Installed Sensors":
+            self.button_get_config.text = "Get Installed\nSensors"
+            self.button_set_config.text = "Set Installed\nSensors"
+            self.textbox_config.value = self.installed_sensor_text.strip()
+
         else:
-            self.textbox_interval.disable()
-            self.textbox_trigger.disable()
+            self.button_get_config.text = "Get Sensor\nConfiguration"
+            self.button_set_config.text = "Set Sensor\nConfiguration"
+            self.textbox_config.value = self.config_sensor_text.strip()
 
-    def custom_checkbox(self):
-        """ Enables or disables the custom Sensor Configuration Window text boxes. """
-        if self.checkbox_custom.value:
-            self.textbox_custom_acc.enable()
-            self.textbox_custom_mag.enable()
-            self.textbox_custom_gyro.enable()
-        else:
-            self.textbox_custom_acc.disable()
-            self.textbox_custom_mag.disable()
-            self.textbox_custom_gyro.disable()
-
-    def config_set(self):
-        """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
-        network_commands = CreateNetworkSendCommands()
-
-        config_settings_str = "," + str(self.checkbox_db_record.value) + "," + \
-                              str(self.textbox_interval.value) + "," + \
-                              str(self.textbox_trigger.value) + "," + \
-                              str(self.checkbox_custom.value) + "," + \
-                              str(self.textbox_custom_acc.value) + "," + \
-                              str(self.textbox_custom_mag.value) + "," + \
-                              str(self.textbox_custom_gyro.value)
-
+    def button_get(self):
+        """ Displays the selected configuration of the first selected and online sensor. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        for ip in ip_list:
-            command = network_commands.set_configuration + config_settings_str
-            command_data = CreateCommandData(ip,
-                                             self.current_config.network_timeout_data,
-                                             command)
-            send_command(command_data)
+        if len(ip_list) > 0:
+            network_commands = app_sensor_commands.CreateNetworkGetCommands()
+            try:
+                if self.combo_dropdown_selection.value == "Installed Sensors":
+                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                             self.current_config.network_timeout_data,
+                                                                             network_commands.installed_sensors_file)
+                else:
+                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                             self.current_config.network_timeout_data,
+                                                                             network_commands.sensor_configuration_file)
 
-        info("Sensors Configuration Set", "Configurations set & Services restarted")
+                self.textbox_config.value = str(app_sensor_commands.get_data(command))
+
+            except Exception as error:
+                app_logger.sensor_logger.error(str(error))
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+
+    def button_set(self):
+        """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
+        network_commands = app_sensor_commands.CreateNetworkSendCommands()
+        ip_list = self.ip_selection.get_verified_ip_list()
+        threads = []
+
+        if len(ip_list) > 0:
+            for ip in ip_list:
+                try:
+                    if self.combo_dropdown_selection.value == "Installed Sensors":
+                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                                 self.current_config.network_timeout_data,
+                                                                                 network_commands.set_installed_sensors)
+                    else:
+                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                                 self.current_config.network_timeout_data,
+                                                                                 network_commands.set_configuration)
+                    command.command_data = self.textbox_config.value.strip()
+
+                    threads.append(Thread(target=app_sensor_commands.put_command, args=[command]))
+                except Exception as error:
+                    app_logger.sensor_logger.error(str(error))
+
+            for thread in threads:
+                thread.start()
+
+            info("Sensors " + self.combo_dropdown_selection.value + " Set",
+                 self.combo_dropdown_selection.value + " set & services restarted on:\n" + str(ip_list)[1:-1])
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")

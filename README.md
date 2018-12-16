@@ -11,19 +11,22 @@ The software is in an alpha state, prone to changes that may break backwards com
 
 ### Features Include
 - View sensor Online/Offline status
+- Add notes into live sensors databases with data correlating Date & Time stamp
 - Download sensor databases
-- Graph offline databases or view a live graph from an online sensor
-- View system, configuration & sensor reading reports that include one or more sensors
-- View or download Sensor Logs
-- Change sensor's configuration
+- Create [Plotly](https://plot.ly/python/) graphs with databases or view a live graph from an online sensor
+- View system, configuration & sensor reading reports
+- View or download sensor Logs
+- Edit sensor configuration file
+- Edit sensors 'Installed Sensors' file
 - Upgrade sensors software (HTTP or SMB)
 - Upgrade sensor operating system
 - Restart sensors services
 - Reboot or shutdown sensors
-- Change sensor hostname (Used in database as the sensor name)
+- Change sensor's name for identifying multiple sensors
 - Sync Date & Time with the local computer's Date & Time
-- Instructions on making sensor units with a Raspberry Pi
+- [Instructions](http://kootenay-networks.com/?page_id=236) to make your own Raspberry Pi sensor
 
-[Pictures of graphs and reports can be found here](http://kootenay-networks.com/?page_id=511)
+[Click here for more program pictures](http://kootenay-networks.com/?page_id=511)
 
+KootNet Sensors - Control Center with most windows open
 ![KootNet Sensors - Control Center](additional_files/KootNetSensorsControlCenter.png "Control Center")

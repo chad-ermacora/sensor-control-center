@@ -16,11 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, PushButton, Text
+from guizero import Window, PushButton, Text, warn
+
 import app_reports
 
 
 class CreateReportsWindow:
+    """ Creates a GUI window for creating sensor reports. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
@@ -73,20 +76,32 @@ class CreateReportsWindow:
                                                grid=[3, 7],
                                                align="top")
 
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
+
     def app_sensor_readings_report(self):
         """ Create a HTML sensor Readings Report containing each IP selected and online. """
-        readings_config = app_reports.CreateHTMLReadingsData(self.current_config)
+        sensor_readings_report = app_reports.CreateHTMLReadingsData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
-        app_reports.sensor_html_report(readings_config, ip_list)
+        if len(ip_list) > 0:
+            app_reports.sensor_html_report(sensor_readings_report, ip_list)
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def app_sensor_system_report(self):
         """ Create a HTML sensor System Report containing each IP selected and online. """
-        system_config = app_reports.CreateHTMLSystemData(self.current_config)
+        sensor_system_report = app_reports.CreateHTMLSystemData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
-        app_reports.sensor_html_report(system_config, ip_list)
+        if len(ip_list) > 0:
+            app_reports.sensor_html_report(sensor_system_report, ip_list)
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def app_sensor_config_report(self):
         """ Create a HTML sensor Configuration Report containing each IP selected and online. """
-        sensor_config_config = app_reports.CreateHTMLConfigData(self.current_config)
+        sensor_config_report = app_reports.CreateHTMLConfigData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
-        app_reports.sensor_html_report(sensor_config_config, ip_list)
+        if len(ip_list) > 0:
+            app_reports.sensor_html_report(sensor_config_report, ip_list)
+        else:
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")

@@ -16,13 +16,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, CheckBox, PushButton, Text, TextBox
 from tkinter import filedialog
+
+from guizero import Window, CheckBox, PushButton, Text, TextBox
+
 import app_config
 import app_logger
 
 
 class CreateConfigWindow:
+    """ Creates a GUI window to configure the program. """
+
     def __init__(self, app, current_config, ip_selection):
         self.current_config = current_config
         self.ip_selection = ip_selection
@@ -35,24 +39,24 @@ class CreateConfigWindow:
 
         self.button_reset = PushButton(self.window,
                                        text="Reset to\nDefaults",
-                                       command=self.reset_to_defaults,
+                                       command=self._reset_to_defaults,
                                        grid=[1, 1],
                                        align="right")
 
         self.checkbox_power_controls = CheckBox(self.window,
-                                                text="Enable Reset to Defaults",
+                                                text="Enable 'Reset to Defaults'",
                                                 command=self._enable_config_reset,
                                                 grid=[1, 1],
                                                 align="top")
 
         self.button_save_apply = PushButton(self.window,
-                                            text="Save &\nApply",
+                                            text="Save",
                                             command=self._button_save_apply,
                                             grid=[1, 1],
                                             align="left")
 
         self.text3 = Text(self.window,
-                          text="Save Files To",
+                          text="Save files to",
                           color='blue',
                           grid=[1, 2],
                           align="top")
@@ -70,7 +74,7 @@ class CreateConfigWindow:
                                           align="bottom")
 
         self.text_info = Text(self.window,
-                              text="Default Graph Date Range",
+                              text="Default graph date range",
                               color='blue',
                               grid=[1, 6],
                               align="top")
@@ -107,7 +111,7 @@ class CreateConfigWindow:
                                    align="right")
 
         self.text_live_refresh = Text(self.window,
-                                      text="Live Refresh in Seconds: ",
+                                      text="Live graph refresh in seconds: ",
                                       color='green',
                                       grid=[1, 10],
                                       align="left")
@@ -119,14 +123,14 @@ class CreateConfigWindow:
                                             align="right")
 
         self.text_database_time = Text(self.window,
-                                       text="Sensor Databases\nSaved in UTC 0",
+                                       text="Sensor Databases are\nsaved in UTC 0",
                                        size=10,
                                        grid=[2, 1],
                                        color='#CB0000',
                                        align="top")
 
         self.text_time_offset2 = Text(self.window,
-                                      text="Graph DateTime Offset in Hours",
+                                      text="DateTime offset in hours",
                                       color='blue',
                                       grid=[2, 1],
                                       align="bottom")
@@ -138,7 +142,7 @@ class CreateConfigWindow:
                                            align="bottom")
 
         self.text_sql_skip = Text(self.window,
-                                  text="Add SQL row to Graph every 'X' rows",
+                                  text="Graph sensor data ever 'X' entries",
                                   color='blue',
                                   grid=[2, 3],
                                   align="top")
@@ -150,7 +154,7 @@ class CreateConfigWindow:
                                         align="top")
 
         self.text_temperature_offset = Text(self.window,
-                                            text="Environment Temperature Offset in °C",
+                                            text="Manual temperature offset in °C",
                                             color='blue',
                                             grid=[2, 4],
                                             align="bottom")
@@ -162,13 +166,13 @@ class CreateConfigWindow:
                                                   align="bottom")
 
         self.text_network_timeouts = Text(self.window,
-                                          text="Network Timeouts in Seconds",
+                                          text="Network timeouts in seconds",
                                           color='blue',
                                           grid=[2, 6],
                                           align="top")
 
         self.text_network_timeouts1 = Text(self.window,
-                                           text="Sensor Status",
+                                           text="Sensor checks",
                                            color='green',
                                            grid=[2, 7],
                                            align="top")
@@ -180,7 +184,7 @@ class CreateConfigWindow:
                                              align="top")
 
         self.text_network_timeouts2 = Text(self.window,
-                                           text="Sensor Reports",
+                                           text="Sensor data",
                                            color='green',
                                            grid=[2, 9],
                                            align="top")
@@ -191,11 +195,14 @@ class CreateConfigWindow:
                                                grid=[2, 10],
                                                align="top")
 
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
         self.set_config(self.current_config)
         self.textbox_save_to.disable()
         self._enable_config_reset()
 
     def get_config(self):
+        """ Returns the current set configuration options. """
         new_config = self.current_config
 
         new_config.save_to = self.textbox_save_to.value
@@ -225,13 +232,14 @@ class CreateConfigWindow:
         self.textbox_network_details.value = new_config.network_timeout_data
         self.checkbox_power_controls.value = new_config.allow_config_reset
 
-    def reset_to_defaults(self):
+    def _reset_to_defaults(self):
         """ Resets all Control Center Configurations to default. """
         app_logger.app_logger.info("Resetting Configuration to Defaults")
         default_config = app_config.CreateDefaultConfigSettings()
         self.set_config(default_config)
 
     def save_ip_list(self):
+        """ Saves the current configuration, which includes the main window IP addresses. """
         self.current_config.ip_list = self.ip_selection.get_all_ip_list()
         app_config.save_config_to_file(self.current_config)
 

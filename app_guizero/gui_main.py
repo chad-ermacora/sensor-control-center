@@ -24,21 +24,25 @@ from threading import Thread
 from tkinter import filedialog
 
 from guizero import App, PushButton, MenuBar, info, warn, yesno
+from matplotlib import pyplot
 
 import app_config
 import app_logger
 import app_sensor_commands
 from app_guizero.gui_about import CreateAboutWindow
 from app_guizero.gui_config import CreateConfigWindow
-from app_guizero.gui_graphing import CreateGraphingWindow, pyplot
+from app_guizero.gui_graphing import CreateGraphingWindow
 from app_guizero.gui_ip_selection import CreateIPSelector
 from app_guizero.gui_reports import CreateReportsWindow
 from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
 from app_guizero.gui_sensor_config import CreateSensorConfigWindow
 from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
+from app_guizero.gui_sql_notes import CreateSQLNotesWindow
 
 
 class CreateMainWindow:
+    """ Creates the main GUI window for the program. """
+
     def __init__(self):
         self.current_config = app_config.get_from_file()
 
@@ -47,12 +51,15 @@ class CreateMainWindow:
                        height=295,
                        layout="grid")
 
+        self.app.on_close(self._app_exit)
+
         self.ip_selection = CreateIPSelector(self.app, self.current_config)
         self._set_ip_list()
 
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
         self.window_reports = CreateReportsWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_sql_notes = CreateSQLNotesWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
@@ -75,13 +82,15 @@ class CreateMainWindow:
                                               self._app_exit]],
                                             [["Create Reports",
                                               self.window_reports.window.show],
+                                             ["View & Download Logs",
+                                              self.window_sensor_logs.window.show],
+                                             ["Add Note to Database",
+                                              self.window_sensor_sql_notes.window.show],
                                              ["Send Commands",
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
-                                              self.window_sensor_config.window.show],
-                                             ["View & Download Logs",
-                                              self.window_sensor_logs.window.show]],
-                                            [["Open Graph Window",
+                                              self.window_sensor_config.window.show]],
+                                            [["Create Graphs",
                                               self.window_graph.window.show]],
                                             [["KootNet Sensors - About",
                                               self.window_about.window.show],
@@ -105,70 +114,8 @@ class CreateMainWindow:
                                                      command=self._app_menu_download_sql_db,
                                                      grid=[4, 15],
                                                      align="right")
-
-    def app_custom_configurations(self):
-        """ Apply system & user specific settings to application.  Used just before application start. """
-        # Add extra tk options to guizero windows
+        # Window Tweaks
         self.app.tk.resizable(False, False)
-        self.window_control_center_config.window.tk.resizable(False, False)
-        self.window_sensor_commands.window.tk.resizable(False, False)
-        self.window_sensor_config.window.tk.resizable(False, False)
-        self.window_reports.window.tk.resizable(False, False)
-        self.window_sensor_logs.window.tk.resizable(False, False)
-        self.window_graph.window.tk.resizable(False, False)
-        self.window_about.window.tk.resizable(False, False)
-
-        # Add custom selections and GUI settings
-        self.app.on_close(self._app_exit)
-
-        self.ip_selection.app_checkbox_all_column1.value = 0
-        self.ip_selection.app_checkbox_all_column2.value = 0
-        self.ip_selection.app_check_all_ip1()
-        self.ip_selection.app_check_all_ip2()
-        self.ip_selection.app_checkbox_ip1.value = 1
-
-        self.window_graph.checkbox_up_time.value = 0
-        self.window_graph.checkbox_temperature.value = 0
-        self.window_graph.checkbox_pressure.value = 0
-        self.window_graph.checkbox_humidity.value = 0
-        self.window_graph.checkbox_lumen.value = 0
-        self.window_graph.checkbox_colour.value = 0
-
-        self.window_sensor_config.checkbox_db_record.value = 1
-        self.window_sensor_config.checkbox_custom.value = 0
-        self.window_sensor_config.recording_checkbox()
-        self.window_sensor_config.custom_checkbox()
-
-        self.window_sensor_logs.textbox_log.bg = "black"
-        self.window_sensor_logs.textbox_log.text_color = "white"
-        self.window_about.about_textbox.bg = "black"
-        self.window_about.about_textbox.text_color = "white"
-
-        # Platform specific adjustments
-        if platform.system() == "Windows":
-            self.app.tk.iconbitmap(self.current_config.additional_files_directory + "/icon.ico")
-        elif platform.system() == "Linux":
-            self.app.width = 490
-            self.app.height = 240
-            self.window_control_center_config.window.width = 675
-            self.window_control_center_config.window.height = 275
-            self.window_reports.window.width = 460
-            self.window_reports.window.height = 85
-            self.window_graph.window.width = 320
-            self.window_graph.window.height = 420
-            self.window_sensor_config.window.width = 350
-            self.window_sensor_config.window.height = 230
-            self.window_sensor_commands.window.width = 295
-            self.window_sensor_commands.window.height = 255
-            self.window_sensor_logs.window.width = 785
-            self.window_sensor_logs.window.height = 400
-            self.window_about.window.width = 535
-            self.window_about.window.height = 285
-
-        # If no config file, create and save it
-        if not os.path.isfile(self.current_config.config_file):
-            app_logger.app_logger.info('No Configuration File Found - Saving Default')
-            app_config.save_config_to_file(self.current_config)
 
     def _app_exit(self):
         """ Closes log handlers & matplotlib before closing the application. """
@@ -194,31 +141,39 @@ class CreateMainWindow:
         else:
             subprocess.Popen(["xdg-open", self.current_config.logs_directory])
 
+    @staticmethod
+    def _download_sql_finished_message(threads):
+        """ Shows a message when provided threads are finished. """
+        for thread in threads:
+            thread.join()
+
+        info("Downloads", "SQL database downloads complete")
+
     def _app_menu_download_sql_db(self):
         """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        if len(ip_list) >= 1:
+        network_commands = app_sensor_commands.CreateNetworkGetCommands()
+
+        if len(ip_list) > 0:
             threads = []
             download_to_location = filedialog.askdirectory()
+            network_timeout = self.current_config.network_timeout_data
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    download_obj = app_sensor_commands.CreateHTTPDownload()
-                    download_obj.ip = ip
-                    download_obj.url = "/"
-                    download_obj.save_to_location = download_to_location
-                    download_obj.file_name = "SensorRecordingDatabase.sqlite"
+                    senor_command = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                                   network_timeout,
+                                                                                   network_commands.sensor_sql_database)
+                    senor_command.save_to_location = download_to_location
 
-                    threads.append(Thread(target=app_sensor_commands.download_http_file,
-                                          args=[download_obj]))
+                    threads.append(Thread(target=app_sensor_commands.download_sensor_database,
+                                          args=[senor_command]))
 
                 for thread in threads:
                     thread.start()
 
-                for thread in threads:
-                    thread.join()
-
-                info("Downloads", "SQL Database Downloads Complete")
+                download_message_thread = Thread(target=self._download_sql_finished_message, args=[threads])
+                download_message_thread.start()
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:
@@ -240,6 +195,7 @@ class CreateMainWindow:
         webbrowser.open_new_tab(help_file_location)
 
     def _set_ip_list(self):
+        """ Sets the main window IP's to the ones provided in the current configuration. """
         self.ip_selection.app_textbox_ip1.value = self.current_config.ip_list[0]
         self.ip_selection.app_textbox_ip2.value = self.current_config.ip_list[1]
         self.ip_selection.app_textbox_ip3.value = self.current_config.ip_list[2]
@@ -258,6 +214,7 @@ class CreateMainWindow:
         self.ip_selection.app_textbox_ip16.value = self.current_config.ip_list[15]
 
     def _reset_ip_list(self):
+        """ Reset main window IP's to default. """
         default_config = app_config.CreateDefaultConfigSettings()
         if yesno("Reset IP List to Default", "Are you sure you want to reset the IP list to Defaults?"):
             self.current_config.ip_list = default_config.ip_list

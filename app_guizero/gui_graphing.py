@@ -19,24 +19,27 @@
 from tkinter import filedialog
 
 from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
-from matplotlib import pyplot
 
 import app_config
-import app_graph
+import app_graph_live
+import app_graph_plotly
 import app_logger
+from app_graph import CreateGraphData
 
 
 class CreateGraphingWindow:
+    """ Creates a GUI window for creating Plotly or Live graphs. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
-        self.readable_column_names = app_graph.CreateSQLColumnsReadable()
-        self.sql_columns = app_graph.CreateSQLColumnNames()
+        self.readable_column_names = app_graph_live.CreateSQLColumnsReadable()
+        self.sql_columns = app_graph_live.CreateSQLColumnNames()
 
         self.window = Window(app,
                              title="Graphing",
                              width=275,
-                             height=505,
+                             height=545,
                              layout="grid",
                              visible=False)
 
@@ -47,17 +50,23 @@ class CreateGraphingWindow:
                                           align="top")
 
         self.radio_sensor_type = ButtonGroup(self.window,
-                                             options=["Live", "SQL Database"],
+                                             options=["Live Sensor", "SQL Database"],
                                              horizontal="True",
                                              command=self._radio_selection,
                                              grid=[1, 2, 2, 1],
                                              align="top")
 
-        self.text_space1 = Text(self.window,
+        self.text_sensor_type_name = Text(self.window,
+                                          text="Graph Options",
+                                          color='blue',
+                                          grid=[1, 4, 2, 1],
+                                          align="top")
+
+        self.text_space2 = Text(self.window,
                                 text="YYYY-MM-DD HH:MM:SS",
                                 size=7,
                                 color='#CB0000',
-                                grid=[2, 3, 2, 1],
+                                grid=[2, 5, 2, 1],
                                 align="left")
 
         self.text_start = Text(self.window,
@@ -85,10 +94,10 @@ class CreateGraphingWindow:
                                    align="left")
 
         self.text_sql_skip = Text(self.window,
-                                  text="Add row every:",
+                                  text="Add one every:  ",
                                   color='green',
                                   grid=[1, 8],
-                                  align="left")
+                                  align="right")
 
         self.textbox_sql_skip = TextBox(self.window,
                                         text="",
@@ -97,13 +106,13 @@ class CreateGraphingWindow:
                                         align="left")
 
         self.text_sql_skip2 = Text(self.window,
-                                   text="rows    ",
+                                   text="entries    ",
                                    color='green',
                                    grid=[2, 8],
                                    align="right")
 
         self.text_temperature_offset = Text(self.window,
-                                            text="Environmental:",
+                                            text="Env Temp Offset:",
                                             color='green',
                                             grid=[1, 9],
                                             align="left")
@@ -114,11 +123,11 @@ class CreateGraphingWindow:
                                                   grid=[2, 9],
                                                   align="left")
 
-        self.text_temperature_offset2 = Text(self.window,
-                                             text="Temp Offset",
-                                             color='green',
-                                             grid=[2, 9],
-                                             align="right")
+        self.checkbox_default_offset = CheckBox(self.window,
+                                                text="Use Sensor\nDefault",
+                                                command=self._click_checkbox_offset,
+                                                grid=[2, 9],
+                                                align="right")
 
         self.text_refresh_time = Text(self.window,
                                       text="Live refresh (Sec):",
@@ -132,10 +141,16 @@ class CreateGraphingWindow:
                                             grid=[2, 10],
                                             align="left")
 
-        self.text_space2 = Text(self.window,
+        self.text_space3 = Text(self.window,
                                 text=" ",
                                 grid=[1, 11],
                                 align="right")
+
+        self.checkbox_master = CheckBox(self.window,
+                                        text="All",
+                                        command=self._master_checkbox,
+                                        grid=[1, 15],
+                                        align="left")
 
         self.text_column_selection = Text(self.window,
                                           text="Interval Sensors",
@@ -219,7 +234,7 @@ class CreateGraphingWindow:
                                       grid=[1, 26],
                                       align="left")
 
-        self.text_space3 = Text(self.window,
+        self.text_space4 = Text(self.window,
                                 text=" ",
                                 grid=[1, 35],
                                 align="right")
@@ -236,10 +251,42 @@ class CreateGraphingWindow:
                                       grid=[2, 36],
                                       align="left")
 
-        self.set_config()
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
+        self.checkbox_default_offset.value = 1
+        self._set_config()
         self._radio_selection()
+        self._click_checkbox_offset()
+        self.checkbox_up_time.value = 0
+        self.checkbox_temperature.value = 0
+        self.checkbox_pressure.value = 0
+        self.checkbox_humidity.value = 0
+        self.checkbox_lumen.value = 0
+        self.checkbox_colour.value = 0
 
-    def set_config(self):
+    def _master_checkbox(self):
+        """ Checks all sensor selection checkboxes. """
+        if self.checkbox_master.value:
+            self._enable_all_checkboxes()
+        else:
+            self._disable_all_checkboxes()
+
+    def _click_checkbox_offset(self):
+        """ Enable or disable custom Env temperature offset for a graph. """
+        if self.checkbox_default_offset.value:
+            self.textbox_temperature_offset.disable()
+            self.current_config.enable_custom_temp_offset = False
+        else:
+            self.textbox_temperature_offset.enable()
+            self.current_config.enable_custom_temp_offset = True
+            try:
+                self.current_config.temperature_offset = float(self.textbox_temperature_offset.value)
+            except Exception as error:
+                self.current_config.temperature_offset = 0
+                warn("Invalid Temperature Offset", "Please check and correct 'Env Temp Offset'")
+                app_logger.app_logger.warning("Invalid Graph 'Env Temp Offset': " + str(error))
+
+    def _set_config(self):
         """ Sets the programs Configuration to the provided settings. """
 
         self.textbox_start.value = self.current_config.graph_start
@@ -250,7 +297,7 @@ class CreateGraphingWindow:
 
     def _radio_selection(self):
         """ Enables or disables the Graph Window selections, based on graph type selected. """
-        self._enable_all_checkboxes()
+        self._enable_all_for_live()
         if self.radio_sensor_type.get() == "SQL Database":
             self.button_live.disable()
             self.textbox_refresh_time.disable()
@@ -258,8 +305,12 @@ class CreateGraphingWindow:
             self.textbox_start.enable()
             self.textbox_end.enable()
             self.textbox_sql_skip.enable()
-            self.textbox_temperature_offset.enable()
 
+            if not self.checkbox_default_offset.value:
+                self.textbox_temperature_offset.enable()
+
+            self.checkbox_master.enable()
+            self.checkbox_master.value = 1
             self.checkbox_up_time.enable()
             self.checkbox_up_time.value = 1
             self.checkbox_cpu_temp.enable()
@@ -283,14 +334,15 @@ class CreateGraphingWindow:
 
             self.button_database.enable()
 
-        if self.radio_sensor_type.get() == "Live":
+        if self.radio_sensor_type.get() == "Live Sensor":
             self.button_database.disable()
             self.textbox_sql_skip.disable()
             self.textbox_start.disable()
             self.textbox_end.disable()
-
             self.textbox_refresh_time.enable()
 
+            self.checkbox_master.disable()
+            self.checkbox_master.value = 0
             self.checkbox_up_time.enable()
             self.checkbox_up_time.value = 0
             self.checkbox_cpu_temp.enable()
@@ -316,29 +368,34 @@ class CreateGraphingWindow:
 
     def plotly_button(self):
         """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
-        new_data = app_graph.CreateGraphData()
+        new_data = CreateGraphData()
         new_data.db_location = filedialog.askopenfilename()
 
-        self.current_config.graph_start = self.textbox_start.value
-        self.current_config.graph_end = self.textbox_end.value
-        self.current_config.sql_queries_skip = self.textbox_sql_skip.value
-        self.current_config.temperature_offset = self.textbox_temperature_offset.value
+        if new_data.db_location.strip() is not "":
+            self.current_config.graph_start = self.textbox_start.value
+            self.current_config.graph_end = self.textbox_end.value
+            self.current_config.sql_queries_skip = self.textbox_sql_skip.value
+            self.current_config.temperature_offset = self.textbox_temperature_offset.value
 
-        app_config.check_config(self.current_config)
-        self.set_config()
+            app_config.check_config(self.current_config)
+            self._set_config()
 
-        new_data.save_to = self.current_config.save_to
-        new_data.graph_start = self.current_config.graph_start
-        new_data.graph_end = self.current_config.graph_end
-        new_data.datetime_offset = self.current_config.datetime_offset
-        new_data.sql_queries_skip = self.current_config.sql_queries_skip
-        new_data.temperature_offset = self.current_config.temperature_offset
-        new_data.graph_columns = self._get_column_checkboxes()
+            new_data.save_to = self.current_config.save_to
+            new_data.graph_start = self.current_config.graph_start
+            new_data.graph_end = self.current_config.graph_end
+            new_data.datetime_offset = self.current_config.datetime_offset
+            new_data.sql_queries_skip = self.current_config.sql_queries_skip
+            new_data.graph_columns = self._get_column_checkboxes()
+            new_data.enable_custom_temp_offset = self.current_config.enable_custom_temp_offset
+            new_data.temperature_offset = self.current_config.temperature_offset
 
-        app_graph.start_plotly_graph(new_data)
+            app_graph_plotly.start_plotly_graph(new_data)
+        else:
+            app_logger.app_logger.warning("Plotly Graph: No Database Selected")
 
     def live_button(self):
-        pyplot.close()
+        """ Creates and starts a 'Live Graph' based on graph selections & the first checked and online IP. """
+        app_graph_live.pyplot.close()
         try:
             ip = self.ip_selection.get_verified_ip_list()[0]
             checkbox = self._get_column_checkboxes()[3]
@@ -350,16 +407,16 @@ class CreateGraphingWindow:
             self.current_config.live_refresh = self.textbox_refresh_time.value
             self.current_config.temperature_offset = self.textbox_temperature_offset.value
             app_config.check_config(self.current_config)
-            self.set_config()
-
-            app_graph.CreateLiveGraph(checkbox, ip, self.current_config)
+            self._set_config()
+            app_graph_live.CreateLiveGraph(checkbox, ip, self.current_config)
+            # Thread(target=app_graph.CreateLiveGraph, args=[checkbox, ip, self.current_config]).start()
         else:
             warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
                                   "& Sensor Type from the Graph window")
 
     def _get_column_checkboxes(self):
         """ Returns selected SQL Columns from the Graph Window, depending on the Data Source Selected. """
-        sql_columns = app_graph.CreateSQLColumnNames()
+        sql_columns = app_graph_live.CreateSQLColumnNames()
         column_checkboxes = [sql_columns.date_time, sql_columns.sensor_name, sql_columns.ip]
 
         if self.checkbox_up_time.value:
@@ -399,7 +456,8 @@ class CreateGraphingWindow:
         app_logger.app_logger.debug(str(column_checkboxes))
         return column_checkboxes
 
-    def _enable_all_checkboxes(self):
+    def _enable_all_for_live(self):
+        """ Uncheck and allows all possible 'Live Graph' sensor type checkboxes. """
         self.checkbox_up_time.enable()
         self.checkbox_up_time.value = 0
         self.checkbox_cpu_temp.enable()
@@ -421,8 +479,35 @@ class CreateGraphingWindow:
         self.checkbox_gyro.enable()
         self.checkbox_gyro.value = 0
 
+    def _enable_all_checkboxes(self):
+        """ Check all sensor type checkboxes. """
+        self.checkbox_up_time.value = 1
+        self.checkbox_cpu_temp.value = 1
+        self.checkbox_temperature.value = 1
+        self.checkbox_pressure.value = 1
+        self.checkbox_humidity.value = 1
+        self.checkbox_lumen.value = 1
+        self.checkbox_colour.value = 1
+        self.checkbox_acc.value = 1
+        self.checkbox_mag.value = 1
+        self.checkbox_gyro.value = 1
+
+    def _disable_all_checkboxes(self):
+        """ Uncheck all sensor type checkboxes. """
+        self.checkbox_up_time.value = 0
+        self.checkbox_cpu_temp.value = 0
+        self.checkbox_temperature.value = 0
+        self.checkbox_pressure.value = 0
+        self.checkbox_humidity.value = 0
+        self.checkbox_lumen.value = 0
+        self.checkbox_colour.value = 0
+        self.checkbox_acc.value = 0
+        self.checkbox_mag.value = 0
+        self.checkbox_gyro.value = 0
+
     def _disable_other_checkboxes(self, var_checkbox):
-        if self.radio_sensor_type.value == "Live":
+        """ Disable all unselected sensor type checkboxes. """
+        if self.radio_sensor_type.value == "Live Sensor":
             unchecked = False
             if var_checkbox is self.sql_columns.system_uptime:
                 if self.checkbox_up_time.value == 0:
@@ -486,4 +571,4 @@ class CreateGraphingWindow:
                 self.checkbox_gyro.value = 0
 
             if unchecked:
-                self._enable_all_checkboxes()
+                self._enable_all_for_live()

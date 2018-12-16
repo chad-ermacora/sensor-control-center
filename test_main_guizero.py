@@ -1,35 +1,58 @@
+"""
+    KootNet Sensors is a collection of programs and scripts to deploy,
+    interact with, and collect readings from various Sensors.
+    Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 import os
 import unittest
-
+from time import sleep
 import app_config
-import app_graph
+import app_graph_live
 import app_reports
+import app_sensor_commands
 
 config_default = app_config.CreateDefaultConfigSettings()
 config_original = app_config.get_from_file()
 config_test = app_config.CreateDefaultConfigSettings()
 
-save_to = config_default.script_directory + "/test_files/"
+save_to = config_default.script_directory + "/test_files/output/"
 sensor_ip = "192.168.10.101"
+test_datetime = "2011-11-20 14:45:05"
 
 
 class TestApp(unittest.TestCase):
 
     # has _1_ to make sure it runs first
     def test_1_clean_old_test_files(self):
-        try:
-            os.remove(config_default.script_directory + "/test_files/PlotlySensorGraph.html")
-            os.remove(config_default.script_directory + "/test_files/SensorsSystemReport.html")
-            os.remove(config_default.script_directory + "/test_files/SensorsConfigReport.html")
-            os.remove(config_default.script_directory + "/test_files/SensorsReadingsReport.html")
-            print("\nOld test files removed")
-        except FileNotFoundError:
-            print("\nOld test files not found, continuing with tests")
+        delete_files = [save_to + "PlotlySensorGraph.html",
+                        save_to + "SensorsSystemReport.html",
+                        save_to + "SensorsConfigReport.html",
+                        save_to + "SensorsReadingsReport.html",
+                        save_to + "_" + sensor_ip[-3:] + "Primary_log.txt",
+                        save_to + "_" + sensor_ip[-3:] + "Sensors_log.txt",
+                        save_to + "_" + sensor_ip[-3:] + "Network_log.txt"]
+        for file in delete_files:
+            try:
+                os.remove(file)
+                print("\nRemoved OK: " + file)
+            except FileNotFoundError:
+                print("\nFile Not Found: " + file)
 
-        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/PlotlySensorGraph.html"))
-        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsSystemReport.html"))
-        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsConfigReport.html"))
-        self.assertFalse(os.path.isfile(config_default.script_directory + "/test_files/SensorsReadingsReport.html"))
+        for file in delete_files:
+            self.assertFalse(os.path.isfile(file))
 
     def test_app_config(self):
         # Initial setup complete
@@ -84,7 +107,7 @@ class TestApp(unittest.TestCase):
     def test_app_graph(self):
         # Interval & Trigger graph's and functions done.  Only Live Graph left to do.
         print("\nPlease review the opened graph for errors.\n")
-        test_graph = app_graph.CreateGraphData()
+        test_graph = app_graph_live.CreateGraphData()
         test_graph.db_location = config_default.script_directory + "/test_files/SensorRecordingDatabase.sqlite"
         test_graph.save_to = save_to
         test_graph.sql_queries_skip = 0
@@ -94,12 +117,12 @@ class TestApp(unittest.TestCase):
                                     "Acc_X", "Acc_Y", "Acc_Z", "Mag_X", "Mag_Y", "Mag_Z",
                                     "Gyro_X", "Gyro_Y", "Gyro_Z", "DateTime", "SensorName", "IP"]
 
-        app_graph.start_plotly_graph(test_graph)
+        app_graph_live.start_plotly_graph(test_graph)
 
-        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/PlotlySensorGraph.html"))
+        self.assertTrue(os.path.isfile(save_to + "PlotlySensorGraph.html"))
 
-        self.assertEqual(app_graph._adjust_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
-        self.assertEqual(app_graph._adjust_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
+        self.assertEqual(app_graph_live._adjust_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
+        self.assertEqual(app_graph_live._adjust_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
 
     def test_app_reports(self):
         # # Initial setup complete - Requires a look over the generated reports by human
@@ -112,13 +135,54 @@ class TestApp(unittest.TestCase):
         app_reports.sensor_html_report(app_reports.CreateHTMLConfigData(config_test), [sensor_ip])
         app_reports.sensor_html_report(app_reports.CreateHTMLReadingsData(config_test), [sensor_ip])
 
-        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorsSystemReport.html"))
-        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorsConfigReport.html"))
-        self.assertTrue(os.path.isfile(config_default.script_directory + "/test_files/SensorsReadingsReport.html"))
+        sleep(3)
+
+        self.assertTrue(os.path.isfile(save_to + "SensorsSystemReport.html"))
+        self.assertTrue(os.path.isfile(save_to + "SensorsConfigReport.html"))
+        self.assertTrue(os.path.isfile(save_to + "SensorsReadingsReport.html"))
 
     def test_app_sensor_commands(self):
-        # I need to figure out how to create a "Virtual" sensor, as I don't want to run all commands on a live one...
-        print("\nNo sensor command tests yet ...")
+        print("\nThis REQUIRES an online sensor @ " + sensor_ip)
+        get_network_commands = app_sensor_commands.CreateNetworkGetCommands()
+        send_network_commands = app_sensor_commands.CreateNetworkSendCommands()
+        network_timeout = config_default.network_timeout_data
+        sensor_command = app_sensor_commands.CreateSensorNetworkCommand(sensor_ip, network_timeout, "")
+
+        http_log_download = app_sensor_commands.CreateSensorNetworkCommand(sensor_ip, 2, "")
+        http_log_download.save_to_location = save_to
+
+        sensor_status = app_sensor_commands.check_sensor_status(sensor_ip, network_timeout)
+        self.assertEqual(sensor_status, "Online")
+
+        app_sensor_commands.download_logs(http_log_download)
+        sleep(2)
+        self.assertTrue(os.path.isfile(save_to + "_" + sensor_ip[-3:] + "PrimaryLog.txt"))
+        self.assertTrue(os.path.isfile(save_to + "_" + sensor_ip[-3:] + "SensorsLog.txt"))
+        self.assertTrue(os.path.isfile(save_to + "_" + sensor_ip[-3:] + "NetworkLog.txt"))
+
+        sensor_command.command = get_network_commands.sensor_name
+        old_hostname = app_sensor_commands.get_data(sensor_command)
+        sleep(2)
+        good_hostname = app_sensor_commands.get_validated_hostname("^^$##_###This.is$NOT-Good!**")
+        self.assertEqual(good_hostname, "_________This_is_NOT_Good___")
+
+        sensor_command.command = send_network_commands.set_host_name
+        sensor_command.command_data = good_hostname
+        app_sensor_commands.send_command(sensor_command)
+        sleep(2)
+        sensor_command.command = get_network_commands.sensor_name
+        verify_hostname = app_sensor_commands.get_data(sensor_command)
+        sleep(2)
+        self.assertEqual(verify_hostname, good_hostname)
+
+        sensor_command.command = send_network_commands.set_host_name
+        sensor_command.command_data = old_hostname
+        app_sensor_commands.send_command(sensor_command)
+        sleep(2)
+        sensor_command.command = get_network_commands.sensor_name
+        verify_hostname = app_sensor_commands.get_data(sensor_command)
+        sleep(2)
+        self.assertEqual(verify_hostname, old_hostname)
 
 
 if __name__ == '__main__':

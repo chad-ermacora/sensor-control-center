@@ -16,25 +16,29 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import pickle
 import re
-import socket
-from tkinter import simpledialog
-from urllib.request import urlopen
+from shutil import copyfileobj
+
+import requests
 
 import app_logger
 
 
-class CreateCommandData:
-    def __init__(self, ip, net_timeout, command):
+class CreateSensorNetworkCommand:
+    def __init__(self, ip, network_timeout, command):
         self.ip = ip
-        self.net_timeout = net_timeout
+        self.network_timeout = network_timeout
         self.command = command
+        self.command_data = ""
+        self.save_to_location = "/home/pi/"
 
 
 class CreateNetworkGetCommands:
     def __init__(self):
-        self.sensor_configuration = "GetConfiguration"
+        self.sensor_sql_database = "DownloadSQLDatabase"
+        self.sensor_configuration = "GetConfigurationReport"
+        self.sensor_configuration_file = "GetConfiguration"
+        self.installed_sensors_file = "GetInstalledSensors"
         self.system_data = "GetSystemData"
         self.sensors_log = "GetSensorsLog"
         self.primary_log = "GetPrimaryLog"
@@ -44,10 +48,11 @@ class CreateNetworkGetCommands:
         self.system_uptime = "GetSystemUptime"
         self.cpu_temp = "GetCPUTemperature"
         self.environmental_temp = "GetEnvTemperature"
+        self.env_temp_offset = "GetTempOffsetEnv"
         self.pressure = "GetPressure"
         self.humidity = "GetHumidity"
         self.lumen = "GetLumen"
-        self.rgb = "GetRGB"
+        self.rgb = "GetEMS"
         self.accelerometer_xyz = "GetAccelerometerXYZ"
         self.magnetometer_xyz = "GetMagnetometerXYZ"
         self.gyroscope_xyz = "GetGyroscopeXYZ"
@@ -63,103 +68,120 @@ class CreateNetworkSendCommands:
         self.upgrade_smb = "UpgradeSMB"
         self.clean_upgrade_online = "CleanOnline"
         self.clean_upgrade_smb = "CleanSMB"
-        self.set_host_name = "ChangeHostName"
+        self.set_host_name = "SetHostName"
         self.set_datetime = "SetDateTime"
         self.set_configuration = "SetConfiguration"
+        self.set_installed_sensors = "SetInstalledSensors"
+        self.put_sql_note = "PutDatabaseNote"
 
 
-class CreateHTTPDownload:
-    def __init__(self):
-        self.ip = "127.0.0.1"
-        self.port = ":8009"
-        self.url = "/"
-        self.file_name = "wrong_file.default"
-        self.save_to_location = "/home/pi/"
-
-
-def check_sensor_status(ip, net_timeout):
+def check_sensor_status(ip, network_timeout):
     """ Socket connection to sensor IP. Return sensor status. """
-    socket.setdefaulttimeout(net_timeout)
-    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sensor_command = CreateSensorNetworkCommand(ip, network_timeout, "CheckOnlineStatus")
+    sensor_status_check = get_data(sensor_command)
 
-    try:
-        sock_g.connect((ip, 10065))
-        sock_g.send(b'CheckOnlineStatus')
+    if sensor_status_check == "OK":
         sensor_status = "Online"
-        app_logger.sensor_logger.debug("IP: " + str(ip) + " Online")
-    except Exception as error:
-        app_logger.sensor_logger.info("IP: " + str(ip) + " Offline: " + str(error))
+    else:
         sensor_status = "Offline"
-    sock_g.close()
 
+    app_logger.sensor_logger.debug("IP: " + str(ip) + sensor_status)
     return sensor_status
 
 
-def download_logs(download_obj):
-    """ Download 3 log files. """
-    download_obj.file_name = "Primary_log.txt"
-    download_http_file(download_obj)
+def download_sensor_database(sensor_command):
+    """ Returns requested sensor file (based on the provided command data). """
+    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
 
-    download_obj.file_name = "Sensors_log.txt"
-    download_http_file(download_obj)
-
-    download_obj.file_name = "Network_log.txt"
-    download_http_file(download_obj)
-
-
-def download_http_file(obj_download):
-    """ Download provided HTTP file to locally chosen directory. """
     try:
-        http_file = urlopen(
-            "http://" + obj_download.ip + obj_download.port + obj_download.url + obj_download.file_name)
-        local_file = open(obj_download.save_to_location + "/_" + obj_download.ip[-3:] + obj_download.file_name, 'wb')
-        local_file.write(http_file.read())
-        http_file.close()
-        local_file.close()
-        app_logger.sensor_logger.info("Download " + obj_download.file_name + " from " + obj_download.ip + " Complete")
+        return_data = requests.get(url, timeout=sensor_command.network_timeout, stream=True)
+        app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
+        sensor_database = open(sensor_command.save_to_location + "/" +
+                               sensor_command.ip[-3:] + "SensorRecordingDatabase" +
+                               ".sqlite", "wb")
+        copyfileobj(return_data.raw, sensor_database)
+        sensor_database.close()
     except Exception as error:
-        app_logger.sensor_logger.error(
-            "Download " + obj_download.file_name + " from " + obj_download.ip + " Failed: " + str(error))
+        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(sensor_command.ip))
+        app_logger.sensor_logger.debug(str(error))
 
 
-def request_new_name(ip):
-    tmp_hostname = simpledialog.askstring(ip, "New Hostname: ")
-    app_logger.sensor_logger.debug(tmp_hostname)
+def download_logs(sensor_command):
+    """ Download 3 log files. """
+    sensor_command.command = "DownloadPrimaryLog"
 
-    if tmp_hostname is not None and tmp_hostname is not "":
-        new_hostname = re.sub('\W', '_', tmp_hostname)
-        app_logger.sensor_logger.debug(new_hostname)
-        return new_hostname
+    log_file_data = get_data(sensor_command)
+    try:
+        log_file = open(sensor_command.save_to_location + "/_" + sensor_command.ip[-3:] + "PrimaryLog.txt", "w")
+        log_file.write(log_file_data)
+        log_file.close()
+    except Exception as error:
+        app_logger.sensor_logger.error("PrimaryLog Failed: " + str(error))
+
+    sensor_command.command = "DownloadNetworkLog"
+    log_file_data = get_data(sensor_command)
+    try:
+        log_file = open(sensor_command.save_to_location + "/_" + sensor_command.ip[-3:] + "NetworkLog.txt", "w")
+        log_file.write(log_file_data)
+        log_file.close()
+    except Exception as error:
+        app_logger.sensor_logger.error("NetworkLog Failed: " + str(error))
+
+    sensor_command.command = "DownloadSensorsLog"
+    log_file_data = get_data(sensor_command)
+    try:
+        log_file = open(sensor_command.save_to_location + "/_" + sensor_command.ip[-3:] + "SensorsLog.txt", "w")
+        log_file.write(log_file_data)
+        log_file.close()
+    except Exception as error:
+        app_logger.sensor_logger.error("SensorsLog Failed: " + str(error))
+
+
+def get_validated_hostname(hostname):
+    if hostname is not None and hostname is not "":
+        final_hostname = re.sub("[^A-Za-z0-9_]", "_", hostname)
+        app_logger.sensor_logger.debug(final_hostname)
+        return final_hostname
     else:
         app_logger.sensor_logger.warning("Hostname Cancelled or blank")
+        return "Cancelled"
 
 
-def send_command(command_data):
-    """ Socket connection to sensor IP. Sends provided text as command. """
-    socket.setdefaulttimeout(command_data.net_timeout)
-    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    try:
-        sock_g.connect((command_data.ip, 10065))
-        sock_g.send(command_data.command.encode())
-        app_logger.sensor_logger.info(command_data.command + " to " + command_data.ip + " - OK")
-    except Exception as error:
-        app_logger.sensor_logger.warning(command_data.command + " to " + command_data.ip + " - Failed: " + str(error))
-    sock_g.close()
-
-
-def get_data(command_data):
-    """ Socket connection to sensor IP. Return sensor's data. """
-    socket.setdefaulttimeout(command_data.net_timeout)
-    sock_g = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def send_command(sensor_command):
+    """ Sends command to sensor (based on provided command data). """
+    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
 
     try:
-        sock_g.connect((command_data.ip, 10065))
-        sock_g.send(command_data.command.encode())
-        var_data = pickle.loads(sock_g.recv(4096))
-        sock_g.close()
-        app_logger.sensor_logger.debug(command_data.command + " to " + command_data.ip + " - OK")
+        requests.get(url, timeout=sensor_command.network_timeout, headers={'Connection': 'close'})
+        app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
-        var_data = ""
-        app_logger.sensor_logger.warning(command_data.command + " to " + command_data.ip + " - Failed: " + str(error))
-    return var_data
+        app_logger.sensor_logger.debug(str(error))
+
+
+def put_command(sensor_command):
+    """ Sends command to sensor (based on provided command data). """
+    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+
+    try:
+        requests.put(url, timeout=sensor_command.network_timeout, data={'command_data': sensor_command.command_data})
+        app_logger.sensor_logger.info(sensor_command.command + " to " + sensor_command.ip + " - OK")
+    except Exception as error:
+        app_logger.sensor_logger.debug(str(error))
+
+
+def get_data(sensor_command):
+    """ Returns requested sensor data (based on the provided command data). """
+    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+
+    try:
+        tmp_return_data = requests.get(url, timeout=sensor_command.network_timeout)
+        app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
+        return_data = tmp_return_data.text
+    except Exception as error:
+        return_data = "Sensor Offline"
+        if sensor_command.command == "CheckOnlineStatus":
+            app_logger.sensor_logger.warning("Sensor " + str(sensor_command.ip) + " Offline")
+        else:
+            app_logger.sensor_logger.warning("Sensor " + str(sensor_command.ip) + " Error")
+        app_logger.sensor_logger.debug(str(error))
+    return return_data

@@ -26,13 +26,15 @@ import app_sensor_commands
 
 
 class CreateSensorLogsWindow:
+    """ Creates a GUI window for viewing and or downloading sensor logs. """
+
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
 
         self.window = Window(app,
                              title="Sensor Logs",
-                             width=895,
+                             width=975,
                              height=450,
                              layout="grid",
                              visible=False)
@@ -62,13 +64,14 @@ class CreateSensorLogsWindow:
 
         self.textbox_log = TextBox(self.window,
                                    text="\nPlease select the log type in the top right" +
-                                        " and press the button 'Update Sensor Log View' in the bottom right\n\n" +
+                                        " and press 'Update Sensor Log View' in the bottom right\n\n" +
                                         "You may also use the 'Download' menu in the top left to " +
-                                        "download ALL logs off ALL selected Sensors",
+                                        "download ALL logs from selected sensors to a chosen folder",
                                    grid=[1, 2],
-                                   width=110,
+                                   width=118,
                                    height=22,
                                    multiline=True,
+                                   scrollbar=True,
                                    align="left")
 
         self.button_get = PushButton(self.window,
@@ -77,40 +80,46 @@ class CreateSensorLogsWindow:
                                      grid=[1, 3],
                                      align="right")
 
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
+        self.textbox_log.bg = "black"
+        self.textbox_log.text_color = "white"
+        self.textbox_log.tk.config(insertbackground="red")
+
     def _get_log(self):
-        """ Select the remote sensor log you wish to view. """
+        """ Displays the chosen remote sensor log. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        command_data = app_sensor_commands.CreateCommandData(ip_list[0],
-                                                             self.current_config.network_timeout_data,
-                                                             "GetNetworkLog")
-        if self.radio_log_type.value == "Network Log":
-            log = app_sensor_commands.get_data(command_data)
-        elif self.radio_log_type.value == "Primary Log":
-            command_data.command = "GetPrimaryLog"
-            log = app_sensor_commands.get_data(command_data)
-        elif self.radio_log_type.value == "Sensors Log":
-            command_data.command = "GetSensorsLog"
-            log = app_sensor_commands.get_data(command_data)
+        if len(ip_list) > 0:
+            network_timeout = self.current_config.network_timeout_data
+            command_data = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0], network_timeout, "GetNetworkLog")
+            if self.radio_log_type.value == "Network Log":
+                log = app_sensor_commands.get_data(command_data)
+            elif self.radio_log_type.value == "Primary Log":
+                command_data.command = "GetPrimaryLog"
+                log = app_sensor_commands.get_data(command_data)
+            elif self.radio_log_type.value == "Sensors Log":
+                command_data.command = "GetSensorsLog"
+                log = app_sensor_commands.get_data(command_data)
+            else:
+                app_logger.app_logger.error("Bad Log Request")
+                log = "Bad Log Request"
+            self.textbox_log.value = log
         else:
-            app_logger.app_logger.error("Bad Log Request")
-            log = "Bad Log Request"
-        self.textbox_log.value = log
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
 
     def _download_logs(self):
+        """ Download all selected and online sensors logs. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        if len(ip_list) >= 1:
+        if len(ip_list) > 0:
             threads = []
             download_to_location = filedialog.askdirectory()
+            network_timeout = self.current_config.network_timeout_data
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    download_obj = app_sensor_commands.CreateHTTPDownload()
-                    download_obj.ip = ip
-                    download_obj.url = "/logs/"
-                    download_obj.save_to_location = download_to_location
-
-                    threads.append(Thread(target=app_sensor_commands.download_logs,
-                                          args=[download_obj]))
+                    sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, "")
+                    sensor_command.save_to_location = download_to_location
+                    threads.append(Thread(target=app_sensor_commands.download_logs, args=[sensor_command]))
 
                 for thread in threads:
                     thread.start()
@@ -122,4 +131,4 @@ class CreateSensorLogsWindow:
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:
-            warn("No IP Selected", "Please Select at least 1 Sensor IP")
+            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")

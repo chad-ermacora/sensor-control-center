@@ -23,6 +23,8 @@ from app_config import app_version
 
 
 class CreateAboutWindow:
+    """ Creates a GUI window for program & license information. """
+
     def __init__(self, app, current_config):
         self.current_config = current_config
         self.about_text = self.current_config.additional_files_directory + "/about_text.txt"
@@ -45,9 +47,14 @@ class CreateAboutWindow:
                                      width=75,
                                      height=18,
                                      multiline=True,
-                                     align="right")
+                                     align="left")
+
+        # Window Tweaks
+        self.window.tk.resizable(False, False)
         self._set_about_text()
         self.about_textbox.disable()
+        self.about_textbox.bg = "black"
+        self.about_textbox.text_color = "white"
 
     def _set_about_text(self):
         """ Loads and sets the about text from file. """
