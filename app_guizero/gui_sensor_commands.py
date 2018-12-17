@@ -164,7 +164,7 @@ class CreateSensorCommandsWindow:
             thread.start()
 
         if len(ip_list) > 0:
-            message = command + " sent OK to " + str(len(ip_list)) + " Sensors"
+            message = command + " sent to " + str(len(ip_list)) + " sensors"
             info("Sensors Command Sent", message)
         else:
             warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
