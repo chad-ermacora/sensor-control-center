@@ -19,10 +19,11 @@
 from threading import Thread
 from tkinter import simpledialog
 
-from guizero import Window, PushButton, Text, info, MenuBar, warn
+from guizero import Window, PushButton, Text, info, MenuBar
 
 import app_modules.app_logger as app_logger
 import app_modules.app_sensor_commands as app_sensor_commands
+from app_modules.app_useful import no_ip_selected_message
 
 network_commands = app_sensor_commands.CreateNetworkSendCommands()
 
@@ -164,10 +165,15 @@ class CreateSensorCommandsWindow:
             thread.start()
 
         if len(ip_list) > 0:
-            message = command + " sent to " + str(len(ip_list)) + " sensors"
-            info("Sensors Command Sent", message)
+            message = command + " sent to " + str(len(ip_list))
+            if len(ip_list) is 1:
+                message += " sensor"
+            else:
+                message += " sensors"
+
+            info("Sensor Command Sent", message)
         else:
-            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+            no_ip_selected_message()
 
     def hostname_change(self):
         """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
@@ -194,7 +200,7 @@ class CreateSensorCommandsWindow:
             for thread in threads:
                 thread.start()
         else:
-            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+            no_ip_selected_message()
 
     def datetime_update(self):
         """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
@@ -215,4 +221,4 @@ class CreateSensorCommandsWindow:
 
             info("Sensors DateTime Set", "Sensors Date & Time synchronized with local computer's")
         else:
-            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+            no_ip_selected_message()
