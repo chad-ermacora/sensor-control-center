@@ -16,12 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, Text, TextBox, PushButton, info, CheckBox, warn
+from guizero import Window, Text, TextBox, PushButton, info, CheckBox
 
 import app_modules.app_logger as app_logger
 import app_modules.app_sensor_commands as app_sensor_commands
 from app_modules.app_graph import adjust_datetime
-from app_modules.app_useful import sql_default_textbox_note
+from app_modules.app_useful import sql_default_textbox_note, no_ip_selected_message
 
 
 class CreateSQLNotesWindow:
@@ -137,7 +137,7 @@ class CreateSQLNotesWindow:
                                           " sensors with DateTime " +
                                           datetime)
         else:
-            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+            no_ip_selected_message()
 
     def _reset_datetime(self):
         """ Reset note Date & Time stamp. """

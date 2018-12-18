@@ -18,6 +18,8 @@
 """
 import webbrowser
 
+from guizero import warn
+
 import app_modules.app_logger as app_logger
 
 default_installed_sensors_text = """
@@ -62,6 +64,10 @@ laser emitting sheep in the area.
 Notice how it only shows in the Near-Infrared spectrum. 
   - Random Zoologist
 """
+
+
+def no_ip_selected_message():
+    warn("No Sensor IP", "Please select at least one online sensor IP\n\nSelect sensor IPs in the main window")
 
 
 def convert_minutes_string(var_minutes):

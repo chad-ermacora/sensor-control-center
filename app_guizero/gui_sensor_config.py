@@ -18,11 +18,11 @@
 """
 from threading import Thread
 
-from guizero import Window, PushButton, Text, TextBox, info, Combo, warn
+from guizero import Window, PushButton, Text, TextBox, info, Combo
 
 import app_modules.app_logger as app_logger
 import app_modules.app_sensor_commands as app_sensor_commands
-from app_modules.app_useful import default_installed_sensors_text, default_sensor_config_text
+from app_modules.app_useful import default_installed_sensors_text, default_sensor_config_text, no_ip_selected_message
 
 
 class CreateSensorConfigWindow:
@@ -117,7 +117,7 @@ class CreateSensorConfigWindow:
             except Exception as error:
                 app_logger.sensor_logger.error(str(error))
         else:
-            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+            no_ip_selected_message()
 
     def button_set(self):
         """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
@@ -148,4 +148,4 @@ class CreateSensorConfigWindow:
             info("Sensors " + self.combo_dropdown_selection.value + " Set",
                  self.combo_dropdown_selection.value + " set & services restarted on:\n" + str(ip_list)[1:-1])
         else:
-            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+            no_ip_selected_message()

@@ -37,7 +37,9 @@ from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
 from app_guizero.gui_sensor_config import CreateSensorConfigWindow
 from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
 from app_guizero.gui_sql_notes import CreateSQLNotesWindow
-from app_modules.app_sensor_commands import CreateNetworkGetCommands, CreateSensorNetworkCommand, download_sensor_database
+from app_modules.app_sensor_commands import CreateNetworkGetCommands, CreateSensorNetworkCommand, \
+    download_sensor_database
+from app_modules.app_useful import no_ip_selected_message
 
 
 class CreateMainWindow:
@@ -177,7 +179,7 @@ class CreateMainWindow:
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:
-            warn("No IP Selected", "Please Select at least 1 Sensor IP")
+            no_ip_selected_message()
 
     @staticmethod
     def _app_menu_open_website():

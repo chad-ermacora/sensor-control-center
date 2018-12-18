@@ -23,6 +23,7 @@ from guizero import Window, Text, TextBox, ButtonGroup, PushButton, MenuBar, inf
 
 import app_modules.app_logger as app_logger
 import app_modules.app_sensor_commands as app_sensor_commands
+from app_modules.app_useful import no_ip_selected_message
 
 
 class CreateSensorLogsWindow:
@@ -105,7 +106,7 @@ class CreateSensorLogsWindow:
                 log = "Bad Log Request"
             self.textbox_log.value = log
         else:
-            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+            no_ip_selected_message()
 
     def _download_logs(self):
         """ Download all selected and online sensors logs. """
@@ -131,4 +132,4 @@ class CreateSensorLogsWindow:
             else:
                 warn("Warning", "User Cancelled Download Operation")
         else:
-            warn("No Sensor IP", "Please select at least one online sensor IP from the main window")
+            no_ip_selected_message()
