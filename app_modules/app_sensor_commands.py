@@ -40,9 +40,12 @@ class CreateNetworkGetCommands:
         self.sensor_configuration_file = "GetConfiguration"
         self.installed_sensors_file = "GetInstalledSensors"
         self.system_data = "GetSystemData"
-        self.sensors_log = "GetSensorsLog"
         self.primary_log = "GetPrimaryLog"
         self.network_log = "GetNetworkLog"
+        self.sensors_log = "GetSensorsLog"
+        self.download_primary_log = "DownloadPrimaryLog"
+        self.download_network_log = "DownloadNetworkLog"
+        self.download_sensors_log = "DownloadSensorsLog"
         self.sensor_readings = "GetSensorReadings"
         self.sensor_name = "GetHostName"
         self.system_uptime = "GetSystemUptime"
@@ -109,13 +112,13 @@ def download_logs(sensor_command):
     """ Download 3 log files. """
     sensor_get_commands = CreateNetworkGetCommands()
 
-    sensor_command.command = sensor_get_commands.primary_log
+    sensor_command.command = sensor_get_commands.download_primary_log
     _get_logs(sensor_command, "PrimaryLog.txt")
 
-    sensor_command.command = sensor_get_commands.network_log
+    sensor_command.command = sensor_get_commands.download_network_log
     _get_logs(sensor_command, "NetworkLog.txt")
 
-    sensor_command.command = sensor_get_commands.sensors_log
+    sensor_command.command = sensor_get_commands.download_sensors_log
     _get_logs(sensor_command, "SensorsLog.txt")
 
 
