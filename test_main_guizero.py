@@ -129,7 +129,7 @@ class TestApp(unittest.TestCase):
     def test_app_reports(self):
         # # Initial setup complete - Requires a look over the generated reports by human
         print("\nThis REQUIRES an online sensor @ " + sensor_ip + "\nPlease review the 3 opened Reports for errors.")
-        self.assertEqual(app_reports.convert_minutes_string(7634), "5 Days / 7.14 Hours")
+        self.assertEqual(app_reports.convert_minutes_string(7634), "5 Days, 7 Hours & 14 Min")
 
         config_test.save_to = save_to
 
@@ -154,13 +154,13 @@ class TestApp(unittest.TestCase):
         http_log_download.save_to_location = save_to
 
         sensor_status = app_sensor_commands.check_sensor_status(sensor_ip, network_timeout)
-        self.assertEqual(sensor_status, "Online")
+        self.assertEqual(sensor_status, "OK")
 
         app_sensor_commands.download_logs(http_log_download)
         sleep(2)
-        self.assertTrue(os.path.isfile(save_to + "_" + sensor_ip[-3:] + "PrimaryLog.txt"))
-        self.assertTrue(os.path.isfile(save_to + "_" + sensor_ip[-3:] + "SensorsLog.txt"))
-        self.assertTrue(os.path.isfile(save_to + "_" + sensor_ip[-3:] + "NetworkLog.txt"))
+        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:] + "PrimaryLog.txt"))
+        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:] + "SensorsLog.txt"))
+        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:] + "NetworkLog.txt"))
 
         sensor_command.command = get_network_commands.sensor_name
         old_hostname = app_sensor_commands.get_data(sensor_command)
