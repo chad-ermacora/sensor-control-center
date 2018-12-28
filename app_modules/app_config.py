@@ -23,7 +23,7 @@ from datetime import datetime
 
 import app_modules.app_logger as app_logger
 
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.23.10"
+app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.23.11"
 current_platform = platform.system()
 
 
@@ -36,7 +36,7 @@ class CreateDefaultConfigSettings:
         self.logs_directory = self.script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
         if current_platform == "Linux":
-            self.config_file = "/etc/kootnet/control_center_config.conf"
+            self.config_file = "/etc/kootnet/control_center.conf"
             self.config_folder = "/etc/kootnet/"
         else:
             self.config_file = self.script_directory + "/config.txt"
