@@ -43,9 +43,9 @@ class TestApp(unittest.TestCase):
                         save_to + "SensorsSystemReport.html",
                         save_to + "SensorsConfigReport.html",
                         save_to + "SensorsReadingsReport.html",
-                        save_to + "_" + sensor_ip[-3:] + "Primary_log.txt",
-                        save_to + "_" + sensor_ip[-3:] + "Sensors_log.txt",
-                        save_to + "_" + sensor_ip[-3:] + "Network_log.txt"]
+                        save_to + sensor_ip[-3:].replace(".", "_") + "PrimaryLog.txt",
+                        save_to + sensor_ip[-3:].replace(".", "_") + "NetworkLog.txt",
+                        save_to + sensor_ip[-3:].replace(".", "_") + "SensorsLog.txt"]
         for file in delete_files:
             try:
                 os.remove(file)
@@ -158,9 +158,9 @@ class TestApp(unittest.TestCase):
 
         app_sensor_commands.download_logs(http_log_download)
         sleep(2)
-        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:] + "PrimaryLog.txt"))
-        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:] + "SensorsLog.txt"))
-        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:] + "NetworkLog.txt"))
+        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:].replace(".", "_") + "PrimaryLog.txt"))
+        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:].replace(".", "_") + "NetworkLog.txt"))
+        self.assertTrue(os.path.isfile(save_to + sensor_ip[-3:].replace(".", "_") + "SensorsLog.txt"))
 
         sensor_command.command = get_network_commands.sensor_name
         old_hostname = app_sensor_commands.get_data(sensor_command)
