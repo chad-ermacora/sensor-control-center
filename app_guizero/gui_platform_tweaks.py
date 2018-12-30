@@ -16,15 +16,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import platform
+from platform import system
 
 
 def app_custom_configurations(main_app):
     """ Apply system & user specific settings to application.  Used just before application start. """
 
-    if platform.system() == "Windows":
+    if system() == "Windows":
         main_app.app.tk.iconbitmap(main_app.current_config.additional_files_directory + "/icon.ico")
-    elif platform.system() == "Linux":
+    elif system() == "Linux":
         main_app.app.width = 490
         main_app.app.height = 240
         main_app.window_control_center_config.window.width = 675
