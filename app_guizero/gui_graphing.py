@@ -432,21 +432,17 @@ class CreateGraphingWindow:
         if self.checkbox_lumen.value:
             column_checkboxes.append(sql_columns.lumen)
         if self.checkbox_colour.value:
-            column_checkboxes.append(sql_columns.rgb[0])
-            column_checkboxes.append(sql_columns.rgb[1])
-            column_checkboxes.append(sql_columns.rgb[2])
+            for colour in sql_columns.six_chan_color:
+                column_checkboxes.append(colour)
         if self.checkbox_acc.value:
-            column_checkboxes.append(sql_columns.accelerometer_xyz[0])
-            column_checkboxes.append(sql_columns.accelerometer_xyz[1])
-            column_checkboxes.append(sql_columns.accelerometer_xyz[2])
+            for axis in sql_columns.accelerometer_xyz:
+                column_checkboxes.append(axis)
         if self.checkbox_mag.value:
-            column_checkboxes.append(sql_columns.magnetometer_xyz[0])
-            column_checkboxes.append(sql_columns.magnetometer_xyz[1])
-            column_checkboxes.append(sql_columns.magnetometer_xyz[2])
+            for axis in sql_columns.magnetometer_xyz:
+                column_checkboxes.append(axis)
         if self.checkbox_gyro.value:
-            column_checkboxes.append(sql_columns.gyroscope_xyz[0])
-            column_checkboxes.append(sql_columns.gyroscope_xyz[1])
-            column_checkboxes.append(sql_columns.gyroscope_xyz[2])
+            for axis in sql_columns.gyroscope_xyz:
+                column_checkboxes.append(axis)
 
         if self.checkbox_gyro.value or self.checkbox_mag.value or self.checkbox_acc.value:
             column_checkboxes.append(sql_columns.date_time)
