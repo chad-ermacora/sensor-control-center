@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
+from platform import system
 
 import app_modules.app_logger as app_logger
 
@@ -81,6 +82,11 @@ class CreateGraphData:
     """ Creates an object to hold all the data needed for a graph. """
 
     def __init__(self):
+        if system() == "Linux":
+            self.enable_plotly_webgl = False
+        else:
+            self.enable_plotly_webgl = True
+
         self.db_location = ""
         self.save_to = ""
         self.graph_start = "1111-08-21 00:00:01"
@@ -91,8 +97,9 @@ class CreateGraphData:
         self.enable_custom_temp_offset = True
         self.temperature_offset = 0.0
 
-        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
-                              "EnvTempOffset", "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
+        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp",
+                              "EnvironmentTemp", "EnvTempOffset", "Pressure", "Humidity", "Lumen",
+                              "Red", "Orange", "Yellow", "Green", "Blue", "Violet"]
         self.max_sql_queries = 200000
 
         # Graph data holders for SQL DataBase
@@ -108,8 +115,11 @@ class CreateGraphData:
         self.sql_humidity = []
         self.sql_lumen = []
         self.sql_red = []
+        self.sql_orange = []
+        self.sql_yellow = []
         self.sql_green = []
         self.sql_blue = []
+        self.sql_violet = []
 
         self.sql_trigger_time = []
         self.sql_trigger_ip = []
