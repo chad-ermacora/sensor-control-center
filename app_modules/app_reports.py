@@ -44,8 +44,8 @@ class CreateHTMLSystemData:
                                   "{{CPUTemp}}",
                                   "{{FreeDisk}}",
                                   "{{SQLDBSize}}",
-                                  "{{SQLWriteEnabled}}",
-                                  "{{CustomEnabled}}",
+                                  "{{IntervalSQLWriteEnabled}}",
+                                  "{{TriggerSQLWriteEnabled}}",
                                   "{{LastUpdated}}"]
 
         self.local_time_code = ["{{LocalDateTime}}"]
@@ -98,13 +98,11 @@ class CreateHTMLConfigData:
         self.replacement_codes = ["{{HostName}}",
                                   "{{IP}}",
                                   "{{DateTime}}",
+                                  "{{IntervalSQLWriteEnabled}}",
+                                  "{{TriggerSQLWriteEnabled}}",
                                   "{{IntervalDuration}}",
-                                  "{{TriggerDuration}}",
-                                  "{{SQLWriteEnabled}}",
-                                  "{{CustomEnabled}}",
-                                  "{{CustomAcc}}",
-                                  "{{CustomMag}}",
-                                  "{{CustomGyro}}",
+                                  "{{CustomTempOffset}}",
+                                  "{{TemperatureOffset}}",
                                   "{{InstalledSensors}}"]
 
         self.local_time_code = ["{{LocalDateTime}}"]
@@ -131,9 +129,7 @@ class CreateHTMLConfigData:
                                str(sensor_config[2]),
                                str(sensor_config[3]),
                                str(sensor_config[4]),
-                               str(sensor_config[5]),
-                               str(sensor_config[6]),
-                               str(sensor_config[7])]
+                               str(sensor_config[5])]
         data_queue.put([ip, final_sensor_config])
 
 

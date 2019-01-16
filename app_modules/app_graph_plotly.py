@@ -238,13 +238,13 @@ def _plotly_graph(graph_data):
                            color='rgba(153, 0, 204, .9)',
                            line=dict(width=2, color='rgb(0, 0, 0)'))
 
-        mark_x = dict(size=3,
+        mark_x = dict(size=5,
                       color='rgba(255, 0, 0, 1)')
 
-        mark_y = dict(size=3,
+        mark_y = dict(size=5,
                       color='rgba(0, 255, 0, 1)')
 
-        mark_z = dict(size=3,
+        mark_z = dict(size=5,
                       color='rgba(0, 0, 255, 1)')
 
         if len(graph_data.sql_interval_host_name) > 1:

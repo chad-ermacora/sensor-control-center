@@ -201,7 +201,7 @@ class CreateGraphingWindow:
                                        align="left")
 
         self.checkbox_colour = CheckBox(self.window,
-                                        text=self.readable_column_names.rgb,
+                                        text=self.readable_column_names.colours,
                                         command=self._disable_other_checkboxes,
                                         args=[self.sql_columns.rgb],
                                         grid=[2, 18],

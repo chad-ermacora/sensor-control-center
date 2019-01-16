@@ -168,7 +168,7 @@ class CreateLiveGraph:
 
             sensor_type_name = self.readable_column_names.lumen
             measurement_type = self.sensor_measurements.lumen
-        elif self.sensor_type == self.sql_column_names.rgb[0]:
+        elif self.sensor_type == self.sql_column_names.six_chan_color[0]:
             try:
                 command_data.command = self.get_commands.rgb
                 ems_colors = app_sensor_commands.get_data(command_data)[1:-1].split(",")
@@ -184,19 +184,19 @@ class CreateLiveGraph:
                                       round(float(colors[3]), 3),
                                       round(float(colors[4]), 3),
                                       round(float(colors[5]), 3)]
-                    sensor_type_name = self.readable_column_names.six_chan_color
+                    sensor_type_name = self.readable_column_names.colours
                     measurement_type = self.sensor_measurements.six_chan_color
                 else:
                     sensor_reading = [round(float(colors[0]), 3),
                                       round(float(colors[1]), 3),
                                       round(float(colors[2]), 3)]
-                    sensor_type_name = self.readable_column_names.rgb
+                    sensor_type_name = self.readable_column_names.colours
                     measurement_type = self.sensor_measurements.rgb
 
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-                sensor_type_name = self.readable_column_names.rgb
+                sensor_type_name = self.readable_column_names.colours
                 measurement_type = self.sensor_measurements.rgb
         elif self.sensor_type == self.sql_column_names.accelerometer_xyz[0]:
             try:

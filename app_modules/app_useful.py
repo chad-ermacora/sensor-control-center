@@ -39,13 +39,9 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 
 default_sensor_config_text = """
 Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
-1 = Record Sensors to SQL Database
-300.0 = Duration between Interval recordings in Seconds
-0.15 = Duration between Trigger reading checks in Seconds
-0 = Enable Custom Variances
-0.0 = Custom Accelerometer variance
-0.0 = Custom Magnetometer variance
-0.0 = Custom Gyroscope variance
+1 = Record Interval Sensors to SQL Database
+1 = Record Trigger Sensors to SQL Database
+300.0 = Seconds between Interval recordings
 0 = Enable Custom Temperature Offset
 0.0 = Custom Temperature Offset
 """
