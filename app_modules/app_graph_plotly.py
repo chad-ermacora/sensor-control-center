@@ -18,9 +18,8 @@
 """
 import sqlite3
 
-import plotly
 from guizero import warn
-from plotly import tools, graph_objs as go
+from plotly import tools, offline, graph_objs as go
 
 import app_modules.app_logger as app_logger
 from app_modules.app_graph import CreateSQLColumnNames, adjust_datetime
@@ -476,7 +475,7 @@ def _plotly_graph(graph_data):
             fig['layout'].update(height=2048)
 
         try:
-            plotly.offline.plot(fig, filename=graph_data.save_to + 'PlotlySensorGraph.html', auto_open=True)
+            offline.plot(fig, filename=graph_data.save_to + 'PlotlySensorGraph.html', auto_open=True)
             app_logger.app_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
             app_logger.app_logger.error("Plotly Graph Creation - Failed - " + str(error))
@@ -756,7 +755,7 @@ def _plotly_graph_old(graph_data):
             fig['layout'].update(height=2048)
 
         try:
-            plotly.offline.plot(fig, filename=graph_data.save_to + 'PlotlySensorGraph.html', auto_open=True)
+            offline.plot(fig, filename=graph_data.save_to + 'PlotlySensorGraph.html', auto_open=True)
             app_logger.app_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
             app_logger.app_logger.error("Plotly Graph Creation - Failed - " + str(error))
