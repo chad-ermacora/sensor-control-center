@@ -107,7 +107,7 @@ class CreateGraphingWindow:
                                    align="left")
 
         self.text_sql_skip = Text(self.window,
-                                  text="Add one every:  ",
+                                  text="Plot Data - Skip:  ",
                                   color='green',
                                   grid=[1, 10],
                                   align="right")
@@ -119,7 +119,7 @@ class CreateGraphingWindow:
                                         align="left")
 
         self.text_sql_skip2 = Text(self.window,
-                                   text="entries    ",
+                                   text=" Plot 1    ",
                                    color='green',
                                    grid=[2, 10],
                                    align="right")
