@@ -39,6 +39,7 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 
 default_sensor_config_text = """
 Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
+0 = Enable Debug Logging
 1 = Record Interval Sensors to SQL Database
 1 = Record Trigger Sensors to SQL Database
 300.0 = Seconds between Interval recordings
