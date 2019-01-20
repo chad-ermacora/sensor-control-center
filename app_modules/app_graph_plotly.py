@@ -27,7 +27,6 @@ from app_modules.app_graph import CreateSQLColumnNames, adjust_datetime
 
 def start_plotly_graph(graph_data):
     """ Creates a Offline Plotly graph from a SQL database. """
-    graph_data.graph_table = "IntervalData"
     app_logger.app_logger.debug("SQL Columns: " + str(graph_data.graph_columns))
     app_logger.app_logger.debug("SQL Table(s): " + str(graph_data.graph_table))
     app_logger.app_logger.debug("SQL Start DateTime: " + str(graph_data.graph_start))
@@ -40,11 +39,11 @@ def start_plotly_graph(graph_data):
     get_sql_graph_start = adjust_datetime(graph_data.graph_start, new_time_offset)
     get_sql_graph_end = adjust_datetime(graph_data.graph_end, new_time_offset)
     for var_column in graph_data.graph_columns:
-        if var_column == sql_column_names.accelerometer_xyz[0] \
-                or var_column == sql_column_names.magnetometer_xyz[0] \
-                or var_column == sql_column_names.gyroscope_xyz[0]:
-            graph_data.graph_table = "TriggerData"
-            graph_data.bypass_sql_skip = True
+        # if var_column == sql_column_names.accelerometer_xyz[0] \
+        #         or var_column == sql_column_names.magnetometer_xyz[0] \
+        #         or var_column == sql_column_names.gyroscope_xyz[0]:
+        #     graph_data.graph_table = "TriggerData"
+        #     graph_data.bypass_sql_skip = True
 
         var_sql_query = "SELECT " + \
                         str(var_column) + \
@@ -65,21 +64,11 @@ def start_plotly_graph(graph_data):
             for data in sql_column_data:
                 sql_column_data[count] = adjust_datetime(data, int(graph_data.datetime_offset))
                 count = count + 1
-            if graph_data.graph_table == "TriggerData":
-                graph_data.sql_trigger_time = sql_column_data
-            else:
-                graph_data.sql_interval_time = sql_column_data
-
+            graph_data.sql_time = sql_column_data
         elif str(var_column) == sql_column_names.ip:
-            if graph_data.graph_table == "TriggerData":
-                graph_data.sql_trigger_ip = sql_column_data
-            else:
-                graph_data.sql_interval_ip = sql_column_data
+            graph_data.sql_ip = sql_column_data
         elif str(var_column) == sql_column_names.sensor_name:
-            if graph_data.graph_table == "TriggerData":
-                graph_data.sql_trigger_host_name = sql_column_data
-            else:
-                graph_data.sql_interval_host_name = sql_column_data
+            graph_data.sql_host_name = sql_column_data
         elif str(var_column) == sql_column_names.system_uptime:
             graph_data.sql_up_time = sql_column_data
         elif str(var_column) == sql_column_names.cpu_temp:
@@ -95,18 +84,20 @@ def start_plotly_graph(graph_data):
                         count = count + 1
                         app_logger.app_logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
             else:
-                graph_data.bypass_sql_skip = False
-                graph_data.graph_table = "IntervalData"
-                get_sql_temp_offset_command = "SELECT EnvTempOffset FROM IntervalData " + \
-                                              "WHERE DateTime BETWEEN datetime('" + \
-                                              str(get_sql_graph_start) + \
-                                              "') AND datetime('" + \
-                                              str(get_sql_graph_end) + \
-                                              "') LIMIT " + \
-                                              str(graph_data.max_sql_queries)
-                sql_temp_offset_data = _get_sql_data(graph_data, get_sql_temp_offset_command)
+
+                var_sql_query = "SELECT EnvTempOffset FROM " + \
+                                str(graph_data.graph_table) + \
+                                " WHERE DateTime BETWEEN datetime('" + \
+                                str(get_sql_graph_start) + \
+                                "') AND datetime('" + \
+                                str(get_sql_graph_end) + \
+                                "') LIMIT " + \
+                                str(graph_data.max_sql_queries)
+
+                sql_temp_offset_data = _get_sql_data(graph_data, var_sql_query)
 
                 warn_message = False
+                count = 0
                 for data in sql_column_data:
                     try:
                         sql_column_data[count] = str(float(data) + float(sql_temp_offset_data[count]))
@@ -212,7 +203,7 @@ def _plotly_graph(graph_data):
     row_count = 0
     graph_collection = []
 
-    if len(graph_data.sql_interval_time) > 1 or len(graph_data.sql_trigger_time) > 1:
+    if len(graph_data.sql_time) > 1:
         mark_red = dict(size=10,
                         color='rgba(255, 0, 0, .9)',
                         line=dict(width=2, color='rgb(0, 0, 0)'))
@@ -246,38 +237,24 @@ def _plotly_graph(graph_data):
         mark_z = dict(size=5,
                       color='rgba(0, 0, 255, 1)')
 
-        if len(graph_data.sql_interval_host_name) > 1:
+        if len(graph_data.sql_host_name) > 1:
             row_count = row_count + 1
-            first_hostname = graph_data.sql_interval_host_name[0]
-            last_hostname = graph_data.sql_interval_host_name[-1]
+            first_hostname = graph_data.sql_host_name[0]
+            last_hostname = graph_data.sql_host_name[-1]
             tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
 
-            trace_sensor_name = go.Scattergl(x=graph_data.sql_interval_time,
-                                             y=graph_data.sql_interval_host_name,
+            trace_sensor_name = go.Scattergl(x=graph_data.sql_time,
+                                             y=graph_data.sql_host_name,
                                              name="Sensor Name")
 
             graph_collection.append([trace_sensor_name, row_count, 1])
             sub_plots.append(tmp_sensor_name)
             app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
-        else:
-            if len(graph_data.sql_trigger_host_name) > 1:
-                row_count = row_count + 1
-                first_hostname = graph_data.sql_trigger_host_name[0]
-                last_hostname = graph_data.sql_trigger_host_name[-1]
-                tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
-
-                trace_sensor_name = go.Scattergl(x=graph_data.sql_trigger_time,
-                                                 y=graph_data.sql_trigger_host_name,
-                                                 name="Sensor Name")
-
-                graph_collection.append([trace_sensor_name, row_count, 1])
-                sub_plots.append(tmp_sensor_name)
-                app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
 
         if len(graph_data.sql_up_time) > 1:
             row_count = row_count + 1
 
-            trace_uptime = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_uptime = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_up_time,
                                         name="Sensor Uptime")
 
@@ -288,12 +265,12 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
             row_count = row_count + 1
 
-            trace_cpu_temp = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_cpu_temp = go.Scattergl(x=graph_data.sql_time,
                                           y=graph_data.sql_cpu_temp,
                                           name="CPU Temp",
                                           marker=mark_red)
 
-            trace_hat_temp = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_hat_temp = go.Scattergl(x=graph_data.sql_time,
                                           y=graph_data.sql_hat_temp,
                                           name="Environmental Temp",
                                           marker=mark_green)
@@ -306,7 +283,7 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_pressure) > 2:
             row_count = row_count + 1
 
-            trace_pressure = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_pressure = go.Scattergl(x=graph_data.sql_time,
                                           y=graph_data.sql_pressure,
                                           name="Pressure hPa")
 
@@ -317,7 +294,7 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_humidity) > 2:
             row_count = row_count + 1
 
-            trace_humidity = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_humidity = go.Scattergl(x=graph_data.sql_time,
                                           y=graph_data.sql_humidity,
                                           name="Humidity %")
 
@@ -328,7 +305,7 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_lumen) > 2:
             row_count = row_count + 1
 
-            trace_lumen = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_lumen = go.Scattergl(x=graph_data.sql_time,
                                        y=graph_data.sql_lumen,
                                        name="Lumen",
                                        marker=mark_yellow)
@@ -340,32 +317,32 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_red) > 2:
             row_count = row_count + 1
 
-            trace_red = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_red = go.Scattergl(x=graph_data.sql_time,
                                      y=graph_data.sql_red,
                                      name="Red",
                                      marker=mark_red)
 
-            trace_orange = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_orange = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_orange,
                                         name="Orange",
                                         marker=mark_orange)
 
-            trace_yellow = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_yellow = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_yellow,
                                         name="Yellow",
                                         marker=mark_yellow)
 
-            trace_green = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_green = go.Scattergl(x=graph_data.sql_time,
                                        y=graph_data.sql_green,
                                        name="Green",
                                        marker=mark_green)
 
-            trace_blue = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_blue = go.Scattergl(x=graph_data.sql_time,
                                       y=graph_data.sql_blue,
                                       name="Blue",
                                       marker=mark_blue)
 
-            trace_violet = go.Scattergl(x=graph_data.sql_interval_time,
+            trace_violet = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_violet,
                                         name="Violet",
                                         marker=mark_violet)
@@ -382,19 +359,19 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_acc_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_x = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_acc_x,
                                         name="Accelerometer X",
                                         mode='markers',
                                         marker=mark_x)
 
-            trace_gyro_y = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_y = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_acc_y,
                                         name="Accelerometer Y",
                                         mode='markers',
                                         marker=mark_y)
 
-            trace_gyro_z = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_z = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_acc_z,
                                         name="Accelerometer Z",
                                         mode='markers',
@@ -409,19 +386,19 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_mg_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_x = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_mg_x,
                                         name="Magnetic X",
                                         mode='markers',
                                         marker=mark_x)
 
-            trace_gyro_y = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_y = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_mg_y,
                                         name="Magnetic Y",
                                         mode='markers',
                                         marker=mark_y)
 
-            trace_gyro_z = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_z = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_mg_z,
                                         name="Magnetic Z",
                                         mode='markers',
@@ -436,19 +413,19 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_gyro_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_x = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_gyro_x,
                                         name="Gyroscopic X",
                                         mode='markers',
                                         marker=mark_x)
 
-            trace_gyro_y = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_y = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_gyro_y,
                                         name="Gyroscopic Y",
                                         mode='markers',
                                         marker=mark_y)
 
-            trace_gyro_z = go.Scattergl(x=graph_data.sql_trigger_time,
+            trace_gyro_z = go.Scattergl(x=graph_data.sql_time,
                                         y=graph_data.sql_gyro_z,
                                         name="Gyroscopic Z",
                                         mode='markers',
@@ -466,10 +443,8 @@ def _plotly_graph(graph_data):
 
         for graph in graph_collection:
             fig.add_trace(graph[0], graph[1], graph[2])
-        if len(graph_data.sql_interval_ip) > 1:
-            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_interval_ip[0]))
-        else:
-            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_trigger_ip[0]))
+        if len(graph_data.sql_ip) > 1:
+            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_ip[0]))
 
         if row_count > 4:
             fig['layout'].update(height=2048)
@@ -492,7 +467,7 @@ def _plotly_graph_old(graph_data):
     row_count = 0
     graph_collection = []
 
-    if len(graph_data.sql_interval_time) > 1 or len(graph_data.sql_trigger_time) > 1:
+    if len(graph_data.sql_time) > 1:
         mark_red = dict(size=10,
                         color='rgba(255, 0, 0, .9)',
                         line=dict(width=2, color='rgb(0, 0, 0)'))
@@ -526,38 +501,23 @@ def _plotly_graph_old(graph_data):
         mark_z = dict(size=3,
                       color='rgba(0, 0, 255, 1)')
 
-        if len(graph_data.sql_interval_host_name) > 1:
+        if len(graph_data.sql_host_name) > 1:
             row_count = row_count + 1
-            first_hostname = graph_data.sql_interval_host_name[0]
-            last_hostname = graph_data.sql_interval_host_name[-1]
+            first_hostname = graph_data.sql_host_name[0]
+            last_hostname = graph_data.sql_host_name[-1]
             tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
 
-            trace_sensor_name = go.Scatter(x=graph_data.sql_interval_time,
-                                           y=graph_data.sql_interval_host_name,
+            trace_sensor_name = go.Scatter(x=graph_data.sql_time,
+                                           y=graph_data.sql_host_name,
                                            name="Sensor Name")
 
             graph_collection.append([trace_sensor_name, row_count, 1])
             sub_plots.append(tmp_sensor_name)
             app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
-        else:
-            if len(graph_data.sql_trigger_host_name) > 1:
-                row_count = row_count + 1
-                first_hostname = graph_data.sql_trigger_host_name[0]
-                last_hostname = graph_data.sql_trigger_host_name[-1]
-                tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
-
-                trace_sensor_name = go.Scatter(x=graph_data.sql_trigger_time,
-                                               y=graph_data.sql_trigger_host_name,
-                                               name="Sensor Name")
-
-                graph_collection.append([trace_sensor_name, row_count, 1])
-                sub_plots.append(tmp_sensor_name)
-                app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
-
         if len(graph_data.sql_up_time) > 1:
             row_count = row_count + 1
 
-            trace_uptime = go.Scatter(x=graph_data.sql_interval_time,
+            trace_uptime = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_up_time,
                                       name="Sensor Uptime")
 
@@ -568,12 +528,12 @@ def _plotly_graph_old(graph_data):
         if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
             row_count = row_count + 1
 
-            trace_cpu_temp = go.Scatter(x=graph_data.sql_interval_time,
+            trace_cpu_temp = go.Scatter(x=graph_data.sql_time,
                                         y=graph_data.sql_cpu_temp,
                                         name="CPU Temp",
                                         marker=mark_red)
 
-            trace_hat_temp = go.Scatter(x=graph_data.sql_interval_time,
+            trace_hat_temp = go.Scatter(x=graph_data.sql_time,
                                         y=graph_data.sql_hat_temp,
                                         name="Environmental Temp",
                                         marker=mark_green)
@@ -586,7 +546,7 @@ def _plotly_graph_old(graph_data):
         if len(graph_data.sql_pressure) > 2:
             row_count = row_count + 1
 
-            trace_pressure = go.Scatter(x=graph_data.sql_interval_time,
+            trace_pressure = go.Scatter(x=graph_data.sql_time,
                                         y=graph_data.sql_pressure,
                                         name="Pressure hPa")
 
@@ -597,7 +557,7 @@ def _plotly_graph_old(graph_data):
         if len(graph_data.sql_humidity) > 2:
             row_count = row_count + 1
 
-            trace_humidity = go.Scatter(x=graph_data.sql_interval_time,
+            trace_humidity = go.Scatter(x=graph_data.sql_time,
                                         y=graph_data.sql_humidity,
                                         name="Humidity %")
 
@@ -608,7 +568,7 @@ def _plotly_graph_old(graph_data):
         if len(graph_data.sql_lumen) > 2:
             row_count = row_count + 1
 
-            trace_lumen = go.Scatter(x=graph_data.sql_interval_time,
+            trace_lumen = go.Scatter(x=graph_data.sql_time,
                                      y=graph_data.sql_lumen,
                                      name="Lumen",
                                      marker=mark_yellow)
@@ -620,32 +580,32 @@ def _plotly_graph_old(graph_data):
         if len(graph_data.sql_red) > 2:
             row_count = row_count + 1
 
-            trace_red = go.Scatter(x=graph_data.sql_interval_time,
+            trace_red = go.Scatter(x=graph_data.sql_time,
                                    y=graph_data.sql_red,
                                    name="Red",
                                    marker=mark_red)
 
-            trace_orange = go.Scatter(x=graph_data.sql_interval_time,
+            trace_orange = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_orange,
                                       name="Orange",
                                       marker=mark_orange)
 
-            trace_yellow = go.Scatter(x=graph_data.sql_interval_time,
+            trace_yellow = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_yellow,
                                       name="Yellow",
                                       marker=mark_yellow)
 
-            trace_green = go.Scatter(x=graph_data.sql_interval_time,
+            trace_green = go.Scatter(x=graph_data.sql_time,
                                      y=graph_data.sql_green,
                                      name="Green",
                                      marker=mark_green)
 
-            trace_blue = go.Scatter(x=graph_data.sql_interval_time,
+            trace_blue = go.Scatter(x=graph_data.sql_time,
                                     y=graph_data.sql_blue,
                                     name="Blue",
                                     marker=mark_blue)
 
-            trace_violet = go.Scatter(x=graph_data.sql_interval_time,
+            trace_violet = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_violet,
                                       name="Violet",
                                       marker=mark_violet)
@@ -662,19 +622,19 @@ def _plotly_graph_old(graph_data):
         if len(graph_data.sql_acc_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_x = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_acc_x,
                                       name="Accelerometer X",
                                       mode='markers',
                                       marker=mark_x)
 
-            trace_gyro_y = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_y = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_acc_y,
                                       name="Accelerometer Y",
                                       mode='markers',
                                       marker=mark_y)
 
-            trace_gyro_z = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_z = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_acc_z,
                                       name="Accelerometer Z",
                                       mode='markers',
@@ -689,19 +649,19 @@ def _plotly_graph_old(graph_data):
         if len(graph_data.sql_mg_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_x = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_mg_x,
                                       name="Magnetic X",
                                       mode='markers',
                                       marker=mark_x)
 
-            trace_gyro_y = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_y = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_mg_y,
                                       name="Magnetic Y",
                                       mode='markers',
                                       marker=mark_y)
 
-            trace_gyro_z = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_z = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_mg_z,
                                       name="Magnetic Z",
                                       mode='markers',
@@ -716,19 +676,19 @@ def _plotly_graph_old(graph_data):
         if len(graph_data.sql_gyro_x) > 2:
             row_count = row_count + 1
 
-            trace_gyro_x = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_x = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_gyro_x,
                                       name="Gyroscopic X",
                                       mode='markers',
                                       marker=mark_x)
 
-            trace_gyro_y = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_y = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_gyro_y,
                                       name="Gyroscopic Y",
                                       mode='markers',
                                       marker=mark_y)
 
-            trace_gyro_z = go.Scatter(x=graph_data.sql_trigger_time,
+            trace_gyro_z = go.Scatter(x=graph_data.sql_time,
                                       y=graph_data.sql_gyro_z,
                                       name="Gyroscopic Z",
                                       mode='markers',
@@ -746,10 +706,8 @@ def _plotly_graph_old(graph_data):
 
         for graph in graph_collection:
             fig.add_trace(graph[0], graph[1], graph[2])
-        if len(graph_data.sql_interval_ip) > 1:
-            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_interval_ip[0]))
-        else:
-            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_trigger_ip[0]))
+        if len(graph_data.sql_ip) > 1:
+            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_ip[0]))
 
         if row_count > 4:
             fig['layout'].update(height=2048)

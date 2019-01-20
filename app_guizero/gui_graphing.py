@@ -39,7 +39,7 @@ class CreateGraphingWindow:
         self.window = Window(app,
                              title="Graphing",
                              width=275,
-                             height=545,
+                             height=525,
                              layout="grid",
                              visible=False)
 
@@ -52,186 +52,182 @@ class CreateGraphingWindow:
         self.radio_sensor_type = ButtonGroup(self.window,
                                              options=["Live Sensor", "SQL Database"],
                                              horizontal="True",
-                                             command=self._radio_selection,
+                                             command=self._radio_source_selection,
                                              grid=[1, 2, 2, 1],
                                              align="top")
+
+        self.text_space3 = Text(self.window,
+                                text="SQL Recording Type",
+                                color="blue",
+                                grid=[1, 3, 2, 1],
+                                align="top")
+
+        self.radio_recording_type_selection = ButtonGroup(self.window,
+                                                          options=["Interval", "Triggers"],
+                                                          horizontal="True",
+                                                          command=self._radio_sql_type_selection,
+                                                          grid=[1, 4, 2, 1],
+                                                          align="top")
 
         self.text_sensor_type_name = Text(self.window,
                                           text="Graph Options",
                                           color='blue',
-                                          grid=[1, 4, 2, 1],
+                                          grid=[1, 6, 2, 1],
                                           align="top")
 
         self.text_space2 = Text(self.window,
                                 text="YYYY-MM-DD HH:MM:SS",
                                 size=7,
                                 color='#CB0000',
-                                grid=[2, 5, 2, 1],
+                                grid=[2, 7, 2, 1],
                                 align="left")
 
         self.text_start = Text(self.window,
                                text="Start Date & Time: ",
                                color='green',
-                               grid=[1, 6],
+                               grid=[1, 8],
                                align="left")
 
         self.textbox_start = TextBox(self.window,
                                      text="",
                                      width=20,
-                                     grid=[2, 6],
+                                     grid=[2, 8],
                                      align="left")
 
         self.text_end = Text(self.window,
                              text="End Date & Time:",
                              color='green',
-                             grid=[1, 7],
+                             grid=[1, 9],
                              align="left")
 
         self.textbox_end = TextBox(self.window,
                                    text="",
                                    width=20,
-                                   grid=[2, 7],
+                                   grid=[2, 9],
                                    align="left")
 
         self.text_sql_skip = Text(self.window,
                                   text="Add one every:  ",
                                   color='green',
-                                  grid=[1, 8],
+                                  grid=[1, 10],
                                   align="right")
 
         self.textbox_sql_skip = TextBox(self.window,
                                         text="",
                                         width=10,
-                                        grid=[2, 8],
+                                        grid=[2, 10],
                                         align="left")
 
         self.text_sql_skip2 = Text(self.window,
                                    text="entries    ",
                                    color='green',
-                                   grid=[2, 8],
+                                   grid=[2, 10],
                                    align="right")
 
         self.text_temperature_offset = Text(self.window,
                                             text="Env Temp Offset:",
                                             color='green',
-                                            grid=[1, 9],
+                                            grid=[1, 11],
                                             align="left")
 
         self.textbox_temperature_offset = TextBox(self.window,
                                                   text="",
                                                   width=5,
-                                                  grid=[2, 9],
+                                                  grid=[2, 11],
                                                   align="left")
 
         self.checkbox_default_offset = CheckBox(self.window,
                                                 text="Use Sensor\nDefault",
                                                 command=self._click_checkbox_offset,
-                                                grid=[2, 9],
+                                                grid=[2, 11],
                                                 align="right")
 
         self.text_refresh_time = Text(self.window,
                                       text="Live refresh (Sec):",
                                       color='green',
-                                      grid=[1, 10],
+                                      grid=[1, 12],
                                       align="left")
 
         self.textbox_refresh_time = TextBox(self.window,
                                             text="2",
                                             width=5,
-                                            grid=[2, 10],
+                                            grid=[2, 12],
                                             align="left")
 
-        self.text_space3 = Text(self.window,
-                                text=" ",
-                                grid=[1, 11],
-                                align="right")
-
         self.checkbox_master = CheckBox(self.window,
-                                        text="All",
+                                        text="All Sensors",
                                         command=self._master_checkbox,
-                                        grid=[1, 15],
-                                        align="left")
-
-        self.text_column_selection = Text(self.window,
-                                          text="Interval Sensors",
-                                          color='blue',
-                                          grid=[1, 15, 2, 1],
-                                          align="top")
+                                        grid=[1, 16, 2, 1],
+                                        align="top")
 
         self.checkbox_up_time = CheckBox(self.window,
                                          text=self.readable_column_names.system_uptime,
                                          command=self._disable_other_checkboxes,
                                          args=[self.sql_columns.system_uptime],
-                                         grid=[1, 16],
+                                         grid=[1, 17],
                                          align="left")
 
         self.checkbox_cpu_temp = CheckBox(self.window,
                                           text=self.readable_column_names.cpu_temp,
                                           command=self._disable_other_checkboxes,
                                           args=[self.sql_columns.cpu_temp],
-                                          grid=[1, 17],
+                                          grid=[1, 18],
                                           align="left")
 
         self.checkbox_temperature = CheckBox(self.window,
                                              text=self.readable_column_names.environmental_temp,
                                              command=self._disable_other_checkboxes,
                                              args=[self.sql_columns.environmental_temp],
-                                             grid=[1, 18],
+                                             grid=[1, 19],
                                              align="left")
 
         self.checkbox_pressure = CheckBox(self.window,
                                           text=self.readable_column_names.pressure,
                                           command=self._disable_other_checkboxes,
                                           args=[self.sql_columns.pressure],
-                                          grid=[1, 19],
+                                          grid=[1, 20],
                                           align="left")
 
         self.checkbox_humidity = CheckBox(self.window,
                                           text=self.readable_column_names.humidity,
                                           command=self._disable_other_checkboxes,
                                           args=[self.sql_columns.humidity],
-                                          grid=[2, 16],
+                                          grid=[2, 17],
                                           align="left")
 
         self.checkbox_lumen = CheckBox(self.window,
                                        text=self.readable_column_names.lumen,
                                        command=self._disable_other_checkboxes,
                                        args=[self.sql_columns.lumen],
-                                       grid=[2, 17],
+                                       grid=[2, 18],
                                        align="left")
 
         self.checkbox_colour = CheckBox(self.window,
                                         text=self.readable_column_names.colours,
                                         command=self._disable_other_checkboxes,
                                         args=[self.sql_columns.rgb],
-                                        grid=[2, 18],
+                                        grid=[2, 19],
                                         align="left")
-
-        self.text_column_selection2 = Text(self.window,
-                                           text="Trigger Sensors",
-                                           color='blue',
-                                           grid=[1, 24, 2, 1],
-                                           align="bottom")
 
         self.checkbox_acc = CheckBox(self.window,
                                      text=self.readable_column_names.accelerometer_xyz,
                                      command=self._disable_other_checkboxes,
                                      args=[self.sql_columns.accelerometer_xyz],
-                                     grid=[1, 25],
+                                     grid=[2, 20],
                                      align="left")
 
         self.checkbox_mag = CheckBox(self.window,
                                      text=self.readable_column_names.magnetometer_xyz,
                                      command=self._disable_other_checkboxes,
                                      args=[self.sql_columns.magnetometer_xyz],
-                                     grid=[2, 25],
+                                     grid=[1, 25],
                                      align="left")
 
         self.checkbox_gyro = CheckBox(self.window,
                                       text=self.readable_column_names.gyroscope_xyz,
                                       command=self._disable_other_checkboxes,
                                       args=[self.sql_columns.gyroscope_xyz],
-                                      grid=[1, 26],
+                                      grid=[2, 25],
                                       align="left")
 
         self.text_space4 = Text(self.window,
@@ -255,7 +251,7 @@ class CreateGraphingWindow:
         self.window.tk.resizable(False, False)
         self.checkbox_default_offset.value = 1
         self._set_config()
-        self._radio_selection()
+        self._radio_source_selection()
         self._click_checkbox_offset()
         self.checkbox_up_time.value = 0
         self.checkbox_temperature.value = 0
@@ -263,6 +259,9 @@ class CreateGraphingWindow:
         self.checkbox_humidity.value = 0
         self.checkbox_lumen.value = 0
         self.checkbox_colour.value = 0
+
+        # Temp disable radio box until triggers working
+        self.radio_recording_type_selection.disable()
 
     def _master_checkbox(self):
         """ Checks all sensor selection checkboxes. """
@@ -295,16 +294,17 @@ class CreateGraphingWindow:
         self.textbox_temperature_offset.value = self.current_config.temperature_offset
         self.textbox_refresh_time.value = self.current_config.live_refresh
 
-    def _radio_selection(self):
+    def _radio_source_selection(self):
         """ Enables or disables the Graph Window selections, based on graph type selected. """
         self._enable_all_for_live()
         if self.radio_sensor_type.get() == "SQL Database":
+            self._radio_sql_type_selection()
             self.button_live.disable()
             self.textbox_refresh_time.disable()
 
             self.textbox_start.enable()
             self.textbox_end.enable()
-            self.textbox_sql_skip.enable()
+            self.radio_recording_type_selection.enable()
 
             if not self.checkbox_default_offset.value:
                 self.textbox_temperature_offset.enable()
@@ -340,6 +340,7 @@ class CreateGraphingWindow:
             self.textbox_start.disable()
             self.textbox_end.disable()
             self.textbox_refresh_time.enable()
+            self.radio_recording_type_selection.disable()
 
             self.checkbox_master.disable()
             self.checkbox_master.value = 0
@@ -366,6 +367,13 @@ class CreateGraphingWindow:
 
             self.button_live.enable()
 
+    def _radio_sql_type_selection(self):
+        """ Enables or disables the SQL Skip, based on graph type selected. """
+        if self.radio_recording_type_selection.value_text == "Interval":
+            self.textbox_sql_skip.enable()
+        else:
+            self.textbox_sql_skip.disable()
+
     def plotly_button(self):
         """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
         new_data = CreateGraphData()
@@ -381,6 +389,9 @@ class CreateGraphingWindow:
             self._set_config()
 
             new_data.save_to = self.current_config.save_to
+            if self.radio_recording_type_selection.value_text is "Triggers":
+                new_data.graph_table = "TriggerData"
+                new_data.bypass_sql_skip = True
             new_data.graph_start = self.current_config.graph_start
             new_data.graph_end = self.current_config.graph_end
             new_data.datetime_offset = self.current_config.datetime_offset

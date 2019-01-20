@@ -87,6 +87,7 @@ class CreateGraphData:
             self.enable_plotly_webgl = True
 
         self.db_location = ""
+        self.graph_table = "IntervalData"
         self.save_to = ""
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
@@ -102,10 +103,9 @@ class CreateGraphData:
         self.max_sql_queries = 200000
 
         # Graph data holders for SQL DataBase
-        self.sql_interval_time = []
-        self.sql_interval_ip = []
-        self.sql_interval_host_name = []
-
+        self.sql_time = []
+        self.sql_ip = []
+        self.sql_host_name = []
         self.sql_up_time = []
         self.sql_cpu_temp = []
         self.sql_hat_temp = []
@@ -119,10 +119,6 @@ class CreateGraphData:
         self.sql_green = []
         self.sql_blue = []
         self.sql_violet = []
-
-        self.sql_trigger_time = []
-        self.sql_trigger_ip = []
-        self.sql_trigger_host_name = []
         self.sql_acc_x = []
         self.sql_acc_y = []
         self.sql_acc_z = []
