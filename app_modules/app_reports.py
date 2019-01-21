@@ -44,8 +44,6 @@ class CreateHTMLSystemData:
                                   "{{CPUTemp}}",
                                   "{{FreeDisk}}",
                                   "{{SQLDBSize}}",
-                                  "{{IntervalSQLWriteEnabled}}",
-                                  "{{TriggerSQLWriteEnabled}}",
                                   "{{LastUpdated}}"]
 
         self.local_time_code = ["{{LocalDateTime}}"]
