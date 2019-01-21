@@ -58,7 +58,7 @@ class CreateSensorLogsWindow:
                                 align="top")
 
         self.radio_log_type = ButtonGroup(self.window,
-                                          options=["Network Log", "Primary Log", "Sensors Log"],
+                                          options=["Primary Log", "Network Log", "Sensors Log"],
                                           horizontal="True",
                                           grid=[1, 1],
                                           align="right")
