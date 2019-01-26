@@ -18,7 +18,7 @@
 """
 from datetime import datetime, timedelta
 from platform import system
-
+from app_guizero.gui_platform_tweaks import check_pi_model
 import app_modules.app_logger as app_logger
 
 
@@ -82,7 +82,10 @@ class CreateGraphData:
 
     def __init__(self):
         if system() == "Linux":
-            self.enable_plotly_webgl = False
+            if check_pi_model()[:12] == "Raspberry Pi":
+                self.enable_plotly_webgl = False
+            else:
+                self.enable_plotly_webgl = True
         else:
             self.enable_plotly_webgl = True
 
