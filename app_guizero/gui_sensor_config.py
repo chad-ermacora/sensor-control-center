@@ -22,7 +22,8 @@ from guizero import Window, PushButton, Text, TextBox, info, Combo
 
 import app_modules.app_logger as app_logger
 import app_modules.app_sensor_commands as app_sensor_commands
-from app_modules.app_useful import default_installed_sensors_text, default_sensor_config_text, no_ip_selected_message
+from app_modules.app_useful import default_installed_sensors_text, default_sensor_config_text, no_ip_selected_message,\
+    default_wifi_config_text
 
 
 class CreateSensorConfigWindow:
@@ -33,6 +34,7 @@ class CreateSensorConfigWindow:
         self.current_config = current_config
         self.installed_sensor_text = default_installed_sensors_text
         self.config_sensor_text = default_sensor_config_text
+        self.wifi_config_text = default_wifi_config_text
 
         self.window = Window(app,
                              title="Sensors Configuration",
@@ -68,7 +70,7 @@ class CreateSensorConfigWindow:
                                       align="top")
 
         self.combo_dropdown_selection = Combo(self.window,
-                                              options=["Configuration", "Installed Sensors"],
+                                              options=["Configuration", "Installed Sensors", "Wifi"],
                                               grid=[1, 10],
                                               command=self.combo_selection,
                                               align="bottom")
@@ -91,11 +93,14 @@ class CreateSensorConfigWindow:
             self.button_get_config.text = "Get Installed\nSensors"
             self.button_set_config.text = "Set Installed\nSensors"
             self.textbox_config.value = self.installed_sensor_text.strip()
-
-        else:
+        elif self.combo_dropdown_selection.value == "Configuration":
             self.button_get_config.text = "Get Sensor\nConfiguration"
             self.button_set_config.text = "Set Sensor\nConfiguration"
             self.textbox_config.value = self.config_sensor_text.strip()
+        elif self.combo_dropdown_selection.value == "Wifi":
+            self.button_get_config.text = "Get Sensor\nWifi Configuration"
+            self.button_set_config.text = "Set Sensor\nWifi Configuration"
+            self.textbox_config.value = self.wifi_config_text.strip()
 
     def button_get(self):
         """ Displays the selected configuration of the first selected and online sensor. """
@@ -107,10 +112,19 @@ class CreateSensorConfigWindow:
                     command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
                                                                              self.current_config.network_timeout_data,
                                                                              network_commands.installed_sensors_file)
-                else:
+                elif self.combo_dropdown_selection.value == "Configuration":
                     command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
                                                                              self.current_config.network_timeout_data,
                                                                              network_commands.sensor_configuration_file)
+                elif self.combo_dropdown_selection.value == "Wifi":
+                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                             self.current_config.network_timeout_data,
+                                                                             network_commands.wifi_config_file)
+                else:
+                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                             self.current_config.network_timeout_data,
+                                                                             "")
+                    command.command = ""
 
                 self.textbox_config.value = str(app_sensor_commands.get_data(command))
 
@@ -132,10 +146,20 @@ class CreateSensorConfigWindow:
                         command = app_sensor_commands.CreateSensorNetworkCommand(ip,
                                                                                  self.current_config.network_timeout_data,
                                                                                  network_commands.set_installed_sensors)
-                    else:
+                    elif self.combo_dropdown_selection.value == "Configuration":
                         command = app_sensor_commands.CreateSensorNetworkCommand(ip,
                                                                                  self.current_config.network_timeout_data,
                                                                                  network_commands.set_configuration)
+                    elif self.combo_dropdown_selection.value == "Wifi":
+                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                                 self.current_config.network_timeout_data,
+                                                                                 network_commands.set_wifi_configuration)
+                    else:
+                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                                 self.current_config.network_timeout_data,
+                                                                                 "")
+                        command.command = ""
+
                     command.command_data = self.textbox_config.value.strip()
 
                     threads.append(Thread(target=app_sensor_commands.put_command, args=[command]))

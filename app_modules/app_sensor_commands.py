@@ -38,6 +38,7 @@ class CreateNetworkGetCommands:
         self.sensor_configuration = "GetConfigurationReport"
         self.sensor_configuration_file = "GetConfiguration"
         self.installed_sensors_file = "GetInstalledSensors"
+        self.wifi_config_file = "GetWifiConfiguration"
         self.system_data = "GetSystemData"
         self.primary_log = "GetPrimaryLog"
         self.network_log = "GetNetworkLog"
@@ -73,6 +74,7 @@ class CreateNetworkSendCommands:
         self.set_host_name = "SetHostName"
         self.set_datetime = "SetDateTime"
         self.set_configuration = "SetConfiguration"
+        self.set_wifi_configuration = "SetWifiConfiguration"
         self.set_installed_sensors = "SetInstalledSensors"
         self.put_sql_note = "PutDatabaseNote"
 

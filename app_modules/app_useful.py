@@ -47,6 +47,25 @@ Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
 0.0 = Custom Temperature Offset
 """
 
+default_wifi_config_text = """
+# Update or Add additional wireless network connections as required
+# Add your wireless name to the end of 'ssid=' 
+# Add the password to the end of 'psk=' in double quotes
+
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+# Change 'country' to your country, common codes are included below
+# GB (United Kingdom), FR (France), US (United States), CA (Canada)
+country=CA
+
+network={
+        ssid="SomeOtherNetwork"
+        psk="SuperSecurePassword"
+        key_mgmt=WPA-PSK
+}
+"""
+
 sql_default_textbox_note = """
 Use this textbox to create a note to enter into one or more sensor
 SQL Databases.  Use the Date & Time in the top right to enter the note
