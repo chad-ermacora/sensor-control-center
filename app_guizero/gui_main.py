@@ -143,41 +143,19 @@ class CreateMainWindow:
         else:
             subprocess.Popen(["xdg-open", self.current_config.logs_directory])
 
-    @staticmethod
-    def _download_sql_finished_message(threads):
-        """ Shows a message when provided threads are finished. """
-        for thread in threads:
-            thread.join()
-
-        info("Downloads", "SQL database downloads complete")
-
     def _app_menu_download_sql_db(self):
         """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
         ip_list = self.ip_selection.get_verified_ip_list()
-        network_commands = CreateNetworkGetCommands()
-        network_timeout = self.current_config.network_timeout_data
 
         if len(ip_list) > 0:
             threads = []
-            download_to_location = filedialog.askdirectory()
 
-            if download_to_location is not "" and download_to_location is not None:
-                for ip in ip_list:
-                    senor_command = CreateSensorNetworkCommand(ip,
-                                                               network_timeout,
-                                                               network_commands.sensor_sql_database)
-                    senor_command.save_to_location = download_to_location
+            for ip in ip_list:
+                threads.append(Thread(target=download_sensor_database,
+                                      args=[ip]))
 
-                    threads.append(Thread(target=download_sensor_database,
-                                          args=[senor_command]))
-
-                for thread in threads:
-                    thread.start()
-
-                download_message_thread = Thread(target=self._download_sql_finished_message, args=[threads])
-                download_message_thread.start()
-            else:
-                warn("Warning", "User Cancelled Download Operation")
+            for thread in threads:
+                thread.start()
         else:
             no_ip_selected_message()
 

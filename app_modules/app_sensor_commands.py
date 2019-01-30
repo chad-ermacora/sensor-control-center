@@ -17,8 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import re
-from shutil import copyfileobj
-
+import webbrowser
 import requests
 
 import app_modules.app_logger as app_logger
@@ -92,19 +91,15 @@ def check_sensor_status(ip, network_timeout):
     return sensor_status
 
 
-def download_sensor_database(sensor_command):
+def download_sensor_database(ip):
     """ Returns requested sensor file (based on the provided command data). """
-    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+    network_commands = CreateNetworkGetCommands()
+    url = "http://" + ip + ":10065/" + network_commands.sensor_sql_database
 
     try:
-        return_data = requests.get(url, timeout=sensor_command.network_timeout, stream=True)
-        app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
-        sensor_database = open(sensor_command.save_to_location + "/" + sensor_command.ip[-3:].replace(".", "_") +
-                               "SensorRecordingDatabase" + ".sqlite", "wb")
-        copyfileobj(return_data.raw, sensor_database)
-        sensor_database.close()
+        webbrowser.open_new_tab(url)
     except Exception as error:
-        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(sensor_command.ip))
+        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(ip))
         app_logger.sensor_logger.debug(str(error))
 
 
