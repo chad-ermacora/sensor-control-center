@@ -60,7 +60,7 @@ def app_custom_configurations(main_app):
             main_app.window_sensor_sql_notes.textbox_main_note.width = 105
             main_app.window_sensor_commands.window.width = 315
             main_app.window_sensor_commands.window.height = 275
-            main_app.window_sensor_config.window.width = 615
+            main_app.window_sensor_config.window.width = 625
             main_app.window_sensor_config.window.height = 405
             main_app.window_graph.window.width = 325
             main_app.window_graph.window.height = 485

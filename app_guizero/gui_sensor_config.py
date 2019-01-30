@@ -23,7 +23,7 @@ from guizero import Window, PushButton, Text, TextBox, info, Combo
 import app_modules.app_logger as app_logger
 import app_modules.app_sensor_commands as app_sensor_commands
 from app_modules.app_useful import default_installed_sensors_text, default_sensor_config_text, no_ip_selected_message,\
-    default_wifi_config_text
+    default_wifi_config_text, default_variance_config_text
 
 
 class CreateSensorConfigWindow:
@@ -32,9 +32,6 @@ class CreateSensorConfigWindow:
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
-        self.installed_sensor_text = default_installed_sensors_text
-        self.config_sensor_text = default_sensor_config_text
-        self.wifi_config_text = default_wifi_config_text
 
         self.window = Window(app,
                              title="Sensors Configuration",
@@ -50,11 +47,12 @@ class CreateSensorConfigWindow:
                                 align="left")
 
         self.textbox_config = TextBox(self.window,
-                                      text=self.config_sensor_text.strip(),
+                                      text=default_sensor_config_text.strip(),
                                       grid=[1, 2],
                                       width=75,
                                       height=18,
                                       multiline=True,
+                                      scrollbar=True,
                                       align="right")
 
         self.button_get_config = PushButton(self.window,
@@ -70,7 +68,7 @@ class CreateSensorConfigWindow:
                                       align="top")
 
         self.combo_dropdown_selection = Combo(self.window,
-                                              options=["Configuration", "Installed Sensors", "Wifi"],
+                                              options=["Configuration", "Installed Sensors", "Wifi", "Trigger Variances"],
                                               grid=[1, 10],
                                               command=self.combo_selection,
                                               align="bottom")
@@ -92,15 +90,19 @@ class CreateSensorConfigWindow:
         if self.combo_dropdown_selection.value == "Installed Sensors":
             self.button_get_config.text = "Get Installed\nSensors"
             self.button_set_config.text = "Set Installed\nSensors"
-            self.textbox_config.value = self.installed_sensor_text.strip()
+            self.textbox_config.value = default_installed_sensors_text.strip()
         elif self.combo_dropdown_selection.value == "Configuration":
             self.button_get_config.text = "Get Sensor\nConfiguration"
             self.button_set_config.text = "Set Sensor\nConfiguration"
-            self.textbox_config.value = self.config_sensor_text.strip()
+            self.textbox_config.value = default_sensor_config_text.strip()
         elif self.combo_dropdown_selection.value == "Wifi":
             self.button_get_config.text = "Get Sensor\nWifi Configuration"
             self.button_set_config.text = "Set Sensor\nWifi Configuration"
-            self.textbox_config.value = self.wifi_config_text.strip()
+            self.textbox_config.value = default_wifi_config_text.strip()
+        elif self.combo_dropdown_selection.value == "Trigger Variances":
+            self.button_get_config.text = "Get Sensor\nTrigger Variances"
+            self.button_set_config.text = "Set Sensor\nTrigger Variances"
+            self.textbox_config.value = default_variance_config_text.strip()
 
     def button_get(self):
         """ Displays the selected configuration of the first selected and online sensor. """
@@ -120,6 +122,10 @@ class CreateSensorConfigWindow:
                     command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
                                                                              self.current_config.network_timeout_data,
                                                                              network_commands.wifi_config_file)
+                elif self.combo_dropdown_selection.value == "Trigger Variances":
+                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                             self.current_config.network_timeout_data,
+                                                                             network_commands.variance_config)
                 else:
                     command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
                                                                              self.current_config.network_timeout_data,
@@ -154,6 +160,10 @@ class CreateSensorConfigWindow:
                         command = app_sensor_commands.CreateSensorNetworkCommand(ip,
                                                                                  self.current_config.network_timeout_data,
                                                                                  network_commands.set_wifi_configuration)
+                    elif self.combo_dropdown_selection.value == "Trigger Variances":
+                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                                 self.current_config.network_timeout_data,
+                                                                                 network_commands.set_variance_configuration)
                     else:
                         command = app_sensor_commands.CreateSensorNetworkCommand(ip,
                                                                                  self.current_config.network_timeout_data,
