@@ -68,6 +68,9 @@ network={
 
 default_variance_config_text = """
 Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.
+1 = Enable Sensor Uptime
+1209600.0 = Seconds between SQL Writes of Sensor Uptime
+
 1 = Enable CPU Temperature
 10.0 = CPU Temperature variance
 99999.99 = Seconds between 'CPU Temperature' readings
