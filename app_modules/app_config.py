@@ -23,7 +23,7 @@ from datetime import datetime
 
 import app_modules.app_logger as app_logger
 
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.23.36"
+app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.23.39"
 current_platform = platform.system()
 
 

@@ -19,10 +19,11 @@
 import sqlite3
 
 from guizero import warn
-from plotly import tools, offline, graph_objs as go
+from plotly import tools, offline
 
 import app_modules.app_logger as app_logger
 from app_modules.app_graph import CreateSQLColumnNames, adjust_datetime
+import app_modules.app_graph_plotly_additional as plot_extras
 
 
 def start_plotly_graph(graph_data):
@@ -39,12 +40,6 @@ def start_plotly_graph(graph_data):
     get_sql_graph_start = adjust_datetime(graph_data.graph_start, new_time_offset)
     get_sql_graph_end = adjust_datetime(graph_data.graph_end, new_time_offset)
     for var_column in graph_data.graph_columns:
-        # if var_column == sql_column_names.accelerometer_xyz[0] \
-        #         or var_column == sql_column_names.magnetometer_xyz[0] \
-        #         or var_column == sql_column_names.gyroscope_xyz[0]:
-        #     graph_data.graph_table = "TriggerData"
-        #     graph_data.bypass_sql_skip = True
-
         var_sql_query = "SELECT " + \
                         str(var_column) + \
                         " FROM " + \
@@ -153,10 +148,7 @@ def start_plotly_graph(graph_data):
             graph_data.sql_gyro_z = sql_column_data
         else:
             app_logger.app_logger.error(var_column + " - Does Not Exist")
-    if graph_data.enable_plotly_webgl:
-        _plotly_graph(graph_data)
-    else:
-        _plotly_graph_old(graph_data)
+    _plotly_graph(graph_data)
     app_logger.app_logger.debug("Interval DB Graph Complete")
 
 
@@ -199,254 +191,49 @@ def _get_sql_data(graph_interval_data, sql_command):
 
 def _plotly_graph(graph_data):
     """ Create and open a HTML offline Plotly graph with the data provided. """
-    sub_plots = []
-    row_count = 0
-    graph_collection = []
+    graph_data.sub_plots = []
+    graph_data.row_count = 0
+    graph_data.graph_collection = []
 
     if len(graph_data.sql_time) > 1:
-        mark_red = dict(size=10,
-                        color='rgba(255, 0, 0, .9)',
-                        line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_orange = dict(size=10,
-                           color='rgba(255, 102, 0, .9)',
-                           line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_yellow = dict(size=10,
-                           color='rgba(230, 230, 0, .9)',
-                           line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_green = dict(size=10,
-                          color='rgba(0, 255, 0, .9)',
-                          line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_blue = dict(size=10,
-                         color='rgba(0, 0, 255, .9)',
-                         line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_violet = dict(size=10,
-                           color='rgba(153, 0, 204, .9)',
-                           line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_x = dict(size=5,
-                      color='rgba(255, 0, 0, 1)')
-
-        mark_y = dict(size=5,
-                      color='rgba(0, 255, 0, 1)')
-
-        mark_z = dict(size=5,
-                      color='rgba(0, 0, 255, 1)')
-
         if len(graph_data.sql_host_name) > 1:
-            row_count = row_count + 1
-            first_hostname = graph_data.sql_host_name[0]
-            last_hostname = graph_data.sql_host_name[-1]
-            tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
-
-            trace_sensor_name = go.Scattergl(x=graph_data.sql_time,
-                                             y=graph_data.sql_host_name,
-                                             name="Sensor Name")
-
-            graph_collection.append([trace_sensor_name, row_count, 1])
-            sub_plots.append(tmp_sensor_name)
-            app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
+            plot_extras.graph_host_name(graph_data)
 
         if len(graph_data.sql_up_time) > 1:
-            row_count = row_count + 1
-
-            trace_uptime = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_up_time,
-                                        name="Sensor Uptime")
-
-            graph_collection.append([trace_uptime, row_count, 1])
-            sub_plots.append('Sensor Uptime')
-            app_logger.app_logger.debug("Graph Sensor Uptime Added")
+            plot_extras.graph_sql_uptime(graph_data)
 
         if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
-            row_count = row_count + 1
-
-            trace_cpu_temp = go.Scattergl(x=graph_data.sql_time,
-                                          y=graph_data.sql_cpu_temp,
-                                          name="CPU Temp",
-                                          marker=mark_red)
-
-            trace_hat_temp = go.Scattergl(x=graph_data.sql_time,
-                                          y=graph_data.sql_hat_temp,
-                                          name="Environmental Temp",
-                                          marker=mark_green)
-
-            graph_collection.append([trace_cpu_temp, row_count, 1])
-            graph_collection.append([trace_hat_temp, row_count, 1])
-            sub_plots.append('Temperature')
-            app_logger.app_logger.debug("Graph CPU / Environmental Temperature Added")
+            plot_extras.graph_sql_cpu_env_temperature(graph_data)
 
         if len(graph_data.sql_pressure) > 2:
-            row_count = row_count + 1
-
-            trace_pressure = go.Scattergl(x=graph_data.sql_time,
-                                          y=graph_data.sql_pressure,
-                                          name="Pressure hPa")
-
-            graph_collection.append([trace_pressure, row_count, 1])
-            sub_plots.append('Pressure hPa')
-            app_logger.app_logger.debug("Graph Pressure hPa Added")
+            plot_extras.graph_sql_pressure(graph_data)
 
         if len(graph_data.sql_humidity) > 2:
-            row_count = row_count + 1
-
-            trace_humidity = go.Scattergl(x=graph_data.sql_time,
-                                          y=graph_data.sql_humidity,
-                                          name="Humidity %")
-
-            graph_collection.append([trace_humidity, row_count, 1])
-            sub_plots.append('Humidity')
-            app_logger.app_logger.debug("Graph Humidity Added")
+            plot_extras.graph_sql_humidity(graph_data)
 
         if len(graph_data.sql_lumen) > 2:
-            row_count = row_count + 1
-
-            trace_lumen = go.Scattergl(x=graph_data.sql_time,
-                                       y=graph_data.sql_lumen,
-                                       name="Lumen",
-                                       marker=mark_yellow)
-
-            graph_collection.append([trace_lumen, row_count, 1])
-            sub_plots.append('Lumen')
-            app_logger.app_logger.debug("Graph Lumen Added")
+            plot_extras.graph_sql_lumen(graph_data)
 
         if len(graph_data.sql_red) > 2:
-            row_count = row_count + 1
-
-            trace_red = go.Scattergl(x=graph_data.sql_time,
-                                     y=graph_data.sql_red,
-                                     name="Red",
-                                     marker=mark_red)
-
-            trace_orange = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_orange,
-                                        name="Orange",
-                                        marker=mark_orange)
-
-            trace_yellow = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_yellow,
-                                        name="Yellow",
-                                        marker=mark_yellow)
-
-            trace_green = go.Scattergl(x=graph_data.sql_time,
-                                       y=graph_data.sql_green,
-                                       name="Green",
-                                       marker=mark_green)
-
-            trace_blue = go.Scattergl(x=graph_data.sql_time,
-                                      y=graph_data.sql_blue,
-                                      name="Blue",
-                                      marker=mark_blue)
-
-            trace_violet = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_violet,
-                                        name="Violet",
-                                        marker=mark_violet)
-
-            graph_collection.append([trace_red, row_count, 1])
-            graph_collection.append([trace_orange, row_count, 1])
-            graph_collection.append([trace_yellow, row_count, 1])
-            graph_collection.append([trace_green, row_count, 1])
-            graph_collection.append([trace_blue, row_count, 1])
-            graph_collection.append([trace_violet, row_count, 1])
-            sub_plots.append('Electromagnetic Spectrum')
-            app_logger.app_logger.debug("Graph Electromagnetic Spectrum Added")
+            plot_extras.graph_sql_ems_colours(graph_data)
 
         if len(graph_data.sql_acc_x) > 2:
-            row_count = row_count + 1
-
-            trace_gyro_x = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_acc_x,
-                                        name="Accelerometer X",
-                                        mode='markers',
-                                        marker=mark_x)
-
-            trace_gyro_y = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_acc_y,
-                                        name="Accelerometer Y",
-                                        mode='markers',
-                                        marker=mark_y)
-
-            trace_gyro_z = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_acc_z,
-                                        name="Accelerometer Z",
-                                        mode='markers',
-                                        marker=mark_z)
-
-            graph_collection.append([trace_gyro_x, row_count, 1])
-            graph_collection.append([trace_gyro_y, row_count, 1])
-            graph_collection.append([trace_gyro_z, row_count, 1])
-            sub_plots.append('Accelerometer XYZ')
-            app_logger.app_logger.debug("Graph Accelerometer XYZ Added")
+            plot_extras.graph_sql_accelerometer(graph_data)
 
         if len(graph_data.sql_mg_x) > 2:
-            row_count = row_count + 1
-
-            trace_gyro_x = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_mg_x,
-                                        name="Magnetic X",
-                                        mode='markers',
-                                        marker=mark_x)
-
-            trace_gyro_y = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_mg_y,
-                                        name="Magnetic Y",
-                                        mode='markers',
-                                        marker=mark_y)
-
-            trace_gyro_z = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_mg_z,
-                                        name="Magnetic Z",
-                                        mode='markers',
-                                        marker=mark_z)
-
-            graph_collection.append([trace_gyro_x, row_count, 1])
-            graph_collection.append([trace_gyro_y, row_count, 1])
-            graph_collection.append([trace_gyro_z, row_count, 1])
-            sub_plots.append('Magnetic XYZ')
-            app_logger.app_logger.debug("Graph Magnetic XYZ Added")
+            plot_extras.graph_sql_magnetometer(graph_data)
 
         if len(graph_data.sql_gyro_x) > 2:
-            row_count = row_count + 1
+            plot_extras.graph_sql_gyroscope(graph_data)
 
-            trace_gyro_x = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_gyro_x,
-                                        name="Gyroscopic X",
-                                        mode='markers',
-                                        marker=mark_x)
+        fig = tools.make_subplots(rows=graph_data.row_count, cols=1, subplot_titles=graph_data.sub_plots)
 
-            trace_gyro_y = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_gyro_y,
-                                        name="Gyroscopic Y",
-                                        mode='markers',
-                                        marker=mark_y)
-
-            trace_gyro_z = go.Scattergl(x=graph_data.sql_time,
-                                        y=graph_data.sql_gyro_z,
-                                        name="Gyroscopic Z",
-                                        mode='markers',
-                                        marker=mark_z)
-
-            graph_collection.append([trace_gyro_x, row_count, 1])
-            graph_collection.append([trace_gyro_y, row_count, 1])
-            graph_collection.append([trace_gyro_z, row_count, 1])
-            sub_plots.append('Gyroscopic XYZ')
-            app_logger.app_logger.debug("Graph Gyroscopic XYZ Added")
-
-        fig = tools.make_subplots(rows=row_count,
-                                  cols=1,
-                                  subplot_titles=sub_plots)
-
-        for graph in graph_collection:
+        for graph in graph_data.graph_collection:
             fig.add_trace(graph[0], graph[1], graph[2])
         if len(graph_data.sql_ip) > 1:
             fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_ip[0]))
 
-        if row_count > 4:
+        if graph_data.row_count > 4:
             fig['layout'].update(height=2048)
 
         try:
@@ -456,269 +243,5 @@ def _plotly_graph(graph_data):
             app_logger.app_logger.error("Plotly Graph Creation - Failed - " + str(error))
             warn("Graph Failed", str(error))
     else:
-        app_logger.app_logger.error(
-            "Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
-        warn("Error", "No SQL Data to Graph")
-
-
-def _plotly_graph_old(graph_data):
-    """ Create and open a HTML offline Plotly graph with the data provided. """
-    sub_plots = []
-    row_count = 0
-    graph_collection = []
-
-    if len(graph_data.sql_time) > 1:
-        mark_red = dict(size=10,
-                        color='rgba(255, 0, 0, .9)',
-                        line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_orange = dict(size=10,
-                           color='rgba(255, 102, 0, .9)',
-                           line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_yellow = dict(size=10,
-                           color='rgba(230, 230, 0, .9)',
-                           line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_green = dict(size=10,
-                          color='rgba(0, 255, 0, .9)',
-                          line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_blue = dict(size=10,
-                         color='rgba(0, 0, 255, .9)',
-                         line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_violet = dict(size=10,
-                           color='rgba(153, 0, 204, .9)',
-                           line=dict(width=2, color='rgb(0, 0, 0)'))
-
-        mark_x = dict(size=3,
-                      color='rgba(255, 0, 0, 1)')
-
-        mark_y = dict(size=3,
-                      color='rgba(0, 255, 0, 1)')
-
-        mark_z = dict(size=3,
-                      color='rgba(0, 0, 255, 1)')
-
-        if len(graph_data.sql_host_name) > 1:
-            row_count = row_count + 1
-            first_hostname = graph_data.sql_host_name[0]
-            last_hostname = graph_data.sql_host_name[-1]
-            tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
-
-            trace_sensor_name = go.Scatter(x=graph_data.sql_time,
-                                           y=graph_data.sql_host_name,
-                                           name="Sensor Name")
-
-            graph_collection.append([trace_sensor_name, row_count, 1])
-            sub_plots.append(tmp_sensor_name)
-            app_logger.app_logger.debug("Graph Sensor Sensor Name Added")
-        if len(graph_data.sql_up_time) > 1:
-            row_count = row_count + 1
-
-            trace_uptime = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_up_time,
-                                      name="Sensor Uptime")
-
-            graph_collection.append([trace_uptime, row_count, 1])
-            sub_plots.append('Sensor Uptime')
-            app_logger.app_logger.debug("Graph Sensor Uptime Added")
-
-        if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
-            row_count = row_count + 1
-
-            trace_cpu_temp = go.Scatter(x=graph_data.sql_time,
-                                        y=graph_data.sql_cpu_temp,
-                                        name="CPU Temp",
-                                        marker=mark_red)
-
-            trace_hat_temp = go.Scatter(x=graph_data.sql_time,
-                                        y=graph_data.sql_hat_temp,
-                                        name="Environmental Temp",
-                                        marker=mark_green)
-
-            graph_collection.append([trace_cpu_temp, row_count, 1])
-            graph_collection.append([trace_hat_temp, row_count, 1])
-            sub_plots.append('Temperature')
-            app_logger.app_logger.debug("Graph CPU / Environmental Temperature Added")
-
-        if len(graph_data.sql_pressure) > 2:
-            row_count = row_count + 1
-
-            trace_pressure = go.Scatter(x=graph_data.sql_time,
-                                        y=graph_data.sql_pressure,
-                                        name="Pressure hPa")
-
-            graph_collection.append([trace_pressure, row_count, 1])
-            sub_plots.append('Pressure hPa')
-            app_logger.app_logger.debug("Graph Pressure hPa Added")
-
-        if len(graph_data.sql_humidity) > 2:
-            row_count = row_count + 1
-
-            trace_humidity = go.Scatter(x=graph_data.sql_time,
-                                        y=graph_data.sql_humidity,
-                                        name="Humidity %")
-
-            graph_collection.append([trace_humidity, row_count, 1])
-            sub_plots.append('Humidity')
-            app_logger.app_logger.debug("Graph Humidity Added")
-
-        if len(graph_data.sql_lumen) > 2:
-            row_count = row_count + 1
-
-            trace_lumen = go.Scatter(x=graph_data.sql_time,
-                                     y=graph_data.sql_lumen,
-                                     name="Lumen",
-                                     marker=mark_yellow)
-
-            graph_collection.append([trace_lumen, row_count, 1])
-            sub_plots.append('Lumen')
-            app_logger.app_logger.debug("Graph Lumen Added")
-
-        if len(graph_data.sql_red) > 2:
-            row_count = row_count + 1
-
-            trace_red = go.Scatter(x=graph_data.sql_time,
-                                   y=graph_data.sql_red,
-                                   name="Red",
-                                   marker=mark_red)
-
-            trace_orange = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_orange,
-                                      name="Orange",
-                                      marker=mark_orange)
-
-            trace_yellow = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_yellow,
-                                      name="Yellow",
-                                      marker=mark_yellow)
-
-            trace_green = go.Scatter(x=graph_data.sql_time,
-                                     y=graph_data.sql_green,
-                                     name="Green",
-                                     marker=mark_green)
-
-            trace_blue = go.Scatter(x=graph_data.sql_time,
-                                    y=graph_data.sql_blue,
-                                    name="Blue",
-                                    marker=mark_blue)
-
-            trace_violet = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_violet,
-                                      name="Violet",
-                                      marker=mark_violet)
-
-            graph_collection.append([trace_red, row_count, 1])
-            graph_collection.append([trace_orange, row_count, 1])
-            graph_collection.append([trace_yellow, row_count, 1])
-            graph_collection.append([trace_green, row_count, 1])
-            graph_collection.append([trace_blue, row_count, 1])
-            graph_collection.append([trace_violet, row_count, 1])
-            sub_plots.append('Electromagnetic Spectrum')
-            app_logger.app_logger.debug("Graph Electromagnetic Spectrum Added")
-
-        if len(graph_data.sql_acc_x) > 2:
-            row_count = row_count + 1
-
-            trace_gyro_x = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_acc_x,
-                                      name="Accelerometer X",
-                                      mode='markers',
-                                      marker=mark_x)
-
-            trace_gyro_y = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_acc_y,
-                                      name="Accelerometer Y",
-                                      mode='markers',
-                                      marker=mark_y)
-
-            trace_gyro_z = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_acc_z,
-                                      name="Accelerometer Z",
-                                      mode='markers',
-                                      marker=mark_z)
-
-            graph_collection.append([trace_gyro_x, row_count, 1])
-            graph_collection.append([trace_gyro_y, row_count, 1])
-            graph_collection.append([trace_gyro_z, row_count, 1])
-            sub_plots.append('Accelerometer XYZ')
-            app_logger.app_logger.debug("Graph Accelerometer XYZ Added")
-
-        if len(graph_data.sql_mg_x) > 2:
-            row_count = row_count + 1
-
-            trace_gyro_x = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_mg_x,
-                                      name="Magnetic X",
-                                      mode='markers',
-                                      marker=mark_x)
-
-            trace_gyro_y = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_mg_y,
-                                      name="Magnetic Y",
-                                      mode='markers',
-                                      marker=mark_y)
-
-            trace_gyro_z = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_mg_z,
-                                      name="Magnetic Z",
-                                      mode='markers',
-                                      marker=mark_z)
-
-            graph_collection.append([trace_gyro_x, row_count, 1])
-            graph_collection.append([trace_gyro_y, row_count, 1])
-            graph_collection.append([trace_gyro_z, row_count, 1])
-            sub_plots.append('Magnetic XYZ')
-            app_logger.app_logger.debug("Graph Magnetic XYZ Added")
-
-        if len(graph_data.sql_gyro_x) > 2:
-            row_count = row_count + 1
-
-            trace_gyro_x = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_gyro_x,
-                                      name="Gyroscopic X",
-                                      mode='markers',
-                                      marker=mark_x)
-
-            trace_gyro_y = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_gyro_y,
-                                      name="Gyroscopic Y",
-                                      mode='markers',
-                                      marker=mark_y)
-
-            trace_gyro_z = go.Scatter(x=graph_data.sql_time,
-                                      y=graph_data.sql_gyro_z,
-                                      name="Gyroscopic Z",
-                                      mode='markers',
-                                      marker=mark_z)
-
-            graph_collection.append([trace_gyro_x, row_count, 1])
-            graph_collection.append([trace_gyro_y, row_count, 1])
-            graph_collection.append([trace_gyro_z, row_count, 1])
-            sub_plots.append('Gyroscopic XYZ')
-            app_logger.app_logger.debug("Graph Gyroscopic XYZ Added")
-
-        fig = tools.make_subplots(rows=row_count,
-                                  cols=1,
-                                  subplot_titles=sub_plots)
-
-        for graph in graph_collection:
-            fig.add_trace(graph[0], graph[1], graph[2])
-        if len(graph_data.sql_ip) > 1:
-            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_ip[0]))
-
-        if row_count > 4:
-            fig['layout'].update(height=2048)
-
-        try:
-            offline.plot(fig, filename=graph_data.save_to + 'PlotlySensorGraph.html', auto_open=True)
-            app_logger.app_logger.debug("Plotly Graph Creation - OK")
-        except Exception as error:
-            app_logger.app_logger.error("Plotly Graph Creation - Failed - " + str(error))
-            warn("Graph Failed", str(error))
-    else:
-        app_logger.app_logger.error(
-            "Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
+        app_logger.app_logger.error("Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
         warn("Error", "No SQL Data to Graph")

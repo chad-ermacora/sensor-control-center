@@ -81,14 +81,7 @@ class CreateGraphData:
     """ Creates an object to hold all the data needed for a graph. """
 
     def __init__(self):
-        if system() == "Linux":
-            if check_pi_model()[:12] == "Raspberry Pi":
-                self.enable_plotly_webgl = False
-            else:
-                self.enable_plotly_webgl = True
-        else:
-            self.enable_plotly_webgl = True
-
+        self.enable_plotly_webgl = False
         self.db_location = ""
         self.graph_table = "IntervalData"
         self.save_to = ""
@@ -99,6 +92,10 @@ class CreateGraphData:
         self.bypass_sql_skip = False
         self.enable_custom_temp_offset = True
         self.temperature_offset = 0.0
+
+        self.sub_plots = []
+        self.row_count = 0
+        self.graph_collection = []
 
         self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp",
                               "EnvironmentTemp", "EnvTempOffset", "Pressure", "Humidity", "Lumen",
@@ -131,6 +128,17 @@ class CreateGraphData:
         self.sql_gyro_x = []
         self.sql_gyro_y = []
         self.sql_gyro_z = []
+
+        self.set_plotly_render_type()
+
+    def set_plotly_render_type(self):
+        if system() == "Linux":
+            if check_pi_model()[:12] == "Raspberry Pi":
+                self.enable_plotly_webgl = False
+            else:
+                self.enable_plotly_webgl = True
+        else:
+            self.enable_plotly_webgl = True
 
 
 def adjust_datetime(var_datetime, datetime_offset):
