@@ -20,6 +20,8 @@ import os.path
 import platform
 import sys
 from datetime import datetime
+from platform import system
+from app_guizero.gui_platform_tweaks import check_pi_model
 
 import app_modules.app_logger as app_logger
 
@@ -47,6 +49,8 @@ class CreateDefaultConfigSettings:
             self.save_to = str(os.path.expanduser('~/Documents/KootNetSensors/')).replace('\\', '/')
         else:
             self.save_to = str(os.path.expanduser('~/KootNetSensors/')).replace('\\', '/')
+
+        self.enable_plotly_webgl = self._detect_plotly_render_type()
 
         self.graph_start = "2018-10-15 15:00:01"
         self.graph_end = "2200-01-01 00:00:01"
@@ -83,6 +87,18 @@ class CreateDefaultConfigSettings:
     def get_str_datetime_now():
         """ Returns local computer time in YYYY-MM-DD HH:MM:SS. """
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    @staticmethod
+    def _detect_plotly_render_type():
+        if system() == "Linux":
+            if check_pi_model()[:12] == "Raspberry Pi":
+                enable_plotly_webgl = False
+            else:
+                enable_plotly_webgl = True
+        else:
+            enable_plotly_webgl = True
+
+        return enable_plotly_webgl
 
 
 def get_from_file():

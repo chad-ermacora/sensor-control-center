@@ -17,8 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
-from platform import system
-from app_guizero.gui_platform_tweaks import check_pi_model
 import app_modules.app_logger as app_logger
 
 
@@ -128,17 +126,6 @@ class CreateGraphData:
         self.sql_gyro_x = []
         self.sql_gyro_y = []
         self.sql_gyro_z = []
-
-        self.set_plotly_render_type()
-
-    def set_plotly_render_type(self):
-        if system() == "Linux":
-            if check_pi_model()[:12] == "Raspberry Pi":
-                self.enable_plotly_webgl = False
-            else:
-                self.enable_plotly_webgl = True
-        else:
-            self.enable_plotly_webgl = True
 
 
 def adjust_datetime(var_datetime, datetime_offset):

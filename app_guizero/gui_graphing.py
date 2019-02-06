@@ -377,6 +377,7 @@ class CreateGraphingWindow:
     def plotly_button(self):
         """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
         new_data = CreateGraphData()
+        new_data.enable_plotly_webgl = self.current_config.enable_plotly_webgl
         new_data.db_location = filedialog.askopenfilename()
 
         if new_data.db_location.strip() is not "":
