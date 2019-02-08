@@ -243,6 +243,7 @@ class CreateConfigWindow:
         app_logger.app_logger.info("Resetting Configuration to Defaults")
         default_config = app_config.CreateDefaultConfigSettings()
         self.set_config(default_config)
+        self._enable_config_reset()
 
     def save_ip_list(self):
         """ Saves the current configuration, which includes the main window IP addresses. """
@@ -282,7 +283,7 @@ class CreateConfigWindow:
 
     def _enable_config_reset(self):
         """ Enables disabled buttons in the Control Center application. """
-        if self.checkbox_power_controls.value == 1:
+        if self.checkbox_power_controls.value:
             self.button_reset.enable()
         else:
             self.button_reset.disable()
