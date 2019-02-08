@@ -21,9 +21,8 @@ import platform
 import subprocess
 import webbrowser
 from threading import Thread
-from tkinter import filedialog
 
-from guizero import App, PushButton, MenuBar, info, warn, yesno
+from guizero import App, PushButton, MenuBar, yesno
 from matplotlib import pyplot
 
 import app_modules.app_config as app_config
@@ -37,8 +36,7 @@ from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
 from app_guizero.gui_sensor_config import CreateSensorConfigWindow
 from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
 from app_guizero.gui_sql_notes import CreateSQLNotesWindow
-from app_modules.app_sensor_commands import CreateNetworkGetCommands, CreateSensorNetworkCommand, \
-    download_sensor_database
+from app_modules.app_sensor_commands import download_sensor_database
 from app_modules.app_useful import no_ip_selected_message
 
 
