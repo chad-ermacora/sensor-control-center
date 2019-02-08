@@ -150,7 +150,7 @@ def send_command(sensor_command):
     url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
 
     try:
-        requests.get(url, timeout=sensor_command.network_timeout, headers={'Connection': 'close'})
+        requests.get(url=url, timeout=sensor_command.network_timeout, headers={'Connection': 'close'})
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
         app_logger.sensor_logger.debug(str(error))
@@ -161,7 +161,7 @@ def put_command(sensor_command):
     url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
 
     try:
-        requests.put(url, timeout=sensor_command.network_timeout, data={'command_data': sensor_command.command_data})
+        requests.put(url=url, timeout=sensor_command.network_timeout, data={'command_data': sensor_command.command_data})
         app_logger.sensor_logger.info(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
         app_logger.sensor_logger.debug(str(error))
@@ -172,7 +172,7 @@ def get_data(sensor_command):
     url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
 
     try:
-        tmp_return_data = requests.get(url, timeout=sensor_command.network_timeout)
+        tmp_return_data = requests.get(url=url, timeout=sensor_command.network_timeout)
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
         return_data = tmp_return_data.text
     except Exception as error:
