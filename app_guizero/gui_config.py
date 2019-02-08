@@ -20,8 +20,8 @@ from tkinter import filedialog
 
 from guizero import Window, CheckBox, PushButton, Text, TextBox
 
-import app_config
-import app_logger
+import app_modules.app_config as app_config
+import app_modules.app_logger as app_logger
 
 
 class CreateConfigWindow:
@@ -72,6 +72,10 @@ class CreateConfigWindow:
                                           command=self._button_save_to,
                                           grid=[1, 4],
                                           align="bottom")
+        self.checkbox_enable_open_gl_plotly = CheckBox(self.window,
+                                                       text="Render Plotly with OpenGL",
+                                                       grid=[1, 5],
+                                                       align="top")
 
         self.text_info = Text(self.window,
                               text="Default graph date range",
@@ -214,6 +218,7 @@ class CreateConfigWindow:
         new_config.network_timeout_sensor_check = self.textbox_network_check.value
         new_config.network_timeout_data = self.textbox_network_details.value
         new_config.allow_config_reset = self.checkbox_power_controls.value
+        new_config.enable_plotly_webgl = self.checkbox_enable_open_gl_plotly.value
 
         return new_config
 
@@ -231,12 +236,14 @@ class CreateConfigWindow:
         self.textbox_network_check.value = new_config.network_timeout_sensor_check
         self.textbox_network_details.value = new_config.network_timeout_data
         self.checkbox_power_controls.value = new_config.allow_config_reset
+        self.checkbox_enable_open_gl_plotly.value = new_config.enable_plotly_webgl
 
     def _reset_to_defaults(self):
         """ Resets all Control Center Configurations to default. """
         app_logger.app_logger.info("Resetting Configuration to Defaults")
         default_config = app_config.CreateDefaultConfigSettings()
         self.set_config(default_config)
+        self._enable_config_reset()
 
     def save_ip_list(self):
         """ Saves the current configuration, which includes the main window IP addresses. """
@@ -258,6 +265,7 @@ class CreateConfigWindow:
         self.current_config.network_timeout_data = self.textbox_network_details.value
         self.current_config.allow_config_reset = self.checkbox_power_controls.value
         self.current_config.ip_list = self.ip_selection.get_all_ip_list()
+        self.current_config.enable_plotly_webgl = self.checkbox_enable_open_gl_plotly.value
 
         app_config.check_config(self.current_config)
         app_config.save_config_to_file(self.current_config)
@@ -275,7 +283,7 @@ class CreateConfigWindow:
 
     def _enable_config_reset(self):
         """ Enables disabled buttons in the Control Center application. """
-        if self.checkbox_power_controls.value == 1:
+        if self.checkbox_power_controls.value:
             self.button_reset.enable()
         else:
             self.button_reset.disable()

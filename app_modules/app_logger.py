@@ -25,9 +25,10 @@ CRITICAL - A serious error, indicating that the program itself may be unable to 
 """
 import logging
 import os
+import sys
 from logging.handlers import RotatingFileHandler
 
-script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
+script_directory = str(sys.path[0]).replace("\\", "/")
 
 if not os.path.exists(os.path.dirname(script_directory + "/logs/")):
     os.makedirs(os.path.dirname(script_directory + "/logs/"))

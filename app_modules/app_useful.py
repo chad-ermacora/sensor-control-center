@@ -18,7 +18,9 @@
 """
 import webbrowser
 
-import app_logger
+from guizero import warn
+
+import app_modules.app_logger as app_logger
 
 default_installed_sensors_text = """
 Change the number in front of each line. Enable = 1 & Disable = 0
@@ -37,15 +39,93 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 
 default_sensor_config_text = """
 Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
-1 = Record Sensors to SQL Database
-300.0 = Duration between Interval readings in Seconds
-0.15 = Duration between Trigger readings in Seconds
-0 = Enable Custom Settings
-0.0 = Custom Accelerometer variance
-0.0 = Custom Magnetometer variance
-0.0 = Custom Gyroscope variance
+0 = Enable Debug Logging
+1 = Record Interval Sensors to SQL Database
+1 = Record Trigger Sensors to SQL Database
+300.0 = Seconds between Interval recordings
 0 = Enable Custom Temperature Offset
 0.0 = Custom Temperature Offset
+"""
+
+default_wifi_config_text = """
+# Update or Add additional wireless network connections as required
+# Add your wireless name to the end of 'ssid=' 
+# Add the password to the end of 'psk=' in double quotes
+
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+# Change 'country' to your country, common codes are included below
+# GB (United Kingdom), FR (France), US (United States), CA (Canada)
+country=CA
+
+network={
+        ssid="SomeOtherNetwork"
+        psk="SuperSecurePassword"
+        key_mgmt=WPA-PSK
+}
+"""
+
+default_variance_config_text = """
+Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.
+1 = Enable Sensor Uptime
+1209600.0 = Seconds between SQL Writes of Sensor Uptime
+
+1 = Enable CPU Temperature
+10.0 = CPU Temperature variance
+99999.99 = Seconds between 'CPU Temperature' readings
+
+1 = Enable Environmental Temperature
+10.0 = Environmental Temperature variance
+99999.99 = Seconds between 'Environmental Temperature' readings
+
+1 = Enable Pressure
+50 = Pressure variance
+99999.99 = Seconds between 'Pressure' readings
+
+1 = Enable Humidity
+25.0 = Humidity variance
+99999.99 = Seconds between 'Humidity' readings
+
+1 = Enable Lumen
+600.0 = Lumen variance
+99999.99 = Seconds between 'Lumen' readings
+
+1 = Enable Red
+10.0 = Red variance
+99999.99 = Seconds between 'Red' readings
+
+1 = Enable Orange
+10.0 = Orange variance
+99999.99 = Seconds between 'Orange' readings
+
+1 = Enable Yellow
+10.0 = Yellow variance
+99999.99 = Seconds between 'Yellow' readings
+
+1 = Enable Green
+10.0 = Green variance
+99999.99 = Seconds between 'Green' readings
+
+1 = Enable Blue
+10.0 = Blue variance
+99999.99 = Seconds between 'Blue' readings
+
+1 = Enable Violet
+10.0 = Violet variance
+99999.99 = Seconds between 'Violet' readings
+
+1 = Enable Accelerometer
+99999.99 = Accelerometer variance
+99999.99 = Seconds between 'Accelerometer' readings
+
+1 = Enable Magnetometer
+99999.99 = Magnetometer variance
+99999.99 = Seconds between 'Magnetometer' readings
+
+1 = Enable Gyroscope
+99999.99 = Gyroscope variance
+99999.99 = Seconds between 'Gyroscope' readings
 """
 
 sql_default_textbox_note = """
@@ -62,6 +142,10 @@ laser emitting sheep in the area.
 Notice how it only shows in the Near-Infrared spectrum. 
   - Random Zoologist
 """
+
+
+def no_ip_selected_message():
+    warn("No Sensor IP", "Please select at least one online sensor IP\n\nSelect sensor IPs in the main window")
 
 
 def convert_minutes_string(var_minutes):

@@ -1,0 +1,4 @@
+guizero
+plotly
+requests
+matplotlib

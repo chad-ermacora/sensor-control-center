@@ -17,8 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
-
-import app_logger
+import app_modules.app_logger as app_logger
 
 
 class CreateSQLColumnsReadable:
@@ -35,8 +34,7 @@ class CreateSQLColumnsReadable:
         self.pressure = "Pressure"
         self.humidity = "Humidity"
         self.lumen = "Lumen"
-        self.rgb = "Colours"
-        self.six_chan_color = "6 Channel Colour"
+        self.colours = "Colours"
         self.accelerometer_xyz = "Accelerometer XYZ"
         self.magnetometer_xyz = "Magnetometer XYZ"
         self.gyroscope_xyz = "Gyroscope XYZ"
@@ -81,7 +79,9 @@ class CreateGraphData:
     """ Creates an object to hold all the data needed for a graph. """
 
     def __init__(self):
+        self.enable_plotly_webgl = False
         self.db_location = ""
+        self.graph_table = "IntervalData"
         self.save_to = ""
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
@@ -91,15 +91,19 @@ class CreateGraphData:
         self.enable_custom_temp_offset = True
         self.temperature_offset = 0.0
 
-        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp", "EnvironmentTemp",
-                              "EnvTempOffset", "Pressure", "Humidity", "Lumen", "Red", "Green", "Blue"]
+        self.sub_plots = []
+        self.row_count = 0
+        self.graph_collection = []
+
+        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp",
+                              "EnvironmentTemp", "EnvTempOffset", "Pressure", "Humidity", "Lumen",
+                              "Red", "Orange", "Yellow", "Green", "Blue", "Violet"]
         self.max_sql_queries = 200000
 
         # Graph data holders for SQL DataBase
-        self.sql_interval_time = []
-        self.sql_interval_ip = []
-        self.sql_interval_host_name = []
-
+        self.sql_time = []
+        self.sql_ip = []
+        self.sql_host_name = []
         self.sql_up_time = []
         self.sql_cpu_temp = []
         self.sql_hat_temp = []
@@ -108,12 +112,11 @@ class CreateGraphData:
         self.sql_humidity = []
         self.sql_lumen = []
         self.sql_red = []
+        self.sql_orange = []
+        self.sql_yellow = []
         self.sql_green = []
         self.sql_blue = []
-
-        self.sql_trigger_time = []
-        self.sql_trigger_ip = []
-        self.sql_trigger_host_name = []
+        self.sql_violet = []
         self.sql_acc_x = []
         self.sql_acc_y = []
         self.sql_acc_z = []

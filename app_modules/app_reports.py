@@ -20,9 +20,9 @@ from queue import Queue
 from threading import Thread
 from time import strftime
 
-import app_logger
-import app_sensor_commands
-from app_useful import convert_minutes_string, get_file_content, save_data_to_file, open_html_file
+import app_modules.app_logger as app_logger
+import app_modules.app_sensor_commands as app_sensor_commands
+from app_modules.app_useful import convert_minutes_string, get_file_content, save_data_to_file, open_html_file
 
 data_queue = Queue()
 network_get_commands = app_sensor_commands.CreateNetworkGetCommands()
@@ -44,8 +44,6 @@ class CreateHTMLSystemData:
                                   "{{CPUTemp}}",
                                   "{{FreeDisk}}",
                                   "{{SQLDBSize}}",
-                                  "{{SQLWriteEnabled}}",
-                                  "{{CustomEnabled}}",
                                   "{{LastUpdated}}"]
 
         self.local_time_code = ["{{LocalDateTime}}"]
@@ -98,13 +96,11 @@ class CreateHTMLConfigData:
         self.replacement_codes = ["{{HostName}}",
                                   "{{IP}}",
                                   "{{DateTime}}",
+                                  "{{IntervalSQLWriteEnabled}}",
+                                  "{{TriggerSQLWriteEnabled}}",
                                   "{{IntervalDuration}}",
-                                  "{{TriggerDuration}}",
-                                  "{{SQLWriteEnabled}}",
-                                  "{{CustomEnabled}}",
-                                  "{{CustomAcc}}",
-                                  "{{CustomMag}}",
-                                  "{{CustomGyro}}",
+                                  "{{CustomTempOffset}}",
+                                  "{{TemperatureOffset}}",
                                   "{{InstalledSensors}}"]
 
         self.local_time_code = ["{{LocalDateTime}}"]
@@ -131,9 +127,7 @@ class CreateHTMLConfigData:
                                str(sensor_config[2]),
                                str(sensor_config[3]),
                                str(sensor_config[4]),
-                               str(sensor_config[5]),
-                               str(sensor_config[6]),
-                               str(sensor_config[7])]
+                               str(sensor_config[5])]
         data_queue.put([ip, final_sensor_config])
 
 

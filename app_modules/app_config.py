@@ -16,13 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
+import os.path
 import platform
+import sys
 from datetime import datetime
+from platform import system
+from app_guizero.gui_platform_tweaks import check_pi_model
 
-import app_logger
+import app_modules.app_logger as app_logger
 
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.22.25"
+app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.23.39"
 current_platform = platform.system()
 
 
@@ -31,11 +34,11 @@ class CreateDefaultConfigSettings:
 
     def __init__(self):
         # Script location information
-        self.script_directory = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
+        self.script_directory = str(sys.path[0]).replace("\\", "/")
         self.logs_directory = self.script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
         if current_platform == "Linux":
-            self.config_file = "/etc/kootnet/control_center_config.conf"
+            self.config_file = "/etc/kootnet/control_center.conf"
             self.config_folder = "/etc/kootnet/"
         else:
             self.config_file = self.script_directory + "/config.txt"
@@ -46,6 +49,8 @@ class CreateDefaultConfigSettings:
             self.save_to = str(os.path.expanduser('~/Documents/KootNetSensors/')).replace('\\', '/')
         else:
             self.save_to = str(os.path.expanduser('~/KootNetSensors/')).replace('\\', '/')
+
+        self.enable_plotly_webgl = self.detect_plotly_render_type()
 
         self.graph_start = "2018-10-15 15:00:01"
         self.graph_end = "2200-01-01 00:00:01"
@@ -77,11 +82,24 @@ class CreateDefaultConfigSettings:
         self.network_timeout_data = default_config.network_timeout_data
         self.allow_config_reset = default_config.allow_config_reset
         self.ip_list = default_config.ip_list
+        self.enable_plotly_webgl = self.detect_plotly_render_type()
 
     @staticmethod
     def get_str_datetime_now():
         """ Returns local computer time in YYYY-MM-DD HH:MM:SS. """
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    @staticmethod
+    def detect_plotly_render_type():
+        if system() == "Linux":
+            if check_pi_model()[:12] == "Raspberry Pi":
+                enable_plotly_webgl = False
+            else:
+                enable_plotly_webgl = True
+        else:
+            enable_plotly_webgl = True
+
+        return enable_plotly_webgl
 
 
 def get_from_file():
@@ -120,6 +138,8 @@ def get_from_file():
             except Exception as error:
                 app_logger.app_logger.error("Unable to Load IP # - " + str(count) + " - " + str(error))
                 count = count + 1
+
+        config_settings.enable_plotly_webgl = tmp_config_settings[27]
 
         app_logger.app_logger.debug("Configuration File Load - OK")
 
@@ -239,6 +259,14 @@ def check_config(config_settings):
             count = count + 1
             bad_settings = True
 
+    try:
+        config_settings.enable_plotly_webgl = int(config_settings.enable_plotly_webgl)
+        app_logger.app_logger.debug("Setting Enable Plotly WebGL - OK")
+    except Exception as error:
+        app_logger.app_logger.error("Setting Enable Plotly WebGL - BAD - Using Default: " + str(error))
+        config_settings.enable_plotly_webgl = config_settings.detect_plotly_render_type()
+        bad_settings = True
+
     if bad_settings:
         app_logger.app_logger.warning("One or more invalid settings have been reset to default and saved")
         save_config_to_file(config_settings)
@@ -249,21 +277,23 @@ def save_config_to_file(config_settings):
     check_config(config_settings)
 
     var_final_write = str(config_settings.save_to)
-    var_final_write = var_final_write + ',' + str(config_settings.graph_start)
-    var_final_write = var_final_write + ',' + str(config_settings.graph_end)
-    var_final_write = var_final_write + ',' + str(config_settings.live_refresh)
-    var_final_write = var_final_write + ',' + str(config_settings.datetime_offset)
-    var_final_write = var_final_write + ',' + str(config_settings.sql_queries_skip)
-    var_final_write = var_final_write + ',' + str(config_settings.temperature_offset)
-    var_final_write = var_final_write + ',' + str(config_settings.live_refresh)
-    var_final_write = var_final_write + ',' + str(config_settings.network_timeout_sensor_check)
-    var_final_write = var_final_write + ',' + str(config_settings.network_timeout_data)
-    var_final_write = var_final_write + ',' + str(config_settings.allow_config_reset)
+    var_final_write = var_final_write + "," + str(config_settings.graph_start)
+    var_final_write = var_final_write + "," + str(config_settings.graph_end)
+    var_final_write = var_final_write + "," + str(config_settings.live_refresh)
+    var_final_write = var_final_write + "," + str(config_settings.datetime_offset)
+    var_final_write = var_final_write + "," + str(config_settings.sql_queries_skip)
+    var_final_write = var_final_write + "," + str(config_settings.temperature_offset)
+    var_final_write = var_final_write + "," + str(config_settings.live_refresh)
+    var_final_write = var_final_write + "," + str(config_settings.network_timeout_sensor_check)
+    var_final_write = var_final_write + "," + str(config_settings.network_timeout_data)
+    var_final_write = var_final_write + "," + str(config_settings.allow_config_reset)
     for ip in config_settings.ip_list:
-        var_final_write = var_final_write + ',' + str(ip)
+        var_final_write = var_final_write + "," + str(ip)
+
+    var_final_write = var_final_write + "," + str(config_settings.enable_plotly_webgl)
 
     try:
-        local_file = open(config_settings.config_file, 'w')
+        local_file = open(config_settings.config_file, "w")
         local_file.write(var_final_write)
         local_file.close()
         app_logger.app_logger.debug("Configuration Settings Save to File - OK")
