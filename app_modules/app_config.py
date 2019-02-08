@@ -50,7 +50,7 @@ class CreateDefaultConfigSettings:
         else:
             self.save_to = str(os.path.expanduser('~/KootNetSensors/')).replace('\\', '/')
 
-        self.enable_plotly_webgl = self._detect_plotly_render_type()
+        self.enable_plotly_webgl = self.detect_plotly_render_type()
 
         self.graph_start = "2018-10-15 15:00:01"
         self.graph_end = "2200-01-01 00:00:01"
@@ -82,6 +82,7 @@ class CreateDefaultConfigSettings:
         self.network_timeout_data = default_config.network_timeout_data
         self.allow_config_reset = default_config.allow_config_reset
         self.ip_list = default_config.ip_list
+        self.enable_plotly_webgl = self.detect_plotly_render_type()
 
     @staticmethod
     def get_str_datetime_now():
@@ -89,7 +90,7 @@ class CreateDefaultConfigSettings:
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     @staticmethod
-    def _detect_plotly_render_type():
+    def detect_plotly_render_type():
         if system() == "Linux":
             if check_pi_model()[:12] == "Raspberry Pi":
                 enable_plotly_webgl = False
@@ -137,6 +138,8 @@ def get_from_file():
             except Exception as error:
                 app_logger.app_logger.error("Unable to Load IP # - " + str(count) + " - " + str(error))
                 count = count + 1
+
+        config_settings.enable_plotly_webgl = tmp_config_settings[27]
 
         app_logger.app_logger.debug("Configuration File Load - OK")
 
@@ -256,6 +259,14 @@ def check_config(config_settings):
             count = count + 1
             bad_settings = True
 
+    try:
+        config_settings.enable_plotly_webgl = int(config_settings.enable_plotly_webgl)
+        app_logger.app_logger.debug("Setting Enable Plotly WebGL - OK")
+    except Exception as error:
+        app_logger.app_logger.error("Setting Enable Plotly WebGL - BAD - Using Default: " + str(error))
+        config_settings.enable_plotly_webgl = config_settings.detect_plotly_render_type()
+        bad_settings = True
+
     if bad_settings:
         app_logger.app_logger.warning("One or more invalid settings have been reset to default and saved")
         save_config_to_file(config_settings)
@@ -266,21 +277,23 @@ def save_config_to_file(config_settings):
     check_config(config_settings)
 
     var_final_write = str(config_settings.save_to)
-    var_final_write = var_final_write + ',' + str(config_settings.graph_start)
-    var_final_write = var_final_write + ',' + str(config_settings.graph_end)
-    var_final_write = var_final_write + ',' + str(config_settings.live_refresh)
-    var_final_write = var_final_write + ',' + str(config_settings.datetime_offset)
-    var_final_write = var_final_write + ',' + str(config_settings.sql_queries_skip)
-    var_final_write = var_final_write + ',' + str(config_settings.temperature_offset)
-    var_final_write = var_final_write + ',' + str(config_settings.live_refresh)
-    var_final_write = var_final_write + ',' + str(config_settings.network_timeout_sensor_check)
-    var_final_write = var_final_write + ',' + str(config_settings.network_timeout_data)
-    var_final_write = var_final_write + ',' + str(config_settings.allow_config_reset)
+    var_final_write = var_final_write + "," + str(config_settings.graph_start)
+    var_final_write = var_final_write + "," + str(config_settings.graph_end)
+    var_final_write = var_final_write + "," + str(config_settings.live_refresh)
+    var_final_write = var_final_write + "," + str(config_settings.datetime_offset)
+    var_final_write = var_final_write + "," + str(config_settings.sql_queries_skip)
+    var_final_write = var_final_write + "," + str(config_settings.temperature_offset)
+    var_final_write = var_final_write + "," + str(config_settings.live_refresh)
+    var_final_write = var_final_write + "," + str(config_settings.network_timeout_sensor_check)
+    var_final_write = var_final_write + "," + str(config_settings.network_timeout_data)
+    var_final_write = var_final_write + "," + str(config_settings.allow_config_reset)
     for ip in config_settings.ip_list:
-        var_final_write = var_final_write + ',' + str(ip)
+        var_final_write = var_final_write + "," + str(ip)
+
+    var_final_write = var_final_write + "," + str(config_settings.enable_plotly_webgl)
 
     try:
-        local_file = open(config_settings.config_file, 'w')
+        local_file = open(config_settings.config_file, "w")
         local_file.write(var_final_write)
         local_file.close()
         app_logger.app_logger.debug("Configuration Settings Save to File - OK")
