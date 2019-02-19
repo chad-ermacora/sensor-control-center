@@ -21,11 +21,15 @@ import app_modules.app_logger as app_logger
 import app_guizero.gui_platform_tweaks
 import app_modules.app_checks as app_checks
 
+# Make sure options and such are set right before starting the program
 app_checks.run_pre_checks()
 
+# Create the app
 guizero_app = app_guizero.gui_main.CreateMainWindow()
+
+# Set app tweaks based on the current system
 app_guizero.gui_platform_tweaks.app_custom_configurations(guizero_app)
 
-# Start the App
+# Start the App after making a note in the log
 app_logger.app_logger.info('KootNet Sensors - Control Center - Started')
 guizero_app.app.display()

@@ -28,6 +28,7 @@ network_get_commands = app_sensor_commands.CreateNetworkGetCommands()
 
 
 class _CreateBasicHTMLData:
+    """ Create a Basic HTML Report data object based on provided report_type (System, Readings, Config). """
     def __init__(self, report_type, current_config):
         self.data_queue = Queue()
 
@@ -58,10 +59,12 @@ class _CreateBasicHTMLData:
 
 
 class CreateHTMLSystemData(_CreateBasicHTMLData):
+    """ Create a System HTML Report data object. """
     def __init__(self, current_config):
         super().__init__("System", current_config)
 
     def get_sensor_data(self, ip):
+        """ Gets system report data from the provided sensor IP and puts it in the instance que. """
         command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
                                                                       self.network_timeout,
                                                                       network_get_commands.system_data)
@@ -76,10 +79,12 @@ class CreateHTMLSystemData(_CreateBasicHTMLData):
 
 
 class CreateHTMLReadingsData(_CreateBasicHTMLData):
+    """ Create a Readings HTML Report data object. """
     def __init__(self, current_config):
         super().__init__("Readings", current_config)
 
     def get_sensor_data(self, ip):
+        """ Gets readings report data from the provided sensor IP and puts it in the instance que. """
         command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
                                                                       self.network_timeout,
                                                                       network_get_commands.sensor_readings)
@@ -88,10 +93,12 @@ class CreateHTMLReadingsData(_CreateBasicHTMLData):
 
 
 class CreateHTMLConfigData(_CreateBasicHTMLData):
+    """ Create a Configuration HTML Report data object. """
     def __init__(self, current_config):
         super().__init__("Config", current_config)
 
     def get_sensor_data(self, ip):
+        """ Gets configuration report data from the provided sensor IP and puts it in the instance que. """
         command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
                                                                       self.network_timeout,
                                                                       network_get_commands.system_data)
@@ -117,6 +124,7 @@ class CreateHTMLConfigData(_CreateBasicHTMLData):
 
 
 def _sensor_report_worker(report_configuration, threads):
+    """ Takes all the data from the threads (AKA Sensors) and creates a single HTML report. """
     template1 = useful.get_file_content(report_configuration.template1)
     # Add Local computer's DateTime to 3rd template
     current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
@@ -176,6 +184,7 @@ def sensor_html_report(report_configuration, ip_list):
 
 
 def _replace_with_codes(data, codes, template):
+    """ Replaces codes in the template with data and returns the template. """
     count = 0
     for code in codes:
         try:

@@ -18,14 +18,14 @@
 """
 import os.path
 import platform
-import sys
+from sys import path
 from datetime import datetime
 from platform import system
 from app_guizero.gui_platform_tweaks import check_pi_model
 
 import app_modules.app_logger as app_logger
 
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.23.39"
+app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.1"
 current_platform = platform.system()
 
 
@@ -34,7 +34,7 @@ class CreateDefaultConfigSettings:
 
     def __init__(self):
         # Script location information
-        self.script_directory = str(sys.path[0]).replace("\\", "/")
+        self.script_directory = str(path[0]).replace("\\", "/")
         self.logs_directory = self.script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
         if current_platform == "Linux":
@@ -91,6 +91,7 @@ class CreateDefaultConfigSettings:
 
     @staticmethod
     def detect_plotly_render_type():
+        """ Checks supported system for OpenGL plotly rendering. Returns True if supported. """
         if system() == "Linux":
             if check_pi_model()[:12] == "Raspberry Pi":
                 enable_plotly_webgl = False

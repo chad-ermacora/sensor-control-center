@@ -186,6 +186,7 @@ Notice how it only shows in the Near-Infrared spectrum.
 
 
 def no_ip_selected_message():
+    """ Displays a GUI message asking the user to select an IP address. """
     warn("No Sensor IP", "Please select at least one online sensor IP\n\nSelect sensor IPs in the main window")
 
 

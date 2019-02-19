@@ -24,6 +24,7 @@ import app_modules.app_logger as app_logger
 
 
 class CreateSensorNetworkCommand:
+    """ Creates object instance of variables needed for network commands. """
     def __init__(self, ip, network_timeout, command):
         self.ip = ip
         self.network_timeout = network_timeout
@@ -33,6 +34,7 @@ class CreateSensorNetworkCommand:
 
 
 class CreateNetworkGetCommands:
+    """ Create a object instance holding available network "Get" commands (AKA expecting data back). """
     def __init__(self):
         self.sensor_sql_database = "DownloadSQLDatabase"
         self.sensor_configuration = "GetConfigurationReport"
@@ -63,6 +65,7 @@ class CreateNetworkGetCommands:
 
 
 class CreateNetworkSendCommands:
+    """ Create a object instance holding available network "Send" commands (AKA not expecting data back). """
     def __init__(self):
         self.restart_services = "RestartServices"
         self.shutdown_system = "ShutdownSystem"

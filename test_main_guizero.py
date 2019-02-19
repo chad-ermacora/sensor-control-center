@@ -21,6 +21,7 @@ import unittest
 from time import sleep
 
 import app_modules.app_config as app_config
+import app_modules.app_useful as app_useful
 import app_modules.app_graph as app_graph
 import app_modules.app_graph_plotly as app_graph_plotly
 import app_modules.app_reports as app_reports
@@ -129,7 +130,7 @@ class TestApp(unittest.TestCase):
     def test_app_reports(self):
         # # Initial setup complete - Requires a look over the generated reports by human
         print("\nThis REQUIRES an online sensor @ " + sensor_ip + "\nPlease review the 3 opened Reports for errors.")
-        self.assertEqual(app_reports.convert_minutes_string(7634), "5 Days, 7 Hours & 14 Min")
+        self.assertEqual(app_useful.convert_minutes_string(7634), "5 Days, 7 Hours & 14 Min")
 
         config_test.save_to = save_to
 
