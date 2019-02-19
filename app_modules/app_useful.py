@@ -17,10 +17,51 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import webbrowser
-
 from guizero import warn
-
+from sys import path
 import app_modules.app_logger as app_logger
+
+script_directory = str(path[0]).replace("\\", "/")
+
+html_file_output_name_system = "SensorsSystemReport.html"
+html_template_system1_location = script_directory + "/additional_files/html_template_system1.html"
+html_template_system2_location = script_directory + "/additional_files/html_template_system2.html"
+html_template_system3_location = script_directory + "/additional_files/html_template_system3.html"
+
+html_file_output_name_readings = "SensorsReadingsReport.html"
+html_template_readings1_location = script_directory + "/additional_files/html_template_readings1.html"
+html_template_readings2_location = script_directory + "/additional_files/html_template_readings2.html"
+html_template_readings3_location = script_directory + "/additional_files/html_template_readings3.html"
+
+html_file_output_name_config = "SensorsConfigReport.html"
+html_template_config1_location = script_directory + "/additional_files/html_template_config1.html"
+html_template_config2_location = script_directory + "/additional_files/html_template_config2.html"
+html_template_config3_location = script_directory + "/additional_files/html_template_config3.html"
+
+reports_system_replacement_codes = ["{{HostName}}",
+                                    "{{IP}}",
+                                    "{{DateTime}}",
+                                    "{{UpTime}}",
+                                    "{{Version}}",
+                                    "{{CPUTemp}}",
+                                    "{{FreeDisk}}",
+                                    "{{SQLDBSize}}",
+                                    "{{LastUpdated}}"]
+
+reports_readings_replacement_codes = ["{{SensorTypes}}",
+                                      "{{SensorReadings}}"]
+
+reports_config_replacement_codes = ["{{HostName}}",
+                                    "{{IP}}",
+                                    "{{DateTime}}",
+                                    "{{IntervalSQLWriteEnabled}}",
+                                    "{{TriggerSQLWriteEnabled}}",
+                                    "{{IntervalDuration}}",
+                                    "{{CustomTempOffset}}",
+                                    "{{TemperatureOffset}}",
+                                    "{{InstalledSensors}}"]
+
+reports_local_time_code = ["{{LocalDateTime}}"]
 
 default_installed_sensors_text = """
 Change the number in front of each line. Enable = 1 & Disable = 0
