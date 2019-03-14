@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Make sure SMB_SHARE points to the root share holding both Sensor & Control Center folders
-SMB_SERVER="//gamercube1"
-SMB_SHARE="/PyCharmProjects"
+SMB_SERVER="//xps-development01"
+SMB_SHARE="/PyProjects"
 SMB_SENSOR="/sensor-rp"
 SMB_CONTROL_CENTER="/sensor-control-center"
 CIFS_OPTIONS="username=myself,password='123'"
@@ -15,10 +15,8 @@ if [[ $EUID != 0 ]]; then
 fi
 # Start Script
 killall nano 2>/dev/null
-printf '\nChecking & creating required folders\n'
-mkdir /mnt/supernas 2>/dev/null
-mkdir /opt/kootnet-control-center 2>/dev/null
-mkdir /opt/kootnet-control-center/logs 2>/dev/null
+# Make sure cifs is installed for SMB mount
+apt-get install cifs-utils
 # Download and Upgrade Sensor Programs off SMB
 printf '\nConnecting to SMB & copying files\n'
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}

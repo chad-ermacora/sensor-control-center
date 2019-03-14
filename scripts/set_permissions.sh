@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-USER_DIR="/home/pi/"
+USER_DIR="/home/oo-dragon/"
 # Make sure its running with root
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
@@ -14,4 +14,4 @@ touch /opt/kootnet-control-center/logs/Sensor_Commands_log.txt
 chmod 766 /opt/kootnet-control-center/config.txt
 chmod 775 /opt/kootnet-control-center -R
 chmod 766 /opt/kootnet-control-center/logs/*.txt
-chmod 766 ${USER_DIR}/Desktop/*.desktop
+chmod 777 ${USER_DIR}/Desktop/*.desktop
