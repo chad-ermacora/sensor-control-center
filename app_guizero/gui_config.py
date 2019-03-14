@@ -146,7 +146,7 @@ class CreateConfigWindow:
                                            align="bottom")
 
         self.text_sql_skip = Text(self.window,
-                                  text="Graph sensor data ever 'X' entries",
+                                  text="Graph sensor data every 'X' entries",
                                   color='blue',
                                   grid=[2, 3],
                                   align="top")
