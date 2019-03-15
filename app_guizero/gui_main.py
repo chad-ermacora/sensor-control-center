@@ -30,6 +30,7 @@ import app_modules.app_logger as app_logger
 from app_guizero.gui_about import CreateAboutWindow
 from app_guizero.gui_config import CreateConfigWindow
 from app_guizero.gui_graphing import CreateGraphingWindow
+from app_guizero.gui_db_information import CreateDataBaseInfoWindow
 from app_guizero.gui_ip_selection import CreateIPSelector
 from app_guizero.gui_reports import CreateReportsWindow
 from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
@@ -63,13 +64,14 @@ class CreateMainWindow:
         self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
+        self.window_db_info = CreateDataBaseInfoWindow(self.app, self.current_config)
         self.window_about = CreateAboutWindow(self.app, self.current_config)
 
         self.app_menubar = MenuBar(self.app,
-                                   toplevel=[["File"],
-                                             ["Sensors"],
-                                             ["Graphing"],
-                                             ["Help"]],
+                                   toplevel=["File",
+                                             "Sensors",
+                                             "Graphing & Databases",
+                                             "Help"],
                                    options=[[["Control Center Configuration",
                                               self.window_control_center_config.window.show],
                                              ["Open Logs",
@@ -90,8 +92,14 @@ class CreateMainWindow:
                                               self.window_sensor_commands.window.show],
                                              ["Update Configurations",
                                               self.window_sensor_config.window.show]],
-                                            [["Create Graphs",
-                                              self.window_graph.window.show]],
+                                            [["Graphing",
+                                              self.window_graph.window.show],
+                                             ["DataBase Info",
+                                              self.window_db_info.window.show],
+                                             ["DataBase Analyzer",
+                                              self.window_about.window.show],
+                                             ["DataBase Notes",
+                                              self.window_about.window.show]],
                                             [["KootNet Sensors - About",
                                               self.window_about.window.show],
                                              ["KootNet Sensors - Website",
