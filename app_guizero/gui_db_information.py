@@ -16,12 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from tkinter import filedialog
-
-from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
-
-import app_modules.app_config as app_config
+import sqlite3
+import os.path
 import app_modules.app_logger as app_logger
+from tkinter import filedialog
+from guizero import Window, PushButton, Text, TextBox
+from app_modules.app_graph_plotly import CreateSQLColumnNames
+
+sql_column_names = CreateSQLColumnNames()
 
 
 class CreateDataBaseInfoWindow:
@@ -33,16 +35,10 @@ class CreateDataBaseInfoWindow:
 
         self.window = Window(app,
                              title="DataBase Information",
-                             width=650,
+                             width=500,
                              height=500,
                              layout="grid",
                              visible=True)
-
-        self.button_select_database = PushButton(self.window,
-                                                 text="Select Database",
-                                                 command=self._select_database,
-                                                 grid=[1, 1],
-                                                 align="top")
 
         self.text_database_label = Text(self.window,
                                         text="Database: ",
@@ -71,9 +67,54 @@ class CreateDataBaseInfoWindow:
                                                  scrollbar=True,
                                                  align="left")
 
+        self.text_db_dates = Text(self.window,
+                                  text="Date Range: ",
+                                  color='blue',
+                                  grid=[1, 4],
+                                  align="left")
+
+        self.textbox_db_dates = TextBox(self.window,
+                                        text="First Recorded Date || Last Recorded Date",
+                                        width=40,
+                                        grid=[2, 4],
+                                        align="left")
+
+        self.text_db_size = Text(self.window,
+                                 text="DB Size: ",
+                                 color='blue',
+                                 grid=[1, 5],
+                                 align="left")
+
+        self.textbox_db_size = TextBox(self.window,
+                                       text=" MB",
+                                       width=12,
+                                       grid=[2, 5],
+                                       align="left")
+
+        self.text_db_notes = Text(self.window,
+                                  text="Number of DB Notes: ",
+                                  color='blue',
+                                  grid=[2, 5, 2, 1],
+                                  align="top")
+
+        self.textbox_db_notes = TextBox(self.window,
+                                        text="",
+                                        width=12,
+                                        grid=[2, 5, 2, 1],
+                                        align="right")
+
+        self.button_select_database = PushButton(self.window,
+                                                 text="Select Database",
+                                                 command=self._select_database,
+                                                 grid=[2, 14],
+                                                 align="right")
+
         # Window Tweaks
         self.textbox_database_name.disable()
         self.textbox_database_location.disable()
+        self.textbox_db_dates.disable()
+        self.textbox_db_size.disable()
+        self.textbox_db_notes.disable()
 
     def _select_database(self):
         """ Prompts for Database to open and opens it. """
@@ -97,3 +138,73 @@ class CreateDataBaseInfoWindow:
         self.textbox_database_location.enable()
         self.textbox_database_location.value = str_location
         self.textbox_database_location.disable()
+
+        self._set_first_last_date(db_location)
+        self._set_db_size(db_location)
+
+        self._set_db_notes(db_location)
+
+    def _set_first_last_date(self, db_location):
+        sql_query = "SELECT Min(" + \
+                    str(sql_column_names.date_time) + \
+                    ") AS First, Max(" + \
+                    str(sql_column_names.date_time) + \
+                    ") AS Last FROM " + \
+                    str(sql_column_names.sql_interval_table)
+
+        db_datetime_column = str(self._get_sql_data(db_location, sql_query))
+        db_datetime_column_list = db_datetime_column.split(",")
+
+        if len(db_datetime_column_list) == 2:
+            db_datetime_column_list[0] = db_datetime_column_list[0][3:-5]
+            db_datetime_column_list[1] = db_datetime_column_list[1][2:-7]
+
+            self.textbox_db_dates.enable()
+            self.textbox_db_dates.value = db_datetime_column_list[0] + " || " + db_datetime_column_list[1]
+            self.textbox_db_dates.disable()
+        else:
+            self.textbox_db_dates.enable()
+            self.textbox_db_dates.value = "Invalid DataBase"
+            self.textbox_db_dates.disable()
+
+    def _set_db_notes(self, db_location):
+        sql_query = "SELECT count(" + \
+                    str(sql_column_names.other_notes) + \
+                    ") FROM " + \
+                    str(sql_column_names.sql_other_table)
+
+        number_of_notes = self._get_sql_data(db_location, sql_query)
+
+        self.textbox_db_notes.enable()
+        self.textbox_db_notes.value = str(number_of_notes)[2:-3]
+        self.textbox_db_notes.disable()
+
+    def _set_db_size(self, db_location):
+        self.textbox_db_size.enable()
+        self.textbox_db_size.value = self.get_sql_db_size(db_location)
+        self.textbox_db_size.disable()
+
+    @staticmethod
+    def _get_sql_data(db_location, sql_query):
+        try:
+            database_connection = sqlite3.connect(db_location)
+            sqlite_database = database_connection.cursor()
+            sqlite_database.execute(sql_query)
+            sql_column_data = sqlite_database.fetchall()
+            sqlite_database.close()
+            database_connection.close()
+        except Exception as error:
+            app_logger.app_logger.error("DB Error: " + str(error))
+            sql_column_data = []
+
+        return sql_column_data
+
+    @staticmethod
+    def get_sql_db_size(db_location):
+        try:
+            db_size_mb = os.path.getsize(db_location) / 1024000
+            app_logger.app_logger.debug("Database Size - OK")
+        except Exception as error:
+            app_logger.app_logger.error("Database Size - Failed - " + str(error))
+            db_size_mb = 0.0
+        return str(round(db_size_mb, 2)) + " MB"
