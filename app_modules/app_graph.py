@@ -44,6 +44,9 @@ class CreateSQLColumnNames:
     """ Creates an object to hold all SQL column names. """
 
     def __init__(self):
+        self.sql_interval_table = "IntervalData"
+        self.sql_trigger_table = "TriggerData"
+        self.sql_other_table = "OtherData"
         self.date_time = "DateTime"
         self.sensor_name = "SensorName"
         self.ip = "IP"
@@ -59,6 +62,9 @@ class CreateSQLColumnNames:
         self.accelerometer_xyz = ["Acc_X", "Acc_Y", "Acc_Z"]
         self.magnetometer_xyz = ["Mag_X", "Mag_Y", "Mag_Z"]
         self.gyroscope_xyz = ["Gyro_X", "Gyro_Y", "Gyro_Z"]
+
+        self.other_notes = "Notes"
+        self.other_user_datetime = "UserDateTime"
 
 
 class CreateMeasurementsTypes:
