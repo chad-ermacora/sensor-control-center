@@ -92,11 +92,17 @@ class CreateDataBaseInfoWindow:
                                             grid=[2, 5, 2, 1],
                                             align="left")
 
+        self.button_select_database = PushButton(self.window,
+                                                 text="Select Database",
+                                                 command=self._select_database,
+                                                 grid=[1, 6, 2, 1],
+                                                 align="top")
+
         self.text_name_changes = Text(self.window,
                                       text="\nRecorded Name Changes\n",
                                       color='purple',
-                                      grid=[2, 6, 2, 2],
-                                      align="left")
+                                      grid=[1, 7, 2, 2],
+                                      align="top")
 
         self.text_name_date = Text(self.window,
                                    text="Date of Change",
@@ -104,14 +110,14 @@ class CreateDataBaseInfoWindow:
                                    grid=[1, 10],
                                    align="left")
 
-        self.textbox_name_date = TextBox(self.window,
-                                         text="1. Date: Date",
-                                         width=21,
-                                         height=10,
-                                         grid=[1, 11],
-                                         multiline=True,
-                                         scrollbar=True,
-                                         align="left")
+        self.textbox_name_dates = TextBox(self.window,
+                                          text="1. Date: Date",
+                                          width=21,
+                                          height=10,
+                                          grid=[1, 11],
+                                          multiline=True,
+                                          scrollbar=True,
+                                          align="left")
 
         self.text_name_new = Text(self.window,
                                   text="New Name",
@@ -119,14 +125,14 @@ class CreateDataBaseInfoWindow:
                                   grid=[2, 10, 2, 1],
                                   align="left")
 
-        self.textbox_name_new = TextBox(self.window,
-                                        text="1. New: New Name",
-                                        width=21,
-                                        height=10,
-                                        grid=[2, 11, 2, 1],
-                                        multiline=True,
-                                        scrollbar=True,
-                                        align="left")
+        self.textbox_new_names = TextBox(self.window,
+                                         text="1. New: New Name",
+                                         width=21,
+                                         height=10,
+                                         grid=[2, 11, 2, 1],
+                                         multiline=True,
+                                         scrollbar=True,
+                                         align="left")
 
         self.text_name_old = Text(self.window,
                                   text="                     Old Name",
@@ -134,14 +140,14 @@ class CreateDataBaseInfoWindow:
                                   grid=[2, 10],
                                   align="top")
 
-        self.textbox_name_old = TextBox(self.window,
-                                        text="1. Old: Old Name",
-                                        width=21,
-                                        height=10,
-                                        grid=[2, 11, 2, 1],
-                                        multiline=True,
-                                        scrollbar=True,
-                                        align="right")
+        self.textbox_old_names = TextBox(self.window,
+                                         text="1. Old: Old Name",
+                                         width=21,
+                                         height=10,
+                                         grid=[2, 11, 2, 1],
+                                         multiline=True,
+                                         scrollbar=True,
+                                         align="right")
 
         self.text_ip_changes = Text(self.window,
                                     text="\nRecorded IP Changes\n",
@@ -155,14 +161,14 @@ class CreateDataBaseInfoWindow:
                                  grid=[1, 16],
                                  align="left")
 
-        self.textbox_ip_date = TextBox(self.window,
-                                       text="1. Date: Date",
-                                       width=21,
-                                       height=10,
-                                       grid=[1, 17],
-                                       multiline=True,
-                                       scrollbar=True,
-                                       align="left")
+        self.textbox_ip_dates = TextBox(self.window,
+                                        text="1. Date: Date",
+                                        width=21,
+                                        height=10,
+                                        grid=[1, 17],
+                                        multiline=True,
+                                        scrollbar=True,
+                                        align="left")
 
         self.text_ip_new = Text(self.window,
                                 text="New IP",
@@ -170,14 +176,14 @@ class CreateDataBaseInfoWindow:
                                 grid=[2, 16, 2, 1],
                                 align="left")
 
-        self.textbox_ip_new = TextBox(self.window,
-                                      text="1. New: New IP",
-                                      width=21,
-                                      height=10,
-                                      grid=[2, 17, 2, 1],
-                                      multiline=True,
-                                      scrollbar=True,
-                                      align="left")
+        self.textbox_new_ips = TextBox(self.window,
+                                       text="1. New: New IP",
+                                       width=21,
+                                       height=10,
+                                       grid=[2, 17, 2, 1],
+                                       multiline=True,
+                                       scrollbar=True,
+                                       align="left")
 
         self.text_ip_old = Text(self.window,
                                 text="                     Old IP",
@@ -185,20 +191,14 @@ class CreateDataBaseInfoWindow:
                                 grid=[2, 16],
                                 align="top")
 
-        self.textbox_ip_old = TextBox(self.window,
-                                      text="1. Old: Old IP",
-                                      width=21,
-                                      height=10,
-                                      grid=[2, 17, 2, 1],
-                                      multiline=True,
-                                      scrollbar=True,
-                                      align="right")
-
-        self.button_select_database = PushButton(self.window,
-                                                 text="Select Database",
-                                                 command=self._select_database,
-                                                 grid=[2, 24],
-                                                 align="right")
+        self.textbox_old_ips = TextBox(self.window,
+                                       text="1. Old: Old IP",
+                                       width=21,
+                                       height=10,
+                                       grid=[2, 17, 2, 1],
+                                       multiline=True,
+                                       scrollbar=True,
+                                       align="right")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
@@ -233,6 +233,8 @@ class CreateDataBaseInfoWindow:
         self._set_first_last_date(db_location)
 
         self._set_misc_db_info(db_location)
+
+        self.set_all_name_ip_columns(db_location)
 
     def _set_misc_db_info(self, db_location):
         db_size = self.get_sql_db_size(db_location)
@@ -282,6 +284,7 @@ class CreateDataBaseInfoWindow:
                     str(sql_column_names.sql_other_table)
 
         number_of_notes = str(self._get_sql_data(db_location, sql_query))
+
         if len(number_of_notes) > 5:
             return_notes_count = number_of_notes[2:-3]
         else:
@@ -315,34 +318,154 @@ class CreateDataBaseInfoWindow:
             app_logger.app_logger.error("Database Size - Failed - " + str(error))
             return "NA"
 
-    @staticmethod
-    def _get_sensor_reboot_count(db_location):
+    def _get_sensor_reboot_count(self, db_location):
         sql_query = "SELECT " + \
                     str(sql_column_names.system_uptime) + \
                     " FROM " + \
                     str(sql_column_names.sql_interval_table)
 
-        try:
-            database_connection = sqlite3.connect(db_location)
-            sqlite_database = database_connection.cursor()
-            sqlite_database.execute(sql_query)
-            sql_column_data = sqlite_database.fetchall()
-            sqlite_database.close()
-            database_connection.close()
-        except Exception as error:
-            app_logger.app_logger.error("DB Error: " + str(error))
-            sql_column_data = []
+        sql_column_data = self._get_sql_data(db_location, sql_query)
 
         reboot_count = 0
         previous_entry = 0
+        bad_entries = 0
         for entry in sql_column_data:
-            entry_int = int(str(entry)[2:-3])
+            try:
+                entry_int = int(str(entry)[2:-3])
+            except Exception as error:
+                app_logger.app_logger.debug("DB Error: " + str(error))
+                bad_entries += 1
+                entry_int = previous_entry
+
             if entry_int < previous_entry:
                 reboot_count += 1
                 previous_entry = entry_int
             else:
                 previous_entry = entry_int
-        if reboot_count is 0:
-            return "NA"
-        else:
+
+        if bad_entries:
+            app_logger.app_logger.error("One or more bad entries in DB reboot column")
+
+        if reboot_count:
             return str(reboot_count)
+        else:
+            app_logger.app_logger.error("Database get reboot count - Failed")
+            return "NA"
+
+    def set_all_name_ip_columns(self, db_location):
+        var_columns = [sql_column_names.date_time,
+                       sql_column_names.sensor_name,
+                       sql_column_names.ip]
+
+        var_column_data = []
+
+        for column in var_columns:
+            sql_query = "SELECT " + \
+                        column + \
+                        " FROM " + \
+                        sql_column_names.sql_interval_table
+
+            var_column_data.append(self._get_sql_data(db_location, sql_query))
+
+        self._set_recorded_changes(var_column_data)
+
+    def _set_recorded_changes(self, var_column_data):
+        bad_sql_entry = False
+
+        if len(var_column_data[0]) > 0:
+            count = 0
+            while count < len(var_column_data[0]):
+                try:
+                    var_column_data[0][count] = str(var_column_data[0][count])[2:-10]
+                    var_column_data[1][count] = str(var_column_data[1][count])[2:-3]
+                    var_column_data[2][count] = str(var_column_data[2][count])[2:-3]
+                except Exception as error:
+                    bad_sql_entry = True
+                    app_logger.app_logger.debug("Bad SQL Entry: " + str(error))
+                count += 1
+
+            if bad_sql_entry:
+                app_logger.app_logger.error("One or more Bad SQL Entries")
+
+            self._set_changed_names(var_column_data)
+            self._set_changed_ips(var_column_data)
+        else:
+            self.textbox_ip_dates.value = "NA"
+            self.textbox_old_ips.value = "NA"
+            self.textbox_new_ips.value = "NA"
+
+            self.textbox_name_dates.value = "NA"
+            self.textbox_new_names.value = "NA"
+            self.textbox_old_names.value = "NA"
+
+    def _set_changed_names(self, var_column_data):
+        name_dates = []
+        new_names = []
+        old_names = []
+
+        previous_name = var_column_data[1][0]
+        count = 0
+        for name in var_column_data[1]:
+            if str(name) != str(previous_name):
+                name_dates.append(var_column_data[0][count])
+                new_names.append(name)
+                old_names.append(previous_name)
+                previous_name = name
+            count += 1
+
+        if len(name_dates) == 0:
+            self.textbox_name_dates.value = "No Changes Found"
+        else:
+            self.textbox_name_dates.value = self._get_change_textbox_str(name_dates)
+
+        if len(new_names) == 0:
+            self.textbox_new_names.value = "No Changes Found"
+        else:
+            self.textbox_new_names.value = self._get_change_textbox_str(new_names)
+
+        if len(old_names) == 0:
+            self.textbox_old_names.value = "No Changes Found"
+        else:
+            self.textbox_old_names.value = self._get_change_textbox_str(old_names)
+
+    def _set_changed_ips(self, var_column_data):
+
+        ip_dates = []
+        new_ips = []
+        old_ips = []
+
+        previous_ip = var_column_data[2][0]
+        count = 0
+        for ip in var_column_data[2]:
+            if str(ip) != str(previous_ip):
+                ip_dates.append(var_column_data[0][count])
+                new_ips.append(ip)
+                old_ips.append(previous_ip)
+                previous_ip = ip
+            count += 1
+
+        if len(ip_dates) == 0:
+            self.textbox_ip_dates.value = "No Changes Found"
+        else:
+            self.textbox_ip_dates.value = self._get_change_textbox_str(ip_dates)
+
+        if len(new_ips) == 0:
+            self.textbox_new_ips.value = "No Changes Found"
+        else:
+            self.textbox_new_ips.value = self._get_change_textbox_str(new_ips)
+
+        if len(old_ips) == 0:
+            self.textbox_old_ips.value = "No Changes Found"
+        else:
+            self.textbox_old_ips.value = self._get_change_textbox_str(old_ips)
+
+    @staticmethod
+    def _get_change_textbox_str(sql_list):
+        return_str = ""
+
+        count = 1
+        for name in sql_list:
+            return_str += str(count) + ". " + name + "\n"
+            count += 1
+
+        return return_str

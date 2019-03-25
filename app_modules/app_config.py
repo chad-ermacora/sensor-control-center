@@ -25,7 +25,7 @@ from app_guizero.gui_platform_tweaks import check_pi_model
 
 import app_modules.app_logger as app_logger
 
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.1"
+app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.3"
 current_platform = platform.system()
 
 
