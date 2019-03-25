@@ -44,6 +44,8 @@ def app_custom_configurations(main_app):
             main_app.window_sensor_config.window.height = 340
             main_app.window_graph.window.width = 320
             main_app.window_graph.window.height = 435
+            main_app.window_db_info.window.width = 542
+            main_app.window_db_info.window.height = 585
             main_app.window_about.window.width = 540
             main_app.window_about.window.height = 285
         else:
