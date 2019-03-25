@@ -39,7 +39,7 @@ class CreateDataBaseInfoWindow:
                              width=570,
                              height=680,
                              layout="grid",
-                             visible=True)
+                             visible=False)
 
         self.text_database_label = Text(self.window,
                                         text="Database:   ",
