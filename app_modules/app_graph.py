@@ -136,7 +136,7 @@ class CreateGraphData:
 
 def adjust_datetime(var_datetime, datetime_offset):
     """
-    Adjusts the provided datetime by the provided hour offset and returns the result.
+    Adjusts the provided datetime by the provided hour offset and returns the result as a string.
 
     Used for graph datetime's accurate to 0.001 second
     """
