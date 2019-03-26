@@ -31,6 +31,7 @@ from app_guizero.gui_about import CreateAboutWindow
 from app_guizero.gui_config import CreateConfigWindow
 from app_guizero.gui_graphing import CreateGraphingWindow
 from app_guizero.gui_db_information import CreateDataBaseInfoWindow
+from app_guizero.gui_db_notes import CreateDataBaseNotesWindow
 from app_guizero.gui_ip_selection import CreateIPSelector
 from app_guizero.gui_reports import CreateReportsWindow
 from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
@@ -65,6 +66,7 @@ class CreateMainWindow:
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
         self.window_db_info = CreateDataBaseInfoWindow(self.app, self.current_config)
+        self.window_db_notes = CreateDataBaseNotesWindow(self.app, self.current_config)
         self.window_about = CreateAboutWindow(self.app, self.current_config)
 
         self.app_menubar = MenuBar(self.app,
