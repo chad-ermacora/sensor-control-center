@@ -17,12 +17,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
-import os.path
 import app_modules.app_logger as app_logger
 from tkinter import filedialog
-from guizero import Window, PushButton, Text, TextBox, yesno, error as guierror
+from guizero import Window, PushButton, Text, TextBox, yesno, error as guierror, warn
 from app_modules.app_graph import CreateSQLColumnNames
-from app_modules.app_graph import adjust_datetime
+from datetime import datetime, timedelta
 
 sql_column_names = CreateSQLColumnNames()
 
@@ -35,7 +34,7 @@ class CreateDataBaseNotesWindow:
         self.db_location = ""
 
         self.window = Window(app,
-                             title="DataBase Notes Editor",
+                             title="Offline Notes Editor",
                              width=585,
                              height=555,
                              layout="grid",
@@ -122,7 +121,7 @@ class CreateDataBaseNotesWindow:
                                            align="left")
 
         # Window Tweaks
-        self._disable_notes()
+        self._disable_notes_window_functions()
         self.textbox_current_note.bg = "black"
         self.textbox_current_note.text_color = "white"
         self.textbox_current_note.tk.config(insertbackground="red")
@@ -140,17 +139,18 @@ class CreateDataBaseNotesWindow:
             if len(database_notes) > 0:
                 self.textbox_current_note.enable()
                 self.textbox_on_number_notes.enable()
-                self.textbox_current_note.value = str(database_notes[0])[2:-3]
-                self.text_note_date.value = str(database_notes_dates[0])[2:-7]
+                self.textbox_current_note.value = str(database_notes[0])
+                self.text_note_date.value = str(database_notes_dates[0])
                 self.textbox_on_number_notes.value = "1"
 
                 self.button_next_note.enable()
                 self.button_back_note.enable()
                 self.button_delete_note.enable()
+                self.button_new_note.enable()
             else:
                 self.textbox_current_note.enable()
                 self.textbox_current_note.value = "No Notes Found"
-                self._disable_notes()
+                self._disable_notes_window_functions()
 
     def get_database_notes(self):
         sql_query = "SELECT " + \
@@ -158,7 +158,13 @@ class CreateDataBaseNotesWindow:
                     " FROM " + \
                     str(sql_column_names.sql_other_table)
 
-        database_notes = self._get_sql_data(sql_query)
+        database_notes = self._sql_execute_get_data(sql_query)
+
+        count = 0
+        for date in database_notes:
+            new_note = str(date)[2:-3]
+            database_notes[count] = new_note
+            count += 1
 
         return database_notes
 
@@ -168,52 +174,80 @@ class CreateDataBaseNotesWindow:
                     " FROM " + \
                     str(sql_column_names.sql_other_table)
 
-        database_notes_dates = self._get_sql_data(sql_query)
+        database_notes_dates = self._sql_execute_get_data(sql_query)
+
+        count = 0
+        for date in database_notes_dates:
+            new_date = self.adjust_datetime(str(date)[2:-7], self.current_config.datetime_offset)
+            database_notes_dates[count] = new_date
+            count += 1
 
         return database_notes_dates
 
     def _next_button(self):
-        self._set_note(1)
+        self._change_to_note_plus(1)
 
     def _back_button(self):
-        self._set_note(-1)
+        self._change_to_note_plus(-1)
 
     def _add_note_button(self):
-        pass
+        sql_note_datetime = self.current_config.get_str_datetime_now()
+        utc_0_datetime = str(self.adjust_datetime(sql_note_datetime, self.current_config.datetime_offset * -1)) + ".000"
+        sql_note = self.textbox_current_note.value.strip()
+
+        if sql_note == "":
+            warn("Empty Note", "Cannot add a blank Note")
+        else:
+            sql_query = "INSERT OR IGNORE INTO " + sql_column_names.sql_other_table + " (" + \
+                        sql_column_names.date_time + "," + sql_column_names.other_notes + \
+                        ") VALUES ('" + utc_0_datetime + "','" + sql_note + "')"
+
+            self._sql_execute(sql_query)
+            self._change_to_note_plus(0)
 
     def _delete_button(self):
         try:
-            if int(self.textbox_on_number_notes.value) < 1 or int(self.textbox_on_number_notes.value) > len(
-                    self.get_database_notes_dates()):
+            if int(self.textbox_on_number_notes.value) < 1 or \
+                    int(self.textbox_on_number_notes.value) > len(self.get_database_notes_dates()):
+
                 app_logger.app_logger.warning("Error: Current Note Number is more or less then total")
+
                 guierror("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
                                                          "' is a invalid option\nPlease enter a number between 1 and " +
                                                          str(len(self.get_database_notes_dates()))))
-                self._set_note(0)
+                self._change_to_note_plus(0)
 
             elif yesno("Delete Note", "Are you sure you want to Delete Note " +
-                                      self.textbox_on_number_notes.value + " out of " + self.textbox_number_of_notes_total.value + "?"):
+                                      self.textbox_on_number_notes.value + " out of " +
+                                      self.textbox_number_of_notes_total.value + "?"):
+
                 note_date_times = self.get_database_notes_dates()
-                datetime = str(note_date_times[int(self.textbox_on_number_notes.value) - 1])[2:-3]
+                datetime_var = self.adjust_datetime(note_date_times[int(self.textbox_on_number_notes.value) - 1],
+                                                    self.current_config.datetime_offset * -1) + ".000"
+                print(str(datetime_var))
+
                 sql_query = "DELETE FROM " + \
                             str(sql_column_names.sql_other_table) + \
                             " WHERE " + \
                             str(sql_column_names.date_time) + \
-                            " = '" + datetime + "'"
+                            " = '" + datetime_var + "'"
 
-                self._delete_sql_row(sql_query)
-                self._set_note(0)
+                self._sql_execute(sql_query)
+                self._change_to_note_plus(0)
         except Exception as error:
             app_logger.app_logger.error("Invalid Current Note number: " + str(error))
             guierror("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
                                                      "' is a invalid option\nPlease enter a number between 1 and " +
                                                      str(len(self.get_database_notes_dates()))))
-            self._set_note(0)
+            self._change_to_note_plus(0)
 
     def _save_note_button(self):
-        pass
+        note_datetime = str(self.text_note_date.value).strip()
+        # sql_query = "UPDATE " + sql_column_names.sql_other_table + \
+        #             " SET " + sql_column_names.other_notes + \
+        #             " WHERE '" + utc_0_datetime + "','" + sql_note + "')"
 
-    def _set_note(self, plus):
+    def _change_to_note_plus(self, plus):
         database_notes = self.get_database_notes()
         database_notes_dates = self.get_database_notes_dates()
 
@@ -222,7 +256,7 @@ class CreateDataBaseNotesWindow:
         if len(database_notes) < 1:
             self.textbox_current_note.enable()
             self.textbox_current_note.value = "No Notes Found"
-            self._disable_notes()
+            self._disable_notes_window_functions()
         else:
             try:
                 current_note = int(self.textbox_on_number_notes.value)
@@ -239,11 +273,11 @@ class CreateDataBaseNotesWindow:
                 current_note = 1
 
             self.textbox_on_number_notes.value = str(current_note)
-            self.textbox_current_note.value = str(database_notes[(current_note - 1)])[2:-3]
+            self.textbox_current_note.value = str(database_notes[(current_note - 1)])
 
-            self.text_note_date.value = str(database_notes_dates[(current_note - 1)])[2:-7]
+            self.text_note_date.value = str(database_notes_dates[(current_note - 1)])
 
-    def _get_sql_data(self, sql_query):
+    def _sql_execute_get_data(self, sql_query):
         try:
             database_connection = sqlite3.connect(self.db_location)
             sqlite_database = database_connection.cursor()
@@ -252,12 +286,12 @@ class CreateDataBaseNotesWindow:
             sqlite_database.close()
             database_connection.close()
         except Exception as error:
-            app_logger.app_logger.error("DB Error: " + str(error))
+            app_logger.app_logger.error("SQL Execute Get Data Error: " + str(error))
             sql_column_data = []
 
         return sql_column_data
 
-    def _delete_sql_row(self, sql_query):
+    def _sql_execute(self, sql_query):
         try:
             database_connection = sqlite3.connect(self.db_location)
             sqlite_database = database_connection.cursor()
@@ -266,9 +300,9 @@ class CreateDataBaseNotesWindow:
             sqlite_database.close()
             database_connection.close()
         except Exception as error:
-            app_logger.app_logger.error("DB Error: " + str(error))
+            app_logger.app_logger.error("SQL Execute Error: " + str(error))
 
-    def _disable_notes(self):
+    def _disable_notes_window_functions(self):
         self.button_back_note.disable()
         self.textbox_on_number_notes.value = "0"
         self.textbox_on_number_notes.disable()
@@ -282,3 +316,18 @@ class CreateDataBaseNotesWindow:
         self.button_save_note.disable()
 
         self.text_note_date.value = "YYYY-MM-DD hh:mm"
+
+    @staticmethod
+    def adjust_datetime(var_datetime, datetime_offset):
+        """
+        Adjusts the provided datetime by the provided hour offset and returns the result as a string.
+        """
+        try:
+            new_var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
+            new_time = new_var_datetime + timedelta(hours=datetime_offset)
+        except Exception as error:
+            app_logger.app_logger.debug("Unable to Convert Interval datetime string to datetime format - " + str(error))
+            new_time = var_datetime
+
+        app_logger.app_logger.debug("Adjusted datetime: " + str(new_time))
+        return str(new_time)
