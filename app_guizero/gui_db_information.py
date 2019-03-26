@@ -42,11 +42,11 @@ class CreateDataBaseInfoWindow:
                              layout="grid",
                              visible=False)
 
-        self.button_select_database = PushButton(self.window,
-                                                 text="Open\nDatabase",
-                                                 command=self._open_database,
-                                                 grid=[1, 1, 1, 2],
-                                                 align="left")
+        self.button_open_database = PushButton(self.window,
+                                               text="Open\nDatabase",
+                                               command=self._open_database,
+                                               grid=[1, 1, 1, 2],
+                                               align="left")
 
         self.text_database_label = Text(self.window,
                                         text="Database: ",
@@ -212,6 +212,30 @@ class CreateDataBaseInfoWindow:
         self.textbox_database_location.disable()
         self.textbox_db_dates.disable()
         self.textbox_misc_db_info.disable()
+
+        self.textbox_name_dates.bg = "black"
+        self.textbox_name_dates.text_color = "white"
+        self.textbox_name_dates.tk.config(insertbackground="red")
+
+        self.textbox_new_names.bg = "black"
+        self.textbox_new_names.text_color = "white"
+        self.textbox_new_names.tk.config(insertbackground="red")
+
+        self.textbox_old_names.bg = "black"
+        self.textbox_old_names.text_color = "white"
+        self.textbox_old_names.tk.config(insertbackground="red")
+
+        self.textbox_ip_dates.bg = "black"
+        self.textbox_ip_dates.text_color = "white"
+        self.textbox_ip_dates.tk.config(insertbackground="red")
+
+        self.textbox_new_ips.bg = "black"
+        self.textbox_new_ips.text_color = "white"
+        self.textbox_new_ips.tk.config(insertbackground="red")
+
+        self.textbox_old_ips.bg = "black"
+        self.textbox_old_ips.text_color = "white"
+        self.textbox_old_ips.tk.config(insertbackground="red")
 
     def _open_database(self):
         """ Prompts for Database to open and opens it. """
