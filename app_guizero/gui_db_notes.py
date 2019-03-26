@@ -57,22 +57,40 @@ class CreateDataBaseNotesWindow:
                                            grid=[2, 5],
                                            align="left")
 
+        self.text_note_date = Text(self.window,
+                                   text="Current",
+                                   color="blue",
+                                   grid=[3, 5],
+                                   align="top")
+
         self.textbox_number_of_notes = TextBox(self.window,
                                                text="0",
                                                width=5,
                                                grid=[3, 5],
-                                               align="left")
+                                               align="bottom")
 
         self.text_label1 = Text(self.window,
-                                text="of",
+                                text="Current Note's\nDate",
+                                color="blue",
                                 grid=[4, 5],
-                                align="left")
+                                align="top")
+
+        self.text_note_date = Text(self.window,
+                                   text="YYYY-MM-DD hh:mm",
+                                   grid=[4, 5],
+                                   align="bottom")
+
+        self.text_note_date = Text(self.window,
+                                   text="Total",
+                                   color="blue",
+                                   grid=[5, 5],
+                                   align="top")
 
         self.textbox_number_of_notes_total = TextBox(self.window,
                                                      text="0",
                                                      width=5,
                                                      grid=[5, 5],
-                                                     align="left")
+                                                     align="bottom")
 
         self.button_next_note = PushButton(self.window,
                                            text="Next",
