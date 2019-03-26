@@ -34,7 +34,7 @@ class CreateSQLNotesWindow:
         self.undo_note = ""
 
         self.window = Window(app,
-                             title="Insert Note into Live Sensors SQL Database",
+                             title="Online Notes Editor",
                              width=615,
                              height=385,
                              layout="grid",
