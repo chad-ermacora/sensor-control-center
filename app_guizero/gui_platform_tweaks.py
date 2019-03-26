@@ -25,6 +25,9 @@ def app_custom_configurations(main_app):
 
     if system() == "Windows":
         main_app.app.tk.iconbitmap(main_app.current_config.additional_files_directory + "/icon.ico")
+        main_app.window_db_info.window.width = 570
+        main_app.window_db_info.window.height = 640
+
     elif system() == "Linux":
         if check_pi_model()[:12] == "Raspberry Pi":
             main_app.app.width = 490
@@ -44,8 +47,8 @@ def app_custom_configurations(main_app):
             main_app.window_sensor_config.window.height = 340
             main_app.window_graph.window.width = 320
             main_app.window_graph.window.height = 435
-            main_app.window_db_info.window.width = 542
-            main_app.window_db_info.window.height = 585
+            main_app.window_db_info.window.width = 500
+            main_app.window_db_info.window.height = 550
             main_app.window_about.window.width = 540
             main_app.window_about.window.height = 285
         else:
