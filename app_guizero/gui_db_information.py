@@ -40,7 +40,7 @@ class CreateDataBaseInfoWindow:
                              width=565,
                              height=635,
                              layout="grid",
-                             visible=True)
+                             visible=False)
 
         self.button_select_database = PushButton(self.window,
                                                  text="Open\nDatabase",
@@ -207,7 +207,7 @@ class CreateDataBaseInfoWindow:
                                 align="left")
 
         # Window Tweaks
-        self.window.tk.resizable(True, True)
+        self.window.tk.resizable(False, False)
         self.textbox_database_name.disable()
         self.textbox_database_location.disable()
         self.textbox_db_dates.disable()
