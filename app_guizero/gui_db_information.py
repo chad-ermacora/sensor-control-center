@@ -32,77 +32,78 @@ class CreateDataBaseInfoWindow:
 
     def __init__(self, app, current_config):
         self.current_config = current_config
-        self.database_line_width = 46
+        self.database_line_width = 40
+        self.textbox_table_width = 21
 
         self.window = Window(app,
                              title="DataBase Information",
-                             width=570,
-                             height=680,
+                             width=565,
+                             height=635,
                              layout="grid",
-                             visible=False)
+                             visible=True)
+
+        self.button_select_database = PushButton(self.window,
+                                                 text="Open\nDatabase",
+                                                 command=self._open_database,
+                                                 grid=[1, 1, 1, 2],
+                                                 align="left")
 
         self.text_database_label = Text(self.window,
-                                        text="Database:   ",
+                                        text="Database: ",
                                         color='blue',
-                                        grid=[1, 2],
+                                        grid=[1, 1],
                                         align="right")
 
         self.textbox_database_name = TextBox(self.window,
-                                             text="Please Select a Database",
+                                             text="Please Open a Database",
                                              width=self.database_line_width,
-                                             grid=[1, 2, 2, 1],
-                                             align="right")
+                                             grid=[2, 1, 2, 1],
+                                             align="left")
 
         self.text_database_location_label = Text(self.window,
-                                                 text="Location:   ",
+                                                 text="Location: ",
                                                  color='blue',
-                                                 grid=[1, 3],
+                                                 grid=[1, 2],
                                                  align="right")
 
         self.textbox_database_location = TextBox(self.window,
-                                                 text="Please Select a Database",
+                                                 text="Please Open a Database",
                                                  width=self.database_line_width,
                                                  height=2,
-                                                 grid=[1, 3, 2, 1],
+                                                 grid=[2, 2, 2, 1],
                                                  multiline=True,
                                                  scrollbar=True,
-                                                 align="right")
+                                                 align="left")
 
         self.text_db_dates = Text(self.window,
                                   text="Date Range: ",
                                   color='blue',
-                                  grid=[1, 4],
+                                  grid=[1, 3],
                                   align="right")
 
         self.textbox_db_dates = TextBox(self.window,
                                         text="First Recorded Date || Last Recorded Date",
                                         width=self.database_line_width,
-                                        grid=[2, 4],
+                                        grid=[2, 3, 2, 1],
                                         align="left")
 
         self.text_db_size = Text(self.window,
                                  text="Database Misc. Info: ",
                                  color='blue',
-                                 grid=[1, 5],
+                                 grid=[1, 4],
                                  align="right")
 
         self.textbox_misc_db_info = TextBox(self.window,
                                             text="DB Size:  MB || Notes: XX || Reboots: XX",
                                             width=self.database_line_width,
-                                            grid=[2, 5, 2, 1],
+                                            grid=[2, 4, 2, 1],
                                             align="left")
-
-        self.button_select_database = PushButton(self.window,
-                                                 text="Select Database",
-                                                 command=self._select_database,
-                                                 grid=[1, 6, 2, 1],
-                                                 align="top")
 
         self.text_name_changes = Text(self.window,
                                       text="\nRecorded Name Changes\n",
                                       color='purple',
-                                      grid=[1, 7, 2, 2],
-                                      align="top")
+                                      grid=[2, 7, 2, 1],
+                                      align="left")
 
         self.text_name_date = Text(self.window,
                                    text="Date of Change",
@@ -111,8 +112,8 @@ class CreateDataBaseInfoWindow:
                                    align="left")
 
         self.textbox_name_dates = TextBox(self.window,
-                                          text="1. Date: Date",
-                                          width=21,
+                                          text="1. Date",
+                                          width=self.textbox_table_width,
                                           height=10,
                                           grid=[1, 11],
                                           multiline=True,
@@ -122,37 +123,37 @@ class CreateDataBaseInfoWindow:
         self.text_name_new = Text(self.window,
                                   text="New Name",
                                   color='blue',
-                                  grid=[2, 10, 2, 1],
+                                  grid=[2, 10],
                                   align="left")
 
         self.textbox_new_names = TextBox(self.window,
-                                         text="1. New: New Name",
-                                         width=21,
+                                         text="1. NewName",
+                                         width=self.textbox_table_width,
                                          height=10,
-                                         grid=[2, 11, 2, 1],
+                                         grid=[2, 11],
                                          multiline=True,
                                          scrollbar=True,
                                          align="left")
 
         self.text_name_old = Text(self.window,
-                                  text="                     Old Name",
+                                  text="Old Name",
                                   color='blue',
-                                  grid=[2, 10],
-                                  align="top")
+                                  grid=[3, 10],
+                                  align="left")
 
         self.textbox_old_names = TextBox(self.window,
-                                         text="1. Old: Old Name",
-                                         width=21,
+                                         text="1. OldName",
+                                         width=self.textbox_table_width,
                                          height=10,
-                                         grid=[2, 11, 2, 1],
+                                         grid=[3, 11],
                                          multiline=True,
                                          scrollbar=True,
-                                         align="right")
+                                         align="left")
 
         self.text_ip_changes = Text(self.window,
                                     text="\nRecorded IP Changes\n",
                                     color='purple',
-                                    grid=[2, 12, 2, 2],
+                                    grid=[2, 12],
                                     align="left")
 
         self.text_ip_date = Text(self.window,
@@ -162,8 +163,8 @@ class CreateDataBaseInfoWindow:
                                  align="left")
 
         self.textbox_ip_dates = TextBox(self.window,
-                                        text="1. Date: Date",
-                                        width=21,
+                                        text="1. Date",
+                                        width=self.textbox_table_width,
                                         height=10,
                                         grid=[1, 17],
                                         multiline=True,
@@ -173,68 +174,74 @@ class CreateDataBaseInfoWindow:
         self.text_ip_new = Text(self.window,
                                 text="New IP",
                                 color='blue',
-                                grid=[2, 16, 2, 1],
+                                grid=[2, 16],
                                 align="left")
 
         self.textbox_new_ips = TextBox(self.window,
-                                       text="1. New: New IP",
-                                       width=21,
+                                       text="1. NewIP",
+                                       width=self.textbox_table_width,
                                        height=10,
-                                       grid=[2, 17, 2, 1],
+                                       grid=[2, 17],
                                        multiline=True,
                                        scrollbar=True,
                                        align="left")
 
         self.text_ip_old = Text(self.window,
-                                text="                     Old IP",
+                                text="Old IP",
                                 color='blue',
-                                grid=[2, 16],
-                                align="top")
+                                grid=[3, 16],
+                                align="left")
 
         self.textbox_old_ips = TextBox(self.window,
-                                       text="1. Old: Old IP",
-                                       width=21,
+                                       text="1. OldIP",
+                                       width=self.textbox_table_width,
                                        height=10,
-                                       grid=[2, 17, 2, 1],
+                                       grid=[3, 17],
                                        multiline=True,
                                        scrollbar=True,
-                                       align="right")
+                                       align="left")
+
+        self.text_spacer = Text(self.window,
+                                text="",
+                                grid=[1, 18],
+                                align="left")
 
         # Window Tweaks
-        self.window.tk.resizable(False, False)
+        self.window.tk.resizable(True, True)
         self.textbox_database_name.disable()
         self.textbox_database_location.disable()
         self.textbox_db_dates.disable()
         self.textbox_misc_db_info.disable()
 
-    def _select_database(self):
+    def _open_database(self):
         """ Prompts for Database to open and opens it. """
         str_location = ""
         db_location = filedialog.askopenfilename()
         db_location_list = str(db_location).split("/")
 
-        count = 0
-        count2 = 1
-        for text in db_location_list:
-            if len(str_location) + len(text) > count2 * self.database_line_width:
-                str_location += "\n"
-                count2 += 1
+        if str(db_location) != "()" and db_location != "":
+            count = 0
+            count2 = 1
+            for text in db_location_list:
+                if len(str_location) + len(text) > count2 * self.database_line_width:
+                    str_location += "\n"
+                    count2 += 1
 
-            if count is not len(db_location_list) - 1:
-                str_location += text + "/"
-            count += 1
+                if count is not len(db_location_list) - 1:
+                    str_location += text + "/"
+                count += 1
 
-        self.textbox_database_name.value = db_location_list[-1]
+            self.textbox_database_name.value = db_location_list[-1]
 
-        self.textbox_database_location.enable()
-        self.textbox_database_location.value = str_location
-        self.textbox_database_location.disable()
+            self.textbox_database_location.enable()
+            self.textbox_database_location.value = str_location
+            self.textbox_database_location.disable()
 
-        self._set_first_last_date(db_location)
+            self._set_first_last_date(db_location)
 
-        self._set_misc_db_info(db_location)
+            self._set_misc_db_info(db_location)
 
-        self.set_all_name_ip_columns(db_location)
+            self.set_all_name_ip_columns(db_location)
 
     def _set_misc_db_info(self, db_location):
         db_size = self.get_sql_db_size(db_location)
