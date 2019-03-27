@@ -18,14 +18,15 @@
 """
 import sqlite3
 import app_modules.app_logger as app_logger
-from tkinter import filedialog
 from guizero import Window, PushButton, Text, TextBox, yesno, error as guierror, info, CheckBox
 from app_modules.app_graph import CreateSQLColumnNames
 from app_modules.app_useful import no_ip_selected_message
-from app_modules.app_sensor_commands import CreateNetworkSendCommands, CreateSensorNetworkCommand, put_command
+from app_modules.app_sensor_commands import CreateNetworkSendCommands, CreateSensorNetworkCommand, \
+    CreateNetworkGetCommands, put_command, get_data
 from datetime import datetime, timedelta
 
 sql_column_names = CreateSQLColumnNames()
+sensor_get_commands = CreateNetworkGetCommands()
 
 
 class CreateSensorNotesWindow:
@@ -35,11 +36,13 @@ class CreateSensorNotesWindow:
         self.current_config = current_config
         self.ip_selection = ip_selection
         self.db_location = ""
+        self.database_notes = []
+        self.database_note_dates = []
 
         self.network_send_commands = CreateNetworkSendCommands()
 
         self.window = Window(app,
-                             title="On-line Notes Editor",
+                             title="Online Notes Editor",
                              width=585,
                              height=575,
                              layout="grid",
@@ -141,61 +144,50 @@ class CreateSensorNotesWindow:
 
     def _connect_to_sensor(self):
         """ Prompts for Database to open and opens it. """
-        self.db_location = filedialog.askopenfilename()
+        ip_list = self.ip_selection.get_verified_ip_list()
 
-        if str(self.db_location) != "()" and self.db_location != "":
-            database_notes = self.get_database_notes()
-            database_notes_dates = self.get_database_notes_dates()
+        if len(ip_list) > 0:
+            command = sensor_get_commands.database_notes
+            network_timeout = self.current_config.network_timeout_data
+            sensor_command = CreateSensorNetworkCommand(ip_list[0], network_timeout, command)
 
-            self.textbox_number_of_notes_total.value = str(len(database_notes))
+            self.database_notes = get_data(sensor_command).split(",")
+            sensor_command.command = sensor_get_commands.database_note_dates
+            self.database_notes_dates = get_data(sensor_command).split(",")
 
-            if len(database_notes) > 0:
+            count = 0
+            for date in self.database_notes_dates:
+                new_date = self.adjust_datetime(str(date), self.current_config.datetime_offset)
+                self.database_notes_dates[count] = new_date
+                count += 1
+
+            if len(self.database_notes) > 0:
+                count = 0
+                for entry in self.database_notes:
+                    self.database_notes[count] = entry.replace("[replaced_comma]", ",")
+                    count += 1
+
+                count = 0
+                for entry in self.database_note_dates:
+                    self.database_note_dates[count] = entry.replace("[replaced_comma]", ",")
+                    count += 1
+
+                self.textbox_number_of_notes_total.value = str(len(self.database_notes))
+                self.checkbox_enable_datetime_change.enable()
                 self.textbox_current_note.enable()
                 self.textbox_on_number_notes.enable()
-                self.textbox_current_note.value = str(database_notes[0])
-                self.textbox_note_date.value = str(database_notes_dates[0])
+                self.textbox_current_note.value = str(self.database_notes[0])
+                self.textbox_note_date.value = str(self.database_notes_dates[0])
                 self.textbox_on_number_notes.value = "1"
 
                 self.button_next_note.enable()
                 self.button_back_note.enable()
-                self.button_delete_note.enable()
+                # self.button_delete_note.enable()
                 self.button_new_note.enable()
             else:
                 self.textbox_current_note.enable()
                 self.textbox_current_note.value = "No Notes Found"
                 self._disable_notes_window_functions()
-
-    def get_database_notes(self):
-        sql_query = "SELECT " + \
-                    str(sql_column_names.other_notes) + \
-                    " FROM " + \
-                    str(sql_column_names.sql_other_table)
-
-        database_notes = self._sql_execute_get_data(sql_query)
-
-        count = 0
-        for date in database_notes:
-            new_note = str(date)[2:-3]
-            database_notes[count] = new_note
-            count += 1
-
-        return database_notes
-
-    def get_database_notes_dates(self):
-        sql_query = "SELECT " + \
-                    str(sql_column_names.date_time) + \
-                    " FROM " + \
-                    str(sql_column_names.sql_other_table)
-
-        database_notes_dates = self._sql_execute_get_data(sql_query)
-
-        count = 0
-        for date in database_notes_dates:
-            new_date = self.adjust_datetime(str(date)[2:-7], self.current_config.datetime_offset)
-            database_notes_dates[count] = new_date
-            count += 1
-
-        return database_notes_dates
 
     def _next_button(self):
         self._change_to_note_plus(1)
@@ -225,68 +217,58 @@ class CreateSensorNotesWindow:
         ip_list = self.ip_selection.get_verified_ip_list()
 
         if len(ip_list) > 0:
-            message_ip_addresses = ""
             datetime_var = self.textbox_note_date.value
             utc_0_datetime = self.adjust_datetime(datetime_var, self.current_config.datetime_offset * -1)
             command = self.network_send_commands.put_sql_note
-            command_data = utc_0_datetime + ".000" + self.textbox_current_note.value
+            network_timeout = self.current_config.network_timeout_data
 
-            for ip in ip_list:
-                message_ip_addresses += ip + ", "
-                network_timeout = self.current_config.network_timeout_data
-                sensor_command = CreateSensorNetworkCommand(ip, network_timeout, command)
-                sensor_command.command_data = command_data
-                put_command(sensor_command)
+            sensor_command = CreateSensorNetworkCommand(ip_list[0], network_timeout, command)
+            sensor_command.command_data = utc_0_datetime + ".000" + self.textbox_current_note.value
+            put_command(sensor_command)
 
-            message_ip_addresses = message_ip_addresses[:-2]
-
-            if message_ip_addresses == "":
-                message_ip_addresses = "None"
-
-            info("Note Inserted into Sensors Database", "Inserted with DateTime: " + datetime_var +
-                 "\n\nNote sent to the following sensor IP Addresses\n\n" + message_ip_addresses)
-            app_logger.sensor_logger.info("Inserted note into " +
-                                          str(len(ip_list)) +
-                                          " sensors with DateTime " +
-                                          datetime_var)
+            info("Note Inserted into Sensors " + ip_list[0], "Inserted with DateTime: " + datetime_var)
+            app_logger.sensor_logger.info("Inserted note into sensors " + str(ip_list[0]) +
+                                          " with DateTime " + datetime_var)
+            self._connect_to_sensor()
         else:
             no_ip_selected_message()
 
     def _delete_button(self):
-        try:
-            if int(self.textbox_on_number_notes.value) < 1 or \
-                    int(self.textbox_on_number_notes.value) > len(self.get_database_notes_dates()):
-
-                app_logger.app_logger.warning("Error: Current Note Number is more or less then total")
-
-                guierror("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
-                                                         "' is a invalid option\nPlease enter a number between 1 and " +
-                                                         str(len(self.get_database_notes_dates()))))
-                self._change_to_note_plus(0)
-
-            elif yesno("Delete Note", "Are you sure you want to Delete Note " +
-                                      self.textbox_on_number_notes.value + " out of " +
-                                      self.textbox_number_of_notes_total.value + "?"):
-
-                note_date_times = self.get_database_notes_dates()
-                datetime_var = self.adjust_datetime(note_date_times[int(self.textbox_on_number_notes.value) - 1],
-                                                    self.current_config.datetime_offset * -1) + ".000"
-                print(str(datetime_var))
-
-                sql_query = "DELETE FROM " + \
-                            str(sql_column_names.sql_other_table) + \
-                            " WHERE " + \
-                            str(sql_column_names.date_time) + \
-                            " = '" + datetime_var + "'"
-
-                self._sql_execute(sql_query)
-                self._change_to_note_plus(0)
-        except Exception as error:
-            app_logger.app_logger.error("Invalid Current Note number: " + str(error))
-            guierror("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
-                                                     "' is a invalid option\nPlease enter a number between 1 and " +
-                                                     str(len(self.get_database_notes_dates()))))
-            self._change_to_note_plus(0)
+        pass
+        # try:
+        #     if int(self.textbox_on_number_notes.value) < 1 or \
+        #             int(self.textbox_on_number_notes.value) > len(self.get_database_notes_dates()):
+        #
+        #         app_logger.app_logger.warning("Error: Current Note Number is more or less then total")
+        #
+        #         guierror("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
+        #                                                  "' is a invalid option\nPlease enter a number between 1 and " +
+        #                                                  str(len(self.get_database_notes_dates()))))
+        #         self._change_to_note_plus(0)
+        #
+        #     elif yesno("Delete Note", "Are you sure you want to Delete Note " +
+        #                               self.textbox_on_number_notes.value + " out of " +
+        #                               self.textbox_number_of_notes_total.value + "?"):
+        #
+        #         note_date_times = self.get_database_notes_dates()
+        #         datetime_var = self.adjust_datetime(note_date_times[int(self.textbox_on_number_notes.value) - 1],
+        #                                             self.current_config.datetime_offset * -1) + ".000"
+        #         print(str(datetime_var))
+        #
+        #         sql_query = "DELETE FROM " + \
+        #                     str(sql_column_names.sql_other_table) + \
+        #                     " WHERE " + \
+        #                     str(sql_column_names.date_time) + \
+        #                     " = '" + datetime_var + "'"
+        #
+        #         self._sql_execute(sql_query)
+        #         self._change_to_note_plus(0)
+        # except Exception as error:
+        #     app_logger.app_logger.error("Invalid Current Note number: " + str(error))
+        #     guierror("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
+        #                                              "' is a invalid option\nPlease enter a number between 1 and " +
+        #                                              str(len(self.get_database_notes_dates()))))
+        #     self._change_to_note_plus(0)
 
     def _save_note_button(self):
         note_datetime = str(self.textbox_note_date.value).strip()
@@ -295,24 +277,21 @@ class CreateSensorNotesWindow:
         #             " WHERE '" + utc_0_datetime + "','" + sql_note + "')"
 
     def _change_to_note_plus(self, plus):
-        database_notes = self.get_database_notes()
-        database_notes_dates = self.get_database_notes_dates()
+        self.textbox_number_of_notes_total.value = str(len(self.database_notes))
 
-        self.textbox_number_of_notes_total.value = str(len(database_notes))
-
-        if len(database_notes) < 1:
+        if len(self.database_notes) < 1:
             self.textbox_current_note.enable()
             self.textbox_current_note.value = "No Notes Found"
             self._disable_notes_window_functions()
         else:
             try:
                 current_note = int(self.textbox_on_number_notes.value)
-                if current_note + plus > int(len(database_notes)):
+                if current_note + plus > int(len(self.database_notes)):
                     self.textbox_on_number_notes.value = "1"
                     current_note = 1
                 elif current_note + plus < 1:
-                    self.textbox_on_number_notes.value = str(len(database_notes))
-                    current_note = len(database_notes)
+                    self.textbox_on_number_notes.value = str(len(self.database_notes))
+                    current_note = len(self.database_notes)
                 else:
                     current_note += plus
             except Exception as error:
@@ -320,9 +299,9 @@ class CreateSensorNotesWindow:
                 current_note = 1
 
             self.textbox_on_number_notes.value = str(current_note)
-            self.textbox_current_note.value = str(database_notes[(current_note - 1)])
+            self.textbox_current_note.value = str(self.database_notes[(current_note - 1)])
 
-            self.textbox_note_date.value = str(database_notes_dates[(current_note - 1)])
+            self.textbox_note_date.value = str(self.database_notes_dates[(current_note - 1)])
 
     def _sql_execute_get_data(self, sql_query):
         try:
