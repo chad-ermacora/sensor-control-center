@@ -62,6 +62,8 @@ class CreateNetworkGetCommands:
         self.accelerometer_xyz = "GetAccelerometerXYZ"
         self.magnetometer_xyz = "GetMagnetometerXYZ"
         self.gyroscope_xyz = "GetGyroscopeXYZ"
+        self.database_notes = "GetDatabaseNotes"
+        self.database_note_dates = "GetDatabaseNoteDates"
 
 
 class CreateNetworkSendCommands:
