@@ -19,7 +19,7 @@
 import sqlite3
 import app_modules.app_logger as app_logger
 from tkinter import filedialog
-from guizero import Window, PushButton, Text, TextBox, yesno, error as guierror, warn
+from guizero import Window, PushButton, Text, TextBox, CheckBox, yesno, error as guierror, warn
 from app_modules.app_graph import CreateSQLColumnNames
 from datetime import datetime, timedelta
 
@@ -34,14 +34,20 @@ class CreateDataBaseNotesWindow:
         self.db_location = ""
 
         self.window = Window(app,
-                             title="Offline Notes Editor",
+                             title="Off-line Notes Editor",
                              width=585,
-                             height=555,
+                             height=575,
                              layout="grid",
                              visible=True)
 
+        self.checkbox_enable_datetime_change = CheckBox(self.window,
+                                                        text="Use current Date & Time",
+                                                        command=self._reset_datetime,
+                                                        grid=[4, 1, 5, 1],
+                                                        align="left")
+
         self.button_open_database = PushButton(self.window,
-                                               text="Open\nDatabase",
+                                               text="Open Database",
                                                command=self._open_database,
                                                grid=[1, 5],
                                                align="left")
@@ -70,10 +76,11 @@ class CreateDataBaseNotesWindow:
                                 grid=[4, 5],
                                 align="top")
 
-        self.text_note_date = Text(self.window,
-                                   text="YYYY-MM-DD hh:mm",
-                                   grid=[4, 5],
-                                   align="bottom")
+        self.textbox_note_date = TextBox(self.window,
+                                         text="YYYY-MM-DD hh:mm:ss",
+                                         grid=[4, 5],
+                                         width=21,
+                                         align="bottom")
 
         self.text_note_total = Text(self.window,
                                     text="Total\nNotes",
@@ -109,38 +116,41 @@ class CreateDataBaseNotesWindow:
                                           align="left")
 
         self.button_delete_note = PushButton(self.window,
-                                             text="Delete Current\nNote",
+                                             text="Delete Note\nFrom\nDatabase",
                                              command=self._delete_button,
                                              grid=[4, 12],
                                              align="left")
 
         self.button_update_note = PushButton(self.window,
-                                             text="Update Current\nNote",
+                                             text="Update\nCurrent\nNote",
                                              command=self._save_note_button,
                                              grid=[6, 12],
                                              align="left")
 
         # Window Tweaks
         self._disable_notes_window_functions()
+        self.checkbox_enable_datetime_change.value = True
         self.textbox_current_note.bg = "black"
         self.textbox_current_note.text_color = "white"
         self.textbox_current_note.tk.config(insertbackground="red")
 
     def _open_database(self):
         """ Prompts for Database to open and opens it. """
-        self.db_location = filedialog.askopenfilename()
+        unchecked_db_location = filedialog.askopenfilename()
 
-        if str(self.db_location) != "()" and self.db_location != "":
+        if str(unchecked_db_location) != "()" and unchecked_db_location != "":
+            self.db_location = unchecked_db_location
             database_notes = self.get_database_notes()
             database_notes_dates = self.get_database_notes_dates()
 
             self.textbox_number_of_notes_total.value = str(len(database_notes))
 
             if len(database_notes) > 0:
+                self.checkbox_enable_datetime_change.enable()
                 self.textbox_current_note.enable()
                 self.textbox_on_number_notes.enable()
                 self.textbox_current_note.value = str(database_notes[0])
-                self.text_note_date.value = str(database_notes_dates[0])
+                self.textbox_note_date.value = str(database_notes_dates[0])
                 self.textbox_on_number_notes.value = "1"
 
                 self.button_next_note.enable()
@@ -242,7 +252,7 @@ class CreateDataBaseNotesWindow:
             self._change_to_note_plus(0)
 
     def _save_note_button(self):
-        note_datetime = str(self.text_note_date.value).strip()
+        note_datetime = str(self.textbox_note_date.value).strip()
         # sql_query = "UPDATE " + sql_column_names.sql_other_table + \
         #             " SET " + sql_column_names.other_notes + \
         #             " WHERE '" + utc_0_datetime + "','" + sql_note + "')"
@@ -275,7 +285,7 @@ class CreateDataBaseNotesWindow:
             self.textbox_on_number_notes.value = str(current_note)
             self.textbox_current_note.value = str(database_notes[(current_note - 1)])
 
-            self.text_note_date.value = str(database_notes_dates[(current_note - 1)])
+            self.textbox_note_date.value = str(database_notes_dates[(current_note - 1)])
 
     def _sql_execute_get_data(self, sql_query):
         try:
@@ -303,9 +313,11 @@ class CreateDataBaseNotesWindow:
             app_logger.app_logger.error("SQL Execute Error: " + str(error))
 
     def _disable_notes_window_functions(self):
+        self.checkbox_enable_datetime_change.disable()
         self.button_back_note.disable()
         self.textbox_on_number_notes.value = "0"
         self.textbox_on_number_notes.disable()
+        self.textbox_note_date.disable()
         self.textbox_number_of_notes_total.disable()
         self.button_next_note.disable()
         self.textbox_current_note.value = ""
@@ -315,7 +327,7 @@ class CreateDataBaseNotesWindow:
         self.button_delete_note.disable()
         self.button_update_note.disable()
 
-        self.text_note_date.value = "YYYY-MM-DD hh:mm"
+        self.textbox_note_date.value = "YYYY-MM-DD hh:mm:ss"
 
     @staticmethod
     def adjust_datetime(var_datetime, datetime_offset):
@@ -331,3 +343,11 @@ class CreateDataBaseNotesWindow:
 
         app_logger.app_logger.debug("Adjusted datetime: " + str(new_time))
         return str(new_time)
+
+    def _reset_datetime(self):
+        """ Reset note Date & Time stamp. """
+        if self.checkbox_enable_datetime_change.value:
+            self.textbox_note_date.value = self.current_config.get_str_datetime_now()
+            self.textbox_note_date.disable()
+        else:
+            self.textbox_note_date.enable()
