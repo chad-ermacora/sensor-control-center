@@ -114,11 +114,11 @@ class CreateDataBaseNotesWindow:
                                              grid=[4, 12],
                                              align="left")
 
-        self.button_save_note = PushButton(self.window,
-                                           text="Save\nNote",
-                                           command=self._save_note_button,
-                                           grid=[6, 12],
-                                           align="left")
+        self.button_update_note = PushButton(self.window,
+                                             text="Update Current\nNote",
+                                             command=self._save_note_button,
+                                             grid=[6, 12],
+                                             align="left")
 
         # Window Tweaks
         self._disable_notes_window_functions()
@@ -313,7 +313,7 @@ class CreateDataBaseNotesWindow:
 
         self.button_new_note.disable()
         self.button_delete_note.disable()
-        self.button_save_note.disable()
+        self.button_update_note.disable()
 
         self.text_note_date.value = "YYYY-MM-DD hh:mm"
 
