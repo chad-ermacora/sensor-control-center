@@ -37,7 +37,7 @@ from app_guizero.gui_reports import CreateReportsWindow
 from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
 from app_guizero.gui_sensor_config import CreateSensorConfigWindow
 from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
-from app_guizero.gui_sql_notes import CreateSQLNotesWindow
+from app_guizero.gui_sensor_notes import CreateSensorNotesWindow
 from app_modules.app_sensor_commands import download_sensor_database
 from app_modules.app_useful import no_ip_selected_message
 
@@ -61,7 +61,7 @@ class CreateMainWindow:
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
         self.window_reports = CreateReportsWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection, self.current_config)
-        self.window_sensor_sql_notes = CreateSQLNotesWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_sql_notes = CreateSensorNotesWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
