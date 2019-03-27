@@ -34,11 +34,11 @@ class CreateDataBaseNotesWindow:
         self.db_location = ""
 
         self.window = Window(app,
-                             title="Off-line Notes Editor",
+                             title="Offline Notes Editor",
                              width=585,
                              height=575,
                              layout="grid",
-                             visible=True)
+                             visible=False)
 
         self.checkbox_enable_datetime_change = CheckBox(self.window,
                                                         text="Use current Date & Time",
@@ -143,9 +143,8 @@ class CreateDataBaseNotesWindow:
             database_notes = self.get_database_notes()
             database_notes_dates = self.get_database_notes_dates()
 
-            self.textbox_number_of_notes_total.value = str(len(database_notes))
-
             if len(database_notes) > 0:
+                self.textbox_number_of_notes_total.value = str(len(database_notes))
                 self.checkbox_enable_datetime_change.enable()
                 self.textbox_current_note.enable()
                 self.textbox_on_number_notes.enable()
