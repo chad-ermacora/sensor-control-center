@@ -84,6 +84,7 @@ class CreateNetworkSendCommands:
         self.set_variance_configuration = "SetVarianceConfiguration"
         self.set_installed_sensors = "SetInstalledSensors"
         self.put_sql_note = "PutDatabaseNote"
+        self.delete_sql_note = "DeleteDatabaseNote"
 
 
 def check_sensor_status(ip, network_timeout):
