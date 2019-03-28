@@ -233,7 +233,6 @@ class CreateDataBaseNotesWindow:
                 note_date_times = self.get_database_notes_dates()
                 datetime_var = self.adjust_datetime(note_date_times[int(self.textbox_on_number_notes.value) - 1],
                                                     self.current_config.datetime_offset * -1) + ".000"
-                print(str(datetime_var))
 
                 sql_query = "DELETE FROM " + \
                             str(sql_column_names.sql_other_table) + \
