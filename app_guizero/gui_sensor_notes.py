@@ -32,6 +32,7 @@ class CreateSensorNotesWindow:
     def __init__(self, app, ip_selection, current_config):
         self.current_config = current_config
         self.ip_selection = ip_selection
+        self.selected_ip = ""
         self.db_location = ""
         self.database_notes = []
         self.database_note_dates = []
@@ -46,6 +47,13 @@ class CreateSensorNotesWindow:
                              height=575,
                              layout="grid",
                              visible=False)
+
+        self.text_connected_ip = Text(self.window,
+                                      text="Connected Sensor: IP",
+                                      color="red",
+                                      size=8,
+                                      grid=[1, 1, 2, 1],
+                                      align="left")
 
         self.checkbox_enable_datetime_change = CheckBox(self.window,
                                                         text="Use current Date & Time",
@@ -135,6 +143,7 @@ class CreateSensorNotesWindow:
                                              align="left")
 
         # Window Tweaks
+        self.window.tk.resizable(False, False)
         self._disable_notes_window_functions()
         self.checkbox_enable_datetime_change.value = True
         self.textbox_current_note.bg = "black"
@@ -146,47 +155,57 @@ class CreateSensorNotesWindow:
         ip_list = self.ip_selection.get_verified_ip_list()
 
         if len(ip_list) > 0:
+            self.selected_ip = ip_list[0]
+            self.text_connected_ip.value = "Connected Sensor: " + self.selected_ip
             command = self.sensor_get_commands.database_notes
             network_timeout = self.current_config.network_timeout_data
-            sensor_command = CreateSensorNetworkCommand(ip_list[0], network_timeout, command)
+            sensor_command = CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
 
             self.database_notes = get_data(sensor_command).split(",")
             sensor_command.command = self.sensor_get_commands.database_note_dates
             self.database_notes_dates = get_data(sensor_command).split(",")
 
-            count = 0
-            for date in self.database_notes_dates:
-                new_date = self.adjust_datetime(str(date), self.current_config.datetime_offset)
-                self.database_notes_dates[count] = new_date
-                count += 1
-
-            if len(self.database_notes) > 0:
-                count = 0
-                for entry in self.database_notes:
-                    self.database_notes[count] = entry.replace("[replaced_comma]", ",")
-                    count += 1
-
-                count = 0
-                for entry in self.database_note_dates:
-                    self.database_note_dates[count] = entry.replace("[replaced_comma]", ",")
-                    count += 1
-
-                self.textbox_number_of_notes_total.value = str(len(self.database_notes))
-                self.checkbox_enable_datetime_change.enable()
-                self.textbox_current_note.enable()
-                self.textbox_on_number_notes.enable()
-                self.textbox_current_note.value = str(self.database_notes[0])
-                self.textbox_note_date.value = str(self.database_notes_dates[0])
-                self.textbox_on_number_notes.value = "1"
-
-                self.button_next_note.enable()
-                self.button_back_note.enable()
-                self.button_delete_note.enable()
-                self.button_new_note.enable()
+            if str(self.database_notes)[2:-2] == "No Notes":
+                self._no_sql_notes()
             else:
-                self.textbox_current_note.enable()
-                self.textbox_current_note.value = "No Notes Found"
-                self._disable_notes_window_functions()
+                count = 0
+                for date in self.database_notes_dates:
+                    new_date = self.adjust_datetime(str(date), self.current_config.datetime_offset)
+                    self.database_notes_dates[count] = new_date
+                    count += 1
+
+                if len(self.database_notes) > 0:
+                    count = 0
+                    for entry in self.database_notes:
+                        self.database_notes[count] = entry.replace("[replaced_comma]", ",")
+                        count += 1
+
+                    count = 0
+                    for entry in self.database_note_dates:
+                        self.database_note_dates[count] = entry.replace("[replaced_comma]", ",")
+                        count += 1
+
+                    self.textbox_number_of_notes_total.value = str(len(self.database_notes))
+                    self.checkbox_enable_datetime_change.enable()
+                    self.textbox_current_note.enable()
+                    self.textbox_on_number_notes.enable()
+                    self.textbox_current_note.value = str(self.database_notes[0])
+                    self.textbox_note_date.value = str(self.database_notes_dates[0])
+                    self.textbox_on_number_notes.value = "1"
+
+                    self.button_next_note.enable()
+                    self.button_back_note.enable()
+                    self.button_delete_note.enable()
+                    self.button_new_note.enable()
+                else:
+                    self.textbox_current_note.enable()
+                    self.textbox_current_note.value = "No Notes Found"
+                    self._disable_notes_window_functions()
+        else:
+            self._disable_notes_window_functions()
+            self.text_connected_ip.value = "Connected Sensor: IP"
+
+            no_ip_selected_message()
 
     def _next_button(self):
         self._change_to_note_plus(1)
@@ -202,47 +221,37 @@ class CreateSensorNotesWindow:
             if self.checkbox_enable_datetime_change.value:
                 self._reset_datetime()
 
-            ip_list = self.ip_selection.get_verified_ip_list()
+            datetime_var = self.textbox_note_date.value
+            utc_0_datetime = self.adjust_datetime(datetime_var, self.current_config.datetime_offset * -1)
+            command = self.network_send_commands.put_sql_note
+            network_timeout = self.current_config.network_timeout_data
 
-            if len(ip_list) > 0:
-                datetime_var = self.textbox_note_date.value
-                utc_0_datetime = self.adjust_datetime(datetime_var, self.current_config.datetime_offset * -1)
-                command = self.network_send_commands.put_sql_note
-                network_timeout = self.current_config.network_timeout_data
+            sensor_command = CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
+            sensor_command.command_data = utc_0_datetime + ".000" + self.textbox_current_note.value
+            put_command(sensor_command)
 
-                sensor_command = CreateSensorNetworkCommand(ip_list[0], network_timeout, command)
-                sensor_command.command_data = utc_0_datetime + ".000" + self.textbox_current_note.value
-                put_command(sensor_command)
-
-                info("Note Inserted into Sensors " + ip_list[0], "Inserted with DateTime: " + datetime_var)
-                app_logger.sensor_logger.info("Inserted note into sensors " + str(ip_list[0]) +
-                                              " with DateTime " + datetime_var)
-                self._connect_to_sensor()
-            else:
-                no_ip_selected_message()
+            info("Note Inserted into Sensors " + self.selected_ip, "Inserted with DateTime: " + datetime_var)
+            app_logger.sensor_logger.info("Inserted note into sensors " + str(self.selected_ip) +
+                                          " with DateTime " + datetime_var)
+            self._connect_to_sensor()
 
     def _delete_button(self):
-        ip_list = self.ip_selection.get_verified_ip_list()
+        if yesno("Delete Note", "Are you sure you want to Delete Note " +
+                                self.textbox_on_number_notes.value + " out of " +
+                                self.textbox_number_of_notes_total.value + "?"):
+            datetime_var = self.textbox_note_date.value
+            utc_0_datetime = self.adjust_datetime(datetime_var, self.current_config.datetime_offset * -1)
+            command = self.network_send_commands.delete_sql_note
+            network_timeout = self.current_config.network_timeout_data
 
-        if len(ip_list) > 0:
-            if yesno("Delete Note", "Are you sure you want to Delete Note " +
-                                    self.textbox_on_number_notes.value + " out of " +
-                                    self.textbox_number_of_notes_total.value + "?"):
-                datetime_var = self.textbox_note_date.value
-                utc_0_datetime = self.adjust_datetime(datetime_var, self.current_config.datetime_offset * -1)
-                command = self.network_send_commands.delete_sql_note
-                network_timeout = self.current_config.network_timeout_data
+            sensor_command = CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
+            sensor_command.command_data = utc_0_datetime + ".000"
+            put_command(sensor_command)
 
-                sensor_command = CreateSensorNetworkCommand(ip_list[0], network_timeout, command)
-                sensor_command.command_data = utc_0_datetime + ".000"
-                put_command(sensor_command)
-
-                info("Note Deleted from sensor " + ip_list[0], "Deleted note with DateTime: " + datetime_var)
-                app_logger.sensor_logger.info("Deleted note from sensor " + str(ip_list[0]) +
-                                              " with DateTime " + datetime_var)
-                self._connect_to_sensor()
-        else:
-            no_ip_selected_message()
+            info("Note Deleted from sensor " + self.selected_ip, "Deleted note with DateTime: " + datetime_var)
+            app_logger.sensor_logger.info("Deleted note from sensor " + self.selected_ip +
+                                          " with DateTime " + datetime_var)
+            self._connect_to_sensor()
 
     def _save_note_button(self):
         # note_datetime = str(self.textbox_note_date.value).strip()
@@ -301,17 +310,19 @@ class CreateSensorNotesWindow:
             app_logger.app_logger.error("SQL Execute Error: " + str(error))
 
     def _disable_notes_window_functions(self):
-        self.checkbox_enable_datetime_change.disable()
-        self.button_back_note.disable()
+        self.selected_ip = ""
         self.textbox_on_number_notes.value = "0"
-        self.textbox_on_number_notes.disable()
         self.textbox_note_date.value = "YYYY-MM-DD hh:mm:ss"
+        self.textbox_number_of_notes_total.value = "0"
+        self.textbox_current_note.value = ""
+        self.checkbox_enable_datetime_change.disable()
+        self.textbox_on_number_notes.disable()
         self.textbox_note_date.disable()
         self.textbox_number_of_notes_total.disable()
-        self.button_next_note.disable()
-        self.textbox_current_note.value = ""
         self.textbox_current_note.disable()
 
+        self.button_back_note.disable()
+        self.button_next_note.disable()
         self.button_new_note.disable()
         self.button_delete_note.disable()
         self.button_update_note.disable()
@@ -338,3 +349,18 @@ class CreateSensorNotesWindow:
             self.textbox_note_date.disable()
         else:
             self.textbox_note_date.enable()
+
+    def _no_sql_notes(self):
+        self.textbox_number_of_notes_total.value = "0"
+        self.checkbox_enable_datetime_change.enable()
+        self.checkbox_enable_datetime_change.value = True
+        self.textbox_current_note.enable()
+        self.textbox_on_number_notes.disable()
+        self.textbox_current_note.value = "No Notes Found"
+        self._reset_datetime()
+        self.textbox_on_number_notes.value = "1"
+
+        self.button_next_note.disable()
+        self.button_back_note.disable()
+        self.button_delete_note.disable()
+        self.button_new_note.enable()
