@@ -128,6 +128,7 @@ class CreateDataBaseNotesWindow:
                                              align="left")
 
         # Window Tweaks
+        self.window.tk.resizable(False, False)
         self._disable_notes_window_functions()
         self.checkbox_enable_datetime_change.value = True
         self.textbox_current_note.bg = "black"
@@ -137,29 +138,38 @@ class CreateDataBaseNotesWindow:
     def _open_database(self):
         """ Prompts for Database to open and opens it. """
         unchecked_db_location = filedialog.askopenfilename()
-
         if str(unchecked_db_location) != "()" and unchecked_db_location != "":
             self.db_location = unchecked_db_location
             database_notes = self.get_database_notes()
             database_notes_dates = self.get_database_notes_dates()
 
-            if len(database_notes) > 0:
-                self.textbox_number_of_notes_total.value = str(len(database_notes))
-                self.checkbox_enable_datetime_change.enable()
-                self.textbox_current_note.enable()
-                self.textbox_on_number_notes.enable()
-                self.textbox_current_note.value = str(database_notes[0])
-                self.textbox_note_date.value = str(database_notes_dates[0])
-                self.textbox_on_number_notes.value = "1"
-
-                self.button_next_note.enable()
-                self.button_back_note.enable()
-                self.button_delete_note.enable()
-                self.button_new_note.enable()
+            if str(database_notes) == "Bad SQL Execute":
+                self._disable_notes_window_functions()
             else:
                 self.textbox_current_note.enable()
-                self.textbox_current_note.value = "No Notes Found"
-                self._disable_notes_window_functions()
+                if len(database_notes) > 0:
+                    self.textbox_on_number_notes.enable()
+                    self.textbox_current_note.value = str(database_notes[0])
+                    self.textbox_note_date.value = str(database_notes_dates[0])
+                    self.button_delete_note.enable()
+                    self.button_next_note.enable()
+                    self.button_back_note.enable()
+                    # self.button_update_note.enable()
+                    self.textbox_number_of_notes_total.value = str(len(database_notes))
+                else:
+                    self.textbox_on_number_notes.value = "1"
+                    self.textbox_number_of_notes_total.value = "0"
+                    self.textbox_current_note.value = "No Notes Found"
+                    self._reset_datetime()
+                    self.textbox_on_number_notes.disable()
+                    self.button_delete_note.disable()
+                    self.button_update_note.disable()
+                    self.button_back_note.disable()
+                    self.button_next_note.disable()
+
+                self.button_new_note.enable()
+                self.checkbox_enable_datetime_change.enable()
+                self.textbox_on_number_notes.value = "1"
 
     def get_database_notes(self):
         sql_query = "SELECT " + \
@@ -169,13 +179,16 @@ class CreateDataBaseNotesWindow:
 
         database_notes = self._sql_execute_get_data(sql_query)
 
-        count = 0
-        for date in database_notes:
-            new_note = str(date)[2:-3]
-            database_notes[count] = new_note
-            count += 1
+        if database_notes == "Bad SQL Execute":
+            return "Bad SQL Execute"
+        else:
+            count = 0
+            for date in database_notes:
+                new_note = str(date)[2:-3]
+                database_notes[count] = new_note
+                count += 1
 
-        return database_notes
+            return database_notes
 
     def get_database_notes_dates(self):
         sql_query = "SELECT " + \
@@ -185,13 +198,16 @@ class CreateDataBaseNotesWindow:
 
         database_notes_dates = self._sql_execute_get_data(sql_query)
 
-        count = 0
-        for date in database_notes_dates:
-            new_date = self.adjust_datetime(str(date)[2:-7], self.current_config.datetime_offset)
-            database_notes_dates[count] = new_date
-            count += 1
+        if database_notes_dates == "Bad SQL Execute":
+            return "Bad SQL Execute"
+        else:
+            count = 0
+            for date in database_notes_dates:
+                new_date = self.adjust_datetime(str(date)[2:-7], self.current_config.datetime_offset)
+                database_notes_dates[count] = new_date
+                count += 1
 
-        return database_notes_dates
+            return database_notes_dates
 
     def _next_button(self):
         self._change_to_note_plus(1)
@@ -207,6 +223,10 @@ class CreateDataBaseNotesWindow:
         if sql_note == "":
             warn("Empty Note", "Cannot add a blank Note")
         else:
+            self.button_delete_note.enable()
+            # self.button_update_note.enable()
+            self.button_back_note.enable()
+            self.button_next_note.enable()
             sql_query = "INSERT OR IGNORE INTO " + sql_column_names.sql_other_table + " (" + \
                         sql_column_names.date_time + "," + sql_column_names.other_notes + \
                         ") VALUES ('" + utc_0_datetime + "','" + sql_note + "')"
@@ -259,12 +279,13 @@ class CreateDataBaseNotesWindow:
         database_notes = self.get_database_notes()
         database_notes_dates = self.get_database_notes_dates()
 
-        self.textbox_number_of_notes_total.value = str(len(database_notes))
-
         if len(database_notes) < 1:
             self.textbox_current_note.enable()
             self.textbox_current_note.value = "No Notes Found"
+            self.textbox_on_number_notes.enable()
+            self.textbox_on_number_notes.value = "1"
             self._disable_notes_window_functions()
+            self.button_new_note.enable()
         else:
             try:
                 current_note = int(self.textbox_on_number_notes.value)
@@ -280,10 +301,13 @@ class CreateDataBaseNotesWindow:
                 app_logger.app_logger.error("Unable to convert current Note count: " + str(error))
                 current_note = 1
 
+            self.textbox_on_number_notes.enable()
             self.textbox_on_number_notes.value = str(current_note)
             self.textbox_current_note.value = str(database_notes[(current_note - 1)])
 
             self.textbox_note_date.value = str(database_notes_dates[(current_note - 1)])
+
+        self.textbox_number_of_notes_total.value = str(len(database_notes))
 
     def _sql_execute_get_data(self, sql_query):
         try:
@@ -295,7 +319,7 @@ class CreateDataBaseNotesWindow:
             database_connection.close()
         except Exception as error:
             app_logger.app_logger.error("SQL Execute Get Data Error: " + str(error))
-            sql_column_data = []
+            sql_column_data = "Bad SQL Execute"
 
         return sql_column_data
 
@@ -311,21 +335,21 @@ class CreateDataBaseNotesWindow:
             app_logger.app_logger.error("SQL Execute Error: " + str(error))
 
     def _disable_notes_window_functions(self):
-        self.checkbox_enable_datetime_change.disable()
-        self.button_back_note.disable()
         self.textbox_on_number_notes.value = "0"
+        self.textbox_note_date.value = "YYYY-MM-DD hh:mm:ss"
+        self.textbox_number_of_notes_total.value = "0"
+        self.textbox_current_note.value = ""
+        self.checkbox_enable_datetime_change.disable()
         self.textbox_on_number_notes.disable()
         self.textbox_note_date.disable()
         self.textbox_number_of_notes_total.disable()
-        self.button_next_note.disable()
-        self.textbox_current_note.value = ""
         self.textbox_current_note.disable()
 
+        self.button_back_note.disable()
+        self.button_next_note.disable()
         self.button_new_note.disable()
         self.button_delete_note.disable()
         self.button_update_note.disable()
-
-        self.textbox_note_date.value = "YYYY-MM-DD hh:mm:ss"
 
     @staticmethod
     def adjust_datetime(var_datetime, datetime_offset):
