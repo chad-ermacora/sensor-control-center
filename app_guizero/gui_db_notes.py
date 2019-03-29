@@ -36,7 +36,7 @@ class CreateDataBaseNotesWindow:
         self.window = Window(app,
                              title="Offline Notes Editor",
                              width=585,
-                             height=575,
+                             height=555,
                              layout="grid",
                              visible=False)
 
@@ -59,7 +59,7 @@ class CreateDataBaseNotesWindow:
                                            align="left")
 
         self.text_note_current = Text(self.window,
-                                      text="Current\nNote",
+                                      text="Current",
                                       color="blue",
                                       grid=[3, 5],
                                       align="top")
@@ -71,7 +71,7 @@ class CreateDataBaseNotesWindow:
                                                align="bottom")
 
         self.text_label1 = Text(self.window,
-                                text="Current Note's\nDate",
+                                text="Note's Date",
                                 color="blue",
                                 grid=[4, 5],
                                 align="top")
@@ -79,11 +79,11 @@ class CreateDataBaseNotesWindow:
         self.textbox_note_date = TextBox(self.window,
                                          text="YYYY-MM-DD hh:mm:ss",
                                          grid=[4, 5],
-                                         width=21,
+                                         width=23,
                                          align="bottom")
 
         self.text_note_total = Text(self.window,
-                                    text="Total\nNotes",
+                                    text="Total",
                                     color="blue",
                                     grid=[5, 5],
                                     align="top")

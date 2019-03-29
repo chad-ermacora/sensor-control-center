@@ -33,11 +33,11 @@ class CreateDataBaseInfoWindow:
     def __init__(self, app, current_config):
         self.current_config = current_config
         self.database_line_width = 40
-        self.textbox_table_width = 21
+        self.textbox_table_width = 22
 
         self.window = Window(app,
                              title="DataBase Information",
-                             width=565,
+                             width=595,
                              height=635,
                              layout="grid",
                              visible=False)

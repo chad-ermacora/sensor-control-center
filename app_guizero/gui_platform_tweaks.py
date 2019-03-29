@@ -38,21 +38,22 @@ def app_custom_configurations(main_app):
             main_app.window_reports.window.height = 85
             main_app.window_sensor_logs.window.width = 850
             main_app.window_sensor_logs.window.height = 395
-            # Disabled while adjusting SQL notes windows... this should be deleted or replaced.
             main_app.window_sensor_notes.window.width = 555
             main_app.window_sensor_notes.window.height = 490
             main_app.window_sensor_notes.textbox_current_note.width = 76
+            main_app.window_sensor_notes.textbox_note_date.width = 21
             main_app.window_sensor_commands.window.width = 295
             main_app.window_sensor_commands.window.height = 255
             main_app.window_sensor_config.window.width = 550
             main_app.window_sensor_config.window.height = 340
             main_app.window_graph.window.width = 320
             main_app.window_graph.window.height = 435
-            main_app.window_db_info.window.width = 500
-            main_app.window_db_info.window.height = 550
+            main_app.window_db_info.window.width = 520
+            main_app.window_db_info.window.height = 545
             main_app.window_db_notes.window.width = 555
             main_app.window_db_notes.window.height = 490
             main_app.window_db_notes.textbox_current_note.width = 76
+            main_app.window_db_notes.textbox_note_date.width = 21
             main_app.window_about.window.width = 540
             main_app.window_about.window.height = 285
         else:
@@ -68,6 +69,7 @@ def app_custom_configurations(main_app):
             main_app.window_sensor_notes.window.width = 585
             main_app.window_sensor_notes.window.height = 575
             main_app.window_sensor_notes.textbox_current_note.width = 70
+            main_app.window_sensor_notes.textbox_note_date.width = 20
             main_app.window_sensor_commands.window.width = 315
             main_app.window_sensor_commands.window.height = 275
             main_app.window_sensor_config.window.width = 625
@@ -77,6 +79,7 @@ def app_custom_configurations(main_app):
             main_app.window_db_notes.window.width = 585
             main_app.window_db_notes.window.height = 575
             main_app.window_db_notes.textbox_current_note.width = 70
+            main_app.window_db_notes.textbox_note_date.width = 20
             main_app.window_about.window.width = 610
             main_app.window_about.window.height = 340
 
