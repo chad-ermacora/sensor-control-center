@@ -85,6 +85,7 @@ class CreateNetworkSendCommands:
         self.set_installed_sensors = "SetInstalledSensors"
         self.put_sql_note = "PutDatabaseNote"
         self.delete_sql_note = "DeleteDatabaseNote"
+        self.update_sql_note = "UpdateDatabaseNote"
 
 
 def check_sensor_status(ip, network_timeout):
