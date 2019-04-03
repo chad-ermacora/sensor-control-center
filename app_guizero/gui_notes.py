@@ -27,6 +27,49 @@ from app_modules.app_sensor_commands import CreateNetworkSendCommands, CreateSen
     CreateNetworkGetCommands, put_command, get_data
 
 
+class CreateGenericNoteVariables:
+    """ Holds generic text variables for notes window """
+
+    def __init__(self):
+        self.checkbox_enable_datetime = "Use current Date & Time"
+        self.button_back_note = "Back"
+        self.text_note_current = "Current"
+        self.text_date_label1 = "Note's Date"
+        self.textbox_note_date = "YYYY-MM-DD hh:mm:ss"
+        self.text_total_notes_label = "Total"
+        self.button_next_note = "Next"
+        self.button_new_note = "Add Note"
+        self.button_delete_note = "Delete Note"
+        self.button_update_note = "Update Note"
+
+        self.sensor_notes_verification = "sensor"
+        self.no_notes_found = "No Notes Found"
+        self.replace_comma = "[replaced_comma]"
+        self.replace_new_line = "[new_line]"
+        self.replace_back_slash = "[clean_slash]"
+        self.sensor_return_no_notes = "No Notes"
+
+
+class CreateSensorNoteVariables:
+    """ Holds text variables for notes window connecting to a Sensor """
+
+    def __init__(self):
+        self.window_title = "Online Notes Editor"
+        self.text_connected_to = "Sensor: IP"
+        self.button_connect = "Connect to Sensor"
+        self.textbox_current_note = "Please Connect to a Sensor to view Notes"
+
+
+class CreateDatabaseNoteVariables:
+    """ Holds text variables for notes window connecting to a Database """
+
+    def __init__(self):
+        self.window_title = "Offline Notes Editor"
+        self.text_connected_to = "Database: Database_file_name"
+        self.button_connect = "Open Database"
+        self.textbox_current_note = "Please Open a Database to view Notes"
+
+
 class CreateDataBaseNotesWindow:
     """ Creates a GUI window for generating database information. """
 
@@ -39,32 +82,36 @@ class CreateDataBaseNotesWindow:
         self.database_notes = []
         self.database_note_dates = []
 
+        self.text_variables_generic = CreateGenericNoteVariables()
+        self.text_variables_sensor = CreateSensorNoteVariables()
+        self.text_variables_database = CreateDatabaseNoteVariables()
+
         self.sql_column_names = CreateSQLColumnNames()
         self.network_send_commands = CreateNetworkSendCommands()
         self.sensor_get_commands = CreateNetworkGetCommands()
 
         self.window = Window(app,
-                             title="Offline Notes Editor",
+                             title=self.text_variables_database.window_title,
                              width=585,
                              height=555,
                              layout="grid",
                              visible=False)
 
         self.text_connected_to = Text(self.window,
-                                      text="Open Database: Database_file_name",
+                                      text=self.text_variables_database.text_connected_to,
                                       color="red",
                                       size=8,
-                                      grid=[1, 1, 2, 1],
+                                      grid=[1, 1, 3, 1],
                                       align="left")
 
         self.checkbox_enable_datetime_change = CheckBox(self.window,
-                                                        text="Use current Date & Time",
+                                                        text=self.text_variables_generic.checkbox_enable_datetime,
                                                         command=self._reset_datetime,
                                                         grid=[4, 1, 5, 1],
                                                         align="left")
 
         self.button_connect = PushButton(self.window,
-                                         text="Open Database",
+                                         text=self.text_variables_database.button_connect,
                                          command=self._open_database,
                                          grid=[1, 5],
                                          align="left")
@@ -76,7 +123,7 @@ class CreateDataBaseNotesWindow:
                                            align="left")
 
         self.text_note_current = Text(self.window,
-                                      text="Current",
+                                      text=self.text_variables_generic.text_note_current,
                                       color="blue",
                                       grid=[3, 5],
                                       align="top")
@@ -88,19 +135,19 @@ class CreateDataBaseNotesWindow:
                                                align="bottom")
 
         self.text_date_label1 = Text(self.window,
-                                     text="Note's Date",
+                                     text=self.text_variables_generic.text_date_label1,
                                      color="blue",
                                      grid=[4, 5],
                                      align="top")
 
         self.textbox_note_date = TextBox(self.window,
-                                         text="YYYY-MM-DD hh:mm:ss",
+                                         text=self.text_variables_generic.textbox_note_date,
                                          grid=[4, 5],
                                          width=23,
                                          align="bottom")
 
         self.text_total_notes_label = Text(self.window,
-                                           text="Total",
+                                           text=self.text_variables_generic.text_total_notes_label,
                                            color="blue",
                                            grid=[5, 5],
                                            align="top")
@@ -112,13 +159,13 @@ class CreateDataBaseNotesWindow:
                                            align="bottom")
 
         self.button_next_note = PushButton(self.window,
-                                           text="Next",
+                                           text=self.text_variables_generic.button_next_note,
                                            command=self._next_button,
                                            grid=[6, 5],
                                            align="left")
 
         self.textbox_current_note = TextBox(self.window,
-                                            text="Please Open a Database to view Notes",
+                                            text=self.text_variables_database.textbox_current_note,
                                             width=70,
                                             height=25,
                                             grid=[1, 10, 6, 1],
@@ -127,19 +174,19 @@ class CreateDataBaseNotesWindow:
                                             align="left")
 
         self.button_new_note = PushButton(self.window,
-                                          text="Add Note",
+                                          text=self.text_variables_generic.button_new_note,
                                           command=self._database_add_note_button,
                                           grid=[1, 12],
                                           align="left")
 
         self.button_delete_note = PushButton(self.window,
-                                             text="Delete Note",
+                                             text=self.text_variables_generic.button_delete_note,
                                              command=self._database_delete_button,
                                              grid=[4, 12],
                                              align="left")
 
         self.button_update_note = PushButton(self.window,
-                                             text="Update Note",
+                                             text=self.text_variables_generic.button_update_note,
                                              command=self._database_update_note_button,
                                              grid=[6, 12],
                                              align="left")
@@ -152,7 +199,7 @@ class CreateDataBaseNotesWindow:
         self.textbox_current_note.text_color = "white"
         self.textbox_current_note.tk.config(insertbackground="red")
 
-        if database_or_sensor == "sensor":
+        if database_or_sensor == self.text_variables_generic.sensor_notes_verification:
             self._change_for_sensor()
 
     def _connect_to_sensor(self):
@@ -161,7 +208,7 @@ class CreateDataBaseNotesWindow:
 
         if len(ip_list) > 0:
             self.selected_ip = ip_list[0]
-            self.text_connected_to.value = "Connected Sensor: " + self.selected_ip
+            self.text_connected_to.value = self.text_variables_sensor.text_connected_to[:-2] + self.selected_ip
             command = self.sensor_get_commands.database_notes
             network_timeout = self.current_config.network_timeout_data
             sensor_command = CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
@@ -171,7 +218,7 @@ class CreateDataBaseNotesWindow:
             sensor_command.command = self.sensor_get_commands.database_note_dates
             self.database_notes_dates = get_data(sensor_command).split(",")
 
-            if str(self.database_notes)[2:-2] == "No Notes":
+            if str(self.database_notes)[2:-2] == self.text_variables_generic.sensor_return_no_notes:
                 self._no_sql_notes()
             else:
                 count = 0
@@ -198,11 +245,11 @@ class CreateDataBaseNotesWindow:
                     self.button_update_note.enable()
                 else:
                     self.textbox_current_note.enable()
-                    self.textbox_current_note.value = "No Notes Found"
+                    self.textbox_current_note.value = self.text_variables_generic.no_notes_found
                     self._disable_notes_window_functions()
         else:
             self._disable_notes_window_functions()
-            self.text_connected_to.value = "Connected Sensor: IP"
+            self.text_connected_to.value = self.text_variables_sensor.text_connected_to
 
             no_ip_selected_message()
 
@@ -219,6 +266,7 @@ class CreateDataBaseNotesWindow:
             else:
                 self.textbox_current_note.enable()
                 if len(database_notes) > 0:
+                    self.text_connected_to.value = self.text_variables_database.text_connected_to[:-2] + self.db_location.split("/")[-1]
                     self.database_notes = self.undue_sterilize_notes(database_notes)
 
                     self.textbox_on_number_notes.enable()
@@ -232,7 +280,7 @@ class CreateDataBaseNotesWindow:
                 else:
                     self.textbox_on_number_notes.value = "1"
                     self.textbox_total_notes.value = "0"
-                    self.textbox_current_note.value = "No Notes Found"
+                    self.textbox_current_note.value = self.text_variables_generic.no_notes_found
                     self._reset_datetime()
                     self.textbox_on_number_notes.disable()
                     self.button_delete_note.disable()
@@ -257,9 +305,7 @@ class CreateDataBaseNotesWindow:
         else:
             count = 0
             for note in database_notes:
-                new_note = str(note)[2:-3].strip()
-                new_note = new_note.replace("[replaced_comma]", ",")
-                new_note = new_note.replace("[clean_slash]", "\\")
+                new_note = self.undue_sterilize_notes(str(note)[2:-3].strip())
                 database_notes[count] = new_note
                 count += 1
 
@@ -285,13 +331,13 @@ class CreateDataBaseNotesWindow:
             return database_notes_dates
 
     def _next_button(self):
-        if self.database_or_sensor == "sensor":
+        if self.database_or_sensor == self.text_variables_generic.sensor_notes_verification:
             self._sensor_change_to_note_plus(1)
         else:
             self._database_change_to_note_plus(1)
 
     def _back_button(self):
-        if self.database_or_sensor == "sensor":
+        if self.database_or_sensor == self.text_variables_generic.sensor_notes_verification:
             self._sensor_change_to_note_plus(-1)
         else:
             self._database_change_to_note_plus(-1)
@@ -432,7 +478,7 @@ class CreateDataBaseNotesWindow:
 
         if len(self.database_notes) < 1:
             self.textbox_current_note.enable()
-            self.textbox_current_note.value = "No Notes Found"
+            self.textbox_current_note.value = self.text_variables_generic.no_notes_found
             self._disable_notes_window_functions()
         else:
             try:
@@ -460,7 +506,7 @@ class CreateDataBaseNotesWindow:
 
         if len(database_notes) < 1:
             self.textbox_current_note.enable()
-            self.textbox_current_note.value = "No Notes Found"
+            self.textbox_current_note.value = self.text_variables_generic.no_notes_found
             self.textbox_on_number_notes.enable()
             self.textbox_on_number_notes.value = "1"
             self._disable_notes_window_functions()
@@ -516,7 +562,7 @@ class CreateDataBaseNotesWindow:
     def _disable_notes_window_functions(self):
         self.selected_ip = ""
         self.textbox_on_number_notes.value = "0"
-        self.textbox_note_date.value = "YYYY-MM-DD hh:mm:ss"
+        self.textbox_note_date.value = self.text_variables_generic.textbox_note_date
         self.textbox_total_notes.value = "0"
         self.textbox_current_note.value = ""
         self.checkbox_enable_datetime_change.disable()
@@ -560,7 +606,7 @@ class CreateDataBaseNotesWindow:
         self.checkbox_enable_datetime_change.value = True
         self.textbox_current_note.enable()
         self.textbox_on_number_notes.disable()
-        self.textbox_current_note.value = "No Notes Found"
+        self.textbox_current_note.value = self.text_variables_generic.no_notes_found
         self._reset_datetime()
         self.textbox_on_number_notes.value = "1"
 
@@ -570,49 +616,45 @@ class CreateDataBaseNotesWindow:
         self.button_new_note.enable()
 
     def _change_for_sensor(self):
-        self.window.title = "Online Notes Editor"
-        self.text_connected_to.value = "Connected Sensor: IP"
-        self.button_connect.text = "Connect to Sensor"
+        self.window.title = self.text_variables_sensor.window_title
+        self.text_connected_to.value = self.text_variables_sensor.text_connected_to
+        self.button_connect.text = self.text_variables_sensor.button_connect
         self.button_connect.update_command(self._connect_to_sensor)
         self.button_new_note.update_command(self._sensor_add_note_button)
         self.button_delete_note.update_command(self._sensor_delete_button)
         self.button_update_note.update_command(self._sensor_update_note_button)
 
-    @staticmethod
-    def sterilize_notes(notes):
+    def sterilize_notes(self, notes):
         if type(notes) == str:
-            print(type(notes))
-            notes = notes.replace(",", "[replaced_comma]")
-            notes = notes.replace("\n", "[new_line]")
-            notes = notes.replace("\\", "[clean_slash]")
+            notes = notes.strip()
+            notes = notes.replace(",", self.text_variables_generic.replace_comma)
+            notes = notes.replace("\n", self.text_variables_generic.replace_new_line)
+            notes = notes.replace("\\", self.text_variables_generic.replace_back_slash)
         else:
-            print("other")
             count = 0
             for note in notes:
-                note = note.replace(",", "[replaced_comma]")
-                note = note.replace("\n", "[new_line]")
-                note = note.replace("\\", "[clean_slash]")
+                note = note.strip()
+                note = note.replace(",", self.text_variables_generic.replace_comma)
+                note = note.replace("\n", self.text_variables_generic.replace_new_line)
+                note = note.replace("\\", self.text_variables_generic.replace_back_slash)
                 notes[count] = note
                 count += 1
 
         return notes
 
-    @staticmethod
-    def undue_sterilize_notes(notes):
+    def undue_sterilize_notes(self, notes):
         if type(notes) == str:
-            print(type(notes))
             notes = notes.strip()
-            notes = notes.replace("[replaced_comma]", ",")
-            notes = notes.replace("[new_line]", "\n")
-            notes = notes.replace("[clean_slash]", "\\")
+            notes = notes.replace(self.text_variables_generic.replace_comma, ",")
+            notes = notes.replace(self.text_variables_generic.replace_new_line, "\n")
+            notes = notes.replace(self.text_variables_generic.replace_back_slash, "\\")
         else:
-            print("other")
             count = 0
             for note in notes:
                 note = note.strip()
-                note = note.replace("[replaced_comma]", ",")
-                note = note.replace("[new_line]", "\n")
-                note = note.replace("[clean_slash]", "\\")
+                note = note.replace(self.text_variables_generic.replace_comma, ",")
+                note = note.replace(self.text_variables_generic.replace_new_line, "\n")
+                note = note.replace(self.text_variables_generic.replace_back_slash, "\\")
                 notes[count] = note
                 count += 1
 
