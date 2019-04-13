@@ -37,7 +37,7 @@ def app_custom_configurations(main_app):
             main_app.window_sensor_logs.window.width = 850
             main_app.window_sensor_logs.window.height = 395
             main_app.window_sensor_notes.window.width = 555
-            main_app.window_sensor_notes.window.height = 490
+            main_app.window_sensor_notes.window.height = 460
             main_app.window_sensor_notes.textbox_current_note.width = 76
             main_app.window_sensor_notes.textbox_note_date.width = 21
             main_app.window_sensor_commands.window.width = 295
@@ -49,7 +49,7 @@ def app_custom_configurations(main_app):
             main_app.window_db_info.window.width = 520
             main_app.window_db_info.window.height = 545
             main_app.window_db_notes.window.width = 555
-            main_app.window_db_notes.window.height = 490
+            main_app.window_db_notes.window.height = 460
             main_app.window_db_notes.textbox_current_note.width = 76
             main_app.window_db_notes.textbox_note_date.width = 21
             main_app.window_about.window.width = 540

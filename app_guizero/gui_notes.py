@@ -189,7 +189,7 @@ class CreateDataBaseNotesWindow:
         self.button_update_note = PushButton(self.window,
                                              text=self.text_variables_generic.button_update_note,
                                              command=self._database_update_note_button,
-                                             grid=[6, 12],
+                                             grid=[5, 12, 2, 1],
                                              align="left")
 
         # Window Tweaks
