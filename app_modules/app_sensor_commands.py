@@ -64,6 +64,7 @@ class CreateNetworkGetCommands:
         self.gyroscope_xyz = "GetGyroscopeXYZ"
         self.database_notes = "GetDatabaseNotes"
         self.database_note_dates = "GetDatabaseNoteDates"
+        self.database_user_note_dates = "GetDatabaseNoteUserDates"
 
 
 class CreateNetworkSendCommands:
@@ -86,6 +87,8 @@ class CreateNetworkSendCommands:
         self.put_sql_note = "PutDatabaseNote"
         self.delete_sql_note = "DeleteDatabaseNote"
         self.update_sql_note = "UpdateDatabaseNote"
+
+        self.command_data_separator = "[new_data_section]"
 
 
 def check_sensor_status(ip, network_timeout):
