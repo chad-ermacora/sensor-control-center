@@ -100,7 +100,7 @@ class CreateDataBaseInfoWindow:
                                             align="left")
 
         self.text_name_changes = Text(self.window,
-                                      text="\nRecorded Name Changes\n",
+                                      text="\nRecorded Name Changes\nCurrent: ",
                                       color='purple',
                                       grid=[2, 7, 2, 1],
                                       align="left")
@@ -151,7 +151,7 @@ class CreateDataBaseInfoWindow:
                                          align="left")
 
         self.text_ip_changes = Text(self.window,
-                                    text="\nRecorded IP Changes\n",
+                                    text="\nRecorded IP Changes\nCurrent: ",
                                     color='purple',
                                     grid=[2, 12],
                                     align="left")
@@ -444,6 +444,8 @@ class CreateDataBaseInfoWindow:
                 previous_name = name
             count += 1
 
+        self.text_name_changes.value = "\nRecorded Name Changes\nCurrent: " + str(var_column_data[1][-1])
+
         if len(name_dates) == 0:
             self.textbox_name_dates.value = "No Changes Found"
         else:
@@ -474,6 +476,8 @@ class CreateDataBaseInfoWindow:
                 old_ips.append(previous_ip)
                 previous_ip = ip
             count += 1
+
+        self.text_ip_changes.value = "\nRecorded IP Changes\nCurrent: " + str(var_column_data[2][-1])
 
         if len(ip_dates) == 0:
             self.textbox_ip_dates.value = "No Changes Found"
