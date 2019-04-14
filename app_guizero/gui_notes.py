@@ -105,11 +105,11 @@ class CreateDataBaseNotesWindow:
                                       grid=[1, 1, 3, 1],
                                       align="left")
 
-        self.checkbox_enable_datetime_change = CheckBox(self.window,
-                                                        text=self.text_variables_generic.checkbox_enable_datetime,
-                                                        command=self._reset_datetime,
-                                                        grid=[4, 1, 5, 1],
-                                                        align="left")
+        self.checkbox_use_current_datetime = CheckBox(self.window,
+                                                      text=self.text_variables_generic.checkbox_enable_datetime,
+                                                      command=self._reset_datetime,
+                                                      grid=[4, 1, 5, 1],
+                                                      align="left")
 
         self.button_connect = PushButton(self.window,
                                          text=self.text_variables_database.button_connect,
@@ -195,7 +195,7 @@ class CreateDataBaseNotesWindow:
         # Window Tweaks
         self.window.tk.resizable(False, False)
         self._disable_notes_window_functions()
-        self.checkbox_enable_datetime_change.value = True
+        self.checkbox_use_current_datetime.value = True
         self.textbox_current_note.bg = "black"
         self.textbox_current_note.text_color = "white"
         self.textbox_current_note.tk.config(insertbackground="red")
@@ -240,7 +240,7 @@ class CreateDataBaseNotesWindow:
                     self.database_notes = self.undue_sterilize_notes(self.database_notes)
 
                     self.textbox_total_notes.value = str(len(self.database_notes))
-                    self.checkbox_enable_datetime_change.enable()
+                    self.checkbox_use_current_datetime.enable()
                     self.textbox_current_note.enable()
                     self.textbox_on_number_notes.enable()
                     self.textbox_current_note.value = self.database_notes[0]
@@ -302,7 +302,7 @@ class CreateDataBaseNotesWindow:
                     self.button_next_note.disable()
 
                 self.button_new_note.enable()
-                self.checkbox_enable_datetime_change.enable()
+                self.checkbox_use_current_datetime.enable()
                 self.textbox_on_number_notes.value = "1"
 
     def get_database_notes(self):
@@ -388,7 +388,7 @@ class CreateDataBaseNotesWindow:
         if self.textbox_current_note.value.strip() == "":
             warn("Empty Note", "Cannot add a blank Note")
         else:
-            if self.checkbox_enable_datetime_change.value:
+            if self.checkbox_use_current_datetime.value:
                 self._reset_datetime()
 
             try:
@@ -416,7 +416,7 @@ class CreateDataBaseNotesWindow:
         utc_0_datetime = str(self.adjust_datetime(sql_note_datetime, self.current_config.datetime_offset * -1)) + ".000"
         sql_note = self.sterilize_notes(self.textbox_current_note.value)
 
-        if self.checkbox_enable_datetime_change.value:
+        if self.checkbox_use_current_datetime.value:
             sql_note_user_datetime = sql_note_datetime + ".000"
         else:
             sql_note_user_datetime = self.textbox_note_date.value.strip() + ".000"
@@ -500,7 +500,7 @@ class CreateDataBaseNotesWindow:
         current_note_datetime = self.database_notes_dates[current_note_number]
         reverse_datetime_offset = self.current_config.datetime_offset * -1
 
-        if self.checkbox_enable_datetime_change.value:
+        if self.checkbox_use_current_datetime.value:
             datetime_var = self.current_config.get_str_datetime_now()
         else:
             datetime_var = self.textbox_note_date.value.strip()
@@ -534,16 +534,15 @@ class CreateDataBaseNotesWindow:
 
     def _database_update_note_button(self):
         current_note_number = int(self.textbox_on_number_notes.value.strip()) - 1
+        datetime_offset = self.current_config.datetime_offset
 
         user_note_datetime = self.textbox_note_date.value.strip()
         try:
-            if self.checkbox_enable_datetime_change.value:
-                user_note_datetime = self.current_config.get_str_datetime_now()
-                user_note_datetime_utc = str(self.adjust_datetime(self.current_config.get_str_datetime_now(),
-                                                                  self.current_config.datetime_offset * -1)) + ".000"
+            if self.checkbox_use_current_datetime.value:
+                current_datetime = self.current_config.get_str_datetime_now()
+                user_note_datetime_utc = str(self.adjust_datetime(current_datetime, datetime_offset * -1)) + ".000"
             else:
-                user_note_datetime_utc = str(
-                    self.adjust_datetime(user_note_datetime, self.current_config.datetime_offset * -1)) + ".000"
+                user_note_datetime_utc = self.adjust_datetime(user_note_datetime, datetime_offset * -1) + ".000"
         except Exception as error:
             app_logger.app_logger.error("Unable to convert current Note's user set DateTime: " + str(error))
             user_note_datetime_utc = user_note_datetime
@@ -551,8 +550,7 @@ class CreateDataBaseNotesWindow:
         current_note_datetime = self.database_notes_dates[current_note_number]
         self.database_user_note_dates[current_note_number] = user_note_datetime
 
-        current_note_datetime_utc = str(
-            self.adjust_datetime(current_note_datetime, self.current_config.datetime_offset * -1)) + ".000"
+        current_note_datetime_utc = self.adjust_datetime(current_note_datetime, datetime_offset * -1) + ".000"
 
         sql_note = self.sterilize_notes(self.textbox_current_note.value)
 
@@ -662,7 +660,7 @@ class CreateDataBaseNotesWindow:
         self.textbox_note_date.value = self.text_variables_generic.textbox_note_date
         self.textbox_total_notes.value = "0"
         self.textbox_current_note.value = ""
-        self.checkbox_enable_datetime_change.disable()
+        self.checkbox_use_current_datetime.disable()
         self.textbox_on_number_notes.disable()
         self.textbox_note_date.disable()
         self.textbox_total_notes.disable()
@@ -691,7 +689,7 @@ class CreateDataBaseNotesWindow:
 
     def _reset_datetime(self):
         """ Reset note Date & Time stamp. """
-        if self.checkbox_enable_datetime_change.value:
+        if self.checkbox_use_current_datetime.value:
             self.textbox_note_date.value = self.current_config.get_str_datetime_now()
             self.textbox_note_date.disable()
         else:
@@ -699,8 +697,8 @@ class CreateDataBaseNotesWindow:
 
     def _no_sql_notes(self):
         self.textbox_total_notes.value = "0"
-        self.checkbox_enable_datetime_change.enable()
-        self.checkbox_enable_datetime_change.value = True
+        self.checkbox_use_current_datetime.enable()
+        self.checkbox_use_current_datetime.value = True
         self.textbox_current_note.enable()
         self.textbox_on_number_notes.disable()
         self.textbox_current_note.value = self.text_variables_generic.no_notes_found
