@@ -18,11 +18,11 @@
 """
 import guizero
 from tkinter import filedialog
+from app_modules import app_logger
+from app_modules import app_variables
 from app_modules import app_config
 from app_modules import graphing_live
 from app_modules import graphing_offline
-from app_modules import app_logger
-from app_modules import app_variables
 
 
 class CreateGraphingWindow:

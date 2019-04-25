@@ -23,20 +23,20 @@ import webbrowser
 import guizero
 from matplotlib import pyplot
 from threading import Thread
-from app_modules import app_config
 from app_modules import app_logger
 from app_modules import app_useful_functions
+from app_modules import app_config
+from app_modules.sensor_commands import download_sensor_database
+from app_guizero.ip_selection import CreateIPSelector
 from app_guizero.about_window import CreateAboutWindow
 from app_guizero.config_window import CreateConfigWindow
 from app_guizero.graphing_window import CreateGraphingWindow
 from app_guizero.db_information_window import CreateDataBaseInfoWindow
 from app_guizero.notes_window import CreateDataBaseNotesWindow
-from app_guizero.ip_selection import CreateIPSelector
 from app_guizero.reports_window import CreateReportsWindow
 from app_guizero.remote_sensor_commands_window import CreateSensorCommandsWindow
 from app_guizero.remote_sensor_config_window import CreateSensorConfigWindow
 from app_guizero.remote_sensor_logs_window import CreateSensorLogsWindow
-from app_modules.sensor_commands import download_sensor_database
 
 
 class CreateMainWindow:

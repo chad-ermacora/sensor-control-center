@@ -19,8 +19,8 @@
 import os.path
 from sys import path
 from datetime import datetime
-from app_guizero import platform_gui_tweaks
 from app_modules import app_logger
+from app_guizero import platform_gui_tweaks
 
 
 class CreateDefaultConfigSettings:

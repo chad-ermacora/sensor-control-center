@@ -20,8 +20,8 @@ import guizero
 import sqlite3
 from plotly import tools, offline
 from app_modules import app_logger
-from app_modules import app_useful_functions
 from app_modules import app_variables
+from app_modules import app_useful_functions
 from app_modules import graphing_offline_extras
 
 

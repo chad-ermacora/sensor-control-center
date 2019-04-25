@@ -16,10 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from app_guizero import gui_main
-from app_guizero import platform_gui_tweaks
 from app_modules import app_logger
 from app_modules import program_start_checks
+from app_guizero import gui_main
+from app_guizero import platform_gui_tweaks
 
 
 # Make sure options and such are set right before starting the program

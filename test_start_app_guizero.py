@@ -19,12 +19,12 @@
 import os
 import unittest
 from time import sleep
-from app_modules import app_config
-from app_modules import app_useful_functions
 from app_modules import app_variables
+from app_modules import app_useful_functions
+from app_modules import app_config
+from app_modules import sensor_commands
 from app_modules import graphing_offline
 from app_modules import reports
-from app_modules import sensor_commands
 
 config_default = app_config.CreateDefaultConfigSettings()
 config_original = app_config.get_from_file()
