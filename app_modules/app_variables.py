@@ -21,7 +21,7 @@ import webbrowser
 from sys import path
 from app_modules import app_logger
 
-software_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.70"
+software_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.81"
 
 script_directory = str(path[0]).replace("\\", "/")
 
