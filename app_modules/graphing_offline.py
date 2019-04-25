@@ -22,8 +22,8 @@ from guizero import warn
 from plotly import tools, offline
 
 import app_modules.app_logger as app_logger
-from app_modules.app_graph import CreateSQLColumnNames, adjust_datetime
-import app_modules.app_graph_plotly_additional as plot_extras
+from app_modules.graphing import CreateSQLColumnNames, adjust_datetime
+import app_modules.graphing_offline_extras as plot_extras
 
 
 def start_plotly_graph(graph_data):

@@ -22,7 +22,7 @@ from threading import Thread
 from guizero import CheckBox, TextBox
 
 import app_modules.app_logger as app_logger
-import app_modules.app_sensor_commands as app_sensor_commands
+import app_modules.sensor_commands as app_sensor_commands
 
 
 class CreateIPSelector:

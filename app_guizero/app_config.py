@@ -20,7 +20,7 @@ from tkinter import filedialog
 
 from guizero import Window, CheckBox, PushButton, Text, TextBox
 
-import app_modules.app_config as app_config
+import app_modules.config as app_config
 import app_modules.app_logger as app_logger
 
 

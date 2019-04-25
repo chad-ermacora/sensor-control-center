@@ -20,11 +20,11 @@ from tkinter import filedialog
 
 from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
 
-import app_modules.app_config as app_config
-import app_modules.app_graph_live as app_graph_live
-import app_modules.app_graph_plotly as app_graph_plotly
+import app_modules.config as app_config
+import app_modules.graphing_live as app_graph_live
+import app_modules.graphing_offline as app_graph_plotly
 import app_modules.app_logger as app_logger
-from app_modules.app_graph import CreateGraphData
+from app_modules.graphing import CreateGraphData
 
 
 class CreateGraphingWindow:

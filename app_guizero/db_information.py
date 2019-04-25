@@ -21,8 +21,8 @@ import os.path
 import app_modules.app_logger as app_logger
 from tkinter import filedialog
 from guizero import Window, PushButton, Text, TextBox
-from app_modules.app_graph_plotly import CreateSQLColumnNames
-from app_modules.app_graph import adjust_datetime
+from app_modules.graphing_offline import CreateSQLColumnNames
+from app_modules.graphing import adjust_datetime
 
 sql_column_names = CreateSQLColumnNames()
 

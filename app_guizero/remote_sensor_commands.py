@@ -22,8 +22,8 @@ from tkinter import simpledialog
 from guizero import Window, PushButton, Text, info, MenuBar
 
 import app_modules.app_logger as app_logger
-import app_modules.app_sensor_commands as app_sensor_commands
-from app_modules.app_useful import no_ip_selected_message
+import app_modules.sensor_commands as app_sensor_commands
+from app_modules.app_variables import no_ip_selected_message
 
 network_commands = app_sensor_commands.CreateNetworkSendCommands()
 

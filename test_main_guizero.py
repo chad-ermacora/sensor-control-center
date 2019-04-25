@@ -20,12 +20,12 @@ import os
 import unittest
 from time import sleep
 
-import app_modules.app_config as app_config
-import app_modules.app_useful as app_useful
-import app_modules.app_graph as app_graph
-import app_modules.app_graph_plotly as app_graph_plotly
-import app_modules.app_reports as app_reports
-import app_modules.app_sensor_commands as app_sensor_commands
+import app_modules.config as app_config
+import app_modules.app_variables as app_useful
+import app_modules.graphing as app_graph
+import app_modules.graphing_offline as app_graph_plotly
+import app_modules.reports as app_reports
+import app_modules.sensor_commands as app_sensor_commands
 
 config_default = app_config.CreateDefaultConfigSettings()
 config_original = app_config.get_from_file()

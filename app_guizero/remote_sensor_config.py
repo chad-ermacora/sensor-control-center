@@ -21,8 +21,8 @@ from threading import Thread
 from guizero import Window, PushButton, Text, TextBox, info, Combo
 
 import app_modules.app_logger as app_logger
-import app_modules.app_sensor_commands as app_sensor_commands
-from app_modules.app_useful import default_installed_sensors_text, default_sensor_config_text, no_ip_selected_message,\
+import app_modules.sensor_commands as app_sensor_commands
+from app_modules.app_variables import default_installed_sensors_text, default_sensor_config_text, no_ip_selected_message,\
     default_wifi_config_text, default_variance_config_text
 
 

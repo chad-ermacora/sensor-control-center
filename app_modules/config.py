@@ -21,7 +21,7 @@ import platform
 from sys import path
 from datetime import datetime
 from platform import system
-from app_guizero.gui_platform_tweaks import check_pi_model
+from app_guizero.platform_gui_tweaks import check_pi_model
 
 import app_modules.app_logger as app_logger
 

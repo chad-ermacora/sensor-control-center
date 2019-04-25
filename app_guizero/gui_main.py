@@ -25,20 +25,20 @@ from threading import Thread
 from guizero import App, PushButton, MenuBar, yesno
 from matplotlib import pyplot
 
-import app_modules.app_config as app_config
+import app_modules.config as app_config
 import app_modules.app_logger as app_logger
-from app_guizero.gui_about import CreateAboutWindow
-from app_guizero.gui_config import CreateConfigWindow
-from app_guizero.gui_graphing import CreateGraphingWindow
-from app_guizero.gui_db_information import CreateDataBaseInfoWindow
-from app_guizero.gui_notes import CreateDataBaseNotesWindow
-from app_guizero.gui_ip_selection import CreateIPSelector
-from app_guizero.gui_reports import CreateReportsWindow
-from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
-from app_guizero.gui_sensor_config import CreateSensorConfigWindow
-from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
-from app_modules.app_sensor_commands import download_sensor_database
-from app_modules.app_useful import no_ip_selected_message
+from app_guizero.about import CreateAboutWindow
+from app_guizero.app_config import CreateConfigWindow
+from app_guizero.graphing import CreateGraphingWindow
+from app_guizero.db_information import CreateDataBaseInfoWindow
+from app_guizero.notes import CreateDataBaseNotesWindow
+from app_guizero.ip_selection import CreateIPSelector
+from app_guizero.reports import CreateReportsWindow
+from app_guizero.remote_sensor_commands import CreateSensorCommandsWindow
+from app_guizero.remote_sensor_config import CreateSensorConfigWindow
+from app_guizero.app_logs import CreateSensorLogsWindow
+from app_modules.sensor_commands import download_sensor_database
+from app_modules.app_variables import no_ip_selected_message
 
 
 class CreateMainWindow:

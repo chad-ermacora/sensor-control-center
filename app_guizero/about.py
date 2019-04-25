@@ -19,7 +19,7 @@
 from guizero import Window, Text, TextBox
 
 import app_modules.app_logger as app_logger
-from app_modules.app_config import app_version
+from app_modules.config import app_version
 
 
 class CreateAboutWindow:

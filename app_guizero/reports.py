@@ -18,8 +18,8 @@
 """
 from guizero import Window, PushButton, Text
 
-import app_modules.app_reports as app_reports
-from app_modules.app_useful import no_ip_selected_message
+import app_modules.reports as app_reports
+from app_modules.app_variables import no_ip_selected_message
 
 
 class CreateReportsWindow:

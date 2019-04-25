@@ -17,8 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-
-import app_modules.app_config as app_config
+import app_modules.config as app_config
 import app_modules.app_logger as app_logger
 
 current_config = app_config.CreateDefaultConfigSettings()

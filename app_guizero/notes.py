@@ -20,10 +20,10 @@ import sqlite3
 import app_modules.app_logger as app_logger
 from tkinter import filedialog
 from guizero import Window, PushButton, Text, TextBox, CheckBox, yesno, error as guierror, warn, info
-from app_modules.app_graph import CreateSQLColumnNames
+from app_modules.graphing import CreateSQLColumnNames
 from datetime import datetime, timedelta
-from app_modules.app_useful import no_ip_selected_message
-from app_modules.app_sensor_commands import CreateNetworkSendCommands, CreateSensorNetworkCommand, put_command, \
+from app_modules.app_variables import no_ip_selected_message
+from app_modules.sensor_commands import CreateNetworkSendCommands, CreateSensorNetworkCommand, put_command, \
     get_data, CreateNetworkGetCommands
 
 
