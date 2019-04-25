@@ -20,10 +20,11 @@ from queue import Queue
 from threading import Thread
 from time import strftime
 from app_modules import app_logger
-from app_modules import sensor_commands as app_sensor_commands
-from app_modules import app_variables as useful
+from app_modules import sensor_commands
+from app_modules import app_variables
+from app_modules import app_useful_functions
 
-network_get_commands = app_sensor_commands.CreateNetworkGetCommands()
+network_get_commands = app_variables.CreateNetworkGetCommands()
 
 
 class _CreateBasicHTMLData:
@@ -32,27 +33,27 @@ class _CreateBasicHTMLData:
         self.data_queue = Queue()
 
         if report_type == "System":
-            self.template1 = useful.html_template_system1_location
-            self.template2 = useful.html_template_system2_location
-            self.template3 = useful.html_template_system3_location
-            self.file_output_name = useful.html_file_output_name_system
-            self.replacement_codes = useful.reports_system_replacement_codes
+            self.template1 = app_variables.html_template_system1_location
+            self.template2 = app_variables.html_template_system2_location
+            self.template3 = app_variables.html_template_system3_location
+            self.file_output_name = app_variables.html_file_output_name_system
+            self.replacement_codes = app_variables.reports_system_replacement_codes
 
         elif report_type == "Readings":
-            self.template1 = useful.html_template_readings1_location
-            self.template2 = useful.html_template_readings2_location
-            self.template3 = useful.html_template_readings3_location
-            self.file_output_name = useful.html_file_output_name_readings
-            self.replacement_codes = useful.reports_readings_replacement_codes
+            self.template1 = app_variables.html_template_readings1_location
+            self.template2 = app_variables.html_template_readings2_location
+            self.template3 = app_variables.html_template_readings3_location
+            self.file_output_name = app_variables.html_file_output_name_readings
+            self.replacement_codes = app_variables.reports_readings_replacement_codes
 
         elif report_type == "Config":
-            self.template1 = useful.html_template_config1_location
-            self.template2 = useful.html_template_config2_location
-            self.template3 = useful.html_template_config3_location
-            self.file_output_name = useful.html_file_output_name_config
-            self.replacement_codes = useful.reports_config_replacement_codes
+            self.template1 = app_variables.html_template_config1_location
+            self.template2 = app_variables.html_template_config2_location
+            self.template3 = app_variables.html_template_config3_location
+            self.file_output_name = app_variables.html_file_output_name_config
+            self.replacement_codes = app_variables.reports_config_replacement_codes
 
-        self.local_time_code = useful.reports_local_time_code
+        self.local_time_code = app_variables.reports_local_time_code
         self.network_timeout = current_config.network_timeout_data
         self.save_to = current_config.save_to
 
@@ -64,13 +65,13 @@ class CreateHTMLSystemData(_CreateBasicHTMLData):
 
     def get_sensor_data(self, ip):
         """ Gets system report data from the provided sensor IP and puts it in the instance que. """
-        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                      self.network_timeout,
-                                                                      network_get_commands.system_data)
-        sensor_system = app_sensor_commands.get_data(command_data).split(",")
+        command_data = sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                  self.network_timeout,
+                                                                  network_get_commands.system_data)
+        sensor_system = sensor_commands.get_data(command_data).split(",")
 
         try:
-            sensor_system[3] = useful.convert_minutes_string(sensor_system[3])
+            sensor_system[3] = app_useful_functions.convert_minutes_string(sensor_system[3])
         except Exception as error:
             app_logger.app_logger.error("Sensor System Report: " + str(error))
 
@@ -84,10 +85,10 @@ class CreateHTMLReadingsData(_CreateBasicHTMLData):
 
     def get_sensor_data(self, ip):
         """ Gets readings report data from the provided sensor IP and puts it in the instance que. """
-        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                      self.network_timeout,
-                                                                      network_get_commands.sensor_readings)
-        sensor_data = app_sensor_commands.get_data(command_data).split(",")
+        command_data = sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                  self.network_timeout,
+                                                                  network_get_commands.sensor_readings)
+        sensor_data = sensor_commands.get_data(command_data).split(",")
         self.data_queue.put([ip, sensor_data])
 
 
@@ -98,17 +99,17 @@ class CreateHTMLConfigData(_CreateBasicHTMLData):
 
     def get_sensor_data(self, ip):
         """ Gets configuration report data from the provided sensor IP and puts it in the instance que. """
-        command_data = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                      self.network_timeout,
-                                                                      network_get_commands.system_data)
-        sensor_system = app_sensor_commands.get_data(command_data).split(",")
+        command_data = sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                  self.network_timeout,
+                                                                  network_get_commands.system_data)
+        sensor_system = sensor_commands.get_data(command_data).split(",")
         try:
-            sensor_system[3] = useful.convert_minutes_string(sensor_system[3])
+            sensor_system[3] = app_useful_functions.convert_minutes_string(sensor_system[3])
         except Exception as error:
             app_logger.app_logger.error("Sensor Config Report: " + str(error))
 
         command_data.command = network_get_commands.sensor_configuration
-        sensor_config = app_sensor_commands.get_data(command_data).split(",")
+        sensor_config = sensor_commands.get_data(command_data).split(",")
 
         final_sensor_config = [str(sensor_system[0]),
                                str(sensor_system[1]),
@@ -124,13 +125,13 @@ class CreateHTMLConfigData(_CreateBasicHTMLData):
 
 def _sensor_report_worker(report_configuration, threads):
     """ Takes all the data from the threads (AKA Sensors) and creates a single HTML report. """
-    template1 = useful.get_file_content(report_configuration.template1)
+    template1 = app_useful_functions.get_file_content(report_configuration.template1)
     # Add Local computer's DateTime to 3rd template
     current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
     final_file = _replace_with_codes([current_datetime],
                                      report_configuration.local_time_code,
                                      template1)
-    sensor_html_template = useful.get_file_content(report_configuration.template2)
+    sensor_html_template = app_useful_functions.get_file_content(report_configuration.template2)
 
     # Add first HTML Template file to final HTML output file
     # Insert each sensors data into final HTML output file through the 2nd template & replacement codes
@@ -157,13 +158,13 @@ def _sensor_report_worker(report_configuration, threads):
 
     # Merge the result with the Final HTML Template file.
 
-    template3 = useful.get_file_content(report_configuration.template3)
+    template3 = app_useful_functions.get_file_content(report_configuration.template3)
     final_file += template3
 
     try:
         save_file_location = report_configuration.save_to + report_configuration.file_output_name
-        useful.save_data_to_file(final_file, save_file_location)
-        useful.open_html_file(save_file_location)
+        app_useful_functions.save_data_to_file(final_file, save_file_location)
+        app_useful_functions.open_html_file(save_file_location)
         app_logger.app_logger.debug("Sensor Report - HTML Save File - OK")
     except Exception as error:
         app_logger.app_logger.error("Sensor Report - HTML Save File - Failed: " + str(error))

@@ -20,10 +20,11 @@ import guizero
 from threading import Thread
 from tkinter import simpledialog
 from app_modules import app_logger
-from app_modules.app_variables import no_ip_selected_message
-from app_modules import sensor_commands as app_sensor_commands
+from app_modules import app_variables
+from app_modules import app_useful_functions
+from app_modules import sensor_commands
 
-network_commands = app_sensor_commands.CreateNetworkSendCommands()
+network_commands = app_variables.CreateNetworkSendCommands()
 
 
 class CreateSensorCommandsWindow:
@@ -156,8 +157,8 @@ class CreateSensorCommandsWindow:
         network_timeout = self.current_config.network_timeout_data
 
         for ip in ip_list:
-            sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            threads.append(Thread(target=app_sensor_commands.send_command, args=[sensor_command]))
+            sensor_command = sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
+            threads.append(Thread(target=sensor_commands.send_command, args=[sensor_command]))
 
         for thread in threads:
             thread.start()
@@ -171,7 +172,7 @@ class CreateSensorCommandsWindow:
 
             guizero.info("Sensor Command Sent", message)
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     def hostname_change(self):
         """ Sends the host name change command to the Sensor Units IP, along with the new host name. """
@@ -184,21 +185,21 @@ class CreateSensorCommandsWindow:
             for ip in ip_list:
                 new_hostname = simpledialog.askstring(ip, "New Hostname: ")
                 app_logger.sensor_logger.debug("Sent Hostname: " + str(new_hostname))
-                validated_hostname = app_sensor_commands.get_validated_hostname(new_hostname)
+                validated_hostname = sensor_commands.get_validated_hostname(new_hostname)
                 app_logger.sensor_logger.debug("Validated Hostname: " + validated_hostname)
 
                 if validated_hostname is not "Cancelled":
                     command = network_commands.set_host_name
-                    sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
+                    sensor_command = sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
                     sensor_command.command_data = validated_hostname
-                    threads.append(Thread(target=app_sensor_commands.put_command, args=[sensor_command]))
+                    threads.append(Thread(target=sensor_commands.put_command, args=[sensor_command]))
                 else:
                     guizero.info(ip, "Hostname Cancelled or blank for " + ip)
 
             for thread in threads:
                 thread.start()
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     def datetime_update(self):
         """ Sends the Date & Time update command to the Sensor Units IP, along with the computers Date & Time. """
@@ -210,13 +211,13 @@ class CreateSensorCommandsWindow:
         if len(ip_list) > 0:
             command = network_commands.set_datetime
             for ip in ip_list:
-                sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
+                sensor_command = sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
                 sensor_command.command_data = self.current_config.get_str_datetime_now()
-                threads.append(Thread(target=app_sensor_commands.put_command, args=[sensor_command]))
+                threads.append(Thread(target=sensor_commands.put_command, args=[sensor_command]))
 
             for thread in threads:
                 thread.start()
 
             guizero.info("Sensors DateTime Set", "Sensors Date & Time synchronized with local computer's")
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()

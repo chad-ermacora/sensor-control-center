@@ -17,8 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import guizero
-from app_modules import reports as app_reports
-from app_modules.app_variables import no_ip_selected_message
+from app_modules import app_useful_functions
+from app_modules import reports
 
 
 class CreateReportsWindow:
@@ -81,27 +81,27 @@ class CreateReportsWindow:
 
     def app_sensor_readings_report(self):
         """ Create a HTML sensor Readings Report containing each IP selected and online. """
-        sensor_readings_report = app_reports.CreateHTMLReadingsData(self.current_config)
+        sensor_readings_report = reports.CreateHTMLReadingsData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
-            app_reports.sensor_html_report(sensor_readings_report, ip_list)
+            reports.sensor_html_report(sensor_readings_report, ip_list)
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     def app_sensor_system_report(self):
         """ Create a HTML sensor System Report containing each IP selected and online. """
-        sensor_system_report = app_reports.CreateHTMLSystemData(self.current_config)
+        sensor_system_report = reports.CreateHTMLSystemData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
-            app_reports.sensor_html_report(sensor_system_report, ip_list)
+            reports.sensor_html_report(sensor_system_report, ip_list)
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     def app_sensor_config_report(self):
         """ Create a HTML sensor Configuration Report containing each IP selected and online. """
-        sensor_config_report = app_reports.CreateHTMLConfigData(self.current_config)
+        sensor_config_report = reports.CreateHTMLConfigData(self.current_config)
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
-            app_reports.sensor_html_report(sensor_config_report, ip_list)
+            reports.sensor_html_report(sensor_config_report, ip_list)
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()

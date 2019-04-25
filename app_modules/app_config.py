@@ -83,7 +83,8 @@ class CreateDefaultConfigSettings:
         """ Returns local computer time in YYYY-MM-DD HH:MM:SS. """
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    def detect_plotly_render_type(self):
+    @staticmethod
+    def detect_plotly_render_type():
         """ Checks supported system for OpenGL plotly rendering. Returns True if supported. """
         if platform_gui_tweaks.current_platform == "Linux":
             if platform_gui_tweaks.check_pi_model()[:12] == "Raspberry Pi":

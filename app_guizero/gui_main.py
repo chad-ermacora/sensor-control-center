@@ -23,20 +23,20 @@ import webbrowser
 import guizero
 from matplotlib import pyplot
 from threading import Thread
-from app_modules import config as app_config
+from app_modules import app_config
 from app_modules import app_logger
-from app_guizero.about import CreateAboutWindow
-from app_guizero.app_config import CreateConfigWindow
-from app_guizero.graphing import CreateGraphingWindow
-from app_guizero.db_information import CreateDataBaseInfoWindow
-from app_guizero.notes import CreateDataBaseNotesWindow
+from app_modules import app_useful_functions
+from app_guizero.about_window import CreateAboutWindow
+from app_guizero.config_window import CreateConfigWindow
+from app_guizero.graphing_window import CreateGraphingWindow
+from app_guizero.db_information_window import CreateDataBaseInfoWindow
+from app_guizero.notes_window import CreateDataBaseNotesWindow
 from app_guizero.ip_selection import CreateIPSelector
-from app_guizero.reports import CreateReportsWindow
-from app_guizero.remote_sensor_commands import CreateSensorCommandsWindow
-from app_guizero.remote_sensor_config import CreateSensorConfigWindow
-from app_guizero.app_logs import CreateSensorLogsWindow
+from app_guizero.reports_window import CreateReportsWindow
+from app_guizero.remote_sensor_commands_window import CreateSensorCommandsWindow
+from app_guizero.remote_sensor_config_window import CreateSensorConfigWindow
+from app_guizero.remote_sensor_logs_window import CreateSensorLogsWindow
 from app_modules.sensor_commands import download_sensor_database
-from app_modules.app_variables import no_ip_selected_message
 
 
 class CreateMainWindow:
@@ -162,7 +162,7 @@ class CreateMainWindow:
             for thread in threads:
                 thread.start()
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     @staticmethod
     def _app_menu_open_website():

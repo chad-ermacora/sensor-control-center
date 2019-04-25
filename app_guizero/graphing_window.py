@@ -18,11 +18,11 @@
 """
 import guizero
 from tkinter import filedialog
-from app_modules import config as app_config
-from app_modules import graphing_live as app_graph_live
-from app_modules import graphing_offline as app_graph_plotly
+from app_modules import app_config
+from app_modules import graphing_live
+from app_modules import graphing_offline
 from app_modules import app_logger
-from app_modules.graphing import CreateGraphData
+from app_modules import app_variables
 
 
 class CreateGraphingWindow:
@@ -31,8 +31,8 @@ class CreateGraphingWindow:
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
-        self.readable_column_names = app_graph_live.CreateSQLColumnsReadable()
-        self.sql_columns = app_graph_live.CreateSQLColumnNames()
+        self.readable_column_names = app_variables.CreateSQLColumnsReadable()
+        self.sql_columns = app_variables.CreateSQLColumnNames()
 
         self.window = guizero.Window(app,
                                      title="Graphing",
@@ -374,7 +374,7 @@ class CreateGraphingWindow:
 
     def plotly_button(self):
         """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
-        new_data = CreateGraphData()
+        new_data = app_variables.CreateGraphData()
         new_data.enable_plotly_webgl = self.current_config.enable_plotly_webgl
         new_data.db_location = filedialog.askopenfilename()
 
@@ -399,13 +399,13 @@ class CreateGraphingWindow:
             new_data.enable_custom_temp_offset = self.current_config.enable_custom_temp_offset
             new_data.temperature_offset = self.current_config.temperature_offset
 
-            app_graph_plotly.start_plotly_graph(new_data)
+            graphing_offline.start_plotly_graph(new_data)
         else:
             app_logger.app_logger.warning("Plotly Graph: No Database Selected")
 
     def live_button(self):
         """ Creates and starts a 'Live Graph' based on graph selections & the first checked and online IP. """
-        app_graph_live.pyplot.close()
+        graphing_live.pyplot.close()
         try:
             ip = self.ip_selection.get_verified_ip_list()[0]
             checkbox = self._get_column_checkboxes()[3]
@@ -418,7 +418,7 @@ class CreateGraphingWindow:
             self.current_config.temperature_offset = self.textbox_temperature_offset.value
             app_config.check_config(self.current_config)
             self._set_config()
-            app_graph_live.CreateLiveGraph(checkbox, ip, self.current_config)
+            graphing_live.CreateLiveGraph(checkbox, ip, self.current_config)
             # Thread(target=app_graph.CreateLiveGraph, args=[checkbox, ip, self.current_config]).start()
         else:
             guizero.warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
@@ -426,7 +426,7 @@ class CreateGraphingWindow:
 
     def _get_column_checkboxes(self):
         """ Returns selected SQL Columns from the Graph Window, depending on the Data Source Selected. """
-        sql_columns = app_graph_live.CreateSQLColumnNames()
+        sql_columns = app_variables.CreateSQLColumnNames()
         column_checkboxes = [sql_columns.date_time, sql_columns.sensor_name, sql_columns.ip]
 
         if self.checkbox_up_time.value:

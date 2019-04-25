@@ -19,7 +19,7 @@
 import guizero
 from tkinter import filedialog
 from app_modules import app_logger
-from app_modules import config as app_config
+from app_modules import app_config
 
 
 class CreateConfigWindow:

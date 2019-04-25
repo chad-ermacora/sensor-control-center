@@ -20,7 +20,7 @@ import guizero
 from queue import Queue
 from threading import Thread
 from app_modules import app_logger
-from app_modules import sensor_commands as app_sensor_commands
+from app_modules import sensor_commands
 
 
 class CreateIPSelector:
@@ -313,7 +313,7 @@ class CreateIPSelector:
 
     def _worker_sensor_check(self, ip):
         """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
-        data = [ip, app_sensor_commands.check_sensor_status(ip, self.current_config.network_timeout_sensor_check)]
+        data = [ip, sensor_commands.check_sensor_status(ip, self.current_config.network_timeout_sensor_check)]
         self.data_queue.put(data)
 
     def get_verified_ip_list(self):

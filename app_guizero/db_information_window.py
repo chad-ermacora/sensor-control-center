@@ -21,10 +21,10 @@ import sqlite3
 import os.path
 from tkinter import filedialog
 from app_modules import app_logger
-from app_modules.graphing_offline import CreateSQLColumnNames
-from app_modules.graphing import adjust_datetime
+from app_modules import app_variables
+from app_modules import app_useful_functions
 
-sql_column_names = CreateSQLColumnNames()
+sql_column_names = app_variables.CreateSQLColumnNames()
 
 
 class CreateDataBaseInfoWindow:
@@ -295,10 +295,10 @@ class CreateDataBaseInfoWindow:
             db_datetime_column_list = ["---NA-----", "--NA-------"]
 
         if len(db_datetime_column_list) == 2:
-            db_datetime_column_list[0] = adjust_datetime(db_datetime_column_list[0][3:-5],
-                                                         self.current_config.datetime_offset)
-            db_datetime_column_list[1] = adjust_datetime(db_datetime_column_list[1][2:-7],
-                                                         self.current_config.datetime_offset)
+            db_datetime_column_list[0] = app_useful_functions.adjust_datetime(db_datetime_column_list[0][3:-5],
+                                                                              self.current_config.datetime_offset)
+            db_datetime_column_list[1] = app_useful_functions.adjust_datetime(db_datetime_column_list[1][2:-7],
+                                                                              self.current_config.datetime_offset)
 
             self.textbox_db_dates.enable()
             self.textbox_db_dates.value = db_datetime_column_list[0] + " || " + db_datetime_column_list[1]

@@ -19,9 +19,9 @@
 import guizero
 from tkinter import filedialog
 from threading import Thread
-from app_modules.app_variables import no_ip_selected_message
 from app_modules import app_logger
-from app_modules import sensor_commands as app_sensor_commands
+from app_modules import app_useful_functions
+from app_modules import sensor_commands
 
 
 class CreateSensorLogsWindow:
@@ -90,21 +90,21 @@ class CreateSensorLogsWindow:
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
             network_timeout = self.current_config.network_timeout_data
-            command_data = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0], network_timeout, "GetNetworkLog")
+            command_data = sensor_commands.CreateSensorNetworkCommand(ip_list[0], network_timeout, "GetNetworkLog")
             if self.radio_log_type.value == "Network Log":
-                log = app_sensor_commands.get_data(command_data)
+                log = sensor_commands.get_data(command_data)
             elif self.radio_log_type.value == "Primary Log":
                 command_data.command = "GetPrimaryLog"
-                log = app_sensor_commands.get_data(command_data)
+                log = sensor_commands.get_data(command_data)
             elif self.radio_log_type.value == "Sensors Log":
                 command_data.command = "GetSensorsLog"
-                log = app_sensor_commands.get_data(command_data)
+                log = sensor_commands.get_data(command_data)
             else:
                 app_logger.app_logger.error("Bad Log Request")
                 log = "Bad Log Request"
             self.textbox_log.value = log
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     def _download_logs(self):
         """ Download all selected and online sensors logs. """
@@ -116,9 +116,9 @@ class CreateSensorLogsWindow:
 
             if download_to_location is not "" and download_to_location is not None:
                 for ip in ip_list:
-                    sensor_command = app_sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, "")
+                    sensor_command = sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, "")
                     sensor_command.save_to_location = download_to_location
-                    threads.append(Thread(target=app_sensor_commands.download_logs, args=[sensor_command]))
+                    threads.append(Thread(target=sensor_commands.download_logs, args=[sensor_command]))
 
                 for thread in threads:
                     thread.start()
@@ -130,4 +130,4 @@ class CreateSensorLogsWindow:
             else:
                 guizero.warn("Warning", "User Cancelled Download Operation")
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()

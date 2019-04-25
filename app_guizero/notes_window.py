@@ -18,13 +18,12 @@
 """
 import guizero
 import sqlite3
-from app_modules import app_logger
 from tkinter import filedialog
-from app_modules.graphing import CreateSQLColumnNames
 from datetime import datetime, timedelta
-from app_modules.app_variables import no_ip_selected_message
-from app_modules.sensor_commands import CreateNetworkSendCommands, CreateSensorNetworkCommand, put_command, \
-    get_data, CreateNetworkGetCommands
+from app_modules import app_logger
+from app_modules import app_variables
+from app_modules import app_useful_functions
+from app_modules import sensor_commands
 
 
 class CreateGenericNoteVariables:
@@ -87,9 +86,9 @@ class CreateDataBaseNotesWindow:
         self.text_variables_sensor = CreateSensorNoteVariables()
         self.text_variables_database = CreateDatabaseNoteVariables()
 
-        self.sql_column_names = CreateSQLColumnNames()
-        self.network_send_commands = CreateNetworkSendCommands()
-        self.sensor_get_commands = CreateNetworkGetCommands()
+        self.sql_column_names = app_variables.CreateSQLColumnNames()
+        self.network_send_commands = app_variables.CreateNetworkSendCommands()
+        self.sensor_get_commands = app_variables.CreateNetworkGetCommands()
 
         self.window = guizero.Window(app,
                                      title=self.text_variables_database.window_title,
@@ -212,9 +211,9 @@ class CreateDataBaseNotesWindow:
             self.text_connected_to.value = self.text_variables_sensor.text_connected_to[:-2] + self.selected_ip
             command = self.sensor_get_commands.database_notes
             network_timeout = self.current_config.network_timeout_data
-            sensor_command = CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
+            sensor_command = sensor_commands.CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
 
-            test_database_notes = get_data(sensor_command).split(",")
+            test_database_notes = sensor_commands.get_data(sensor_command).split(",")
 
             if str(test_database_notes)[2:-2] == self.text_variables_generic.sensor_return_no_notes:
                 self._no_sql_notes()
@@ -222,9 +221,9 @@ class CreateDataBaseNotesWindow:
                 self.database_notes = test_database_notes
 
                 sensor_command.command = self.sensor_get_commands.database_note_dates
-                self.database_notes_dates = get_data(sensor_command).split(",")
+                self.database_notes_dates = sensor_commands.get_data(sensor_command).split(",")
                 sensor_command.command = self.sensor_get_commands.database_user_note_dates
-                self.database_user_note_dates = get_data(sensor_command).split(",")
+                self.database_user_note_dates = sensor_commands.get_data(sensor_command).split(",")
 
                 count = 0
                 datetime_offset = self.current_config.datetime_offset
@@ -260,7 +259,7 @@ class CreateDataBaseNotesWindow:
             self._disable_notes_window_functions()
             self.text_connected_to.value = self.text_variables_sensor.text_connected_to
 
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     def _open_database(self):
         """ Prompts for Database to open and opens it. """
@@ -401,11 +400,11 @@ class CreateDataBaseNotesWindow:
             command = self.network_send_commands.put_sql_note
             network_timeout = self.current_config.network_timeout_data
 
-            sensor_command = CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
+            sensor_command = sensor_commands.CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
             sensor_command.command_data = user_datetime_var + ".000" + \
                                           self.network_send_commands.command_data_separator + \
                                           self.sterilize_notes(self.textbox_current_note.value)
-            put_command(sensor_command)
+            sensor_commands.put_command(sensor_command)
 
             guizero.info("Note Inserted into Sensors " + self.selected_ip,
                          "Inserted with DateTime: " + user_datetime_var)
@@ -455,9 +454,9 @@ class CreateDataBaseNotesWindow:
             command = self.network_send_commands.delete_sql_note
             network_timeout = self.current_config.network_timeout_data
 
-            sensor_command = CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
+            sensor_command = sensor_commands.CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
             sensor_command.command_data = utc_0_datetime + ".000"
-            put_command(sensor_command)
+            sensor_commands.put_command(sensor_command)
 
             app_logger.sensor_logger.info("Deleted note from sensor " + self.selected_ip)
             self._connect_to_sensor()
@@ -524,13 +523,13 @@ class CreateDataBaseNotesWindow:
                 command = self.network_send_commands.update_sql_note
                 network_timeout = self.current_config.network_timeout_data
 
-                sensor_command = CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
+                sensor_command = sensor_commands.CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
                 sensor_command.command_data = utc_0_datetime_current + \
                                               self.network_send_commands.command_data_separator + \
                                               utc_0_datetime_user + \
                                               self.network_send_commands.command_data_separator + \
                                               sql_note
-                put_command(sensor_command)
+                sensor_commands.put_command(sensor_command)
         except Exception as error:
             guizero.warn("Invalid Note Number", str(error))
 

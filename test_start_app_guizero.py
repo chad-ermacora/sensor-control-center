@@ -19,11 +19,11 @@
 import os
 import unittest
 from time import sleep
-from app_modules import config as app_config
-from app_modules import app_variables as app_useful
-from app_modules import graphing as app_graph
+from app_modules import app_config
+from app_modules import app_useful_functions
+from app_modules import app_variables
 from app_modules import graphing_offline
-from app_modules import reports as app_reports
+from app_modules import reports
 from app_modules import sensor_commands
 
 config_default = app_config.CreateDefaultConfigSettings()
@@ -109,7 +109,7 @@ class TestApp(unittest.TestCase):
     def test_app_graph(self):
         # Interval & Trigger graph's and functions done.  Only Live Graph left to do.
         print("\nPlease review the opened graph for errors.\n")
-        test_graph = app_graph.CreateGraphData()
+        test_graph = app_variables.CreateGraphData()
         test_graph.db_location = config_default.script_directory + "/test_files/SensorRecordingDatabase.sqlite"
         test_graph.save_to = save_to
         test_graph.sql_queries_skip = 0
@@ -123,19 +123,19 @@ class TestApp(unittest.TestCase):
 
         self.assertTrue(os.path.isfile(save_to + "PlotlySensorGraph.html"))
 
-        self.assertEqual(app_graph.adjust_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
-        self.assertEqual(app_graph.adjust_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
+        self.assertEqual(app_useful_functions.adjust_datetime("1984-10-10 10:00:00", -7), "1984-10-10 03:00:00")
+        self.assertEqual(app_useful_functions.adjust_datetime("1984-10-10 10:00:00.111", -7), "1984-10-10 03:00:00.111")
 
     def test_app_reports(self):
         # # Initial setup complete - Requires a look over the generated reports by human
         print("\nThis REQUIRES an online sensor @ " + sensor_ip + "\nPlease review the 3 opened Reports for errors.")
-        self.assertEqual(app_useful.convert_minutes_string(7634), "5 Days, 7 Hours & 14 Min")
+        self.assertEqual(app_useful_functions.convert_minutes_string(7634), "5 Days, 7 Hours & 14 Min")
 
         config_test.save_to = save_to
 
-        app_reports.sensor_html_report(app_reports.CreateHTMLSystemData(config_test), [sensor_ip])
-        app_reports.sensor_html_report(app_reports.CreateHTMLConfigData(config_test), [sensor_ip])
-        app_reports.sensor_html_report(app_reports.CreateHTMLReadingsData(config_test), [sensor_ip])
+        reports.sensor_html_report(reports.CreateHTMLSystemData(config_test), [sensor_ip])
+        reports.sensor_html_report(reports.CreateHTMLConfigData(config_test), [sensor_ip])
+        reports.sensor_html_report(reports.CreateHTMLReadingsData(config_test), [sensor_ip])
 
         sleep(3)
 
@@ -145,8 +145,8 @@ class TestApp(unittest.TestCase):
 
     def test_app_sensor_commands(self):
         print("\nThis REQUIRES an online sensor @ " + sensor_ip)
-        get_network_commands = sensor_commands.CreateNetworkGetCommands()
-        send_network_commands = sensor_commands.CreateNetworkSendCommands()
+        get_network_commands = app_variables.CreateNetworkGetCommands()
+        send_network_commands = app_variables.CreateNetworkSendCommands()
         network_timeout = config_default.network_timeout_data
         sensor_command = sensor_commands.CreateSensorNetworkCommand(sensor_ip, network_timeout, "")
 

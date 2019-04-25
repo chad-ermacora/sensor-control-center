@@ -20,8 +20,9 @@ import guizero
 import sqlite3
 from plotly import tools, offline
 from app_modules import app_logger
-from app_modules.graphing import CreateSQLColumnNames, adjust_datetime
-from app_modules import graphing_offline_extras as plot_extras
+from app_modules import app_useful_functions
+from app_modules import app_variables
+from app_modules import graphing_offline_extras
 
 
 def start_plotly_graph(graph_data):
@@ -33,10 +34,10 @@ def start_plotly_graph(graph_data):
     app_logger.app_logger.debug("SQL DataBase Location: " + str(graph_data.db_location))
 
     # Adjust dates to Database timezone in UTC 0
-    sql_column_names = CreateSQLColumnNames()
+    sql_column_names = app_variables.CreateSQLColumnNames()
     new_time_offset = int(graph_data.datetime_offset) * -1
-    get_sql_graph_start = adjust_datetime(graph_data.graph_start, new_time_offset)
-    get_sql_graph_end = adjust_datetime(graph_data.graph_end, new_time_offset)
+    get_sql_graph_start = app_useful_functions.adjust_datetime(graph_data.graph_start, new_time_offset)
+    get_sql_graph_end = app_useful_functions.adjust_datetime(graph_data.graph_end, new_time_offset)
     for var_column in graph_data.graph_columns:
         var_sql_query = "SELECT " + \
                         str(var_column) + \
@@ -55,7 +56,7 @@ def start_plotly_graph(graph_data):
         if str(var_column) == sql_column_names.date_time:
             count = 0
             for data in sql_column_data:
-                sql_column_data[count] = adjust_datetime(data, int(graph_data.datetime_offset))
+                sql_column_data[count] = app_useful_functions.adjust_datetime(data, int(graph_data.datetime_offset))
                 count = count + 1
             graph_data.sql_time = sql_column_data
         elif str(var_column) == sql_column_names.ip:
@@ -195,34 +196,34 @@ def _plotly_graph(graph_data):
 
     if len(graph_data.sql_time) > 1:
         if len(graph_data.sql_host_name) > 1:
-            plot_extras.graph_host_name(graph_data)
+            graphing_offline_extras.graph_host_name(graph_data)
 
         if len(graph_data.sql_up_time) > 1:
-            plot_extras.graph_sql_uptime(graph_data)
+            graphing_offline_extras.graph_sql_uptime(graph_data)
 
         if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
-            plot_extras.graph_sql_cpu_env_temperature(graph_data)
+            graphing_offline_extras.graph_sql_cpu_env_temperature(graph_data)
 
         if len(graph_data.sql_pressure) > 2:
-            plot_extras.graph_sql_pressure(graph_data)
+            graphing_offline_extras.graph_sql_pressure(graph_data)
 
         if len(graph_data.sql_humidity) > 2:
-            plot_extras.graph_sql_humidity(graph_data)
+            graphing_offline_extras.graph_sql_humidity(graph_data)
 
         if len(graph_data.sql_lumen) > 2:
-            plot_extras.graph_sql_lumen(graph_data)
+            graphing_offline_extras.graph_sql_lumen(graph_data)
 
         if len(graph_data.sql_red) > 2:
-            plot_extras.graph_sql_ems_colours(graph_data)
+            graphing_offline_extras.graph_sql_ems_colours(graph_data)
 
         if len(graph_data.sql_acc_x) > 2:
-            plot_extras.graph_sql_accelerometer(graph_data)
+            graphing_offline_extras.graph_sql_accelerometer(graph_data)
 
         if len(graph_data.sql_mg_x) > 2:
-            plot_extras.graph_sql_magnetometer(graph_data)
+            graphing_offline_extras.graph_sql_magnetometer(graph_data)
 
         if len(graph_data.sql_gyro_x) > 2:
-            plot_extras.graph_sql_gyroscope(graph_data)
+            graphing_offline_extras.graph_sql_gyroscope(graph_data)
 
         fig = tools.make_subplots(rows=graph_data.row_count, cols=1, subplot_titles=graph_data.sub_plots)
 

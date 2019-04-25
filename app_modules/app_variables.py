@@ -16,10 +16,180 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import guizero
-import webbrowser
 from sys import path
-from app_modules import app_logger
+
+
+class CreateSQLColumnsReadable:
+    """ Creates an object to hold all human readable SQL column names. """
+
+    def __init__(self):
+        self.no_sensor = ""
+        self.date_time = "Date & Time"
+        self.sensor_name = "Sensor Name"
+        self.ip = "IP"
+        self.system_uptime = "Sensor Uptime"
+        self.cpu_temp = "CPU Temperature"
+        self.environmental_temp = "Env Temperature"
+        self.pressure = "Pressure"
+        self.humidity = "Humidity"
+        self.lumen = "Lumen"
+        self.colours = "Colours"
+        self.accelerometer_xyz = "Accelerometer XYZ"
+        self.magnetometer_xyz = "Magnetometer XYZ"
+        self.gyroscope_xyz = "Gyroscope XYZ"
+
+
+class CreateSQLColumnNames:
+    """ Creates an object to hold all SQL column names. """
+
+    def __init__(self):
+        self.sql_interval_table = "IntervalData"
+        self.sql_trigger_table = "TriggerData"
+        self.sql_other_table = "OtherData"
+        self.date_time = "DateTime"
+        self.sensor_name = "SensorName"
+        self.ip = "IP"
+        self.system_uptime = "SensorUpTime"
+        self.cpu_temp = "SystemTemp"
+        self.environmental_temp = "EnvironmentTemp"
+        self.environmental_temp_offset = "EnvTempOffset"
+        self.pressure = "Pressure"
+        self.humidity = "Humidity"
+        self.lumen = "Lumen"
+        self.rgb = ["Red", "Green", "Blue"]
+        self.six_chan_color = ["Red", "Orange", "Yellow", "Green", "Blue", "Violet"]
+        self.accelerometer_xyz = ["Acc_X", "Acc_Y", "Acc_Z"]
+        self.magnetometer_xyz = ["Mag_X", "Mag_Y", "Mag_Z"]
+        self.gyroscope_xyz = ["Gyro_X", "Gyro_Y", "Gyro_Z"]
+
+        self.other_notes = "Notes"
+        self.other_user_datetime = "UserDateTime"
+
+
+class CreateMeasurementsTypes:
+    """ Creates an object to hold all sensor measurement types. """
+
+    def __init__(self):
+        self.no_measurement = ""
+        self.celsius = " °C"
+        self.pressure = " hPa"
+        self.humidity = " %RH"
+        self.lumen = " Lumen"
+        self.rgb = " RGB"
+        self.six_chan_color = " ROYGBV"
+        self.xyz = " XYZ"
+
+
+class CreateGraphData:
+    """ Creates an object to hold all the data needed for a graph. """
+
+    def __init__(self):
+        self.enable_plotly_webgl = False
+        self.db_location = ""
+        self.graph_table = "IntervalData"
+        self.save_to = ""
+        self.graph_start = "1111-08-21 00:00:01"
+        self.graph_end = "9999-01-01 00:00:01"
+        self.datetime_offset = 0.0
+        self.sql_queries_skip = 12
+        self.bypass_sql_skip = False
+        self.enable_custom_temp_offset = True
+        self.temperature_offset = 0.0
+
+        self.sub_plots = []
+        self.row_count = 0
+        self.graph_collection = []
+
+        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp",
+                              "EnvironmentTemp", "EnvTempOffset", "Pressure", "Humidity", "Lumen",
+                              "Red", "Orange", "Yellow", "Green", "Blue", "Violet"]
+        self.max_sql_queries = 200000
+
+        # Graph data holders for SQL DataBase
+        self.sql_time = []
+        self.sql_ip = []
+        self.sql_host_name = []
+        self.sql_up_time = []
+        self.sql_cpu_temp = []
+        self.sql_hat_temp = []
+        self.sql_temp_offset = []
+        self.sql_pressure = []
+        self.sql_humidity = []
+        self.sql_lumen = []
+        self.sql_red = []
+        self.sql_orange = []
+        self.sql_yellow = []
+        self.sql_green = []
+        self.sql_blue = []
+        self.sql_violet = []
+        self.sql_acc_x = []
+        self.sql_acc_y = []
+        self.sql_acc_z = []
+        self.sql_mg_x = []
+        self.sql_mg_y = []
+        self.sql_mg_z = []
+        self.sql_gyro_x = []
+        self.sql_gyro_y = []
+        self.sql_gyro_z = []
+
+
+class CreateNetworkGetCommands:
+    """ Create a object instance holding available network "Get" commands (AKA expecting data back). """
+    def __init__(self):
+        self.sensor_sql_database = "DownloadSQLDatabase"
+        self.sensor_configuration = "GetConfigurationReport"
+        self.sensor_configuration_file = "GetConfiguration"
+        self.installed_sensors_file = "GetInstalledSensors"
+        self.wifi_config_file = "GetWifiConfiguration"
+        self.variance_config = "GetVarianceConfiguration"
+        self.system_data = "GetSystemData"
+        self.primary_log = "GetPrimaryLog"
+        self.network_log = "GetNetworkLog"
+        self.sensors_log = "GetSensorsLog"
+        self.download_primary_log = "DownloadPrimaryLog"
+        self.download_network_log = "DownloadNetworkLog"
+        self.download_sensors_log = "DownloadSensorsLog"
+        self.sensor_readings = "GetSensorReadings"
+        self.sensor_name = "GetHostName"
+        self.system_uptime = "GetSystemUptime"
+        self.cpu_temp = "GetCPUTemperature"
+        self.environmental_temp = "GetEnvTemperature"
+        self.env_temp_offset = "GetTempOffsetEnv"
+        self.pressure = "GetPressure"
+        self.humidity = "GetHumidity"
+        self.lumen = "GetLumen"
+        self.rgb = "GetEMS"
+        self.accelerometer_xyz = "GetAccelerometerXYZ"
+        self.magnetometer_xyz = "GetMagnetometerXYZ"
+        self.gyroscope_xyz = "GetGyroscopeXYZ"
+        self.database_notes = "GetDatabaseNotes"
+        self.database_note_dates = "GetDatabaseNoteDates"
+        self.database_user_note_dates = "GetDatabaseNoteUserDates"
+
+
+class CreateNetworkSendCommands:
+    """ Create a object instance holding available network "Send" commands (AKA not expecting data back). """
+    def __init__(self):
+        self.restart_services = "RestartServices"
+        self.shutdown_system = "ShutdownSystem"
+        self.reboot_system = "RebootSystem"
+        self.upgrade_system_os = "UpgradeSystemOS"
+        self.upgrade_online = "UpgradeOnline"
+        self.upgrade_smb = "UpgradeSMB"
+        self.clean_upgrade_online = "CleanOnline"
+        self.clean_upgrade_smb = "CleanSMB"
+        self.set_host_name = "SetHostName"
+        self.set_datetime = "SetDateTime"
+        self.set_configuration = "SetConfiguration"
+        self.set_wifi_configuration = "SetWifiConfiguration"
+        self.set_variance_configuration = "SetVarianceConfiguration"
+        self.set_installed_sensors = "SetInstalledSensors"
+        self.put_sql_note = "PutDatabaseNote"
+        self.delete_sql_note = "DeleteDatabaseNote"
+        self.update_sql_note = "UpdateDatabaseNote"
+
+        self.command_data_separator = "[new_data_section]"
+
 
 software_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.81"
 
@@ -187,68 +357,3 @@ laser emitting sheep in the area.
 Notice how it only shows in the Near-Infrared spectrum. 
   - Random Zoologist
 """
-
-
-def no_ip_selected_message():
-    """ Displays a GUI message asking the user to select an IP address. """
-    guizero.warn("No Sensor IP", "Please select at least one online sensor IP\n\nSelect sensor IPs in the main window")
-
-
-def convert_minutes_string(var_minutes):
-    """ Converts provided minutes into a human readable string. """
-    str_day_hour_min = ""
-
-    try:
-        uptime_days = int(float(var_minutes) // 1440)
-        uptime_hours = int((float(var_minutes) % 1440) // 60)
-        uptime_min = int(float(var_minutes) % 60)
-        if uptime_days:
-            if uptime_days > 1:
-                str_day_hour_min = str(uptime_days) + " Days, "
-            else:
-                str_day_hour_min = str(uptime_days) + " Day, "
-        if uptime_hours:
-            if uptime_hours > 1:
-                str_day_hour_min += str(uptime_hours) + " Hours & "
-            else:
-                str_day_hour_min += str(uptime_hours) + " Hour & "
-
-        str_day_hour_min += str(uptime_min) + " Min"
-
-    except Exception as error:
-        app_logger.app_logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
-        str_day_hour_min = var_minutes
-
-    return str_day_hour_min
-
-
-def save_data_to_file(data, file_location):
-    """ Save data to a local file. """
-    try:
-        file_out = open(file_location, "w")
-        file_out.write(data)
-        file_out.close()
-    except Exception as error:
-        app_logger.app_logger.error("Unable to save file: " + str(error))
-
-
-def open_html_file(outfile):
-    """ Opens a local HTML file in the default web browser. """
-    try:
-        webbrowser.open_new_tab("file:///" + outfile)
-        app_logger.app_logger.debug("Graph HTML File Opened - OK")
-    except Exception as error:
-        app_logger.app_logger.error("Graph HTML File Opened - Failed - " + str(error))
-
-
-def get_file_content(file_location):
-    """ Returns the content of a local file. """
-    try:
-        tmp_file = open(file_location, "r")
-        file_content = tmp_file.read()
-        tmp_file.close()
-    except Exception as error:
-        app_logger.app_logger.error("Unable to get file contents: " + str(error))
-        file_content = "Unable to get file contents: " + str(error)
-
-    return file_content

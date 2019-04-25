@@ -19,11 +19,11 @@
 from app_guizero import gui_main
 from app_guizero import platform_gui_tweaks
 from app_modules import app_logger
-from app_modules import checks as app_checks
+from app_modules import program_start_checks
 
 
 # Make sure options and such are set right before starting the program
-app_checks.run_pre_checks()
+program_start_checks.run_pre_checks()
 
 # Create the app
 guizero_app = gui_main.CreateMainWindow()

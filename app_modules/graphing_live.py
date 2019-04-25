@@ -19,9 +19,9 @@
 from datetime import datetime
 from matplotlib import pyplot, animation, style
 from app_modules import app_logger
-from app_modules import sensor_commands as app_sensor_commands
-from app_modules.graphing import CreateMeasurementsTypes, CreateSQLColumnsReadable, CreateSQLColumnNames
-from app_modules.app_variables import convert_minutes_string
+from app_modules import app_variables
+from app_modules import app_useful_functions
+from app_modules import sensor_commands
 
 style.use("dark_background")
 
@@ -36,11 +36,11 @@ class CreateLiveGraph:
         self.ip = ip
         self.current_config = current_config
         self.temperature_offset = self.current_config.temperature_offset
-        self.get_commands = app_sensor_commands.CreateNetworkGetCommands()
+        self.get_commands = app_variables.CreateNetworkGetCommands()
 
-        self.sql_column_names = CreateSQLColumnNames()
-        self.readable_column_names = CreateSQLColumnsReadable()
-        self.sensor_measurements = CreateMeasurementsTypes()
+        self.sql_column_names = app_variables.CreateSQLColumnNames()
+        self.readable_column_names = app_variables.CreateSQLColumnsReadable()
+        self.sensor_measurements = app_variables.CreateMeasurementsTypes()
 
         self.first_datetime = str(datetime.time(datetime.now()))[:8]
 
@@ -59,10 +59,10 @@ class CreateLiveGraph:
         """ Update the Live Graph Instance. """
         current_time = str(datetime.time(datetime.now()))[:8]
         network_timeout = self.current_config.network_timeout_data
-        command_data = app_sensor_commands.CreateSensorNetworkCommand(self.ip, network_timeout, "")
+        command_data = sensor_commands.CreateSensorNetworkCommand(self.ip, network_timeout, "")
 
         command_data.command = self.get_commands.sensor_name
-        sensor_name = app_sensor_commands.get_data(command_data)
+        sensor_name = sensor_commands.get_data(command_data)
 
         sensor_reading, sensor_type_name, measurement_type = self._get_sensor_reading_name_unit(command_data)
         try:
@@ -72,7 +72,7 @@ class CreateLiveGraph:
             self.ax1.plot(self.x, self.y)
 
             if self.sensor_type is "SensorUpTime":
-                sensor_reading = convert_minutes_string(sensor_reading)
+                sensor_reading = app_useful_functions.convert_minutes_string(sensor_reading)
 
             pyplot.title(sensor_name + "  ||  " + self.ip + "\n" + sensor_type_name)
             pyplot.xlabel("Start Time: " + self.first_datetime +
@@ -92,7 +92,7 @@ class CreateLiveGraph:
         if self.sensor_type is self.sql_column_names.system_uptime:
             command_data.command = self.get_commands.system_uptime
             try:
-                sensor_reading = int(round(float(app_sensor_commands.get_data(command_data)), 0))
+                sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
@@ -102,7 +102,7 @@ class CreateLiveGraph:
         elif self.sensor_type is self.sql_column_names.cpu_temp:
             command_data.command = self.get_commands.cpu_temp
             try:
-                sensor_reading = round(float(app_sensor_commands.get_data(command_data)), 3)
+                sensor_reading = round(float(sensor_commands.get_data(command_data)), 3)
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
@@ -117,14 +117,14 @@ class CreateLiveGraph:
                 else:
                     command_data.command = self.get_commands.env_temp_offset
                     try:
-                        self.temperature_offset = float(app_sensor_commands.get_data(command_data))
+                        self.temperature_offset = float(sensor_commands.get_data(command_data))
                     except Exception as error:
                         app_logger.app_logger.warning("Live Graph - Invalid Sensor provided temp offset: " + str(error))
                         self.temperature_offset = 0.0
 
                 command_data.command = self.get_commands.environmental_temp
                 try:
-                    sensor_reading = round(float(app_sensor_commands.get_data(command_data)) +
+                    sensor_reading = round(float(sensor_commands.get_data(command_data)) +
                                            float(self.temperature_offset), 3)
                 except Exception as error:
                     app_logger.app_logger.warning("Live Graph - Invalid Env Temperature: " + str(error))
@@ -138,7 +138,7 @@ class CreateLiveGraph:
         elif self.sensor_type is self.sql_column_names.pressure:
             command_data.command = self.get_commands.pressure
             try:
-                sensor_reading = int(round(float(app_sensor_commands.get_data(command_data)), 0))
+                sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
@@ -149,7 +149,7 @@ class CreateLiveGraph:
             command_data.command = self.get_commands.humidity
 
             try:
-                sensor_reading = int(round(float(app_sensor_commands.get_data(command_data)), 0))
+                sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
@@ -159,7 +159,7 @@ class CreateLiveGraph:
         elif self.sensor_type is self.sql_column_names.lumen:
             command_data.command = self.get_commands.lumen
             try:
-                sensor_reading = int(round(float(app_sensor_commands.get_data(command_data)), 0))
+                sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
@@ -169,7 +169,7 @@ class CreateLiveGraph:
         elif self.sensor_type == self.sql_column_names.six_chan_color[0]:
             try:
                 command_data.command = self.get_commands.rgb
-                ems_colors = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+                ems_colors = sensor_commands.get_data(command_data)[1:-1].split(",")
 
                 colors = []
                 for color in ems_colors:
@@ -199,7 +199,7 @@ class CreateLiveGraph:
         elif self.sensor_type == self.sql_column_names.accelerometer_xyz[0]:
             try:
                 command_data.command = self.get_commands.accelerometer_xyz
-                var_x, var_y, var_z = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+                var_x, var_y, var_z = sensor_commands.get_data(command_data)[1:-1].split(",")
                 sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
                 sensor_type_name = self.readable_column_names.accelerometer_xyz
                 measurement_type = self.sensor_measurements.xyz
@@ -211,7 +211,7 @@ class CreateLiveGraph:
         elif self.sensor_type == self.sql_column_names.magnetometer_xyz[0]:
             try:
                 command_data.command = self.get_commands.magnetometer_xyz
-                var_x, var_y, var_z = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+                var_x, var_y, var_z = sensor_commands.get_data(command_data)[1:-1].split(",")
                 sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
                 sensor_type_name = self.readable_column_names.magnetometer_xyz
                 measurement_type = self.sensor_measurements.xyz
@@ -223,7 +223,7 @@ class CreateLiveGraph:
         elif self.sensor_type == self.sql_column_names.gyroscope_xyz[0]:
             try:
                 command_data.command = self.get_commands.gyroscope_xyz
-                var_x, var_y, var_z = app_sensor_commands.get_data(command_data)[1:-1].split(",")
+                var_x, var_y, var_z = sensor_commands.get_data(command_data)[1:-1].split(",")
                 sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
                 sensor_type_name = self.readable_column_names.gyroscope_xyz
                 measurement_type = self.sensor_measurements.xyz

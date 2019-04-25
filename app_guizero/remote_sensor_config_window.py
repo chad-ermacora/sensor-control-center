@@ -20,7 +20,8 @@ import guizero
 from threading import Thread
 from app_modules import app_logger
 from app_modules import app_variables
-from app_modules import sensor_commands as app_sensor_commands
+from app_modules import app_useful_functions
+from app_modules import sensor_commands
 
 
 class CreateSensorConfigWindow:
@@ -106,40 +107,40 @@ class CreateSensorConfigWindow:
         """ Displays the selected configuration of the first selected and online sensor. """
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
-            network_commands = app_sensor_commands.CreateNetworkGetCommands()
+            network_commands = app_variables.CreateNetworkGetCommands()
             try:
                 if self.combo_dropdown_selection.value == "Installed Sensors":
-                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
-                                                                             self.current_config.network_timeout_data,
-                                                                             network_commands.installed_sensors_file)
+                    command = sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                         self.current_config.network_timeout_data,
+                                                                         network_commands.installed_sensors_file)
                 elif self.combo_dropdown_selection.value == "Configuration":
-                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
-                                                                             self.current_config.network_timeout_data,
-                                                                             network_commands.sensor_configuration_file)
+                    command = sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                         self.current_config.network_timeout_data,
+                                                                         network_commands.sensor_configuration_file)
                 elif self.combo_dropdown_selection.value == "Wifi":
-                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
-                                                                             self.current_config.network_timeout_data,
-                                                                             network_commands.wifi_config_file)
+                    command = sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                         self.current_config.network_timeout_data,
+                                                                         network_commands.wifi_config_file)
                 elif self.combo_dropdown_selection.value == "Trigger Variances":
-                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
-                                                                             self.current_config.network_timeout_data,
-                                                                             network_commands.variance_config)
+                    command = sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                         self.current_config.network_timeout_data,
+                                                                         network_commands.variance_config)
                 else:
-                    command = app_sensor_commands.CreateSensorNetworkCommand(ip_list[0],
-                                                                             self.current_config.network_timeout_data,
+                    command = sensor_commands.CreateSensorNetworkCommand(ip_list[0],
+                                                                         self.current_config.network_timeout_data,
                                                                              "")
                     command.command = ""
 
-                self.textbox_config.value = str(app_sensor_commands.get_data(command))
+                self.textbox_config.value = str(sensor_commands.get_data(command))
 
             except Exception as error:
                 app_logger.sensor_logger.error(str(error))
         else:
-            app_variables.no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     def button_set(self):
         """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
-        network_commands = app_sensor_commands.CreateNetworkSendCommands()
+        network_commands = app_variables.CreateNetworkSendCommands()
         ip_list = self.ip_selection.get_verified_ip_list()
         threads = []
 
@@ -147,30 +148,30 @@ class CreateSensorConfigWindow:
             for ip in ip_list:
                 try:
                     if self.combo_dropdown_selection.value == "Installed Sensors":
-                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                                 self.current_config.network_timeout_data,
-                                                                                 network_commands.set_installed_sensors)
+                        command = sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                             self.current_config.network_timeout_data,
+                                                                             network_commands.set_installed_sensors)
                     elif self.combo_dropdown_selection.value == "Configuration":
-                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                                 self.current_config.network_timeout_data,
-                                                                                 network_commands.set_configuration)
+                        command = sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                             self.current_config.network_timeout_data,
+                                                                             network_commands.set_configuration)
                     elif self.combo_dropdown_selection.value == "Wifi":
-                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                                 self.current_config.network_timeout_data,
-                                                                                 network_commands.set_wifi_configuration)
+                        command = sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                             self.current_config.network_timeout_data,
+                                                                             network_commands.set_wifi_configuration)
                     elif self.combo_dropdown_selection.value == "Trigger Variances":
-                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                                 self.current_config.network_timeout_data,
-                                                                                 network_commands.set_variance_configuration)
+                        command = sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                             self.current_config.network_timeout_data,
+                                                                             network_commands.set_variance_configuration)
                     else:
-                        command = app_sensor_commands.CreateSensorNetworkCommand(ip,
-                                                                                 self.current_config.network_timeout_data,
+                        command = sensor_commands.CreateSensorNetworkCommand(ip,
+                                                                             self.current_config.network_timeout_data,
                                                                                  "")
                         command.command = ""
 
                     command.command_data = self.textbox_config.value.strip()
 
-                    threads.append(Thread(target=app_sensor_commands.put_command, args=[command]))
+                    threads.append(Thread(target=sensor_commands.put_command, args=[command]))
                 except Exception as error:
                     app_logger.sensor_logger.error(str(error))
 
@@ -180,4 +181,4 @@ class CreateSensorConfigWindow:
             guizero.info("Sensors " + self.combo_dropdown_selection.value + " Set",
                          self.combo_dropdown_selection.value + " set & services restarted on:\n" + str(ip_list)[1:-1])
         else:
-            app_variables.no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
