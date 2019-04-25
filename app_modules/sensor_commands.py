@@ -19,8 +19,7 @@
 import re
 import webbrowser
 import requests
-
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
 
 
 class CreateSensorNetworkCommand:

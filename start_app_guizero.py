@@ -16,19 +16,20 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import app_guizero.gui_main
-import app_modules.app_logger as app_logger
-import app_guizero.platform_gui_tweaks
-import app_modules.checks as app_checks
+from app_guizero import gui_main
+from app_guizero import platform_gui_tweaks
+from app_modules import app_logger
+from app_modules import checks as app_checks
+
 
 # Make sure options and such are set right before starting the program
 app_checks.run_pre_checks()
 
 # Create the app
-guizero_app = app_guizero.gui_main.CreateMainWindow()
+guizero_app = gui_main.CreateMainWindow()
 
 # Set app tweaks based on the current system
-app_guizero.platform_gui_tweaks.app_custom_configurations(guizero_app)
+platform_gui_tweaks.app_custom_configurations(guizero_app)
 
 # Start the App after making a note in the log
 app_logger.app_logger.info('KootNet Sensors - Control Center - Started')

@@ -16,14 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from threading import Thread
+import guizero
 from tkinter import filedialog
-
-from guizero import Window, Text, TextBox, ButtonGroup, PushButton, MenuBar, info, warn
-
-import app_modules.app_logger as app_logger
-import app_modules.sensor_commands as app_sensor_commands
+from threading import Thread
 from app_modules.app_variables import no_ip_selected_message
+from app_modules import app_logger
+from app_modules import sensor_commands as app_sensor_commands
 
 
 class CreateSensorLogsWindow:
@@ -33,53 +31,53 @@ class CreateSensorLogsWindow:
         self.ip_selection = ip_selection
         self.current_config = current_config
 
-        self.window = Window(app,
-                             title="Sensor Logs",
-                             width=975,
-                             height=450,
-                             layout="grid",
-                             visible=False)
+        self.window = guizero.Window(app,
+                                     title="Sensor Logs",
+                                     width=975,
+                                     height=450,
+                                     layout="grid",
+                                     visible=False)
 
-        self.app_menubar = MenuBar(self.window,
-                                   toplevel=[["Download"]],
-                                   options=[[["Download All Selected Sensors Logs",
-                                              self._download_logs]]])
+        self.app_menubar = guizero.MenuBar(self.window,
+                                           toplevel=[["Download"]],
+                                           options=[[["Download All Selected Sensors Logs",
+                                                      self._download_logs]]])
 
-        self.text_select_ip = Text(self.window,
-                                   text="Select Sensor IPs in the main window",
-                                   color="#CB0000",
-                                   grid=[1, 1],
-                                   align="left")
+        self.text_select_ip = guizero.Text(self.window,
+                                           text="Select Sensor IPs in the main window",
+                                           color="#CB0000",
+                                           grid=[1, 1],
+                                           align="left")
 
-        self.text_choose = Text(self.window,
-                                text="Last lines of selected log",
-                                color="blue",
-                                grid=[1, 1],
-                                align="top")
+        self.text_choose = guizero.Text(self.window,
+                                        text="Last lines of selected log",
+                                        color="blue",
+                                        grid=[1, 1],
+                                        align="top")
 
-        self.radio_log_type = ButtonGroup(self.window,
-                                          options=["Primary Log", "Network Log", "Sensors Log"],
-                                          horizontal="True",
-                                          grid=[1, 1],
-                                          align="right")
+        self.radio_log_type = guizero.ButtonGroup(self.window,
+                                                  options=["Primary Log", "Network Log", "Sensors Log"],
+                                                  horizontal="True",
+                                                  grid=[1, 1],
+                                                  align="right")
 
-        self.textbox_log = TextBox(self.window,
-                                   text="\nPlease select the log type in the top right" +
-                                        " and press 'Update Sensor Log View' in the bottom right\n\n" +
-                                        "You may also use the 'Download' menu in the top left to " +
-                                        "download ALL logs from selected sensors to a chosen folder",
-                                   grid=[1, 2],
-                                   width=118,
-                                   height=22,
-                                   multiline=True,
-                                   scrollbar=True,
-                                   align="left")
+        self.textbox_log = guizero.TextBox(self.window,
+                                           text="\nPlease select the log type in the top right" +
+                                                " and press 'Update Sensor Log View' in the bottom right\n\n" +
+                                                "You may also use the 'Download' menu in the top left to " +
+                                                "download ALL logs from selected sensors to a chosen folder",
+                                           grid=[1, 2],
+                                           width=118,
+                                           height=22,
+                                           multiline=True,
+                                           scrollbar=True,
+                                           align="left")
 
-        self.button_get = PushButton(self.window,
-                                     text="Update Sensor\nLog View",
-                                     command=self._get_log,
-                                     grid=[1, 3],
-                                     align="right")
+        self.button_get = guizero.PushButton(self.window,
+                                             text="Update Sensor\nLog View",
+                                             command=self._get_log,
+                                             grid=[1, 3],
+                                             align="right")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
@@ -128,8 +126,8 @@ class CreateSensorLogsWindow:
                 for thread in threads:
                     thread.join()
 
-                info("Downloads", "Sensor Log Downloads Complete")
+                guizero.info("Downloads", "Sensor Log Downloads Complete")
             else:
-                warn("Warning", "User Cancelled Download Operation")
+                guizero.warn("Warning", "User Cancelled Download Operation")
         else:
             no_ip_selected_message()

@@ -17,8 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import app_modules.config as app_config
-import app_modules.app_logger as app_logger
+from app_modules import config as app_config
+from app_modules import app_logger
 
 current_config = app_config.CreateDefaultConfigSettings()
 important_folders = [current_config.save_to,

@@ -16,10 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import guizero
 import webbrowser
-from guizero import warn
 from sys import path
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
 
 script_directory = str(path[0]).replace("\\", "/")
 
@@ -187,7 +187,7 @@ Notice how it only shows in the Near-Infrared spectrum.
 
 def no_ip_selected_message():
     """ Displays a GUI message asking the user to select an IP address. """
-    warn("No Sensor IP", "Please select at least one online sensor IP\n\nSelect sensor IPs in the main window")
+    guizero.warn("No Sensor IP", "Please select at least one online sensor IP\n\nSelect sensor IPs in the main window")
 
 
 def convert_minutes_string(var_minutes):

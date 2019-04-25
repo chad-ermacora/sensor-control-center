@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
 from plotly import graph_objs as go
 
 mark_red_line = dict(size=10,

@@ -16,12 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import guizero
 from tkinter import filedialog
-
-from guizero import Window, CheckBox, PushButton, Text, TextBox
-
-import app_modules.config as app_config
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
+from app_modules import config as app_config
 
 
 class CreateConfigWindow:
@@ -30,174 +28,175 @@ class CreateConfigWindow:
     def __init__(self, app, current_config, ip_selection):
         self.current_config = current_config
         self.ip_selection = ip_selection
-        self.window = Window(app,
-                             title="Control Center Configuration",
-                             width=580,
-                             height=300,
-                             layout="grid",
-                             visible=False)
+        self.window = guizero.Window(app,
+                                     title="Control Center Configuration",
+                                     width=580,
+                                     height=300,
+                                     layout="grid",
+                                     visible=False)
 
-        self.button_reset = PushButton(self.window,
-                                       text="Reset to\nDefaults",
-                                       command=self._reset_to_defaults,
-                                       grid=[1, 1],
-                                       align="right")
+        self.button_reset = guizero.PushButton(self.window,
+                                               text="Reset to\nDefaults",
+                                               command=self._reset_to_defaults,
+                                               grid=[1, 1],
+                                               align="right")
 
-        self.checkbox_power_controls = CheckBox(self.window,
-                                                text="Enable 'Reset to Defaults'",
-                                                command=self._enable_config_reset,
-                                                grid=[1, 1],
-                                                align="top")
+        self.checkbox_power_controls = guizero.CheckBox(self.window,
+                                                        text="Enable 'Reset to Defaults'",
+                                                        command=self._enable_config_reset,
+                                                        grid=[1, 1],
+                                                        align="top")
 
-        self.button_save_apply = PushButton(self.window,
-                                            text="Save",
-                                            command=self._button_save_apply,
-                                            grid=[1, 1],
-                                            align="left")
+        self.button_save_apply = guizero.PushButton(self.window,
+                                                    text="Save",
+                                                    command=self._button_save_apply,
+                                                    grid=[1, 1],
+                                                    align="left")
 
-        self.text3 = Text(self.window,
-                          text="Save files to",
-                          color='blue',
-                          grid=[1, 2],
-                          align="top")
-
-        self.textbox_save_to = TextBox(self.window,
-                                       text='',
-                                       width=50,
-                                       grid=[1, 3],
-                                       align="bottom")
-
-        self.button_save_dir = PushButton(self.window,
-                                          text="Choose Folder",
-                                          command=self._button_save_to,
-                                          grid=[1, 4],
-                                          align="bottom")
-        self.checkbox_enable_open_gl_plotly = CheckBox(self.window,
-                                                       text="Render Plotly with OpenGL",
-                                                       grid=[1, 5],
-                                                       align="top")
-
-        self.text_info = Text(self.window,
-                              text="Default graph date range",
-                              color='blue',
-                              grid=[1, 6],
-                              align="top")
-
-        self.text_spacer3 = Text(self.window,
-                                 text="YYYY-MM-DD HH:MM:SS",
-                                 size=7,
-                                 color='#CB0000',
-                                 grid=[1, 7],
-                                 align="right")
-
-        self.text_start = Text(self.window,
-                               text="         Start DateTime: ",
-                               color='green',
-                               grid=[1, 8],
-                               align="left")
-
-        self.textbox_start = TextBox(self.window,
-                                     text="",
-                                     width=20,
-                                     grid=[1, 8],
-                                     align="right")
-
-        self.text_end = Text(self.window,
-                             text="         End DateTime: ",
-                             color='green',
-                             grid=[1, 9],
-                             align="left")
-
-        self.textbox_end = TextBox(self.window,
-                                   text="",
-                                   width=20,
-                                   grid=[1, 9],
-                                   align="right")
-
-        self.text_live_refresh = Text(self.window,
-                                      text="Live graph refresh in seconds: ",
-                                      color='green',
-                                      grid=[1, 10],
-                                      align="left")
-
-        self.textbox_live_refresh = TextBox(self.window,
-                                            text="",
-                                            width=5,
-                                            grid=[1, 10],
-                                            align="right")
-
-        self.text_database_time = Text(self.window,
-                                       text="Sensor Databases are\nsaved in UTC 0",
-                                       size=10,
-                                       grid=[2, 1],
-                                       color='#CB0000',
-                                       align="top")
-
-        self.text_time_offset2 = Text(self.window,
-                                      text="DateTime offset in hours",
-                                      color='blue',
-                                      grid=[2, 1],
-                                      align="bottom")
-
-        self.textbox_time_offset = TextBox(self.window,
-                                           text="",
-                                           width="5",
-                                           grid=[2, 2],
-                                           align="bottom")
-
-        self.text_sql_skip = Text(self.window,
-                                  text="Graph sensor data every 'X' entries",
+        self.text3 = guizero.Text(self.window,
+                                  text="Save files to",
                                   color='blue',
-                                  grid=[2, 3],
+                                  grid=[1, 2],
                                   align="top")
 
-        self.textbox_sql_skip = TextBox(self.window,
-                                        text="",
-                                        width="5",
-                                        grid=[2, 4],
-                                        align="top")
+        self.textbox_save_to = guizero.TextBox(self.window,
+                                               text='',
+                                               width=50,
+                                               grid=[1, 3],
+                                               align="bottom")
 
-        self.text_temperature_offset = Text(self.window,
-                                            text="Manual temperature offset in °C",
-                                            color='blue',
-                                            grid=[2, 4],
-                                            align="bottom")
-
-        self.textbox_temperature_offset = TextBox(self.window,
-                                                  text="",
-                                                  width="5",
-                                                  grid=[2, 5],
+        self.button_save_dir = guizero.PushButton(self.window,
+                                                  text="Choose Folder",
+                                                  command=self._button_save_to,
+                                                  grid=[1, 4],
                                                   align="bottom")
 
-        self.text_network_timeouts = Text(self.window,
-                                          text="Network timeouts in seconds",
+        self.checkbox_enable_open_gl_plotly = guizero.CheckBox(self.window,
+                                                               text="Render Plotly with OpenGL",
+                                                               grid=[1, 5],
+                                                               align="top")
+
+        self.text_info = guizero.Text(self.window,
+                                      text="Default graph date range",
+                                      color='blue',
+                                      grid=[1, 6],
+                                      align="top")
+
+        self.text_spacer3 = guizero.Text(self.window,
+                                         text="YYYY-MM-DD HH:MM:SS",
+                                         size=7,
+                                         color='#CB0000',
+                                         grid=[1, 7],
+                                         align="right")
+
+        self.text_start = guizero.Text(self.window,
+                                       text="         Start DateTime: ",
+                                       color='green',
+                                       grid=[1, 8],
+                                       align="left")
+
+        self.textbox_start = guizero.TextBox(self.window,
+                                             text="",
+                                             width=20,
+                                             grid=[1, 8],
+                                             align="right")
+
+        self.text_end = guizero.Text(self.window,
+                                     text="         End DateTime: ",
+                                     color='green',
+                                     grid=[1, 9],
+                                     align="left")
+
+        self.textbox_end = guizero.TextBox(self.window,
+                                           text="",
+                                           width=20,
+                                           grid=[1, 9],
+                                           align="right")
+
+        self.text_live_refresh = guizero.Text(self.window,
+                                              text="Live graph refresh in seconds: ",
+                                              color='green',
+                                              grid=[1, 10],
+                                              align="left")
+
+        self.textbox_live_refresh = guizero.TextBox(self.window,
+                                                    text="",
+                                                    width=5,
+                                                    grid=[1, 10],
+                                                    align="right")
+
+        self.text_database_time = guizero.Text(self.window,
+                                               text="Sensor Databases are\nsaved in UTC 0",
+                                               size=10,
+                                               grid=[2, 1],
+                                               color='#CB0000',
+                                               align="top")
+
+        self.text_time_offset2 = guizero.Text(self.window,
+                                              text="DateTime offset in hours",
+                                              color='blue',
+                                              grid=[2, 1],
+                                              align="bottom")
+
+        self.textbox_time_offset = guizero.TextBox(self.window,
+                                                   text="",
+                                                   width="5",
+                                                   grid=[2, 2],
+                                                   align="bottom")
+
+        self.text_sql_skip = guizero.Text(self.window,
+                                          text="Graph sensor data every 'X' entries",
                                           color='blue',
-                                          grid=[2, 6],
+                                          grid=[2, 3],
                                           align="top")
 
-        self.text_network_timeouts1 = Text(self.window,
-                                           text="Sensor checks",
-                                           color='green',
-                                           grid=[2, 7],
-                                           align="top")
+        self.textbox_sql_skip = guizero.TextBox(self.window,
+                                                text="",
+                                                width="5",
+                                                grid=[2, 4],
+                                                align="top")
 
-        self.textbox_network_check = TextBox(self.window,
-                                             text="",
-                                             width="5",
-                                             grid=[2, 8],
-                                             align="top")
+        self.text_temperature_offset = guizero.Text(self.window,
+                                                    text="Manual temperature offset in °C",
+                                                    color='blue',
+                                                    grid=[2, 4],
+                                                    align="bottom")
 
-        self.text_network_timeouts2 = Text(self.window,
-                                           text="Sensor data",
-                                           color='green',
-                                           grid=[2, 9],
-                                           align="top")
+        self.textbox_temperature_offset = guizero.TextBox(self.window,
+                                                          text="",
+                                                          width="5",
+                                                          grid=[2, 5],
+                                                          align="bottom")
 
-        self.textbox_network_details = TextBox(self.window,
-                                               text="",
-                                               width="5",
-                                               grid=[2, 10],
-                                               align="top")
+        self.text_network_timeouts = guizero.Text(self.window,
+                                                  text="Network timeouts in seconds",
+                                                  color='blue',
+                                                  grid=[2, 6],
+                                                  align="top")
+
+        self.text_network_timeouts1 = guizero.Text(self.window,
+                                                   text="Sensor checks",
+                                                   color='green',
+                                                   grid=[2, 7],
+                                                   align="top")
+
+        self.textbox_network_check = guizero.TextBox(self.window,
+                                                     text="",
+                                                     width="5",
+                                                     grid=[2, 8],
+                                                     align="top")
+
+        self.text_network_timeouts2 = guizero.Text(self.window,
+                                                   text="Sensor data",
+                                                   color='green',
+                                                   grid=[2, 9],
+                                                   align="top")
+
+        self.textbox_network_details = guizero.TextBox(self.window,
+                                                       text="",
+                                                       width="5",
+                                                       grid=[2, 10],
+                                                       align="top")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)

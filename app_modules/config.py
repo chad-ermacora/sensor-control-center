@@ -22,8 +22,7 @@ from sys import path
 from datetime import datetime
 from platform import system
 from app_guizero.platform_gui_tweaks import check_pi_model
-
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
 
 app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.68"
 current_platform = platform.system()

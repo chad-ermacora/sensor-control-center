@@ -16,14 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import guizero
 from threading import Thread
-
-from guizero import Window, PushButton, Text, TextBox, info, Combo
-
-import app_modules.app_logger as app_logger
-import app_modules.sensor_commands as app_sensor_commands
-from app_modules.app_variables import default_installed_sensors_text, default_sensor_config_text, no_ip_selected_message,\
-    default_wifi_config_text, default_variance_config_text
+from app_modules import app_logger
+from app_modules import app_variables
+from app_modules import sensor_commands as app_sensor_commands
 
 
 class CreateSensorConfigWindow:
@@ -33,51 +30,52 @@ class CreateSensorConfigWindow:
         self.ip_selection = ip_selection
         self.current_config = current_config
 
-        self.window = Window(app,
-                             title="Sensors Configuration",
-                             width=615,
-                             height=385,
-                             layout="grid",
-                             visible=False)
+        self.window = guizero.Window(app,
+                                     title="Sensors Configuration",
+                                     width=615,
+                                     height=385,
+                                     layout="grid",
+                                     visible=False)
 
-        self.text_select = Text(self.window,
-                                text="Select Sensor IPs in the main window",
-                                grid=[1, 1, 3, 1],
-                                color='#CB0000',
-                                align="left")
+        self.text_select = guizero.Text(self.window,
+                                        text="Select Sensor IPs in the main window",
+                                        grid=[1, 1, 3, 1],
+                                        color='#CB0000',
+                                        align="left")
 
-        self.textbox_config = TextBox(self.window,
-                                      text=default_sensor_config_text.strip(),
-                                      grid=[1, 2],
-                                      width=75,
-                                      height=18,
-                                      multiline=True,
-                                      scrollbar=True,
-                                      align="right")
+        self.textbox_config = guizero.TextBox(self.window,
+                                              text=app_variables.default_sensor_config_text.strip(),
+                                              grid=[1, 2],
+                                              width=75,
+                                              height=18,
+                                              multiline=True,
+                                              scrollbar=True,
+                                              align="right")
 
-        self.button_get_config = PushButton(self.window,
-                                            text="Get Sensor\nConfiguration",
-                                            command=self.button_get,
-                                            grid=[1, 10],
-                                            align="left")
+        self.button_get_config = guizero.PushButton(self.window,
+                                                    text="Get Sensor\nConfiguration",
+                                                    command=self.button_get,
+                                                    grid=[1, 10],
+                                                    align="left")
 
-        self.text_select_combo = Text(self.window,
-                                      text="Select Configuration File to Edit",
-                                      grid=[1, 10],
-                                      color='blue',
-                                      align="top")
-
-        self.combo_dropdown_selection = Combo(self.window,
-                                              options=["Configuration", "Installed Sensors", "Wifi", "Trigger Variances"],
+        self.text_select_combo = guizero.Text(self.window,
+                                              text="Select Configuration File to Edit",
                                               grid=[1, 10],
-                                              command=self.combo_selection,
-                                              align="bottom")
+                                              color='blue',
+                                              align="top")
 
-        self.button_set_config = PushButton(self.window,
-                                            text="Set Sensor\nConfiguration",
-                                            command=self.button_set,
-                                            grid=[1, 10],
-                                            align="right")
+        self.combo_dropdown_selection = guizero.Combo(self.window,
+                                                      options=["Configuration", "Installed Sensors", "Wifi",
+                                                               "Trigger Variances"],
+                                                      grid=[1, 10],
+                                                      command=self.combo_selection,
+                                                      align="bottom")
+
+        self.button_set_config = guizero.PushButton(self.window,
+                                                    text="Set Sensor\nConfiguration",
+                                                    command=self.button_set,
+                                                    grid=[1, 10],
+                                                    align="right")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
@@ -90,19 +88,19 @@ class CreateSensorConfigWindow:
         if self.combo_dropdown_selection.value == "Installed Sensors":
             self.button_get_config.text = "Get Installed\nSensors"
             self.button_set_config.text = "Set Installed\nSensors"
-            self.textbox_config.value = default_installed_sensors_text.strip()
+            self.textbox_config.value = app_variables.default_installed_sensors_text.strip()
         elif self.combo_dropdown_selection.value == "Configuration":
             self.button_get_config.text = "Get Sensor\nConfiguration"
             self.button_set_config.text = "Set Sensor\nConfiguration"
-            self.textbox_config.value = default_sensor_config_text.strip()
+            self.textbox_config.value = app_variables.default_sensor_config_text.strip()
         elif self.combo_dropdown_selection.value == "Wifi":
             self.button_get_config.text = "Get Sensor\nWifi Configuration"
             self.button_set_config.text = "Set Sensor\nWifi Configuration"
-            self.textbox_config.value = default_wifi_config_text.strip()
+            self.textbox_config.value = app_variables.default_wifi_config_text.strip()
         elif self.combo_dropdown_selection.value == "Trigger Variances":
             self.button_get_config.text = "Get Sensor\nTrigger Variances"
             self.button_set_config.text = "Set Sensor\nTrigger Variances"
-            self.textbox_config.value = default_variance_config_text.strip()
+            self.textbox_config.value = app_variables.default_variance_config_text.strip()
 
     def button_get(self):
         """ Displays the selected configuration of the first selected and online sensor. """
@@ -137,7 +135,7 @@ class CreateSensorConfigWindow:
             except Exception as error:
                 app_logger.sensor_logger.error(str(error))
         else:
-            no_ip_selected_message()
+            app_variables.no_ip_selected_message()
 
     def button_set(self):
         """ Sends the update configuration command to the Sensor Units IP, along with the new configuration. """
@@ -179,7 +177,7 @@ class CreateSensorConfigWindow:
             for thread in threads:
                 thread.start()
 
-            info("Sensors " + self.combo_dropdown_selection.value + " Set",
-                 self.combo_dropdown_selection.value + " set & services restarted on:\n" + str(ip_list)[1:-1])
+            guizero.info("Sensors " + self.combo_dropdown_selection.value + " Set",
+                         self.combo_dropdown_selection.value + " set & services restarted on:\n" + str(ip_list)[1:-1])
         else:
-            no_ip_selected_message()
+            app_variables.no_ip_selected_message()

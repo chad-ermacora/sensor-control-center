@@ -19,10 +19,9 @@
 from queue import Queue
 from threading import Thread
 from time import strftime
-
-import app_modules.app_logger as app_logger
-import app_modules.sensor_commands as app_sensor_commands
-import app_modules.app_variables as useful
+from app_modules import app_logger
+from app_modules import sensor_commands as app_sensor_commands
+from app_modules import app_variables as useful
 
 network_get_commands = app_sensor_commands.CreateNetworkGetCommands()
 

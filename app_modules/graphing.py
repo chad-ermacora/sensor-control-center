@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
 
 
 class CreateSQLColumnsReadable:

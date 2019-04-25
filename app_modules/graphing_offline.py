@@ -16,14 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import guizero
 import sqlite3
-
-from guizero import warn
 from plotly import tools, offline
-
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
 from app_modules.graphing import CreateSQLColumnNames, adjust_datetime
-import app_modules.graphing_offline_extras as plot_extras
+from app_modules import graphing_offline_extras as plot_extras
 
 
 def start_plotly_graph(graph_data):
@@ -241,7 +239,7 @@ def _plotly_graph(graph_data):
             app_logger.app_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
             app_logger.app_logger.error("Plotly Graph Creation - Failed - " + str(error))
-            warn("Graph Failed", str(error))
+            guizero.warn("Graph Failed", str(error))
     else:
         app_logger.app_logger.error("Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
-        warn("Error", "No SQL Data to Graph")
+        guizero.warn("Error", "No SQL Data to Graph")

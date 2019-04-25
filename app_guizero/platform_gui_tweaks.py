@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from platform import system
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
 
 
 def app_custom_configurations(main_app):

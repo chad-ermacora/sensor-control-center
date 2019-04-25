@@ -16,11 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import guizero
 import sqlite3
 import os.path
-import app_modules.app_logger as app_logger
 from tkinter import filedialog
-from guizero import Window, PushButton, Text, TextBox
+from app_modules import app_logger
 from app_modules.graphing_offline import CreateSQLColumnNames
 from app_modules.graphing import adjust_datetime
 
@@ -35,176 +35,176 @@ class CreateDataBaseInfoWindow:
         self.database_line_width = 40
         self.textbox_table_width = 22
 
-        self.window = Window(app,
-                             title="DataBase Information",
-                             width=595,
-                             height=635,
-                             layout="grid",
-                             visible=False)
+        self.window = guizero.Window(app,
+                                     title="DataBase Information",
+                                     width=595,
+                                     height=635,
+                                     layout="grid",
+                                     visible=False)
 
-        self.button_open_database = PushButton(self.window,
-                                               text="Open\nDatabase",
-                                               command=self._open_database,
-                                               grid=[1, 1, 1, 2],
-                                               align="left")
+        self.button_open_database = guizero.PushButton(self.window,
+                                                       text="Open\nDatabase",
+                                                       command=self._open_database,
+                                                       grid=[1, 1, 1, 2],
+                                                       align="left")
 
-        self.text_database_label = Text(self.window,
-                                        text="Database: ",
-                                        color='blue',
-                                        grid=[1, 1],
-                                        align="right")
+        self.text_database_label = guizero.Text(self.window,
+                                                text="Database: ",
+                                                color='blue',
+                                                grid=[1, 1],
+                                                align="right")
 
-        self.textbox_database_name = TextBox(self.window,
-                                             text="Please Open a Database",
-                                             width=self.database_line_width,
-                                             grid=[2, 1, 2, 1],
-                                             align="left")
+        self.textbox_database_name = guizero.TextBox(self.window,
+                                                     text="Please Open a Database",
+                                                     width=self.database_line_width,
+                                                     grid=[2, 1, 2, 1],
+                                                     align="left")
 
-        self.text_database_location_label = Text(self.window,
-                                                 text="Location: ",
-                                                 color='blue',
-                                                 grid=[1, 2],
-                                                 align="right")
+        self.text_database_location_label = guizero.Text(self.window,
+                                                         text="Location: ",
+                                                         color='blue',
+                                                         grid=[1, 2],
+                                                         align="right")
 
-        self.textbox_database_location = TextBox(self.window,
-                                                 text="Please Open a Database",
-                                                 width=self.database_line_width,
-                                                 height=2,
-                                                 grid=[2, 2, 2, 1],
+        self.textbox_database_location = guizero.TextBox(self.window,
+                                                         text="Please Open a Database",
+                                                         width=self.database_line_width,
+                                                         height=2,
+                                                         grid=[2, 2, 2, 1],
+                                                         multiline=True,
+                                                         scrollbar=True,
+                                                         align="left")
+
+        self.text_db_dates = guizero.Text(self.window,
+                                          text="Date Range: ",
+                                          color='blue',
+                                          grid=[1, 3],
+                                          align="right")
+
+        self.textbox_db_dates = guizero.TextBox(self.window,
+                                                text="First Recorded Date || Last Recorded Date",
+                                                width=self.database_line_width,
+                                                grid=[2, 3, 2, 1],
+                                                align="left")
+
+        self.text_db_size = guizero.Text(self.window,
+                                         text="Database Misc. Info: ",
+                                         color='blue',
+                                         grid=[1, 4],
+                                         align="right")
+
+        self.textbox_misc_db_info = guizero.TextBox(self.window,
+                                                    text="DB Size:  MB || Notes: XX || Reboots: XX",
+                                                    width=self.database_line_width,
+                                                    grid=[2, 4, 2, 1],
+                                                    align="left")
+
+        self.text_name_changes = guizero.Text(self.window,
+                                              text="\nRecorded Name Changes\nCurrent: ",
+                                              color='purple',
+                                              grid=[2, 7, 2, 1],
+                                              align="left")
+
+        self.text_name_date = guizero.Text(self.window,
+                                           text="Date of Change",
+                                           color='blue',
+                                           grid=[1, 10],
+                                           align="left")
+
+        self.textbox_name_dates = guizero.TextBox(self.window,
+                                                  text="1. Date",
+                                                  width=self.textbox_table_width,
+                                                  height=10,
+                                                  grid=[1, 11],
+                                                  multiline=True,
+                                                  scrollbar=True,
+                                                  align="left")
+
+        self.text_name_new = guizero.Text(self.window,
+                                          text="New Name",
+                                          color='blue',
+                                          grid=[2, 10],
+                                          align="left")
+
+        self.textbox_new_names = guizero.TextBox(self.window,
+                                                 text="1. NewName",
+                                                 width=self.textbox_table_width,
+                                                 height=10,
+                                                 grid=[2, 11],
                                                  multiline=True,
                                                  scrollbar=True,
                                                  align="left")
 
-        self.text_db_dates = Text(self.window,
-                                  text="Date Range: ",
-                                  color='blue',
-                                  grid=[1, 3],
-                                  align="right")
-
-        self.textbox_db_dates = TextBox(self.window,
-                                        text="First Recorded Date || Last Recorded Date",
-                                        width=self.database_line_width,
-                                        grid=[2, 3, 2, 1],
-                                        align="left")
-
-        self.text_db_size = Text(self.window,
-                                 text="Database Misc. Info: ",
-                                 color='blue',
-                                 grid=[1, 4],
-                                 align="right")
-
-        self.textbox_misc_db_info = TextBox(self.window,
-                                            text="DB Size:  MB || Notes: XX || Reboots: XX",
-                                            width=self.database_line_width,
-                                            grid=[2, 4, 2, 1],
-                                            align="left")
-
-        self.text_name_changes = Text(self.window,
-                                      text="\nRecorded Name Changes\nCurrent: ",
-                                      color='purple',
-                                      grid=[2, 7, 2, 1],
-                                      align="left")
-
-        self.text_name_date = Text(self.window,
-                                   text="Date of Change",
-                                   color='blue',
-                                   grid=[1, 10],
-                                   align="left")
-
-        self.textbox_name_dates = TextBox(self.window,
-                                          text="1. Date",
-                                          width=self.textbox_table_width,
-                                          height=10,
-                                          grid=[1, 11],
-                                          multiline=True,
-                                          scrollbar=True,
+        self.text_name_old = guizero.Text(self.window,
+                                          text="Old Name",
+                                          color='blue',
+                                          grid=[3, 10],
                                           align="left")
 
-        self.text_name_new = Text(self.window,
-                                  text="New Name",
-                                  color='blue',
-                                  grid=[2, 10],
-                                  align="left")
+        self.textbox_old_names = guizero.TextBox(self.window,
+                                                 text="1. OldName",
+                                                 width=self.textbox_table_width,
+                                                 height=10,
+                                                 grid=[3, 11],
+                                                 multiline=True,
+                                                 scrollbar=True,
+                                                 align="left")
 
-        self.textbox_new_names = TextBox(self.window,
-                                         text="1. NewName",
-                                         width=self.textbox_table_width,
-                                         height=10,
-                                         grid=[2, 11],
-                                         multiline=True,
-                                         scrollbar=True,
+        self.text_ip_changes = guizero.Text(self.window,
+                                            text="\nRecorded IP Changes\nCurrent: ",
+                                            color='purple',
+                                            grid=[2, 12],
+                                            align="left")
+
+        self.text_ip_date = guizero.Text(self.window,
+                                         text="Date of Change",
+                                         color='blue',
+                                         grid=[1, 16],
                                          align="left")
 
-        self.text_name_old = Text(self.window,
-                                  text="Old Name",
-                                  color='blue',
-                                  grid=[3, 10],
-                                  align="left")
+        self.textbox_ip_dates = guizero.TextBox(self.window,
+                                                text="1. Date",
+                                                width=self.textbox_table_width,
+                                                height=10,
+                                                grid=[1, 17],
+                                                multiline=True,
+                                                scrollbar=True,
+                                                align="left")
 
-        self.textbox_old_names = TextBox(self.window,
-                                         text="1. OldName",
-                                         width=self.textbox_table_width,
-                                         height=10,
-                                         grid=[3, 11],
-                                         multiline=True,
-                                         scrollbar=True,
-                                         align="left")
-
-        self.text_ip_changes = Text(self.window,
-                                    text="\nRecorded IP Changes\nCurrent: ",
-                                    color='purple',
-                                    grid=[2, 12],
-                                    align="left")
-
-        self.text_ip_date = Text(self.window,
-                                 text="Date of Change",
-                                 color='blue',
-                                 grid=[1, 16],
-                                 align="left")
-
-        self.textbox_ip_dates = TextBox(self.window,
-                                        text="1. Date",
-                                        width=self.textbox_table_width,
-                                        height=10,
-                                        grid=[1, 17],
-                                        multiline=True,
-                                        scrollbar=True,
+        self.text_ip_new = guizero.Text(self.window,
+                                        text="New IP",
+                                        color='blue',
+                                        grid=[2, 16],
                                         align="left")
 
-        self.text_ip_new = Text(self.window,
-                                text="New IP",
-                                color='blue',
-                                grid=[2, 16],
-                                align="left")
+        self.textbox_new_ips = guizero.TextBox(self.window,
+                                               text="1. NewIP",
+                                               width=self.textbox_table_width,
+                                               height=10,
+                                               grid=[2, 17],
+                                               multiline=True,
+                                               scrollbar=True,
+                                               align="left")
 
-        self.textbox_new_ips = TextBox(self.window,
-                                       text="1. NewIP",
-                                       width=self.textbox_table_width,
-                                       height=10,
-                                       grid=[2, 17],
-                                       multiline=True,
-                                       scrollbar=True,
-                                       align="left")
+        self.text_ip_old = guizero.Text(self.window,
+                                        text="Old IP",
+                                        color='blue',
+                                        grid=[3, 16],
+                                        align="left")
 
-        self.text_ip_old = Text(self.window,
-                                text="Old IP",
-                                color='blue',
-                                grid=[3, 16],
-                                align="left")
+        self.textbox_old_ips = guizero.TextBox(self.window,
+                                               text="1. OldIP",
+                                               width=self.textbox_table_width,
+                                               height=10,
+                                               grid=[3, 17],
+                                               multiline=True,
+                                               scrollbar=True,
+                                               align="left")
 
-        self.textbox_old_ips = TextBox(self.window,
-                                       text="1. OldIP",
-                                       width=self.textbox_table_width,
-                                       height=10,
-                                       grid=[3, 17],
-                                       multiline=True,
-                                       scrollbar=True,
-                                       align="left")
-
-        self.text_spacer = Text(self.window,
-                                text="",
-                                grid=[1, 18],
-                                align="left")
+        self.text_spacer = guizero.Text(self.window,
+                                        text="",
+                                        grid=[1, 18],
+                                        align="left")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)

@@ -16,10 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import guizero
 import sqlite3
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
 from tkinter import filedialog
-from guizero import Window, PushButton, Text, TextBox, CheckBox, yesno, error as guierror, warn, info
 from app_modules.graphing import CreateSQLColumnNames
 from datetime import datetime, timedelta
 from app_modules.app_variables import no_ip_selected_message
@@ -91,106 +91,106 @@ class CreateDataBaseNotesWindow:
         self.network_send_commands = CreateNetworkSendCommands()
         self.sensor_get_commands = CreateNetworkGetCommands()
 
-        self.window = Window(app,
-                             title=self.text_variables_database.window_title,
-                             width=580,
-                             height=525,
-                             layout="grid",
-                             visible=False)
+        self.window = guizero.Window(app,
+                                     title=self.text_variables_database.window_title,
+                                     width=580,
+                                     height=525,
+                                     layout="grid",
+                                     visible=False)
 
-        self.text_connected_to = Text(self.window,
-                                      text=self.text_variables_database.text_connected_to,
-                                      color="red",
-                                      size=8,
-                                      grid=[1, 1, 3, 1],
-                                      align="left")
+        self.text_connected_to = guizero.Text(self.window,
+                                              text=self.text_variables_database.text_connected_to,
+                                              color="red",
+                                              size=8,
+                                              grid=[1, 1, 3, 1],
+                                              align="left")
 
-        self.checkbox_use_current_datetime = CheckBox(self.window,
-                                                      text=self.text_variables_generic.checkbox_enable_datetime,
-                                                      command=self._reset_datetime,
-                                                      grid=[4, 1, 5, 1],
-                                                      align="left")
+        self.checkbox_use_current_datetime = guizero.CheckBox(self.window,
+                                                              text=self.text_variables_generic.checkbox_enable_datetime,
+                                                              command=self._reset_datetime,
+                                                              grid=[4, 1, 5, 1],
+                                                              align="left")
 
-        self.button_connect = PushButton(self.window,
-                                         text=self.text_variables_database.button_connect,
-                                         command=self._open_database,
-                                         grid=[1, 5],
-                                         align="left")
+        self.button_connect = guizero.PushButton(self.window,
+                                                 text=self.text_variables_database.button_connect,
+                                                 command=self._open_database,
+                                                 grid=[1, 5],
+                                                 align="left")
 
-        self.button_back_note = PushButton(self.window,
-                                           text="Back",
-                                           command=self._back_button,
-                                           grid=[2, 5],
-                                           align="left")
+        self.button_back_note = guizero.PushButton(self.window,
+                                                   text="Back",
+                                                   command=self._back_button,
+                                                   grid=[2, 5],
+                                                   align="left")
 
-        self.text_note_current = Text(self.window,
-                                      text=self.text_variables_generic.text_note_current,
-                                      color="blue",
-                                      grid=[3, 5],
-                                      align="top")
+        self.text_note_current = guizero.Text(self.window,
+                                              text=self.text_variables_generic.text_note_current,
+                                              color="blue",
+                                              grid=[3, 5],
+                                              align="top")
 
-        self.textbox_on_number_notes = TextBox(self.window,
-                                               text="0",
-                                               width=5,
-                                               grid=[3, 5],
-                                               align="bottom")
+        self.textbox_on_number_notes = guizero.TextBox(self.window,
+                                                       text="0",
+                                                       width=5,
+                                                       grid=[3, 5],
+                                                       align="bottom")
 
-        self.text_date_label1 = Text(self.window,
-                                     text=self.text_variables_generic.text_date_label1,
-                                     color="blue",
-                                     grid=[4, 5],
-                                     align="top")
+        self.text_date_label1 = guizero.Text(self.window,
+                                             text=self.text_variables_generic.text_date_label1,
+                                             color="blue",
+                                             grid=[4, 5],
+                                             align="top")
 
-        self.textbox_note_date = TextBox(self.window,
-                                         text=self.text_variables_generic.textbox_note_date,
-                                         grid=[4, 5],
-                                         width=23,
-                                         align="bottom")
+        self.textbox_note_date = guizero.TextBox(self.window,
+                                                 text=self.text_variables_generic.textbox_note_date,
+                                                 grid=[4, 5],
+                                                 width=23,
+                                                 align="bottom")
 
-        self.text_total_notes_label = Text(self.window,
-                                           text=self.text_variables_generic.text_total_notes_label,
-                                           color="blue",
-                                           grid=[5, 5],
-                                           align="top")
+        self.text_total_notes_label = guizero.Text(self.window,
+                                                   text=self.text_variables_generic.text_total_notes_label,
+                                                   color="blue",
+                                                   grid=[5, 5],
+                                                   align="top")
 
-        self.textbox_total_notes = TextBox(self.window,
-                                           text="0",
-                                           width=5,
-                                           grid=[5, 5],
-                                           align="bottom")
+        self.textbox_total_notes = guizero.TextBox(self.window,
+                                                   text="0",
+                                                   width=5,
+                                                   grid=[5, 5],
+                                                   align="bottom")
 
-        self.button_next_note = PushButton(self.window,
-                                           text=self.text_variables_generic.button_next_note,
-                                           command=self._next_button,
-                                           grid=[6, 5],
-                                           align="left")
+        self.button_next_note = guizero.PushButton(self.window,
+                                                   text=self.text_variables_generic.button_next_note,
+                                                   command=self._next_button,
+                                                   grid=[6, 5],
+                                                   align="left")
 
-        self.textbox_current_note = TextBox(self.window,
-                                            text=self.text_variables_database.textbox_current_note,
-                                            width=70,
-                                            height=25,
-                                            grid=[1, 10, 6, 1],
-                                            multiline=True,
-                                            scrollbar=True,
-                                            align="left")
+        self.textbox_current_note = guizero.TextBox(self.window,
+                                                    text=self.text_variables_database.textbox_current_note,
+                                                    width=70,
+                                                    height=25,
+                                                    grid=[1, 10, 6, 1],
+                                                    multiline=True,
+                                                    scrollbar=True,
+                                                    align="left")
 
-        self.button_new_note = PushButton(self.window,
-                                          text=self.text_variables_generic.button_new_note,
-                                          command=self._database_add_note_button,
-                                          grid=[1, 12],
-                                          align="left")
+        self.button_new_note = guizero.PushButton(self.window,
+                                                  text=self.text_variables_generic.button_new_note,
+                                                  command=self._database_add_note_button,
+                                                  grid=[1, 12],
+                                                  align="left")
 
-        self.button_delete_note = PushButton(self.window,
-                                             text=self.text_variables_generic.button_delete_note,
-                                             command=self._database_delete_button,
-                                             grid=[4, 12],
-                                             align="left")
+        self.button_delete_note = guizero.PushButton(self.window,
+                                                     text=self.text_variables_generic.button_delete_note,
+                                                     command=self._database_delete_button,
+                                                     grid=[4, 12],
+                                                     align="left")
 
-        self.button_update_note = PushButton(self.window,
-                                             text=self.text_variables_generic.button_update_note,
-                                             command=self._database_update_note_button,
-                                             grid=[5, 12, 2, 1],
-                                             align="left")
+        self.button_update_note = guizero.PushButton(self.window,
+                                                     text=self.text_variables_generic.button_update_note,
+                                                     command=self._database_update_note_button,
+                                                     grid=[5, 12, 2, 1],
+                                                     align="left")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
@@ -386,13 +386,14 @@ class CreateDataBaseNotesWindow:
     def _sensor_add_note_button(self):
         """ Send the note to selected sensor. """
         if self.textbox_current_note.value.strip() == "":
-            warn("Empty Note", "Cannot add a blank Note")
+            guizero.warn("Empty Note", "Cannot add a blank Note")
         else:
             if self.checkbox_use_current_datetime.value:
                 self._reset_datetime()
 
             try:
-                user_datetime_var = self.adjust_datetime(self.textbox_note_date.value, self.current_config.datetime_offset * -1)
+                user_datetime_var = self.adjust_datetime(self.textbox_note_date.value,
+                                                         self.current_config.datetime_offset * -1)
             except Exception as error:
                 user_datetime_var = self.textbox_note_date.value
                 app_logger.sensor_logger.error("Unable to convert user entered DateTime: " + str(error))
@@ -406,7 +407,8 @@ class CreateDataBaseNotesWindow:
                                           self.sterilize_notes(self.textbox_current_note.value)
             put_command(sensor_command)
 
-            info("Note Inserted into Sensors " + self.selected_ip, "Inserted with DateTime: " + user_datetime_var)
+            guizero.info("Note Inserted into Sensors " + self.selected_ip,
+                         "Inserted with DateTime: " + user_datetime_var)
             app_logger.sensor_logger.info("Inserted note into sensors " + str(self.selected_ip) +
                                           " with DateTime " + user_datetime_var)
             self._connect_to_sensor()
@@ -426,7 +428,7 @@ class CreateDataBaseNotesWindow:
         self.database_user_note_dates.append(sql_note_user_datetime[:-4])
 
         if sql_note == "":
-            warn("Empty Note", "Cannot add a blank Note")
+            guizero.warn("Empty Note", "Cannot add a blank Note")
         else:
             self.button_delete_note.enable()
             self.button_update_note.enable()
@@ -445,9 +447,9 @@ class CreateDataBaseNotesWindow:
     def _sensor_delete_button(self):
         current_note_on = int(self.textbox_on_number_notes.value) - 1
 
-        if yesno("Delete Note", "Are you sure you want to Delete Note " +
-                                self.textbox_on_number_notes.value + " out of " +
-                                self.textbox_total_notes.value + "?\n\n"):
+        if guizero.yesno("Delete Note", "Are you sure you want to Delete Note " +
+                                        self.textbox_on_number_notes.value + " out of " +
+                                        self.textbox_total_notes.value + "?\n\n"):
             datetime_var = self.database_notes_dates[current_note_on]
             utc_0_datetime = self.adjust_datetime(datetime_var, self.current_config.datetime_offset * -1)
             command = self.network_send_commands.delete_sql_note
@@ -467,14 +469,14 @@ class CreateDataBaseNotesWindow:
 
                 app_logger.app_logger.warning("Error: Current Note Number is more or less then total")
 
-                guierror("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
-                                                         "' is a invalid option\nPlease enter a number between 1 and " +
-                                                         str(len(self.get_database_notes_dates()))))
+                guizero.error("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
+                                                              "' is a invalid option\nPlease enter a number between 1 and " +
+                                                              str(len(self.get_database_notes_dates()))))
                 self._database_change_to_note_plus(0)
 
-            elif yesno("Delete Note", "Are you sure you want to Delete Note " +
-                                      self.textbox_on_number_notes.value + " out of " +
-                                      self.textbox_total_notes.value + "?"):
+            elif guizero.yesno("Delete Note", "Are you sure you want to Delete Note " +
+                                              self.textbox_on_number_notes.value + " out of " +
+                                              self.textbox_total_notes.value + "?"):
 
                 note_date_times = self.get_database_notes_dates()
                 datetime_var = self.adjust_datetime(note_date_times[int(self.textbox_on_number_notes.value) - 1],
@@ -490,9 +492,9 @@ class CreateDataBaseNotesWindow:
                 self._database_change_to_note_plus(0)
         except Exception as error:
             app_logger.app_logger.error("Invalid Current Note number: " + str(error))
-            guierror("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
-                                                     "' is a invalid option\nPlease enter a number between 1 and " +
-                                                     str(len(self.get_database_notes_dates()))))
+            guizero.error("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
+                                                          "' is a invalid option\nPlease enter a number between 1 and " +
+                                                          str(len(self.get_database_notes_dates()))))
             self._database_change_to_note_plus(0)
 
     def _sensor_update_note_button(self):
@@ -517,7 +519,7 @@ class CreateDataBaseNotesWindow:
             self.database_notes[on_note_number] = self.undue_sterilize_notes(sql_note)
 
             if sql_note == "":
-                warn("Empty Note", "Cannot add a blank Note")
+                guizero.warn("Empty Note", "Cannot add a blank Note")
             else:
                 command = self.network_send_commands.update_sql_note
                 network_timeout = self.current_config.network_timeout_data
@@ -530,7 +532,7 @@ class CreateDataBaseNotesWindow:
                                               sql_note
                 put_command(sensor_command)
         except Exception as error:
-            warn("Invalid Note Number", str(error))
+            guizero.warn("Invalid Note Number", str(error))
 
     def _database_update_note_button(self):
         current_note_number = int(self.textbox_on_number_notes.value.strip()) - 1
@@ -555,7 +557,7 @@ class CreateDataBaseNotesWindow:
         sql_note = self.sterilize_notes(self.textbox_current_note.value)
 
         if sql_note == "":
-            warn("Empty Note", "Cannot add a blank Note")
+            guizero.warn("Empty Note", "Cannot add a blank Note")
         else:
             sql_query = "UPDATE " + self.sql_column_names.sql_other_table + \
                         " SET " + self.sql_column_names.other_notes + \
