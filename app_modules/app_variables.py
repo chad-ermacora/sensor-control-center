@@ -21,7 +21,11 @@ import webbrowser
 from sys import path
 from app_modules import app_logger
 
+software_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.70"
+
 script_directory = str(path[0]).replace("\\", "/")
+
+about_window_text_file_location = script_directory + "/additional_files/about_text.txt"
 
 html_file_output_name_system = "SensorsSystemReport.html"
 html_template_system1_location = script_directory + "/additional_files/html_template_system1.html"

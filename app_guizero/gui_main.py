@@ -64,7 +64,7 @@ class CreateMainWindow:
         self.window_db_info = CreateDataBaseInfoWindow(self.app, self.current_config)
         self.window_sensor_notes = CreateDataBaseNotesWindow(self.app, self.ip_selection, self.current_config, "sensor")
         self.window_db_notes = CreateDataBaseNotesWindow(self.app, self.ip_selection, self.current_config, "database")
-        self.window_about = CreateAboutWindow(self.app, self.current_config)
+        self.window_about = CreateAboutWindow(self.app)
 
         self.app_menubar = guizero.MenuBar(self.app,
                                            toplevel=["File",

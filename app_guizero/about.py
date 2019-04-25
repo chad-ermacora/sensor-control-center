@@ -18,15 +18,14 @@
 """
 import guizero
 from app_modules import app_logger
-from app_modules.config import app_version
+from app_modules import app_variables
 
 
 class CreateAboutWindow:
     """ Creates a GUI window for program & license information. """
 
-    def __init__(self, app, current_config):
-        self.current_config = current_config
-        self.about_text = self.current_config.additional_files_directory + "/about_text.txt"
+    def __init__(self, app):
+        self.about_text = app_variables.about_window_text_file_location
 
         self.window = guizero.Window(app,
                                      title="About KootNet Sensors - Control Center",
@@ -36,7 +35,7 @@ class CreateAboutWindow:
                                      visible=False)
 
         self.about_text1 = guizero.Text(self.window,
-                                        text=app_version,
+                                        text=app_variables.software_version,
                                         grid=[1, 1],
                                         align="right")
 

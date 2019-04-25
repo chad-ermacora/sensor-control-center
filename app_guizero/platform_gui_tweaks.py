@@ -19,14 +19,16 @@
 from platform import system
 from app_modules import app_logger
 
+current_platform = system()
+
 
 def app_custom_configurations(main_app):
     """ Apply system & user specific settings to application.  Used just before application start. """
 
-    if system() == "Windows":
+    if current_platform == "Windows":
         main_app.app.tk.iconbitmap(main_app.current_config.additional_files_directory + "/icon.ico")
 
-    elif system() == "Linux":
+    elif current_platform == "Linux":
         if check_pi_model()[:12] == "Raspberry Pi":
             main_app.app.width = 490
             main_app.app.height = 240

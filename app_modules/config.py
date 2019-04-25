@@ -17,15 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os.path
-import platform
 from sys import path
 from datetime import datetime
-from platform import system
-from app_guizero.platform_gui_tweaks import check_pi_model
+from app_guizero import platform_gui_tweaks
 from app_modules import app_logger
-
-app_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.68"
-current_platform = platform.system()
 
 
 class CreateDefaultConfigSettings:
@@ -36,7 +31,7 @@ class CreateDefaultConfigSettings:
         self.script_directory = str(path[0]).replace("\\", "/")
         self.logs_directory = self.script_directory + "/logs"
         self.additional_files_directory = self.script_directory + "/additional_files"
-        if current_platform == "Linux":
+        if platform_gui_tweaks.current_platform == "Linux":
             self.config_file = "/etc/kootnet/control_center.conf"
             self.config_folder = "/etc/kootnet/"
         else:
@@ -44,7 +39,7 @@ class CreateDefaultConfigSettings:
             self.config_folder = self.script_directory
 
         # Start of user configurable options
-        if current_platform == "Windows":
+        if platform_gui_tweaks.current_platform == "Windows":
             self.save_to = str(os.path.expanduser('~/Documents/KootNetSensors/')).replace('\\', '/')
         else:
             self.save_to = str(os.path.expanduser('~/KootNetSensors/')).replace('\\', '/')
@@ -88,11 +83,10 @@ class CreateDefaultConfigSettings:
         """ Returns local computer time in YYYY-MM-DD HH:MM:SS. """
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    @staticmethod
-    def detect_plotly_render_type():
+    def detect_plotly_render_type(self):
         """ Checks supported system for OpenGL plotly rendering. Returns True if supported. """
-        if system() == "Linux":
-            if check_pi_model()[:12] == "Raspberry Pi":
+        if platform_gui_tweaks.current_platform == "Linux":
+            if platform_gui_tweaks.check_pi_model()[:12] == "Raspberry Pi":
                 enable_plotly_webgl = False
             else:
                 enable_plotly_webgl = True
