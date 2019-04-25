@@ -18,6 +18,8 @@
 """
 from sys import path
 
+software_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.82"
+
 
 class CreateSQLColumnsReadable:
     """ Creates an object to hold all human readable SQL column names. """
@@ -190,8 +192,6 @@ class CreateNetworkSendCommands:
 
         self.command_data_separator = "[new_data_section]"
 
-
-software_version = "Tested on Python 3.5 & 3.7 || KootNet Sensors - Control Center || Alpha.24.81"
 
 script_directory = str(path[0]).replace("\\", "/")
 
