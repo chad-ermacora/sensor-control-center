@@ -7,6 +7,6 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
-rm -f ${USER_DIR}/Desktop/KootNet-Control-Center.desktop
-rm -f /usr/share/applications/KootNet-Control-Center.desktop
-rm -f -R /opt/kootnet-control-center
+rm -f ${USER_DIR}/Desktop/KootNet-Control-Center.desktop 2>/dev/null
+rm -f /usr/share/applications/KootNet-Control-Center.desktop 2>/dev/null
+rm -f -R /opt/kootnet-control-center 2>/dev/null
