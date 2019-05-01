@@ -46,7 +46,7 @@ class CreateGenericNoteVariables:
         self.replace_comma = "[replaced_comma]"
         self.replace_new_line = "[new_line]"
         self.replace_back_slash = "[clean_slash]"
-        self.sensor_return_no_notes = "No Notes"
+        self.sensor_return_no_notes = "No Data"
 
 
 class CreateSensorNoteVariables:
@@ -227,12 +227,9 @@ class CreateDataBaseNotesWindow:
 
                 count = 0
                 datetime_offset = self.current_config.datetime_offset
-                for date in self.database_notes_dates:
+                for date in self.database_user_note_dates:
                     new_date = self.adjust_datetime(date, datetime_offset)
-                    self.database_notes_dates[count] = new_date
-
-                    new_user_date = self.adjust_datetime(self.database_user_note_dates[count], datetime_offset)
-                    self.database_user_note_dates[count] = new_user_date
+                    self.database_user_note_dates[count] = new_date
                     count += 1
 
                 if len(self.database_notes) > 0:
@@ -334,11 +331,8 @@ class CreateDataBaseNotesWindow:
         if database_notes_dates == "Bad SQL Execute":
             return "Bad SQL Execute"
         else:
-            count = 0
-            for date in database_notes_dates:
-                new_date = self.adjust_datetime(str(date)[2:-7], self.current_config.datetime_offset)
-                database_notes_dates[count] = new_date
-                count += 1
+            for index, date in enumerate(database_notes_dates):
+                database_notes_dates[index] = str(date)[2:-3].strip()
 
             return database_notes_dates
 
@@ -356,7 +350,7 @@ class CreateDataBaseNotesWindow:
             count = 0
             for date in database_notes_dates_user:
                 try:
-                    new_date = self.adjust_datetime(str(date)[2:-7], self.current_config.datetime_offset)
+                    new_date = self.adjust_datetime(str(date)[2:-3], self.current_config.datetime_offset)
                     if new_date == "":
                         database_notes_dates_user[count] = "No-DateTime"
                     else:
@@ -401,7 +395,7 @@ class CreateDataBaseNotesWindow:
             network_timeout = self.current_config.network_timeout_data
 
             sensor_command = sensor_commands.CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
-            sensor_command.command_data = user_datetime_var + ".000" + \
+            sensor_command.command_data = user_datetime_var + \
                                           self.network_send_commands.command_data_separator + \
                                           self.sterilize_notes(self.textbox_current_note.value)
             sensor_commands.put_command(sensor_command)
@@ -414,17 +408,20 @@ class CreateDataBaseNotesWindow:
 
     def _database_add_note_button(self):
         sql_note_datetime = self.current_config.get_str_datetime_now()
-        utc_0_datetime = str(self.adjust_datetime(sql_note_datetime, self.current_config.datetime_offset * -1)) + ".000"
+        utc_0_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         sql_note = self.sterilize_notes(self.textbox_current_note.value)
 
         if self.checkbox_use_current_datetime.value:
-            sql_note_user_datetime = sql_note_datetime + ".000"
+            sql_note_user_datetime = sql_note_datetime
         else:
-            sql_note_user_datetime = self.textbox_note_date.value.strip() + ".000"
+            sql_note_user_datetime = self.textbox_note_date.value.strip()
 
         self.database_notes.append(sql_note)
-        self.database_notes_dates.append(utc_0_datetime[:-4])
-        self.database_user_note_dates.append(sql_note_user_datetime[:-4])
+        self.database_notes_dates.append(utc_0_datetime)
+        self.database_user_note_dates.append(sql_note_user_datetime)
+
+        datetime_offset = self.current_config.datetime_offset
+        sql_note_user_datetime_utc_0 = self.adjust_datetime(sql_note_user_datetime, datetime_offset * -1)
 
         if sql_note == "":
             guizero.warn("Empty Note", "Cannot add a blank Note")
@@ -438,7 +435,7 @@ class CreateDataBaseNotesWindow:
                         self.sql_column_names.date_time + "," + \
                         self.sql_column_names.other_notes + "," + \
                         self.sql_column_names.other_user_datetime + \
-                        ") VALUES ('" + utc_0_datetime + "','" + sql_note + "','" + sql_note_user_datetime + "')"
+                        ") VALUES ('" + utc_0_datetime + "','" + sql_note + "','" + sql_note_user_datetime_utc_0 + "')"
 
             self._sql_execute(sql_query)
             self._database_change_to_note_plus(0)
@@ -449,28 +446,27 @@ class CreateDataBaseNotesWindow:
         if guizero.yesno("Delete Note", "Are you sure you want to Delete Note " +
                                         self.textbox_on_number_notes.value + " out of " +
                                         self.textbox_total_notes.value + "?\n\n"):
-            datetime_var = self.database_notes_dates[current_note_on]
-            utc_0_datetime = self.adjust_datetime(datetime_var, self.current_config.datetime_offset * -1)
+            utc_0_datetime = self.database_notes_dates[current_note_on]
             command = self.network_send_commands.delete_sql_note
             network_timeout = self.current_config.network_timeout_data
 
             sensor_command = sensor_commands.CreateSensorNetworkCommand(self.selected_ip, network_timeout, command)
-            sensor_command.command_data = utc_0_datetime + ".000"
+            sensor_command.command_data = utc_0_datetime
             sensor_commands.put_command(sensor_command)
 
             app_logger.sensor_logger.info("Deleted note from sensor " + self.selected_ip)
             self._connect_to_sensor()
 
     def _database_delete_button(self):
+        on_note_number = int(self.textbox_on_number_notes.value)
+        number_of_notes = len(self.database_notes)
         try:
-            if int(self.textbox_on_number_notes.value) < 1 or \
-                    int(self.textbox_on_number_notes.value) > len(self.get_database_notes_dates()):
-
+            if on_note_number < 1 or on_note_number > number_of_notes:
                 app_logger.app_logger.warning("Error: Current Note Number is more or less then total")
 
-                guizero.error("Invalid Current Note Number", (" '" + self.textbox_on_number_notes.value +
-                                                              "' is a invalid option\nPlease enter a number between 1 and " +
-                                                              str(len(self.get_database_notes_dates()))))
+                guizero.error("Invalid Current Note Number", (" '" + str(on_note_number) + "' is a invalid option\n" +
+                                                              "Please enter a number between 1 and " +
+                                                              str(number_of_notes)))
                 self._database_change_to_note_plus(0)
 
             elif guizero.yesno("Delete Note", "Are you sure you want to Delete Note " +
@@ -478,8 +474,7 @@ class CreateDataBaseNotesWindow:
                                               self.textbox_total_notes.value + "?"):
 
                 note_date_times = self.get_database_notes_dates()
-                datetime_var = self.adjust_datetime(note_date_times[int(self.textbox_on_number_notes.value) - 1],
-                                                    self.current_config.datetime_offset * -1) + ".000"
+                datetime_var = str(note_date_times[on_note_number - 1])
 
                 sql_query = "DELETE FROM " + \
                             str(self.sql_column_names.sql_other_table) + \
@@ -488,6 +483,11 @@ class CreateDataBaseNotesWindow:
                             " = '" + datetime_var + "'"
 
                 self._sql_execute(sql_query)
+
+                self.database_notes.pop(on_note_number - 1)
+                self.database_notes_dates.pop(on_note_number - 1)
+                self.database_user_note_dates.pop(on_note_number - 1)
+
                 self._database_change_to_note_plus(0)
         except Exception as error:
             app_logger.app_logger.error("Invalid Current Note number: " + str(error))
@@ -498,7 +498,7 @@ class CreateDataBaseNotesWindow:
 
     def _sensor_update_note_button(self):
         current_note_number = int(self.textbox_on_number_notes.value.strip()) - 1
-        current_note_datetime = self.database_notes_dates[current_note_number]
+        utc_0_datetime_current = self.database_notes_dates[current_note_number]
         reverse_datetime_offset = self.current_config.datetime_offset * -1
 
         if self.checkbox_use_current_datetime.value:
@@ -509,8 +509,7 @@ class CreateDataBaseNotesWindow:
         self.database_user_note_dates[current_note_number] = datetime_var
         self.textbox_note_date.value = datetime_var
 
-        utc_0_datetime_current = str(self.adjust_datetime(current_note_datetime, reverse_datetime_offset)) + ".000"
-        utc_0_datetime_user = str(self.adjust_datetime(datetime_var, reverse_datetime_offset)) + ".000"
+        utc_0_datetime_user = str(self.adjust_datetime(datetime_var, reverse_datetime_offset))
         sql_note = self.sterilize_notes(self.textbox_current_note.value)
 
         try:
@@ -541,17 +540,15 @@ class CreateDataBaseNotesWindow:
         try:
             if self.checkbox_use_current_datetime.value:
                 current_datetime = self.current_config.get_str_datetime_now()
-                user_note_datetime_utc = str(self.adjust_datetime(current_datetime, datetime_offset * -1)) + ".000"
+                user_note_datetime_utc = str(self.adjust_datetime(current_datetime, datetime_offset * -1))
             else:
-                user_note_datetime_utc = self.adjust_datetime(user_note_datetime, datetime_offset * -1) + ".000"
+                user_note_datetime_utc = self.adjust_datetime(user_note_datetime, datetime_offset * -1)
         except Exception as error:
             app_logger.app_logger.error("Unable to convert current Note's user set DateTime: " + str(error))
             user_note_datetime_utc = user_note_datetime
 
-        current_note_datetime = self.database_notes_dates[current_note_number]
+        current_note_datetime_utc = self.database_notes_dates[current_note_number]
         self.database_user_note_dates[current_note_number] = user_note_datetime
-
-        current_note_datetime_utc = self.adjust_datetime(current_note_datetime, datetime_offset * -1) + ".000"
 
         sql_note = self.sterilize_notes(self.textbox_current_note.value)
 
@@ -600,11 +597,16 @@ class CreateDataBaseNotesWindow:
         database_notes = self.undue_sterilize_notes(self.get_database_notes())
 
         if len(database_notes) < 1:
+            connected_to_db = self.text_connected_to.value
+
             self.textbox_current_note.enable()
             self.textbox_current_note.value = self.text_variables_generic.no_notes_found
             self.textbox_on_number_notes.enable()
             self.textbox_on_number_notes.value = "1"
             self._disable_notes_window_functions()
+            self.text_connected_to.value = connected_to_db
+            self.checkbox_use_current_datetime.enable()
+            self.textbox_current_note.enable()
             self.button_new_note.enable()
         else:
             try:
