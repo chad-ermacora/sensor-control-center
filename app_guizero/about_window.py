@@ -28,7 +28,7 @@ class CreateAboutWindow:
         self.about_text = app_variables.about_window_text_file_location
 
         self.window = guizero.Window(app,
-                                     title="About KootNet Sensors - Control Center",
+                                     title="About || KootNet Sensors - Control Center",
                                      width=610,
                                      height=325,
                                      layout="grid",

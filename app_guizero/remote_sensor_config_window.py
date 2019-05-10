@@ -33,7 +33,7 @@ class CreateSensorConfigWindow:
 
         self.window = guizero.Window(app,
                                      title="Sensors Configuration",
-                                     width=615,
+                                     width=625,
                                      height=385,
                                      layout="grid",
                                      visible=False)
