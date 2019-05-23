@@ -16,38 +16,36 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from guizero import Window, Text, TextBox
-
-import app_modules.app_logger as app_logger
-from app_modules.app_config import app_version
+import guizero
+from app_modules import app_logger
+from app_modules import app_variables
 
 
 class CreateAboutWindow:
     """ Creates a GUI window for program & license information. """
 
-    def __init__(self, app, current_config):
-        self.current_config = current_config
-        self.about_text = self.current_config.additional_files_directory + "/about_text.txt"
+    def __init__(self, app):
+        self.about_text = app_variables.about_window_text_file_location
 
-        self.window = Window(app,
-                             title="About KootNet Sensors - Control Center",
-                             width=610,
-                             height=325,
-                             layout="grid",
-                             visible=False)
+        self.window = guizero.Window(app,
+                                     title="About || KootNet Sensors - Control Center",
+                                     width=610,
+                                     height=325,
+                                     layout="grid",
+                                     visible=False)
 
-        self.about_text1 = Text(self.window,
-                                text=app_version,
-                                grid=[1, 1],
-                                align="right")
+        self.about_text1 = guizero.Text(self.window,
+                                        text=app_variables.software_version,
+                                        grid=[1, 1],
+                                        align="right")
 
-        self.about_textbox = TextBox(self.window,
-                                     text="About",
-                                     grid=[1, 2],
-                                     width=75,
-                                     height=18,
-                                     multiline=True,
-                                     align="left")
+        self.about_textbox = guizero.TextBox(self.window,
+                                             text="About",
+                                             grid=[1, 2],
+                                             width=75,
+                                             height=18,
+                                             multiline=True,
+                                             align="left")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)

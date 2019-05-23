@@ -16,8 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import app_modules.app_logger as app_logger
 from plotly import graph_objs as go
+from app_modules import app_logger
 
 mark_red_line = dict(size=10,
                      color='rgba(255, 0, 0, .9)',
@@ -76,6 +76,7 @@ mark_generic_line = dict(size=5, line=dict(width=2, color='rgb(0, 0, 0)'))
 
 
 def graph_host_name(graph_data):
+    """ Add Host Name to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
     first_hostname = graph_data.sql_host_name[0]
     last_hostname = graph_data.sql_host_name[-1]
@@ -100,6 +101,7 @@ def graph_host_name(graph_data):
 
 
 def graph_sql_uptime(graph_data):
+    """ Add Sensor Uptime to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Sensor Uptime"
@@ -121,6 +123,7 @@ def graph_sql_uptime(graph_data):
 
 
 def graph_sql_cpu_env_temperature(graph_data):
+    """ Add CPU Temperature to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "CPU Temp"
@@ -156,6 +159,7 @@ def graph_sql_cpu_env_temperature(graph_data):
 
 
 def graph_sql_pressure(graph_data):
+    """ Add Pressure to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Pressure hPa"
@@ -177,6 +181,7 @@ def graph_sql_pressure(graph_data):
 
 
 def graph_sql_humidity(graph_data):
+    """ Add Humidity to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Humidity %"
@@ -198,6 +203,7 @@ def graph_sql_humidity(graph_data):
 
 
 def graph_sql_lumen(graph_data):
+    """ Add Lumen to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Lumen"
@@ -219,6 +225,7 @@ def graph_sql_lumen(graph_data):
 
 
 def graph_sql_ems_colours(graph_data):
+    """ Add Electromagnetic Spectrum (usually the visible spectrum) to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Red"
@@ -310,6 +317,7 @@ def graph_sql_ems_colours(graph_data):
 
 
 def graph_sql_accelerometer(graph_data):
+    """ Add Accelerometer to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Accelerometer X"
@@ -350,6 +358,7 @@ def graph_sql_accelerometer(graph_data):
 
 
 def graph_sql_magnetometer(graph_data):
+    """ Add Magnetometer to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Magnetic X"
@@ -390,6 +399,7 @@ def graph_sql_magnetometer(graph_data):
 
 
 def graph_sql_gyroscope(graph_data):
+    """ Add Gyroscope to the plotly graph. """
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Gyroscopic X"
@@ -430,6 +440,7 @@ def graph_sql_gyroscope(graph_data):
 
 
 def _add_scatter_gl(graph_data):
+    """ Use line graph for Interval data and dot markers for Trigger data. Uses OpenGL Rendering """
     if graph_data.graph_table is "IntervalData":
         trace = go.Scattergl(x=graph_data.sql_time,
                              y=graph_data.temp_sql,
@@ -446,6 +457,7 @@ def _add_scatter_gl(graph_data):
 
 
 def _add_scatter_cpu(graph_data):
+    """ Use line graph for Interval data and dot markers for Trigger data. Uses CPU Rendering """
     if graph_data.graph_table is "IntervalData":
         trace = go.Scatter(x=graph_data.sql_time,
                            y=graph_data.temp_sql,

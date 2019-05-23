@@ -16,13 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import guizero
 from queue import Queue
 from threading import Thread
-
-from guizero import CheckBox, TextBox
-
-import app_modules.app_logger as app_logger
-import app_modules.app_sensor_commands as app_sensor_commands
+from app_modules import app_logger
+from app_modules import sensor_commands
 
 
 class CreateIPSelector:
@@ -33,194 +31,194 @@ class CreateIPSelector:
         self.data_queue = Queue()
 
         # Sensor's Online / Offline IP List Selection 1
-        self.app_checkbox_all_column1 = CheckBox(app,
-                                                 text="Check ALL Column 1",
-                                                 command=self._app_check_all_ip1,
-                                                 grid=[1, 1, 3, 1],
+        self.app_checkbox_all_column1 = guizero.CheckBox(app,
+                                                         text="Check ALL Column 1",
+                                                         command=self._app_check_all_ip1,
+                                                         grid=[1, 1, 3, 1],
+                                                         align="left")
+
+        self.app_checkbox_ip1 = guizero.CheckBox(app,
+                                                 text="IP        ",
+                                                 grid=[1, 2],
                                                  align="left")
 
-        self.app_checkbox_ip1 = CheckBox(app,
-                                         text="IP        ",
-                                         grid=[1, 2],
-                                         align="left")
+        self.app_textbox_ip1 = guizero.TextBox(app,
+                                               text="192.168.10.11",
+                                               width=21,
+                                               grid=[2, 2],
+                                               align="left")
 
-        self.app_textbox_ip1 = TextBox(app,
-                                       text="192.168.10.11",
-                                       width=21,
-                                       grid=[2, 2],
-                                       align="left")
+        self.app_checkbox_ip2 = guizero.CheckBox(app,
+                                                 text="IP ",
+                                                 grid=[1, 3],
+                                                 align="left")
 
-        self.app_checkbox_ip2 = CheckBox(app,
-                                         text="IP ",
-                                         grid=[1, 3],
-                                         align="left")
+        self.app_textbox_ip2 = guizero.TextBox(app,
+                                               text="192.168.10.12",
+                                               width=21,
+                                               grid=[2, 3],
+                                               align="left")
 
-        self.app_textbox_ip2 = TextBox(app,
-                                       text="192.168.10.12",
-                                       width=21,
-                                       grid=[2, 3],
-                                       align="left")
+        self.app_checkbox_ip3 = guizero.CheckBox(app,
+                                                 text="IP ",
+                                                 grid=[1, 4],
+                                                 align="left")
 
-        self.app_checkbox_ip3 = CheckBox(app,
-                                         text="IP ",
-                                         grid=[1, 4],
-                                         align="left")
+        self.app_textbox_ip3 = guizero.TextBox(app,
+                                               text="192.168.10.13",
+                                               width=21,
+                                               grid=[2, 4],
+                                               align="left")
 
-        self.app_textbox_ip3 = TextBox(app,
-                                       text="192.168.10.13",
-                                       width=21,
-                                       grid=[2, 4],
-                                       align="left")
+        self.app_checkbox_ip4 = guizero.CheckBox(app,
+                                                 text="IP ",
+                                                 grid=[1, 5],
+                                                 align="left")
 
-        self.app_checkbox_ip4 = CheckBox(app,
-                                         text="IP ",
-                                         grid=[1, 5],
-                                         align="left")
+        self.app_textbox_ip4 = guizero.TextBox(app,
+                                               text="192.168.10.14",
+                                               width=21,
+                                               grid=[2, 5],
+                                               align="left")
 
-        self.app_textbox_ip4 = TextBox(app,
-                                       text="192.168.10.14",
-                                       width=21,
-                                       grid=[2, 5],
-                                       align="left")
+        self.app_checkbox_ip5 = guizero.CheckBox(app,
+                                                 text="IP ",
+                                                 grid=[1, 6],
+                                                 align="left")
 
-        self.app_checkbox_ip5 = CheckBox(app,
-                                         text="IP ",
-                                         grid=[1, 6],
-                                         align="left")
+        self.app_textbox_ip5 = guizero.TextBox(app,
+                                               text="192.168.10.15",
+                                               width=21,
+                                               grid=[2, 6],
+                                               align="left")
 
-        self.app_textbox_ip5 = TextBox(app,
-                                       text="192.168.10.15",
-                                       width=21,
-                                       grid=[2, 6],
-                                       align="left")
+        self.app_checkbox_ip6 = guizero.CheckBox(app,
+                                                 text="IP ",
+                                                 grid=[1, 7],
+                                                 align="left")
 
-        self.app_checkbox_ip6 = CheckBox(app,
-                                         text="IP ",
-                                         grid=[1, 7],
-                                         align="left")
+        self.app_textbox_ip6 = guizero.TextBox(app,
+                                               text="192.168.10.16",
+                                               width=21,
+                                               grid=[2, 7],
+                                               align="left")
 
-        self.app_textbox_ip6 = TextBox(app,
-                                       text="192.168.10.16",
-                                       width=21,
-                                       grid=[2, 7],
-                                       align="left")
+        self.app_checkbox_ip7 = guizero.CheckBox(app,
+                                                 text="IP ",
+                                                 grid=[1, 8],
+                                                 align="left")
 
-        self.app_checkbox_ip7 = CheckBox(app,
-                                         text="IP ",
-                                         grid=[1, 8],
-                                         align="left")
+        self.app_textbox_ip7 = guizero.TextBox(app,
+                                               text="192.168.10.17",
+                                               width=21,
+                                               grid=[2, 8],
+                                               align="left")
 
-        self.app_textbox_ip7 = TextBox(app,
-                                       text="192.168.10.17",
-                                       width=21,
-                                       grid=[2, 8],
-                                       align="left")
+        self.app_checkbox_ip8 = guizero.CheckBox(app,
+                                                 text="IP ",
+                                                 grid=[1, 9],
+                                                 align="left")
 
-        self.app_checkbox_ip8 = CheckBox(app,
-                                         text="IP ",
-                                         grid=[1, 9],
-                                         align="left")
-
-        self.app_textbox_ip8 = TextBox(app,
-                                       text="192.168.10.18",
-                                       width=21,
-                                       grid=[2, 9],
-                                       align="left")
+        self.app_textbox_ip8 = guizero.TextBox(app,
+                                               text="192.168.10.18",
+                                               width=21,
+                                               grid=[2, 9],
+                                               align="left")
 
         # Sensor's Online / Offline IP List Selection 2
-        self.app_checkbox_all_column2 = CheckBox(app,
-                                                 text="Check ALL Column 2",
-                                                 command=self._app_check_all_ip2,
-                                                 grid=[3, 1, 3, 1],
+        self.app_checkbox_all_column2 = guizero.CheckBox(app,
+                                                         text="Check ALL Column 2",
+                                                         command=self._app_check_all_ip2,
+                                                         grid=[3, 1, 3, 1],
+                                                         align="left")
+
+        self.app_checkbox_ip9 = guizero.CheckBox(app,
+                                                 text="IP        ",
+                                                 grid=[3, 2],
                                                  align="left")
 
-        self.app_checkbox_ip9 = CheckBox(app,
-                                         text="IP        ",
-                                         grid=[3, 2],
-                                         align="left")
+        self.app_textbox_ip9 = guizero.TextBox(app,
+                                               text="192.168.10.19",
+                                               width=21,
+                                               grid=[4, 2],
+                                               align="left")
 
-        self.app_textbox_ip9 = TextBox(app,
-                                       text="192.168.10.19",
-                                       width=21,
-                                       grid=[4, 2],
-                                       align="left")
+        self.app_checkbox_ip10 = guizero.CheckBox(app,
+                                                  text="IP ",
+                                                  grid=[3, 3],
+                                                  align="left")
 
-        self.app_checkbox_ip10 = CheckBox(app,
-                                          text="IP ",
-                                          grid=[3, 3],
-                                          align="left")
+        self.app_textbox_ip10 = guizero.TextBox(app,
+                                                text="192.168.10.20",
+                                                width=21,
+                                                grid=[4, 3],
+                                                align="left")
 
-        self.app_textbox_ip10 = TextBox(app,
-                                        text="192.168.10.20",
-                                        width=21,
-                                        grid=[4, 3],
-                                        align="left")
+        self.app_checkbox_ip11 = guizero.CheckBox(app,
+                                                  text="IP ",
+                                                  grid=[3, 4],
+                                                  align="left")
 
-        self.app_checkbox_ip11 = CheckBox(app,
-                                          text="IP ",
-                                          grid=[3, 4],
-                                          align="left")
+        self.app_textbox_ip11 = guizero.TextBox(app,
+                                                text="192.168.10.21",
+                                                width=21,
+                                                grid=[4, 4],
+                                                align="left")
 
-        self.app_textbox_ip11 = TextBox(app,
-                                        text="192.168.10.21",
-                                        width=21,
-                                        grid=[4, 4],
-                                        align="left")
+        self.app_checkbox_ip12 = guizero.CheckBox(app,
+                                                  text="IP ",
+                                                  grid=[3, 5],
+                                                  align="left")
 
-        self.app_checkbox_ip12 = CheckBox(app,
-                                          text="IP ",
-                                          grid=[3, 5],
-                                          align="left")
+        self.app_textbox_ip12 = guizero.TextBox(app,
+                                                text="192.168.10.22",
+                                                width=21,
+                                                grid=[4, 5],
+                                                align="left")
 
-        self.app_textbox_ip12 = TextBox(app,
-                                        text="192.168.10.22",
-                                        width=21,
-                                        grid=[4, 5],
-                                        align="left")
+        self.app_checkbox_ip13 = guizero.CheckBox(app,
+                                                  text="IP ",
+                                                  grid=[3, 6],
+                                                  align="left")
 
-        self.app_checkbox_ip13 = CheckBox(app,
-                                          text="IP ",
-                                          grid=[3, 6],
-                                          align="left")
+        self.app_textbox_ip13 = guizero.TextBox(app,
+                                                text="192.168.10.23",
+                                                width=21,
+                                                grid=[4, 6],
+                                                align="left")
 
-        self.app_textbox_ip13 = TextBox(app,
-                                        text="192.168.10.23",
-                                        width=21,
-                                        grid=[4, 6],
-                                        align="left")
+        self.app_checkbox_ip14 = guizero.CheckBox(app,
+                                                  text="IP ",
+                                                  grid=[3, 7],
+                                                  align="left")
 
-        self.app_checkbox_ip14 = CheckBox(app,
-                                          text="IP ",
-                                          grid=[3, 7],
-                                          align="left")
+        self.app_textbox_ip14 = guizero.TextBox(app,
+                                                text="192.168.10.24",
+                                                width=21,
+                                                grid=[4, 7],
+                                                align="left")
 
-        self.app_textbox_ip14 = TextBox(app,
-                                        text="192.168.10.24",
-                                        width=21,
-                                        grid=[4, 7],
-                                        align="left")
+        self.app_checkbox_ip15 = guizero.CheckBox(app,
+                                                  text="IP ",
+                                                  grid=[3, 8],
+                                                  align="left")
 
-        self.app_checkbox_ip15 = CheckBox(app,
-                                          text="IP ",
-                                          grid=[3, 8],
-                                          align="left")
+        self.app_textbox_ip15 = guizero.TextBox(app,
+                                                text="192.168.10.25",
+                                                width=21,
+                                                grid=[4, 8],
+                                                align="left")
 
-        self.app_textbox_ip15 = TextBox(app,
-                                        text="192.168.10.25",
-                                        width=21,
-                                        grid=[4, 8],
-                                        align="left")
+        self.app_checkbox_ip16 = guizero.CheckBox(app,
+                                                  text="IP ",
+                                                  grid=[3, 9],
+                                                  align="left")
 
-        self.app_checkbox_ip16 = CheckBox(app,
-                                          text="IP ",
-                                          grid=[3, 9],
-                                          align="left")
-
-        self.app_textbox_ip16 = TextBox(app,
-                                        text="192.168.10.26",
-                                        width=21,
-                                        grid=[4, 9],
-                                        align="left")
+        self.app_textbox_ip16 = guizero.TextBox(app,
+                                                text="192.168.10.26",
+                                                width=21,
+                                                grid=[4, 9],
+                                                align="left")
 
         # Window Tweaks
         self.app_checkbox_all_column1.value = 0
@@ -315,7 +313,7 @@ class CreateIPSelector:
 
     def _worker_sensor_check(self, ip):
         """ Used in Threads.  Socket connects to sensor by IP's in queue. Puts results in a data queue. """
-        data = [ip, app_sensor_commands.check_sensor_status(ip, self.current_config.network_timeout_sensor_check)]
+        data = [ip, sensor_commands.check_sensor_status(ip, self.current_config.network_timeout_sensor_check)]
         self.data_queue.put(data)
 
     def get_verified_ip_list(self):

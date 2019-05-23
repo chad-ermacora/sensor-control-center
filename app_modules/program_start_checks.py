@@ -16,16 +16,27 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import app_guizero.gui_main
-import app_modules.app_logger as app_logger
-import app_guizero.gui_platform_tweaks
-import app_modules.app_checks as app_checks
+import os
+from app_modules import app_logger
+from app_modules import app_config
 
-app_checks.run_pre_checks()
+current_config = app_config.CreateDefaultConfigSettings()
+important_folders = [current_config.save_to,
+                     current_config.logs_directory,
+                     current_config.config_folder]
 
-guizero_app = app_guizero.gui_main.CreateMainWindow()
-app_guizero.gui_platform_tweaks.app_custom_configurations(guizero_app)
 
-# Start the App
-app_logger.app_logger.info('KootNet Sensors - Control Center - Started')
-guizero_app.app.display()
+def run_pre_checks():
+    """ Creates missing folders, files & configuration on program start. """
+    for folder in important_folders:
+        if os.path.isdir(folder):
+            pass
+        else:
+            app_logger.app_logger.warning("Added missing folder: " + folder)
+            os.mkdir(folder)
+
+    if os.path.isfile(current_config.config_file):
+        pass
+    else:
+        app_logger.app_logger.warning("No configuration file found, creating and saving default")
+        app_config.save_config_to_file(current_config)

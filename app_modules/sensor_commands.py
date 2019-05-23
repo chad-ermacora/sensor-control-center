@@ -19,66 +19,18 @@
 import re
 import webbrowser
 import requests
-
-import app_modules.app_logger as app_logger
+from app_modules import app_logger
+from app_modules import app_variables
 
 
 class CreateSensorNetworkCommand:
+    """ Creates object instance of variables needed for network commands. """
     def __init__(self, ip, network_timeout, command):
         self.ip = ip
         self.network_timeout = network_timeout
         self.command = command
         self.command_data = ""
         self.save_to_location = "/home/pi/"
-
-
-class CreateNetworkGetCommands:
-    def __init__(self):
-        self.sensor_sql_database = "DownloadSQLDatabase"
-        self.sensor_configuration = "GetConfigurationReport"
-        self.sensor_configuration_file = "GetConfiguration"
-        self.installed_sensors_file = "GetInstalledSensors"
-        self.wifi_config_file = "GetWifiConfiguration"
-        self.variance_config = "GetVarianceConfiguration"
-        self.system_data = "GetSystemData"
-        self.primary_log = "GetPrimaryLog"
-        self.network_log = "GetNetworkLog"
-        self.sensors_log = "GetSensorsLog"
-        self.download_primary_log = "DownloadPrimaryLog"
-        self.download_network_log = "DownloadNetworkLog"
-        self.download_sensors_log = "DownloadSensorsLog"
-        self.sensor_readings = "GetSensorReadings"
-        self.sensor_name = "GetHostName"
-        self.system_uptime = "GetSystemUptime"
-        self.cpu_temp = "GetCPUTemperature"
-        self.environmental_temp = "GetEnvTemperature"
-        self.env_temp_offset = "GetTempOffsetEnv"
-        self.pressure = "GetPressure"
-        self.humidity = "GetHumidity"
-        self.lumen = "GetLumen"
-        self.rgb = "GetEMS"
-        self.accelerometer_xyz = "GetAccelerometerXYZ"
-        self.magnetometer_xyz = "GetMagnetometerXYZ"
-        self.gyroscope_xyz = "GetGyroscopeXYZ"
-
-
-class CreateNetworkSendCommands:
-    def __init__(self):
-        self.restart_services = "RestartServices"
-        self.shutdown_system = "ShutdownSystem"
-        self.reboot_system = "RebootSystem"
-        self.upgrade_system_os = "UpgradeSystemOS"
-        self.upgrade_online = "UpgradeOnline"
-        self.upgrade_smb = "UpgradeSMB"
-        self.clean_upgrade_online = "CleanOnline"
-        self.clean_upgrade_smb = "CleanSMB"
-        self.set_host_name = "SetHostName"
-        self.set_datetime = "SetDateTime"
-        self.set_configuration = "SetConfiguration"
-        self.set_wifi_configuration = "SetWifiConfiguration"
-        self.set_variance_configuration = "SetVarianceConfiguration"
-        self.set_installed_sensors = "SetInstalledSensors"
-        self.put_sql_note = "PutDatabaseNote"
 
 
 def check_sensor_status(ip, network_timeout):
@@ -97,7 +49,7 @@ def check_sensor_status(ip, network_timeout):
 
 def download_sensor_database(ip):
     """ Returns requested sensor file (based on the provided command data). """
-    network_commands = CreateNetworkGetCommands()
+    network_commands = app_variables.CreateNetworkGetCommands()
     url = "http://" + ip + ":10065/" + network_commands.sensor_sql_database
 
     try:
@@ -109,7 +61,7 @@ def download_sensor_database(ip):
 
 def download_logs(sensor_command):
     """ Download 3 log files. """
-    sensor_get_commands = CreateNetworkGetCommands()
+    sensor_get_commands = app_variables.CreateNetworkGetCommands()
 
     sensor_command.command = sensor_get_commands.download_primary_log
     _get_logs(sensor_command, "PrimaryLog.txt")

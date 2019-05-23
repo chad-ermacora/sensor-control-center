@@ -20,24 +20,23 @@ import os
 import platform
 import subprocess
 import webbrowser
-from threading import Thread
-
-from guizero import App, PushButton, MenuBar, yesno
+import guizero
 from matplotlib import pyplot
-
-import app_modules.app_config as app_config
-import app_modules.app_logger as app_logger
-from app_guizero.gui_about import CreateAboutWindow
-from app_guizero.gui_config import CreateConfigWindow
-from app_guizero.gui_graphing import CreateGraphingWindow
-from app_guizero.gui_ip_selection import CreateIPSelector
-from app_guizero.gui_reports import CreateReportsWindow
-from app_guizero.gui_sensor_commands import CreateSensorCommandsWindow
-from app_guizero.gui_sensor_config import CreateSensorConfigWindow
-from app_guizero.gui_sensor_logs import CreateSensorLogsWindow
-from app_guizero.gui_sql_notes import CreateSQLNotesWindow
-from app_modules.app_sensor_commands import download_sensor_database
-from app_modules.app_useful import no_ip_selected_message
+from threading import Thread
+from app_modules import app_logger
+from app_modules import app_useful_functions
+from app_modules import app_config
+from app_modules.sensor_commands import download_sensor_database
+from app_guizero.ip_selection import CreateIPSelector
+from app_guizero.about_window import CreateAboutWindow
+from app_guizero.config_window import CreateConfigWindow
+from app_guizero.graphing_window import CreateGraphingWindow
+from app_guizero.db_information_window import CreateDataBaseInfoWindow
+from app_guizero.notes_window import CreateDataBaseNotesWindow
+from app_guizero.reports_window import CreateReportsWindow
+from app_guizero.remote_sensor_commands_window import CreateSensorCommandsWindow
+from app_guizero.remote_sensor_config_window import CreateSensorConfigWindow
+from app_guizero.remote_sensor_logs_window import CreateSensorLogsWindow
 
 
 class CreateMainWindow:
@@ -46,10 +45,10 @@ class CreateMainWindow:
     def __init__(self):
         self.current_config = app_config.get_from_file()
 
-        self.app = App(title="KootNet Sensors - Control Center",
-                       width=405,
-                       height=295,
-                       layout="grid")
+        self.app = guizero.App(title="KootNet Sensors - Control Center",
+                               width=405,
+                               height=295,
+                               layout="grid")
 
         self.app.on_close(self._app_exit)
 
@@ -59,61 +58,69 @@ class CreateMainWindow:
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
         self.window_reports = CreateReportsWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection, self.current_config)
-        self.window_sensor_sql_notes = CreateSQLNotesWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
         self.window_graph = CreateGraphingWindow(self.app, self.ip_selection, self.current_config)
-        self.window_about = CreateAboutWindow(self.app, self.current_config)
+        self.window_db_info = CreateDataBaseInfoWindow(self.app, self.current_config)
+        self.window_sensor_notes = CreateDataBaseNotesWindow(self.app, self.ip_selection, self.current_config, "sensor")
+        self.window_db_notes = CreateDataBaseNotesWindow(self.app, self.ip_selection, self.current_config, "database")
+        self.window_about = CreateAboutWindow(self.app)
 
-        self.app_menubar = MenuBar(self.app,
-                                   toplevel=[["File"],
-                                             ["Sensors"],
-                                             ["Graphing"],
-                                             ["Help"]],
-                                   options=[[["Control Center Configuration",
-                                              self.window_control_center_config.window.show],
-                                             ["Open Logs",
-                                              self._app_menu_open_logs],
-                                             ["Save IP List",
-                                              self.window_control_center_config.save_ip_list],
-                                             ["Reset IP List",
-                                              self._reset_ip_list],
-                                             ["Quit",
-                                              self._app_exit]],
-                                            [["Create Reports",
-                                              self.window_reports.window.show],
-                                             ["View & Download Logs",
-                                              self.window_sensor_logs.window.show],
-                                             ["Add Note to Database",
-                                              self.window_sensor_sql_notes.window.show],
-                                             ["Send Commands",
-                                              self.window_sensor_commands.window.show],
-                                             ["Update Configurations",
-                                              self.window_sensor_config.window.show]],
-                                            [["Create Graphs",
-                                              self.window_graph.window.show]],
-                                            [["KootNet Sensors - About",
-                                              self.window_about.window.show],
-                                             ["KootNet Sensors - Website",
-                                              self._app_menu_open_website],
-                                             ["Sensor Units - Making a Sensor",
-                                              self._app_menu_open_build_sensor],
-                                             ["Sensor Units - Help",
-                                              self._app_menu_open_sensor_help],
-                                             ["Control Center - Help *WIP",
-                                              self.window_about.window.show]]])
+        self.app_menubar = guizero.MenuBar(self.app,
+                                           toplevel=["File",
+                                                     "Sensors",
+                                                     "Graphing & Databases",
+                                                     "Help"],
+                                           options=[[["Control Center Configuration",
+                                                      self.window_control_center_config.window.show],
+                                                     ["Open Logs",
+                                                      self._app_menu_open_logs],
+                                                     ["Save IP List",
+                                                      self.window_control_center_config.save_ip_list],
+                                                     ["Reset IP List",
+                                                      self._reset_ip_list],
+                                                     ["Quit",
+                                                      self._app_exit]],
+                                                    [["Create Reports",
+                                                      self.window_reports.window.show],
+                                                     ["View & Download Logs",
+                                                      self.window_sensor_logs.window.show],
+                                                     ["Online Notes Editor",
+                                                      self.window_sensor_notes.window.show],
+                                                     ["Send Commands",
+                                                      self.window_sensor_commands.window.show],
+                                                     ["Update Configurations",
+                                                      self.window_sensor_config.window.show]],
+                                                    [["Graphing",
+                                                      self.window_graph.window.show],
+                                                     ["DataBase Info",
+                                                      self.window_db_info.window.show],
+                                                     ["Offline Notes Editor",
+                                                      self.window_db_notes.window.show],
+                                                     ["DataBase Analyzer",
+                                                      self.window_about.window.show]],
+                                                    [["KootNet Sensors - About",
+                                                      self.window_about.window.show],
+                                                     ["KootNet Sensors - Website",
+                                                      self._app_menu_open_website],
+                                                     ["Sensor Units - Making a Sensor",
+                                                      self._app_menu_open_build_sensor],
+                                                     ["Sensor Units - Help",
+                                                      self._app_menu_open_sensor_help],
+                                                     ["Control Center - Help *WIP",
+                                                      self.window_about.window.show]]])
 
-        self.app_button_check_sensor = PushButton(self.app,
-                                                  text="Check Sensors\nStatus",
-                                                  command=self.ip_selection.get_verified_ip_list,
-                                                  grid=[1, 15, 2, 1],
-                                                  align="left")
+        self.app_button_check_sensor = guizero.PushButton(self.app,
+                                                          text="Check Sensors\nStatus",
+                                                          command=self.ip_selection.get_verified_ip_list,
+                                                          grid=[1, 15, 2, 1],
+                                                          align="left")
 
-        self.app_button_download_sql_db = PushButton(self.app,
-                                                     text="Download Sensors\nDatabase",
-                                                     command=self._app_menu_download_sql_db,
-                                                     grid=[4, 15],
-                                                     align="right")
+        self.app_button_download_sql_db = guizero.PushButton(self.app,
+                                                             text="Download Sensors\nDatabase",
+                                                             command=self._app_menu_download_sql_db,
+                                                             grid=[4, 15],
+                                                             align="right")
         # Window Tweaks
         self.app.tk.resizable(False, False)
 
@@ -155,7 +162,7 @@ class CreateMainWindow:
             for thread in threads:
                 thread.start()
         else:
-            no_ip_selected_message()
+            app_useful_functions.no_ip_selected_message()
 
     @staticmethod
     def _app_menu_open_website():
@@ -194,6 +201,6 @@ class CreateMainWindow:
     def _reset_ip_list(self):
         """ Reset main window IP's to default. """
         default_config = app_config.CreateDefaultConfigSettings()
-        if yesno("Reset IP List to Default", "Are you sure you want to reset the IP list to Defaults?"):
+        if guizero.yesno("Reset IP List to Default", "Are you sure you want to reset the IP list to Defaults?"):
             self.current_config.ip_list = default_config.ip_list
             self._set_ip_list()

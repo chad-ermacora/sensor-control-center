@@ -16,15 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import guizero
 from tkinter import filedialog
-
-from guizero import Window, CheckBox, PushButton, Text, TextBox, warn, ButtonGroup
-
-import app_modules.app_config as app_config
-import app_modules.app_graph_live as app_graph_live
-import app_modules.app_graph_plotly as app_graph_plotly
-import app_modules.app_logger as app_logger
-from app_modules.app_graph import CreateGraphData
+from app_modules import app_logger
+from app_modules import app_variables
+from app_modules import app_config
+from app_modules import graphing_live
+from app_modules import graphing_offline
 
 
 class CreateGraphingWindow:
@@ -33,219 +31,219 @@ class CreateGraphingWindow:
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
-        self.readable_column_names = app_graph_live.CreateSQLColumnsReadable()
-        self.sql_columns = app_graph_live.CreateSQLColumnNames()
+        self.readable_column_names = app_variables.CreateSQLColumnsReadable()
+        self.sql_columns = app_variables.CreateSQLColumnNames()
 
-        self.window = Window(app,
-                             title="Graphing",
-                             width=275,
-                             height=525,
-                             layout="grid",
-                             visible=False)
+        self.window = guizero.Window(app,
+                                     title="Graphing",
+                                     width=275,
+                                     height=525,
+                                     layout="grid",
+                                     visible=False)
 
-        self.text_sensor_type_name = Text(self.window,
-                                          text="Data Source",
-                                          color='blue',
-                                          grid=[1, 1, 2, 1],
-                                          align="top")
+        self.text_sensor_type_name = guizero.Text(self.window,
+                                                  text="Data Source",
+                                                  color='blue',
+                                                  grid=[1, 1, 2, 1],
+                                                  align="top")
 
-        self.radio_sensor_type = ButtonGroup(self.window,
-                                             options=["Live Sensor", "SQL Database"],
-                                             horizontal="True",
-                                             command=self._radio_source_selection,
-                                             grid=[1, 2, 2, 1],
-                                             align="top")
+        self.radio_sensor_type = guizero.ButtonGroup(self.window,
+                                                     options=["Live Sensor", "SQL Database"],
+                                                     horizontal="True",
+                                                     command=self._radio_source_selection,
+                                                     grid=[1, 2, 2, 1],
+                                                     align="top")
 
-        self.text_space3 = Text(self.window,
-                                text="SQL Recording Type",
-                                color="blue",
-                                grid=[1, 3, 2, 1],
-                                align="top")
-
-        self.radio_recording_type_selection = ButtonGroup(self.window,
-                                                          options=["Interval", "Triggers"],
-                                                          horizontal="True",
-                                                          command=self._radio_sql_type_selection,
-                                                          grid=[1, 4, 2, 1],
-                                                          align="top")
-
-        self.text_sensor_type_name = Text(self.window,
-                                          text="Graph Options",
-                                          color='blue',
-                                          grid=[1, 6, 2, 1],
-                                          align="top")
-
-        self.text_space2 = Text(self.window,
-                                text="YYYY-MM-DD HH:MM:SS",
-                                size=7,
-                                color='#CB0000',
-                                grid=[2, 7, 2, 1],
-                                align="left")
-
-        self.text_start = Text(self.window,
-                               text="Start Date & Time: ",
-                               color='green',
-                               grid=[1, 8],
-                               align="left")
-
-        self.textbox_start = TextBox(self.window,
-                                     text="",
-                                     width=20,
-                                     grid=[2, 8],
-                                     align="left")
-
-        self.text_end = Text(self.window,
-                             text="End Date & Time:",
-                             color='green',
-                             grid=[1, 9],
-                             align="left")
-
-        self.textbox_end = TextBox(self.window,
-                                   text="",
-                                   width=20,
-                                   grid=[2, 9],
-                                   align="left")
-
-        self.text_sql_skip = Text(self.window,
-                                  text="Plot Data - Skip:  ",
-                                  color='green',
-                                  grid=[1, 10],
-                                  align="right")
-
-        self.textbox_sql_skip = TextBox(self.window,
-                                        text="",
-                                        width=10,
-                                        grid=[2, 10],
-                                        align="left")
-
-        self.text_sql_skip2 = Text(self.window,
-                                   text=" Plot 1    ",
-                                   color='green',
-                                   grid=[2, 10],
-                                   align="right")
-
-        self.text_temperature_offset = Text(self.window,
-                                            text="Env Temp Offset:",
-                                            color='green',
-                                            grid=[1, 11],
-                                            align="left")
-
-        self.textbox_temperature_offset = TextBox(self.window,
-                                                  text="",
-                                                  width=5,
-                                                  grid=[2, 11],
-                                                  align="left")
-
-        self.checkbox_default_offset = CheckBox(self.window,
-                                                text="Use Sensor\nDefault",
-                                                command=self._click_checkbox_offset,
-                                                grid=[2, 11],
-                                                align="right")
-
-        self.text_refresh_time = Text(self.window,
-                                      text="Live refresh (Sec):",
-                                      color='green',
-                                      grid=[1, 12],
-                                      align="left")
-
-        self.textbox_refresh_time = TextBox(self.window,
-                                            text="2",
-                                            width=5,
-                                            grid=[2, 12],
-                                            align="left")
-
-        self.checkbox_master = CheckBox(self.window,
-                                        text="All Sensors",
-                                        command=self._master_checkbox,
-                                        grid=[1, 16, 2, 1],
+        self.text_space3 = guizero.Text(self.window,
+                                        text="SQL Recording Type",
+                                        color="blue",
+                                        grid=[1, 3, 2, 1],
                                         align="top")
 
-        self.checkbox_up_time = CheckBox(self.window,
-                                         text=self.readable_column_names.system_uptime,
-                                         command=self._disable_other_checkboxes,
-                                         args=[self.sql_columns.system_uptime],
-                                         grid=[1, 17],
-                                         align="left")
+        self.radio_recording_type_selection = guizero.ButtonGroup(self.window,
+                                                                  options=["Interval", "Triggers"],
+                                                                  horizontal="True",
+                                                                  command=self._radio_sql_type_selection,
+                                                                  grid=[1, 4, 2, 1],
+                                                                  align="top")
 
-        self.checkbox_cpu_temp = CheckBox(self.window,
-                                          text=self.readable_column_names.cpu_temp,
-                                          command=self._disable_other_checkboxes,
-                                          args=[self.sql_columns.cpu_temp],
-                                          grid=[1, 18],
-                                          align="left")
+        self.text_sensor_type_name = guizero.Text(self.window,
+                                                  text="Graph Options",
+                                                  color='blue',
+                                                  grid=[1, 6, 2, 1],
+                                                  align="top")
 
-        self.checkbox_temperature = CheckBox(self.window,
-                                             text=self.readable_column_names.environmental_temp,
-                                             command=self._disable_other_checkboxes,
-                                             args=[self.sql_columns.environmental_temp],
-                                             grid=[1, 19],
-                                             align="left")
-
-        self.checkbox_pressure = CheckBox(self.window,
-                                          text=self.readable_column_names.pressure,
-                                          command=self._disable_other_checkboxes,
-                                          args=[self.sql_columns.pressure],
-                                          grid=[1, 20],
-                                          align="left")
-
-        self.checkbox_humidity = CheckBox(self.window,
-                                          text=self.readable_column_names.humidity,
-                                          command=self._disable_other_checkboxes,
-                                          args=[self.sql_columns.humidity],
-                                          grid=[2, 17],
-                                          align="left")
-
-        self.checkbox_lumen = CheckBox(self.window,
-                                       text=self.readable_column_names.lumen,
-                                       command=self._disable_other_checkboxes,
-                                       args=[self.sql_columns.lumen],
-                                       grid=[2, 18],
-                                       align="left")
-
-        self.checkbox_colour = CheckBox(self.window,
-                                        text=self.readable_column_names.colours,
-                                        command=self._disable_other_checkboxes,
-                                        args=[self.sql_columns.rgb],
-                                        grid=[2, 19],
+        self.text_space2 = guizero.Text(self.window,
+                                        text="YYYY-MM-DD HH:MM:SS",
+                                        size=7,
+                                        color='#CB0000',
+                                        grid=[2, 7, 2, 1],
                                         align="left")
 
-        self.checkbox_acc = CheckBox(self.window,
-                                     text=self.readable_column_names.accelerometer_xyz,
-                                     command=self._disable_other_checkboxes,
-                                     args=[self.sql_columns.accelerometer_xyz],
-                                     grid=[2, 20],
+        self.text_start = guizero.Text(self.window,
+                                       text="Start Date & Time: ",
+                                       color='green',
+                                       grid=[1, 8],
+                                       align="left")
+
+        self.textbox_start = guizero.TextBox(self.window,
+                                             text="",
+                                             width=20,
+                                             grid=[2, 8],
+                                             align="left")
+
+        self.text_end = guizero.Text(self.window,
+                                     text="End Date & Time:",
+                                     color='green',
+                                     grid=[1, 9],
                                      align="left")
 
-        self.checkbox_mag = CheckBox(self.window,
-                                     text=self.readable_column_names.magnetometer_xyz,
-                                     command=self._disable_other_checkboxes,
-                                     args=[self.sql_columns.magnetometer_xyz],
-                                     grid=[1, 25],
-                                     align="left")
+        self.textbox_end = guizero.TextBox(self.window,
+                                           text="",
+                                           width=20,
+                                           grid=[2, 9],
+                                           align="left")
 
-        self.checkbox_gyro = CheckBox(self.window,
-                                      text=self.readable_column_names.gyroscope_xyz,
-                                      command=self._disable_other_checkboxes,
-                                      args=[self.sql_columns.gyroscope_xyz],
-                                      grid=[2, 25],
-                                      align="left")
+        self.text_sql_skip = guizero.Text(self.window,
+                                          text="Plot Data - Skip:  ",
+                                          color='green',
+                                          grid=[1, 10],
+                                          align="right")
 
-        self.text_space4 = Text(self.window,
-                                text=" ",
-                                grid=[1, 35],
-                                align="right")
+        self.textbox_sql_skip = guizero.TextBox(self.window,
+                                                text="",
+                                                width=10,
+                                                grid=[2, 10],
+                                                align="left")
 
-        self.button_database = PushButton(self.window,
-                                          text="Open & Graph\nDatabase",
-                                          command=self.plotly_button,
-                                          grid=[1, 36, 2, 1],
-                                          align="left")
+        self.text_sql_skip2 = guizero.Text(self.window,
+                                           text=" Plot 1    ",
+                                           color='green',
+                                           grid=[2, 10],
+                                           align="right")
 
-        self.button_live = PushButton(self.window,
-                                      text="Start Live Graph",
-                                      command=self.live_button,
-                                      grid=[2, 36],
-                                      align="left")
+        self.text_temperature_offset = guizero.Text(self.window,
+                                                    text="Env Temp Offset:",
+                                                    color='green',
+                                                    grid=[1, 11],
+                                                    align="left")
+
+        self.textbox_temperature_offset = guizero.TextBox(self.window,
+                                                          text="",
+                                                          width=5,
+                                                          grid=[2, 11],
+                                                          align="left")
+
+        self.checkbox_default_offset = guizero.CheckBox(self.window,
+                                                        text="Use Sensor\nDefault",
+                                                        command=self._click_checkbox_offset,
+                                                        grid=[2, 11],
+                                                        align="right")
+
+        self.text_refresh_time = guizero.Text(self.window,
+                                              text="Live refresh (Sec):",
+                                              color='green',
+                                              grid=[1, 12],
+                                              align="left")
+
+        self.textbox_refresh_time = guizero.TextBox(self.window,
+                                                    text="2",
+                                                    width=5,
+                                                    grid=[2, 12],
+                                                    align="left")
+
+        self.checkbox_master = guizero.CheckBox(self.window,
+                                                text="All Sensors",
+                                                command=self._master_checkbox,
+                                                grid=[1, 16, 2, 1],
+                                                align="top")
+
+        self.checkbox_up_time = guizero.CheckBox(self.window,
+                                                 text=self.readable_column_names.system_uptime,
+                                                 command=self._disable_other_checkboxes,
+                                                 args=[self.sql_columns.system_uptime],
+                                                 grid=[1, 17],
+                                                 align="left")
+
+        self.checkbox_cpu_temp = guizero.CheckBox(self.window,
+                                                  text=self.readable_column_names.cpu_temp,
+                                                  command=self._disable_other_checkboxes,
+                                                  args=[self.sql_columns.cpu_temp],
+                                                  grid=[1, 18],
+                                                  align="left")
+
+        self.checkbox_temperature = guizero.CheckBox(self.window,
+                                                     text=self.readable_column_names.environmental_temp,
+                                                     command=self._disable_other_checkboxes,
+                                                     args=[self.sql_columns.environmental_temp],
+                                                     grid=[1, 19],
+                                                     align="left")
+
+        self.checkbox_pressure = guizero.CheckBox(self.window,
+                                                  text=self.readable_column_names.pressure,
+                                                  command=self._disable_other_checkboxes,
+                                                  args=[self.sql_columns.pressure],
+                                                  grid=[1, 20],
+                                                  align="left")
+
+        self.checkbox_humidity = guizero.CheckBox(self.window,
+                                                  text=self.readable_column_names.humidity,
+                                                  command=self._disable_other_checkboxes,
+                                                  args=[self.sql_columns.humidity],
+                                                  grid=[2, 17],
+                                                  align="left")
+
+        self.checkbox_lumen = guizero.CheckBox(self.window,
+                                               text=self.readable_column_names.lumen,
+                                               command=self._disable_other_checkboxes,
+                                               args=[self.sql_columns.lumen],
+                                               grid=[2, 18],
+                                               align="left")
+
+        self.checkbox_colour = guizero.CheckBox(self.window,
+                                                text=self.readable_column_names.colours,
+                                                command=self._disable_other_checkboxes,
+                                                args=[self.sql_columns.rgb],
+                                                grid=[2, 19],
+                                                align="left")
+
+        self.checkbox_acc = guizero.CheckBox(self.window,
+                                             text=self.readable_column_names.accelerometer_xyz,
+                                             command=self._disable_other_checkboxes,
+                                             args=[self.sql_columns.accelerometer_xyz],
+                                             grid=[2, 20],
+                                             align="left")
+
+        self.checkbox_mag = guizero.CheckBox(self.window,
+                                             text=self.readable_column_names.magnetometer_xyz,
+                                             command=self._disable_other_checkboxes,
+                                             args=[self.sql_columns.magnetometer_xyz],
+                                             grid=[1, 25],
+                                             align="left")
+
+        self.checkbox_gyro = guizero.CheckBox(self.window,
+                                              text=self.readable_column_names.gyroscope_xyz,
+                                              command=self._disable_other_checkboxes,
+                                              args=[self.sql_columns.gyroscope_xyz],
+                                              grid=[2, 25],
+                                              align="left")
+
+        self.text_space4 = guizero.Text(self.window,
+                                        text=" ",
+                                        grid=[1, 35],
+                                        align="right")
+
+        self.button_database = guizero.PushButton(self.window,
+                                                  text="Open & Graph\nDatabase",
+                                                  command=self.plotly_button,
+                                                  grid=[1, 36, 2, 1],
+                                                  align="left")
+
+        self.button_live = guizero.PushButton(self.window,
+                                              text="Start Live Graph",
+                                              command=self.live_button,
+                                              grid=[2, 36],
+                                              align="left")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
@@ -282,7 +280,7 @@ class CreateGraphingWindow:
                 self.current_config.temperature_offset = float(self.textbox_temperature_offset.value)
             except Exception as error:
                 self.current_config.temperature_offset = 0
-                warn("Invalid Temperature Offset", "Please check and correct 'Env Temp Offset'")
+                guizero.warn("Invalid Temperature Offset", "Please check and correct 'Env Temp Offset'")
                 app_logger.app_logger.warning("Invalid Graph 'Env Temp Offset': " + str(error))
 
     def _set_config(self):
@@ -376,7 +374,7 @@ class CreateGraphingWindow:
 
     def plotly_button(self):
         """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
-        new_data = CreateGraphData()
+        new_data = app_variables.CreateGraphData()
         new_data.enable_plotly_webgl = self.current_config.enable_plotly_webgl
         new_data.db_location = filedialog.askopenfilename()
 
@@ -401,13 +399,13 @@ class CreateGraphingWindow:
             new_data.enable_custom_temp_offset = self.current_config.enable_custom_temp_offset
             new_data.temperature_offset = self.current_config.temperature_offset
 
-            app_graph_plotly.start_plotly_graph(new_data)
+            graphing_offline.start_plotly_graph(new_data)
         else:
             app_logger.app_logger.warning("Plotly Graph: No Database Selected")
 
     def live_button(self):
         """ Creates and starts a 'Live Graph' based on graph selections & the first checked and online IP. """
-        app_graph_live.pyplot.close()
+        graphing_live.pyplot.close()
         try:
             ip = self.ip_selection.get_verified_ip_list()[0]
             checkbox = self._get_column_checkboxes()[3]
@@ -420,15 +418,15 @@ class CreateGraphingWindow:
             self.current_config.temperature_offset = self.textbox_temperature_offset.value
             app_config.check_config(self.current_config)
             self._set_config()
-            app_graph_live.CreateLiveGraph(checkbox, ip, self.current_config)
+            graphing_live.CreateLiveGraph(checkbox, ip, self.current_config)
             # Thread(target=app_graph.CreateLiveGraph, args=[checkbox, ip, self.current_config]).start()
         else:
-            warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
-                                  "& Sensor Type from the Graph window")
+            guizero.warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
+                                          "& Sensor Type from the Graph window")
 
     def _get_column_checkboxes(self):
         """ Returns selected SQL Columns from the Graph Window, depending on the Data Source Selected. """
-        sql_columns = app_graph_live.CreateSQLColumnNames()
+        sql_columns = app_variables.CreateSQLColumnNames()
         column_checkboxes = [sql_columns.date_time, sql_columns.sensor_name, sql_columns.ip]
 
         if self.checkbox_up_time.value:
