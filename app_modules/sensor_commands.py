@@ -27,10 +27,17 @@ class CreateSensorNetworkCommand:
     """ Creates object instance of variables needed for network commands. """
     def __init__(self, ip, network_timeout, command):
         self.ip = ip
+        self.port = "10065"
         self.network_timeout = network_timeout
         self.command = command
         self.command_data = ""
         self.save_to_location = "/home/pi/"
+
+    def check_for_port_in_ip(self):
+        ip_list = self.ip.split(":")
+        if len(ip_list) > 1:
+            self.ip = ip_list[0]
+            self.port = ip_list[1]
 
 
 def check_sensor_status(ip, network_timeout):
@@ -99,7 +106,8 @@ def get_validated_hostname(hostname):
 
 def send_command(sensor_command):
     """ Sends command to sensor (based on provided command data). """
-    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+    sensor_command.check_for_port_in_ip()
+    url = "http://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
 
     try:
         requests.get(url=url, timeout=sensor_command.network_timeout, headers={'Connection': 'close'})
@@ -110,7 +118,8 @@ def send_command(sensor_command):
 
 def put_command(sensor_command):
     """ Sends command to sensor (based on provided command data). """
-    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+    sensor_command.check_for_port_in_ip()
+    url = "http://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
 
     try:
         requests.put(url=url, timeout=sensor_command.network_timeout, data={'command_data': sensor_command.command_data})
@@ -121,7 +130,8 @@ def put_command(sensor_command):
 
 def get_data(sensor_command):
     """ Returns requested sensor data (based on the provided command data). """
-    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+    sensor_command.check_for_port_in_ip()
+    url = "http://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
 
     try:
         tmp_return_data = requests.get(url=url, timeout=sensor_command.network_timeout)

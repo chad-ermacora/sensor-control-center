@@ -244,16 +244,6 @@ def check_config(config_settings):
         config_settings.allow_config_reset = default_settings.allow_config_reset
         bad_settings = True
 
-    count = 0
-    while count < 16:
-        if 6 < len(config_settings.ip_list[count]) < 16:
-            count = count + 1
-        else:
-            app_logger.app_logger.error("Setting IP List - BAD - Using Default: Bad IP #" + str(count))
-            config_settings.ip_list[count] = default_settings.ip_list[count]
-            count = count + 1
-            bad_settings = True
-
     try:
         config_settings.enable_plotly_webgl = int(config_settings.enable_plotly_webgl)
         app_logger.app_logger.debug("Setting Enable Plotly WebGL - OK")
