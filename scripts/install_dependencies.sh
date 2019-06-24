@@ -25,3 +25,4 @@ python3 -m pip install -U pip
 pip3 install -r /opt/kootnet-control-center/requirements.txt
 # Create Installed File to prevent re-runs.  Create install_version file for program first run.
 date > /opt/kootnet-control-center/installed_datetime.txt
+deactivate
