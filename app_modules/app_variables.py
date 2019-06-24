@@ -18,7 +18,7 @@
 """
 from sys import path
 
-software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.1"
+software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.2"
 
 
 class CreateSQLColumnsReadable:
