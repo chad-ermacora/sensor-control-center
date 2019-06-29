@@ -18,14 +18,14 @@
 """
 from sys import path
 
-software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.2"
+software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.20"
 
 
 class CreateSQLColumnsReadable:
     """ Creates an object to hold all human readable SQL column names. """
 
     def __init__(self):
-        self.no_sensor = ""
+        self.no_sensor = " || No Sensor Detected || "
         self.date_time = "Date & Time"
         self.sensor_name = "Sensor Name"
         self.ip = "IP"
@@ -33,9 +33,14 @@ class CreateSQLColumnsReadable:
         self.cpu_temp = "CPU Temperature"
         self.environmental_temp = "Env Temperature"
         self.pressure = "Pressure"
+        self.altitude = "Altitude"
         self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas = "Gas"
+        self.particulate_matter = "Particulate Matter"
         self.lumen = "Lumen"
         self.colours = "Colours"
+        self.ultra_violet = "Ultra Violet"
         self.accelerometer_xyz = "Accelerometer XYZ"
         self.magnetometer_xyz = "Magnetometer XYZ"
         self.gyroscope_xyz = "Gyroscope XYZ"
@@ -48,6 +53,7 @@ class CreateSQLColumnNames:
         self.sql_interval_table = "IntervalData"
         self.sql_trigger_table = "TriggerData"
         self.sql_other_table = "OtherData"
+
         self.date_time = "DateTime"
         self.sensor_name = "SensorName"
         self.ip = "IP"
@@ -56,10 +62,15 @@ class CreateSQLColumnNames:
         self.environmental_temp = "EnvironmentTemp"
         self.environmental_temp_offset = "EnvTempOffset"
         self.pressure = "Pressure"
+        self.altitude = "Altitude"
         self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas = ["Gas_Resistance_Index", "Gas_Oxidising", "Gas_Reducing", "Gas_NH3"]
+        self.particulate_matter = ["Particulate_Matter_1", "Particulate_Matter_2_5", "Particulate_Matter_10"]
         self.lumen = "Lumen"
         self.rgb = ["Red", "Green", "Blue"]
         self.six_chan_color = ["Red", "Orange", "Yellow", "Green", "Blue", "Violet"]
+        self.ultra_violet = ["Ultra_Violet_Index", "Ultra_Violet_A", "Ultra_Violet_B"]
         self.accelerometer_xyz = ["Acc_X", "Acc_Y", "Acc_Z"]
         self.magnetometer_xyz = ["Mag_X", "Mag_Y", "Mag_Z"]
         self.gyroscope_xyz = ["Gyro_X", "Gyro_Y", "Gyro_Z"]
@@ -75,10 +86,15 @@ class CreateMeasurementsTypes:
         self.no_measurement = ""
         self.celsius = " °C"
         self.pressure = " hPa"
+        self.altitude = " meters"
         self.humidity = " %RH"
+        self.distance = " meters?"
+        self.gas = " Resistance"
+        self.particulate_matter = " Particulate Matter"
         self.lumen = " Lumen"
         self.rgb = " RGB"
         self.six_chan_color = " ROYGBV"
+        self.ultra_violet = " Ultra Violet"
         self.xyz = " XYZ"
 
 
@@ -116,7 +132,16 @@ class CreateGraphData:
         self.sql_hat_temp = []
         self.sql_temp_offset = []
         self.sql_pressure = []
+        self.sql_altitude = []
         self.sql_humidity = []
+        self.sql_distance = []
+        self.sql_gas_resistance = []
+        self.sql_gas_oxidising = []
+        self.sql_gas_reducing = []
+        self.sql_gas_nh3 = []
+        self.sql_pm_1 = []
+        self.sql_pm_2_5 = []
+        self.sql_pm_10 = []
         self.sql_lumen = []
         self.sql_red = []
         self.sql_orange = []
@@ -124,6 +149,9 @@ class CreateGraphData:
         self.sql_green = []
         self.sql_blue = []
         self.sql_violet = []
+        self.sql_uv_index = []
+        self.sql_uv_a = []
+        self.sql_uv_b = []
         self.sql_acc_x = []
         self.sql_acc_y = []
         self.sql_acc_z = []
@@ -158,9 +186,21 @@ class CreateNetworkGetCommands:
         self.environmental_temp = "GetEnvTemperature"
         self.env_temp_offset = "GetTempOffsetEnv"
         self.pressure = "GetPressure"
+        self.altitude = "GetAltitude"
         self.humidity = "GetHumidity"
+        self.distance = "GetDistance"
+        self.gas_index = "GetGasResistanceIndex"
+        self.gas_oxidised = "GetGasOxidised"
+        self.gas_reduced = "GetGasReduced"
+        self.gas_nh3 = "GetGasNH3"
+        self.pm_1 = "GetParticulateMatter1"
+        self.pm_2_5 = "GetParticulateMatter2_5"
+        self.pm_10 = "GetParticulateMatter10"
         self.lumen = "GetLumen"
         self.rgb = "GetEMS"
+        self.ultra_violet_index = "GetUltraVioletA"
+        self.ultra_violet_a = "GetUltraVioletA"
+        self.ultra_violet_b = "GetUltraVioletB"
         self.accelerometer_xyz = "GetAccelerometerXYZ"
         self.magnetometer_xyz = "GetMagnetometerXYZ"
         self.gyroscope_xyz = "GetGyroscopeXYZ"
@@ -245,11 +285,16 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 0 = Raspberry Pi Sense HAT
 0 = Pimoroni BH1745
 0 = Pimoroni AS7262
+0 = Pimoroni BMP280
 0 = Pimoroni BME680
 0 = Pimoroni EnviroPHAT
+0 = Pimoroni Enviro+
+0 = Pimoroni PMS5003
 0 = Pimoroni LSM303D
+0 = Pimoroni ICM20948
 0 = Pimoroni VL53L1X
 0 = Pimoroni LTR-559
+0 = Pimoroni VEML6075
 """
 
 default_sensor_config_text = """

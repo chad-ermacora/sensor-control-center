@@ -48,7 +48,7 @@ def app_custom_configurations(main_app):
                 main_app.window_sensor_config.window.width = 625
                 main_app.window_sensor_config.window.height = 385
                 main_app.window_graph.window.width = 325
-                main_app.window_graph.window.height = 485
+                main_app.window_graph.window.height = 565
                 main_app.window_db_info.window.width = 590
                 main_app.window_db_info.window.height = 610
                 main_app.window_db_notes.window.width = 580
@@ -75,7 +75,7 @@ def app_custom_configurations(main_app):
                 main_app.window_sensor_config.window.width = 550
                 main_app.window_sensor_config.window.height = 340
                 main_app.window_graph.window.width = 320
-                main_app.window_graph.window.height = 435
+                main_app.window_graph.window.height = 515
                 main_app.window_db_info.window.width = 520
                 main_app.window_db_info.window.height = 545
                 main_app.window_db_notes.window.width = 555
@@ -103,7 +103,7 @@ def app_custom_configurations(main_app):
             main_app.window_sensor_config.window.width = 625
             main_app.window_sensor_config.window.height = 405
             main_app.window_graph.window.width = 325
-            main_app.window_graph.window.height = 485
+            main_app.window_graph.window.height = 555
             main_app.window_db_notes.window.width = 585
             main_app.window_db_notes.window.height = 545
             main_app.window_db_notes.textbox_current_note.width = 70

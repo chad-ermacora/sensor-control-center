@@ -37,7 +37,7 @@ class CreateGraphingWindow:
         self.window = guizero.Window(app,
                                      title="Graphing",
                                      width=275,
-                                     height=525,
+                                     height=605,
                                      layout="grid",
                                      visible=False)
 
@@ -186,12 +186,40 @@ class CreateGraphingWindow:
                                                   grid=[1, 20],
                                                   align="left")
 
+        self.checkbox_altitude = guizero.CheckBox(self.window,
+                                                  text=self.readable_column_names.altitude,
+                                                  command=self._disable_other_checkboxes,
+                                                  args=[self.sql_columns.altitude],
+                                                  grid=[1, 21],
+                                                  align="left")
+
         self.checkbox_humidity = guizero.CheckBox(self.window,
                                                   text=self.readable_column_names.humidity,
                                                   command=self._disable_other_checkboxes,
                                                   args=[self.sql_columns.humidity],
-                                                  grid=[2, 17],
+                                                  grid=[1, 22],
                                                   align="left")
+
+        self.checkbox_distance = guizero.CheckBox(self.window,
+                                                  text=self.readable_column_names.distance,
+                                                  command=self._disable_other_checkboxes,
+                                                  args=[self.sql_columns.distance],
+                                                  grid=[1, 23],
+                                                  align="left")
+
+        self.checkbox_gas = guizero.CheckBox(self.window,
+                                             text=self.readable_column_names.gas,
+                                             command=self._disable_other_checkboxes,
+                                             args=[self.sql_columns.gas],
+                                             grid=[1, 24],
+                                             align="left")
+
+        self.checkbox_particulate_matter = guizero.CheckBox(self.window,
+                                                            text=self.readable_column_names.particulate_matter,
+                                                            command=self._disable_other_checkboxes,
+                                                            args=[self.sql_columns.particulate_matter],
+                                                            grid=[2, 17],
+                                                            align="left")
 
         self.checkbox_lumen = guizero.CheckBox(self.window,
                                                text=self.readable_column_names.lumen,
@@ -207,25 +235,32 @@ class CreateGraphingWindow:
                                                 grid=[2, 19],
                                                 align="left")
 
+        self.checkbox_ultra_violet = guizero.CheckBox(self.window,
+                                                      text=self.readable_column_names.ultra_violet,
+                                                      command=self._disable_other_checkboxes,
+                                                      args=[self.sql_columns.ultra_violet],
+                                                      grid=[2, 20],
+                                                      align="left")
+
         self.checkbox_acc = guizero.CheckBox(self.window,
                                              text=self.readable_column_names.accelerometer_xyz,
                                              command=self._disable_other_checkboxes,
                                              args=[self.sql_columns.accelerometer_xyz],
-                                             grid=[2, 20],
+                                             grid=[2, 21],
                                              align="left")
 
         self.checkbox_mag = guizero.CheckBox(self.window,
                                              text=self.readable_column_names.magnetometer_xyz,
                                              command=self._disable_other_checkboxes,
                                              args=[self.sql_columns.magnetometer_xyz],
-                                             grid=[1, 25],
+                                             grid=[2, 22],
                                              align="left")
 
         self.checkbox_gyro = guizero.CheckBox(self.window,
                                               text=self.readable_column_names.gyroscope_xyz,
                                               command=self._disable_other_checkboxes,
                                               args=[self.sql_columns.gyroscope_xyz],
-                                              grid=[2, 25],
+                                              grid=[2, 23],
                                               align="left")
 
         self.text_space4 = guizero.Text(self.window,
@@ -317,12 +352,22 @@ class CreateGraphingWindow:
             self.checkbox_temperature.value = 1
             self.checkbox_pressure.enable()
             self.checkbox_pressure.value = 1
+            self.checkbox_altitude.enable()
+            self.checkbox_altitude.value = 1
             self.checkbox_humidity.enable()
             self.checkbox_humidity.value = 1
+            self.checkbox_distance.enable()
+            self.checkbox_distance.value = 1
+            self.checkbox_gas.enable()
+            self.checkbox_gas.value = 1
+            self.checkbox_particulate_matter.enable()
+            self.checkbox_particulate_matter.value = 1
             self.checkbox_lumen.enable()
             self.checkbox_lumen.value = 1
             self.checkbox_colour.enable()
             self.checkbox_colour.value = 1
+            self.checkbox_ultra_violet.enable()
+            self.checkbox_ultra_violet.value = 1
             self.checkbox_acc.enable()
             self.checkbox_acc.value = 1
             self.checkbox_mag.enable()
@@ -350,12 +395,22 @@ class CreateGraphingWindow:
             self.checkbox_temperature.value = 0
             self.checkbox_pressure.enable()
             self.checkbox_pressure.value = 0
+            self.checkbox_altitude.enable()
+            self.checkbox_altitude.value = 0
             self.checkbox_humidity.enable()
             self.checkbox_humidity.value = 0
+            self.checkbox_distance.enable()
+            self.checkbox_distance.value = 0
+            self.checkbox_gas.enable()
+            self.checkbox_gas.value = 0
+            self.checkbox_particulate_matter.enable()
+            self.checkbox_particulate_matter.value = 0
             self.checkbox_lumen.enable()
             self.checkbox_lumen.value = 0
             self.checkbox_colour.enable()
             self.checkbox_colour.value = 0
+            self.checkbox_ultra_violet.enable()
+            self.checkbox_ultra_violet.value = 0
             self.checkbox_acc.enable()
             self.checkbox_acc.value = 0
             self.checkbox_mag.enable()
@@ -408,18 +463,17 @@ class CreateGraphingWindow:
         graphing_live.pyplot.close()
         try:
             ip = self.ip_selection.get_verified_ip_list()[0]
-            checkbox = self._get_column_checkboxes()[3]
+            sensor_type = self._get_column_checkboxes()[3]
         except IndexError:
             ip = "Invalid"
-            checkbox = "Invalid"
+            sensor_type = "Invalid"
 
         if ip is not "Invalid":
             self.current_config.live_refresh = self.textbox_refresh_time.value
             self.current_config.temperature_offset = self.textbox_temperature_offset.value
             app_config.check_config(self.current_config)
             self._set_config()
-            graphing_live.CreateLiveGraph(checkbox, ip, self.current_config)
-            # Thread(target=app_graph.CreateLiveGraph, args=[checkbox, ip, self.current_config]).start()
+            graphing_live.CreateLiveGraph(sensor_type, ip, self.current_config)
         else:
             guizero.warn("Select Sensor", "Please Select a Sensor IP from the Main window\n"
                                           "& Sensor Type from the Graph window")
@@ -437,22 +491,35 @@ class CreateGraphingWindow:
             column_checkboxes.append(sql_columns.environmental_temp)
         if self.checkbox_pressure.value:
             column_checkboxes.append(sql_columns.pressure)
+        if self.checkbox_altitude.value:
+            column_checkboxes.append(sql_columns.altitude)
         if self.checkbox_humidity.value:
             column_checkboxes.append(sql_columns.humidity)
+        if self.checkbox_distance.value:
+            column_checkboxes.append(sql_columns.distance)
+        if self.checkbox_gas.value:
+            for column in sql_columns.gas:
+                column_checkboxes.append(column)
+        if self.checkbox_particulate_matter.value:
+            for column in sql_columns.particulate_matter:
+                column_checkboxes.append(column)
         if self.checkbox_lumen.value:
             column_checkboxes.append(sql_columns.lumen)
         if self.checkbox_colour.value:
-            for colour in sql_columns.six_chan_color:
-                column_checkboxes.append(colour)
+            for column in sql_columns.six_chan_color:
+                column_checkboxes.append(column)
+        if self.checkbox_ultra_violet.value:
+            for column in sql_columns.ultra_violet:
+                column_checkboxes.append(column)
         if self.checkbox_acc.value:
-            for axis in sql_columns.accelerometer_xyz:
-                column_checkboxes.append(axis)
+            for column in sql_columns.accelerometer_xyz:
+                column_checkboxes.append(column)
         if self.checkbox_mag.value:
-            for axis in sql_columns.magnetometer_xyz:
-                column_checkboxes.append(axis)
+            for column in sql_columns.magnetometer_xyz:
+                column_checkboxes.append(column)
         if self.checkbox_gyro.value:
-            for axis in sql_columns.gyroscope_xyz:
-                column_checkboxes.append(axis)
+            for column in sql_columns.gyroscope_xyz:
+                column_checkboxes.append(column)
 
         if self.checkbox_gyro.value or self.checkbox_mag.value or self.checkbox_acc.value:
             column_checkboxes.append(sql_columns.date_time)
@@ -472,12 +539,22 @@ class CreateGraphingWindow:
         self.checkbox_temperature.value = 0
         self.checkbox_pressure.enable()
         self.checkbox_pressure.value = 0
+        self.checkbox_altitude.enable()
+        self.checkbox_altitude.value = 0
         self.checkbox_humidity.enable()
         self.checkbox_humidity.value = 0
+        self.checkbox_distance.enable()
+        self.checkbox_distance.value = 0
+        self.checkbox_gas.enable()
+        self.checkbox_gas.value = 0
+        self.checkbox_particulate_matter.enable()
+        self.checkbox_particulate_matter.value = 0
         self.checkbox_lumen.enable()
         self.checkbox_lumen.value = 0
         self.checkbox_colour.enable()
         self.checkbox_colour.value = 0
+        self.checkbox_ultra_violet.enable()
+        self.checkbox_ultra_violet.value = 0
         self.checkbox_acc.enable()
         self.checkbox_acc.value = 0
         self.checkbox_mag.enable()
@@ -491,9 +568,14 @@ class CreateGraphingWindow:
         self.checkbox_cpu_temp.value = 1
         self.checkbox_temperature.value = 1
         self.checkbox_pressure.value = 1
+        self.checkbox_altitude.value = 1
         self.checkbox_humidity.value = 1
+        self.checkbox_distance.value = 1
+        self.checkbox_gas.value = 1
+        self.checkbox_particulate_matter.value = 1
         self.checkbox_lumen.value = 1
         self.checkbox_colour.value = 1
+        self.checkbox_ultra_violet.value = 1
         self.checkbox_acc.value = 1
         self.checkbox_mag.value = 1
         self.checkbox_gyro.value = 1
@@ -504,9 +586,14 @@ class CreateGraphingWindow:
         self.checkbox_cpu_temp.value = 0
         self.checkbox_temperature.value = 0
         self.checkbox_pressure.value = 0
+        self.checkbox_altitude.value = 0
         self.checkbox_humidity.value = 0
+        self.checkbox_distance.value = 0
+        self.checkbox_gas.value = 0
+        self.checkbox_particulate_matter.value = 0
         self.checkbox_lumen.value = 0
         self.checkbox_colour.value = 0
+        self.checkbox_ultra_violet.value = 0
         self.checkbox_acc.value = 0
         self.checkbox_mag.value = 0
         self.checkbox_gyro.value = 0
@@ -539,12 +626,39 @@ class CreateGraphingWindow:
             else:
                 self.checkbox_pressure.disable()
                 self.checkbox_pressure.value = 0
+            if var_checkbox is self.sql_columns.altitude:
+                if self.checkbox_altitude.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_altitude.disable()
+                self.checkbox_altitude.value = 0
             if var_checkbox is self.sql_columns.humidity:
                 if self.checkbox_humidity.value == 0:
                     unchecked = True
             else:
                 self.checkbox_humidity.disable()
                 self.checkbox_humidity.value = 0
+            if var_checkbox is self.sql_columns.distance:
+                if self.checkbox_distance.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_distance.disable()
+                self.checkbox_distance.value = 0
+
+            if var_checkbox is self.sql_columns.gas:
+                if self.checkbox_gas.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_gas.disable()
+                self.checkbox_gas.value = 0
+
+            if var_checkbox is self.sql_columns.particulate_matter:
+                if self.checkbox_particulate_matter.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_particulate_matter.disable()
+                self.checkbox_particulate_matter.value = 0
+
             if var_checkbox is self.sql_columns.lumen:
                 if self.checkbox_lumen.value == 0:
                     unchecked = True
@@ -557,6 +671,12 @@ class CreateGraphingWindow:
             else:
                 self.checkbox_colour.disable()
                 self.checkbox_colour.value = 0
+            if var_checkbox is self.sql_columns.ultra_violet:
+                if self.checkbox_ultra_violet.value == 0:
+                    unchecked = True
+            else:
+                self.checkbox_ultra_violet.disable()
+                self.checkbox_ultra_violet.value = 0
             if var_checkbox is self.sql_columns.accelerometer_xyz:
                 if self.checkbox_acc.value == 0:
                     unchecked = True
