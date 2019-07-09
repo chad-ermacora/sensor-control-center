@@ -110,8 +110,26 @@ def start_plotly_graph(graph_data):
             graph_data.sql_hat_temp = sql_column_data
         elif str(var_column) == sql_column_names.pressure:
             graph_data.sql_pressure = sql_column_data
+        elif str(var_column) == sql_column_names.altitude:
+            graph_data.sql_altitude = sql_column_data
         elif str(var_column) == sql_column_names.humidity:
             graph_data.sql_humidity = sql_column_data
+        elif str(var_column) == sql_column_names.distance:
+            graph_data.sql_distance = sql_column_data
+        elif str(var_column) == sql_column_names.gas[0]:
+            graph_data.sql_gas_resistance = sql_column_data
+        elif str(var_column) == sql_column_names.gas[1]:
+            graph_data.sql_gas_oxidising = sql_column_data
+        elif str(var_column) == sql_column_names.gas[2]:
+            graph_data.sql_gas_reducing = sql_column_data
+        elif str(var_column) == sql_column_names.gas[3]:
+            graph_data.sql_gas_nh3 = sql_column_data
+        elif str(var_column) == sql_column_names.particulate_matter[0]:
+            graph_data.sql_pm_1 = sql_column_data
+        elif str(var_column) == sql_column_names.particulate_matter[1]:
+            graph_data.sql_pm_2_5 = sql_column_data
+        elif str(var_column) == sql_column_names.particulate_matter[2]:
+            graph_data.sql_pm_10 = sql_column_data
         elif str(var_column) == sql_column_names.lumen:
             graph_data.sql_lumen = sql_column_data
         elif str(var_column) == sql_column_names.six_chan_color[0]:
@@ -126,7 +144,12 @@ def start_plotly_graph(graph_data):
             graph_data.sql_blue = sql_column_data
         elif str(var_column) == sql_column_names.six_chan_color[5]:
             graph_data.sql_violet = sql_column_data
-
+        elif str(var_column) == sql_column_names.ultra_violet[0]:
+            graph_data.sql_uv_index = sql_column_data
+        elif str(var_column) == sql_column_names.ultra_violet[1]:
+            graph_data.sql_uv_a = sql_column_data
+        elif str(var_column) == sql_column_names.ultra_violet[2]:
+            graph_data.sql_uv_b = sql_column_data
         elif str(var_column) == sql_column_names.accelerometer_xyz[0]:
             graph_data.sql_acc_x = sql_column_data
         elif str(var_column) == sql_column_names.accelerometer_xyz[1]:
@@ -207,14 +230,30 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_pressure) > 2:
             graphing_offline_extras.graph_sql_pressure(graph_data)
 
+        if len(graph_data.sql_altitude) > 2:
+            graphing_offline_extras.graph_sql_altitude(graph_data)
+
         if len(graph_data.sql_humidity) > 2:
             graphing_offline_extras.graph_sql_humidity(graph_data)
+
+        if len(graph_data.sql_distance) > 2:
+            graphing_offline_extras.graph_sql_distance(graph_data)
+
+        if len(graph_data.sql_gas_resistance) > 2 or len(graph_data.sql_gas_oxidising) > 2 \
+                or len(graph_data.sql_gas_reducing) > 2 or len(graph_data.sql_gas_nh3) > 2:
+            graphing_offline_extras.graph_sql_gas(graph_data)
+
+        if len(graph_data.sql_pm_1) > 2 or len(graph_data.sql_pm_2_5) > 2 or len(graph_data.sql_pm_10) > 2:
+            graphing_offline_extras.graph_sql_particulate_matter(graph_data)
 
         if len(graph_data.sql_lumen) > 2:
             graphing_offline_extras.graph_sql_lumen(graph_data)
 
         if len(graph_data.sql_red) > 2:
             graphing_offline_extras.graph_sql_ems_colours(graph_data)
+
+        if len(graph_data.sql_uv_index) > 2 or len(graph_data.sql_uv_a) > 2 or len(graph_data.sql_uv_b) > 2:
+            graphing_offline_extras.graph_sql_ultra_violet(graph_data)
 
         if len(graph_data.sql_acc_x) > 2:
             graphing_offline_extras.graph_sql_accelerometer(graph_data)

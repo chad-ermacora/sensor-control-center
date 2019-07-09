@@ -23,6 +23,7 @@ from app_modules import app_variables
 from app_modules import app_useful_functions
 from app_modules import app_config
 from app_modules import sensor_commands
+from app_modules import graphing_variables
 from app_modules import graphing_offline
 from app_modules import reports
 
@@ -109,7 +110,7 @@ class TestApp(unittest.TestCase):
     def test_app_graph(self):
         # Interval & Trigger graph's and functions done.  Only Live Graph left to do.
         print("\nPlease review the opened graph for errors.\n")
-        test_graph = app_variables.CreateGraphData()
+        test_graph = graphing_variables.CreateGraphData()
         test_graph.db_location = config_default.script_directory + "/test_files/SensorRecordingDatabase.sqlite"
         test_graph.save_to = save_to
         test_graph.sql_queries_skip = 0

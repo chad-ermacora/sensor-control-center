@@ -18,7 +18,7 @@
 """
 from sys import path
 
-software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.20"
+software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.65"
 
 
 class CreateSQLColumnsReadable:
@@ -96,71 +96,6 @@ class CreateMeasurementsTypes:
         self.six_chan_color = " ROYGBV"
         self.ultra_violet = " Ultra Violet"
         self.xyz = " XYZ"
-
-
-class CreateGraphData:
-    """ Creates an object to hold all the data needed for a graph. """
-
-    def __init__(self):
-        self.enable_plotly_webgl = False
-        self.db_location = ""
-        self.graph_table = "IntervalData"
-        self.save_to = ""
-        self.graph_start = "1111-08-21 00:00:01"
-        self.graph_end = "9999-01-01 00:00:01"
-        self.datetime_offset = 0.0
-        self.sql_queries_skip = 12
-        self.bypass_sql_skip = False
-        self.enable_custom_temp_offset = True
-        self.temperature_offset = 0.0
-
-        self.sub_plots = []
-        self.row_count = 0
-        self.graph_collection = []
-
-        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp",
-                              "EnvironmentTemp", "EnvTempOffset", "Pressure", "Humidity", "Lumen",
-                              "Red", "Orange", "Yellow", "Green", "Blue", "Violet"]
-        self.max_sql_queries = 200000
-
-        # Graph data holders for SQL DataBase
-        self.sql_time = []
-        self.sql_ip = []
-        self.sql_host_name = []
-        self.sql_up_time = []
-        self.sql_cpu_temp = []
-        self.sql_hat_temp = []
-        self.sql_temp_offset = []
-        self.sql_pressure = []
-        self.sql_altitude = []
-        self.sql_humidity = []
-        self.sql_distance = []
-        self.sql_gas_resistance = []
-        self.sql_gas_oxidising = []
-        self.sql_gas_reducing = []
-        self.sql_gas_nh3 = []
-        self.sql_pm_1 = []
-        self.sql_pm_2_5 = []
-        self.sql_pm_10 = []
-        self.sql_lumen = []
-        self.sql_red = []
-        self.sql_orange = []
-        self.sql_yellow = []
-        self.sql_green = []
-        self.sql_blue = []
-        self.sql_violet = []
-        self.sql_uv_index = []
-        self.sql_uv_a = []
-        self.sql_uv_b = []
-        self.sql_acc_x = []
-        self.sql_acc_y = []
-        self.sql_acc_z = []
-        self.sql_mg_x = []
-        self.sql_mg_y = []
-        self.sql_mg_z = []
-        self.sql_gyro_x = []
-        self.sql_gyro_y = []
-        self.sql_gyro_z = []
 
 
 class CreateNetworkGetCommands:
@@ -301,7 +236,7 @@ default_sensor_config_text = """
 Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
 0 = Enable Debug Logging
 1 = Record Interval Sensors to SQL Database
-1 = Record Trigger Sensors to SQL Database
+0 = Record Trigger Sensors to SQL Database
 300.0 = Seconds between Interval recordings
 0 = Enable Custom Temperature Offset
 0.0 = Custom Temperature Offset
@@ -331,61 +266,79 @@ Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.
 1 = Enable Sensor Uptime
 1209600.0 = Seconds between SQL Writes of Sensor Uptime
 
-1 = Enable CPU Temperature
-10.0 = CPU Temperature variance
-99999.99 = Seconds between 'CPU Temperature' readings
+0 = Enable CPU Temperature
+5.0 = CPU Temperature variance
+1.0 = Seconds between 'CPU Temperature' readings
 
-1 = Enable Environmental Temperature
-10.0 = Environmental Temperature variance
-99999.99 = Seconds between 'Environmental Temperature' readings
+0 = Enable Environmental Temperature
+5.0 = Environmental Temperature variance
+1.0 = Seconds between 'Environmental Temperature' readings
 
-1 = Enable Pressure
-50 = Pressure variance
-99999.99 = Seconds between 'Pressure' readings
+0 = Enable Pressure
+10 = Pressure variance
+1.0 = Seconds between 'Pressure' readings
 
-1 = Enable Humidity
-25.0 = Humidity variance
-99999.99 = Seconds between 'Humidity' readings
+0 = Enable Altitude
+10 = Altitude variance
+1.0 = Seconds between 'Altitude' readings
 
-1 = Enable Lumen
-600.0 = Lumen variance
-99999.99 = Seconds between 'Lumen' readings
+0 = Enable Humidity
+5.0 = Humidity variance
+1.0 = Seconds between 'Humidity' readings
 
-1 = Enable Red
-10.0 = Red variance
-99999.99 = Seconds between 'Red' readings
+0 = Enable Distance
+5.0 = Distance variance
+1.0 = Seconds between 'Distance' readings
 
-1 = Enable Orange
-10.0 = Orange variance
-99999.99 = Seconds between 'Orange' readings
+0 = Enable Gas
+100.0 = Gas Resistance Index variance
+100.0 = Gas Oxidising variance
+100.0 = Gas Reducing variance
+100.0 = Gas NH3 variance
+1.0 = Seconds between 'Gas' readings
 
-1 = Enable Yellow
-10.0 = Yellow variance
-99999.99 = Seconds between 'Yellow' readings
+0 = Enable Particulate Matter (PM)
+1000.0 = Particulate Matter 1 (PM1) variance
+1000.0 = Particulate Matter 2.5 (PM2.5) variance
+1000.0 = Particulate Matter 10 (PM10) variance
+1.0 = Seconds between 'Particulate Matter' readings
 
-1 = Enable Green
-10.0 = Green variance
-99999.99 = Seconds between 'Green' readings
+0 = Enable Lumen
+100.0 = Lumen variance
+1.0 = Seconds between 'Lumen' readings
 
-1 = Enable Blue
-10.0 = Blue variance
-99999.99 = Seconds between 'Blue' readings
+0 = Enable Colour
+5.0 = Red variance
+5.0 = Orange variance
+5.0 = Yellow variance
+5.0 = Green variance
+5.0 = Blue variance
+5.0 = Violet variance
+1.0 = Seconds between 'Colour' readings
 
-1 = Enable Violet
-10.0 = Violet variance
-99999.99 = Seconds between 'Violet' readings
+0 = Enable Ultra Violet
+5.0 = Ultra Violet Index variance
+5.0 = Ultra Violet A variance
+5.0 = Ultra Violet B variance
+1.0 = Seconds between 'Ultra Violet' readings
 
-1 = Enable Accelerometer
-99999.99 = Accelerometer variance
-99999.99 = Seconds between 'Accelerometer' readings
+0 = Enable Accelerometer
+25.0 = Accelerometer X variance
+25.0 = Accelerometer Y variance
+25.0 = Accelerometer Z variance
+0.25 = Seconds between 'Accelerometer' readings
 
-1 = Enable Magnetometer
-99999.99 = Magnetometer variance
-99999.99 = Seconds between 'Magnetometer' readings
+0 = Enable Magnetometer
+25.0 = Magnetometer X variance
+25.0 = Magnetometer Y variance
+25.0 = Magnetometer Z variance
+0.25 = Seconds between 'Magnetometer' readings
 
-1 = Enable Gyroscope
-99999.99 = Gyroscope variance
-99999.99 = Seconds between 'Gyroscope' readings
+0 = Enable Gyroscope
+25.0 = Gyroscope X variance
+25.0 = Gyroscope Y variance
+25.0 = Gyroscope Z variance
+0.25 = Seconds between 'Gyroscope' readings
 """
 
 sql_default_textbox_note = """

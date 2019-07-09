@@ -21,6 +21,7 @@ from tkinter import filedialog
 from app_modules import app_logger
 from app_modules import app_variables
 from app_modules import app_config
+from app_modules import graphing_variables
 from app_modules import graphing_live
 from app_modules import graphing_offline
 
@@ -268,17 +269,11 @@ class CreateGraphingWindow:
                                         grid=[1, 35],
                                         align="right")
 
-        self.button_database = guizero.PushButton(self.window,
-                                                  text="Open & Graph\nDatabase",
-                                                  command=self.plotly_button,
-                                                  grid=[1, 36, 2, 1],
-                                                  align="left")
-
         self.button_live = guizero.PushButton(self.window,
-                                              text="Start Live Graph",
-                                              command=self.live_button,
-                                              grid=[2, 36],
-                                              align="left")
+                                              text="Create Graph",
+                                              command=self._create_graph_button,
+                                              grid=[1, 36, 2, 1],
+                                              align="top")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
@@ -332,7 +327,6 @@ class CreateGraphingWindow:
         self._enable_all_for_live()
         if self.radio_sensor_type.get() == "SQL Database":
             self._radio_sql_type_selection()
-            self.button_live.disable()
             self.textbox_refresh_time.disable()
 
             self.textbox_start.enable()
@@ -375,10 +369,7 @@ class CreateGraphingWindow:
             self.checkbox_gyro.enable()
             self.checkbox_gyro.value = 1
 
-            self.button_database.enable()
-
         if self.radio_sensor_type.get() == "Live Sensor":
-            self.button_database.disable()
             self.textbox_sql_skip.disable()
             self.textbox_start.disable()
             self.textbox_end.disable()
@@ -418,8 +409,6 @@ class CreateGraphingWindow:
             self.checkbox_gyro.enable()
             self.checkbox_gyro.value = 0
 
-            self.button_live.enable()
-
     def _radio_sql_type_selection(self):
         """ Enables or disables the SQL Skip, based on graph type selected. """
         if self.radio_recording_type_selection.value_text == "Interval":
@@ -427,9 +416,15 @@ class CreateGraphingWindow:
         else:
             self.textbox_sql_skip.disable()
 
+    def _create_graph_button(self):
+        if self.radio_sensor_type.get() == "Live Sensor":
+            self.live_button()
+        elif self.radio_sensor_type.get() == "SQL Database":
+            self.plotly_button()
+
     def plotly_button(self):
         """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
-        new_data = app_variables.CreateGraphData()
+        new_data = graphing_variables.CreateGraphData()
         new_data.enable_plotly_webgl = self.current_config.enable_plotly_webgl
         new_data.db_location = filedialog.askopenfilename()
 

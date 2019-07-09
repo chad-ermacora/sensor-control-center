@@ -247,6 +247,8 @@ class CreateLiveGraph:
                     if count > 0:
                         sensor_type_name += "||"
                     sensor_type_name += " PM10"
+                if count == 0:
+                    sensor_reading = self.readable_column_names.no_sensor
             except Exception as error:
                 app_logger.app_logger.warning("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
