@@ -44,7 +44,7 @@ def app_custom_configurations(main_app):
                 main_app.window_sensor_notes.textbox_current_note.width = 70
                 main_app.window_sensor_notes.textbox_note_date.width = 20
                 main_app.window_sensor_commands.window.width = 315
-                main_app.window_sensor_commands.window.height = 275
+                main_app.window_sensor_commands.window.height = 290
                 main_app.window_sensor_config.window.width = 625
                 main_app.window_sensor_config.window.height = 385
                 main_app.window_graph.window.width = 325
@@ -70,8 +70,8 @@ def app_custom_configurations(main_app):
                 main_app.window_sensor_notes.window.height = 460
                 main_app.window_sensor_notes.textbox_current_note.width = 76
                 main_app.window_sensor_notes.textbox_note_date.width = 21
-                main_app.window_sensor_commands.window.width = 295
-                main_app.window_sensor_commands.window.height = 255
+                main_app.window_sensor_commands.window.width = 290
+                main_app.window_sensor_commands.window.height = 275
                 main_app.window_sensor_config.window.width = 550
                 main_app.window_sensor_config.window.height = 340
                 main_app.window_graph.window.width = 320
@@ -98,8 +98,8 @@ def app_custom_configurations(main_app):
             main_app.window_sensor_notes.window.height = 545
             main_app.window_sensor_notes.textbox_current_note.width = 70
             main_app.window_sensor_notes.textbox_note_date.width = 20
-            main_app.window_sensor_commands.window.width = 315
-            main_app.window_sensor_commands.window.height = 275
+            main_app.window_sensor_commands.window.width = 310
+            main_app.window_sensor_commands.window.height = 310
             main_app.window_sensor_config.window.width = 625
             main_app.window_sensor_config.window.height = 405
             main_app.window_graph.window.width = 325

@@ -18,7 +18,7 @@
 """
 from sys import path
 
-software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.65"
+software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.78"
 
 
 class CreateSQLColumnsReadable:
@@ -164,6 +164,8 @@ class CreateNetworkSendCommands:
         self.put_sql_note = "PutDatabaseNote"
         self.delete_sql_note = "DeleteDatabaseNote"
         self.update_sql_note = "UpdateDatabaseNote"
+
+        self.display_message = "DisplayText"
 
         self.command_data_separator = "[new_data_section]"
 
