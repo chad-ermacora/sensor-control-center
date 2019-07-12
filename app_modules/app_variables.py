@@ -18,7 +18,7 @@
 """
 from sys import path
 
-software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.78"
+software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.97"
 
 
 class CreateSQLColumnsReadable:
@@ -232,11 +232,15 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 0 = Pimoroni VL53L1X
 0 = Pimoroni LTR-559
 0 = Pimoroni VEML6075
+0 = Pimoroni 11x7 LED Matrix
+0 = Pimoroni 10.96'' SPI Colour LCD (160x80)
+0 = Pimoroni 1.12'' Mono OLED (128x128, white/black)
 """
 
 default_sensor_config_text = """
 Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
 0 = Enable Debug Logging
+0 = Enable Display (If present)
 1 = Record Interval Sensors to SQL Database
 0 = Record Trigger Sensors to SQL Database
 300.0 = Seconds between Interval recordings
