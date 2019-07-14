@@ -80,9 +80,23 @@ class CreateSensorCommandsWindow:
                                                     grid=[3, 3],
                                                     align="top")
 
+        self.button_lan_Upgrade_dev = guizero.PushButton(self.window,
+                                                         text="Dev SMB\nUpgrade",
+                                                         command=self.send_commands,
+                                                         args=[network_commands.upgrade_smb_dev],
+                                                         grid=[1, 4],
+                                                         align="top")
+
+        self.button_online_Upgrade_dev = guizero.PushButton(self.window,
+                                                            text="Dev HTTP\nUpgrade",
+                                                            command=self.send_commands,
+                                                            args=[network_commands.upgrade_online_dev],
+                                                            grid=[2, 4],
+                                                            align="top")
+
         self.text_power = guizero.Text(self.window,
                                        text="Power Commands",
-                                       grid=[1, 4, 3, 1],
+                                       grid=[1, 24, 3, 1],
                                        color='blue',
                                        align="left")
 
@@ -90,46 +104,67 @@ class CreateSensorCommandsWindow:
                                                    text="Restart\nServices",
                                                    command=self.send_commands,
                                                    args=[network_commands.restart_services],
-                                                   grid=[1, 5],
+                                                   grid=[1, 25],
                                                    align="top")
 
         self.button_reboot = guizero.PushButton(self.window,
                                                 text="Reboot",
                                                 command=self.send_commands,
                                                 args=[network_commands.reboot_system],
-                                                grid=[2, 5],
+                                                grid=[2, 25],
                                                 align="top")
 
         self.button_shutdown = guizero.PushButton(self.window,
                                                   text="Shutdown",
                                                   command=self.send_commands,
                                                   args=[network_commands.shutdown_system],
-                                                  grid=[3, 5],
+                                                  grid=[3, 25],
                                                   align="top")
 
         self.text_other = guizero.Text(self.window,
-                                       text="Other Commands",
-                                       grid=[1, 6, 3, 1],
+                                       text="System Commands",
+                                       grid=[1, 36, 3, 1],
                                        color='blue',
                                        align="left")
-
-        self.button_display_text = guizero.PushButton(self.window,
-                                                      text="Display Text\nOn Sensor",
-                                                      command=self.send_text_message,
-                                                      grid=[1, 7],
-                                                      align="top")
 
         self.button_get_config = guizero.PushButton(self.window,
                                                     text="Change\nNames",
                                                     command=self.hostname_change,
-                                                    grid=[2, 7],
+                                                    grid=[1, 37],
                                                     align="top")
 
         self.button_update_datetime = guizero.PushButton(self.window,
                                                          text="Sync Clock\nwith\nComputer",
                                                          command=self.datetime_update,
-                                                         grid=[3, 7],
+                                                         grid=[2, 37],
                                                          align="top")
+
+        self.text_display_commands = guizero.Text(self.window,
+                                                  text="Clear Sensor Logs",
+                                                  grid=[1, 48, 3, 1],
+                                                  color='blue',
+                                                  align="left")
+
+        self.button_delete_primary_log = guizero.PushButton(self.window,
+                                                            text="Primary Log",
+                                                            command=self.send_commands,
+                                                            args=[network_commands.delete_primary_log],
+                                                            grid=[1, 49],
+                                                            align="top")
+
+        self.button_delete_network_log = guizero.PushButton(self.window,
+                                                            text="Network Log",
+                                                            command=self.send_commands,
+                                                            args=[network_commands.delete_network_log],
+                                                            grid=[2, 49],
+                                                            align="top")
+
+        self.button_delete_sensor_log = guizero.PushButton(self.window,
+                                                           text="Sensors Log",
+                                                           command=self.send_commands,
+                                                           args=[network_commands.delete_sensors_log],
+                                                           grid=[3, 49],
+                                                           align="top")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
@@ -140,6 +175,11 @@ class CreateSensorCommandsWindow:
         self.button_os_Upgrade.enable()
         self.button_shutdown.enable()
         self.button_update_datetime.enable()
+        self.button_delete_primary_log.enable()
+        self.button_delete_network_log.enable()
+        self.button_delete_sensor_log.enable()
+        self.button_lan_Upgrade_dev.enable()
+        self.button_online_Upgrade_dev.enable()
         self.button_lan_Upgrade.text = "Clean\nUpgrade\nOver SMB"
         self.button_online_Upgrade.text = "Clean\nUpgrade\nOver HTTP"
         self.button_online_Upgrade.update_command(self.send_commands, [network_commands.clean_upgrade_online])
@@ -150,30 +190,15 @@ class CreateSensorCommandsWindow:
         self.button_os_Upgrade.disable()
         self.button_shutdown.disable()
         self.button_update_datetime.disable()
+        self.button_delete_primary_log.disable()
+        self.button_delete_network_log.disable()
+        self.button_delete_sensor_log.disable()
+        self.button_lan_Upgrade_dev.disable()
+        self.button_online_Upgrade_dev.disable()
         self.button_lan_Upgrade.text = "Upgrade\nSoftware\nOver SMB"
         self.button_online_Upgrade.text = "Upgrade\nSoftware\nOver HTTP"
         self.button_online_Upgrade.update_command(self.send_commands, [network_commands.upgrade_online])
         self.button_lan_Upgrade.update_command(self.send_commands, [network_commands.upgrade_smb])
-
-    def send_text_message(self):
-        """ Sends Message to display on the sensors installed display. """
-        app_logger.sensor_logger.debug("Sending message to sensor")
-
-        network_timeout = self.current_config.network_timeout_data
-        ip_list = self.ip_selection.get_verified_ip_list()
-        ip = ip_list[0]
-        if len(ip_list) > 0:
-            message = simpledialog.askstring("Send Text to Sensor Display", "")
-            app_logger.sensor_logger.debug("Sent Message: " + str(message))
-
-            command = network_commands.display_message
-            sensor_command = sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, command)
-            sensor_command.command_data = message
-            message_thread = Thread(target=sensor_commands.put_command, args=[sensor_command])
-            message_thread.daemon = True
-            message_thread.start()
-        else:
-            app_useful_functions.no_ip_selected_message()
 
     def send_commands(self, command):
         """ Sends provided command to the Sensor Units IP's. """

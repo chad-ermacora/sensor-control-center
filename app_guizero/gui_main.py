@@ -34,6 +34,7 @@ from app_guizero.graphing_window import CreateGraphingWindow
 from app_guizero.db_information_window import CreateDataBaseInfoWindow
 from app_guizero.notes_window import CreateDataBaseNotesWindow
 from app_guizero.reports_window import CreateReportsWindow
+from app_guizero.remote_sensor_display_window import CreateSensorDisplayWindow
 from app_guizero.remote_sensor_commands_window import CreateSensorCommandsWindow
 from app_guizero.remote_sensor_config_window import CreateSensorConfigWindow
 from app_guizero.remote_sensor_logs_window import CreateSensorLogsWindow
@@ -57,6 +58,7 @@ class CreateMainWindow:
 
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
         self.window_reports = CreateReportsWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_display = CreateSensorDisplayWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
@@ -83,6 +85,8 @@ class CreateMainWindow:
                                                       self._app_exit]],
                                                     [["Create Reports",
                                                       self.window_reports.window.show],
+                                                     ["Remote Sensor Display",
+                                                      self.window_sensor_display.window.show],
                                                      ["View & Download Logs",
                                                       self.window_sensor_logs.window.show],
                                                      ["Online Notes Editor",

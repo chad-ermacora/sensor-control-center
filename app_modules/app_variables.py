@@ -18,7 +18,7 @@
 """
 from sys import path
 
-software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.97"
+software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.112"
 
 
 class CreateSQLColumnsReadable:
@@ -152,7 +152,9 @@ class CreateNetworkSendCommands:
         self.reboot_system = "RebootSystem"
         self.upgrade_system_os = "UpgradeSystemOS"
         self.upgrade_online = "UpgradeOnline"
+        self.upgrade_online_dev = "UpgradeOnlineDev"
         self.upgrade_smb = "UpgradeSMB"
+        self.upgrade_smb_dev = "UpgradeSMBDev"
         self.clean_upgrade_online = "CleanOnline"
         self.clean_upgrade_smb = "CleanSMB"
         self.set_host_name = "SetHostName"
@@ -166,6 +168,10 @@ class CreateNetworkSendCommands:
         self.update_sql_note = "UpdateDatabaseNote"
 
         self.display_message = "DisplayText"
+
+        self.delete_primary_log = "DeletePrimaryLog"
+        self.delete_network_log = "DeleteNetworkLog"
+        self.delete_sensors_log = "DeleteSensorsLog"
 
         self.command_data_separator = "[new_data_section]"
 
