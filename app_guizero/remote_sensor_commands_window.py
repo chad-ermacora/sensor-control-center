@@ -136,8 +136,15 @@ class CreateSensorCommandsWindow:
         self.button_update_datetime = guizero.PushButton(self.window,
                                                          text="Sync Clock\nwith\nComputer",
                                                          command=self.datetime_update,
-                                                         grid=[2, 37],
+                                                         grid=[3, 37],
                                                          align="top")
+
+        self.button_reinstall_python_requirements = guizero.PushButton(self.window,
+                                                                       text="Check/Install\nDependencies",
+                                                                       command=self.send_commands,
+                                                                       args=[network_commands.reinstall_requirements],
+                                                                       grid=[2, 37],
+                                                                       align="top")
 
         self.text_display_commands = guizero.Text(self.window,
                                                   text="Clear Sensor Logs",
@@ -175,6 +182,7 @@ class CreateSensorCommandsWindow:
         self.button_os_Upgrade.enable()
         self.button_shutdown.enable()
         self.button_update_datetime.enable()
+        self.button_reinstall_python_requirements.enable()
         self.button_delete_primary_log.enable()
         self.button_delete_network_log.enable()
         self.button_delete_sensor_log.enable()
@@ -190,6 +198,7 @@ class CreateSensorCommandsWindow:
         self.button_os_Upgrade.disable()
         self.button_shutdown.disable()
         self.button_update_datetime.disable()
+        self.button_reinstall_python_requirements.disable()
         self.button_delete_primary_log.disable()
         self.button_delete_network_log.disable()
         self.button_delete_sensor_log.disable()

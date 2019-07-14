@@ -18,7 +18,7 @@
 """
 from sys import path
 
-software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.114"
+software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.117"
 
 
 class CreateSQLColumnsReadable:
@@ -151,6 +151,7 @@ class CreateNetworkSendCommands:
         self.shutdown_system = "ShutdownSystem"
         self.reboot_system = "RebootSystem"
         self.upgrade_system_os = "UpgradeSystemOS"
+        self.reinstall_requirements = "ReInstallRequirements"
         self.upgrade_online = "UpgradeOnline"
         self.upgrade_online_dev = "UpgradeOnlineDev"
         self.upgrade_smb = "UpgradeSMB"
