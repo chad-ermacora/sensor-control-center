@@ -325,7 +325,7 @@ class CreateGraphingWindow:
     def _radio_source_selection(self):
         """ Enables or disables the Graph Window selections, based on graph type selected. """
         self._enable_all_for_live()
-        if self.radio_sensor_type.get() == "SQL Database":
+        if self.radio_sensor_type.value_text == "SQL Database":
             self._radio_sql_type_selection()
             self.textbox_refresh_time.disable()
 
@@ -369,7 +369,7 @@ class CreateGraphingWindow:
             self.checkbox_gyro.enable()
             self.checkbox_gyro.value = 1
 
-        if self.radio_sensor_type.get() == "Live Sensor":
+        if self.radio_sensor_type.value_text == "Live Sensor":
             self.textbox_sql_skip.disable()
             self.textbox_start.disable()
             self.textbox_end.disable()
@@ -417,9 +417,9 @@ class CreateGraphingWindow:
             self.textbox_sql_skip.disable()
 
     def _create_graph_button(self):
-        if self.radio_sensor_type.get() == "Live Sensor":
+        if self.radio_sensor_type.value_text == "Live Sensor":
             self.live_button()
-        elif self.radio_sensor_type.get() == "SQL Database":
+        elif self.radio_sensor_type.value_text == "SQL Database":
             self.plotly_button()
 
     def plotly_button(self):
@@ -428,7 +428,7 @@ class CreateGraphingWindow:
         new_data.enable_plotly_webgl = self.current_config.enable_plotly_webgl
         new_data.db_location = filedialog.askopenfilename()
 
-        if new_data.db_location.strip() is not "":
+        if str(new_data.db_location) != "()":
             self.current_config.graph_start = self.textbox_start.value
             self.current_config.graph_end = self.textbox_end.value
             self.current_config.sql_queries_skip = self.textbox_sql_skip.value

@@ -85,7 +85,7 @@ class CreateMainWindow:
                                                       self._app_exit]],
                                                     [["Create Reports",
                                                       self.window_reports.window.show],
-                                                     ["Remote Sensor Display",
+                                                     ["Remote Display",
                                                       self.window_sensor_display.window.show],
                                                      ["View & Download Logs",
                                                       self.window_sensor_logs.window.show],
