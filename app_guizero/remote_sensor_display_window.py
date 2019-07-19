@@ -39,8 +39,8 @@ class CreateSensorDisplayWindow:
 
         self.window = guizero.Window(app,
                                      title="Remote Sensor Display",
-                                     width=350,
-                                     height=350,
+                                     width=275,
+                                     height=400,
                                      layout="grid",
                                      visible=False)
 

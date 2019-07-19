@@ -37,8 +37,8 @@ class CreateGraphingWindow:
 
         self.window = guizero.Window(app,
                                      title="Graphing",
-                                     width=275,
-                                     height=605,
+                                     width=280,
+                                     height=580,
                                      layout="grid",
                                      visible=False)
 
