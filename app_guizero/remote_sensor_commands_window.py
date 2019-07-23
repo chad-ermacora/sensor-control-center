@@ -33,6 +33,24 @@ class CreateSensorCommandsWindow:
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
+
+        self.text_upgrades_smb = "Regular SMB"
+        self.text_upgrades_http = "Regular HTTP"
+        self.text_upgrades_smb_dev = "Development SMB"
+        self.text_upgrades_http_dev = "Development HTTP"
+        self.text_upgrades_os = "Operating System"
+
+        self.text_power_restart_services = "Restart Services"
+        self.text_power_reboot = "Reboot"
+        self.text_power_shutdown = "Shutdown"
+
+        self.text_system_change_name = "Change Sensors Names"
+        self.text_system_check_dependencies = "Check Dependencies"
+        self.text_system_sync_clock = "Sync Date & Time"
+        self.text_system_clear_log_primary = "Clear Primary Log"
+        self.text_system_clear_log_network = "Clear Network Log"
+        self.text_system_clear_log_sensors = "Clear Sensors Log"
+
         self.window = guizero.Window(app,
                                      title="Sensor Commands",
                                      width=295,
@@ -40,174 +58,110 @@ class CreateSensorCommandsWindow:
                                      layout="grid",
                                      visible=False)
 
-        self.app_menubar = guizero.MenuBar(self.window,
-                                           toplevel=[["Advanced"]],
-                                           options=[[["Enable Advanced Commands",
-                                                      self.enable_advanced],
-                                                     ["Disable Advanced Commands",
-                                                      self.disable_advanced]]])
-
         self.text_select = guizero.Text(self.window,
                                         text="Select Sensor IPs in the main window",
-                                        grid=[1, 1, 3, 1],
+                                        grid=[1, 1],
                                         color='#CB0000',
                                         align="left")
 
         self.text_upgrade = guizero.Text(self.window,
                                          text="Upgrade Commands",
-                                         grid=[1, 2, 2, 1],
+                                         grid=[1, 2],
                                          color='blue',
                                          align="left")
 
-        self.button_lan_Upgrade = guizero.PushButton(self.window,
-                                                     text="Upgrade\nSoftware\nOver SMB",
-                                                     command=self.send_commands,
-                                                     args=[network_commands.upgrade_smb],
-                                                     grid=[1, 3],
-                                                     align="top")
+        self.upgrade_dropdown_selection = guizero.Combo(self.window,
+                                                        options=[self.text_upgrades_http,
+                                                                 self.text_upgrades_smb,
+                                                                 self.text_upgrades_http_dev,
+                                                                 self.text_upgrades_smb_dev,
+                                                                 self.text_upgrades_os],
+                                                        grid=[1, 3],
+                                                        align="left")
 
-        self.button_online_Upgrade = guizero.PushButton(self.window,
-                                                        text="Upgrade\nSoftware\nOver HTTP",
-                                                        command=self.send_commands,
-                                                        args=[network_commands.upgrade_online],
-                                                        grid=[2, 3],
-                                                        align="top")
-
-        self.button_os_Upgrade = guizero.PushButton(self.window,
-                                                    text="Upgrade\nOperating\nSystem",
-                                                    command=self.send_commands,
-                                                    args=[network_commands.upgrade_system_os],
-                                                    grid=[3, 3],
-                                                    align="top")
-
-        self.button_lan_Upgrade_dev = guizero.PushButton(self.window,
-                                                         text="Dev SMB\nUpgrade",
-                                                         command=self.send_commands,
-                                                         args=[network_commands.upgrade_smb_dev],
-                                                         grid=[1, 4],
-                                                         align="top")
-
-        self.button_online_Upgrade_dev = guizero.PushButton(self.window,
-                                                            text="Dev HTTP\nUpgrade",
-                                                            command=self.send_commands,
-                                                            args=[network_commands.upgrade_online_dev],
-                                                            grid=[2, 4],
-                                                            align="top")
+        self.button_upgrade_proceed = guizero.PushButton(self.window,
+                                                         text="Proceed",
+                                                         command=self._proceed_upgrade,
+                                                         grid=[1, 3],
+                                                         align="right")
 
         self.text_power = guizero.Text(self.window,
                                        text="Power Commands",
-                                       grid=[1, 24, 3, 1],
+                                       grid=[1, 24],
                                        color='blue',
                                        align="left")
 
-        self.button_terminate = guizero.PushButton(self.window,
-                                                   text="Restart\nServices",
-                                                   command=self.send_commands,
-                                                   args=[network_commands.restart_services],
-                                                   grid=[1, 25],
-                                                   align="top")
+        self.power_dropdown_selection = guizero.Combo(self.window,
+                                                      options=[self.text_power_restart_services,
+                                                               self.text_power_reboot,
+                                                               self.text_power_shutdown],
+                                                      grid=[1, 25],
+                                                      align="left")
 
-        self.button_reboot = guizero.PushButton(self.window,
-                                                text="Reboot",
-                                                command=self.send_commands,
-                                                args=[network_commands.reboot_system],
-                                                grid=[2, 25],
-                                                align="top")
-
-        self.button_shutdown = guizero.PushButton(self.window,
-                                                  text="Shutdown",
-                                                  command=self.send_commands,
-                                                  args=[network_commands.shutdown_system],
-                                                  grid=[3, 25],
-                                                  align="top")
+        self.button_power_proceed = guizero.PushButton(self.window,
+                                                       text="Proceed",
+                                                       command=self._proceed_power,
+                                                       grid=[1, 25],
+                                                       align="right")
 
         self.text_other = guizero.Text(self.window,
                                        text="System Commands",
-                                       grid=[1, 36, 3, 1],
+                                       grid=[1, 36],
                                        color='blue',
                                        align="left")
 
-        self.button_get_config = guizero.PushButton(self.window,
-                                                    text="Change\nNames",
-                                                    command=self.hostname_change,
-                                                    grid=[1, 37],
-                                                    align="top")
+        self.system_dropdown_selection = guizero.Combo(self.window,
+                                                       options=[self.text_system_change_name,
+                                                                self.text_system_check_dependencies,
+                                                                self.text_system_sync_clock,
+                                                                self.text_system_clear_log_primary,
+                                                                self.text_system_clear_log_network,
+                                                                self.text_system_clear_log_sensors],
+                                                       grid=[1, 37],
+                                                       align="left")
 
-        self.button_update_datetime = guizero.PushButton(self.window,
-                                                         text="Sync Clock\nwith\nComputer",
-                                                         command=self.datetime_update,
-                                                         grid=[3, 37],
-                                                         align="top")
-
-        self.button_reinstall_python_requirements = guizero.PushButton(self.window,
-                                                                       text="Check/Install\nDependencies",
-                                                                       command=self.send_commands,
-                                                                       args=[network_commands.reinstall_requirements],
-                                                                       grid=[2, 37],
-                                                                       align="top")
-
-        self.text_display_commands = guizero.Text(self.window,
-                                                  text="Clear Sensor Logs",
-                                                  grid=[1, 48, 3, 1],
-                                                  color='blue',
-                                                  align="left")
-
-        self.button_delete_primary_log = guizero.PushButton(self.window,
-                                                            text="Primary Log",
-                                                            command=self.send_commands,
-                                                            args=[network_commands.delete_primary_log],
-                                                            grid=[1, 49],
-                                                            align="top")
-
-        self.button_delete_network_log = guizero.PushButton(self.window,
-                                                            text="Network Log",
-                                                            command=self.send_commands,
-                                                            args=[network_commands.delete_network_log],
-                                                            grid=[2, 49],
-                                                            align="top")
-
-        self.button_delete_sensor_log = guizero.PushButton(self.window,
-                                                           text="Sensors Log",
-                                                           command=self.send_commands,
-                                                           args=[network_commands.delete_sensors_log],
-                                                           grid=[3, 49],
-                                                           align="top")
+        self.button_system_proceed = guizero.PushButton(self.window,
+                                                        text="Proceed",
+                                                        command=self._proceed_system,
+                                                        grid=[1, 37],
+                                                        align="right")
 
         # Window Tweaks
         self.window.tk.resizable(False, False)
-        self.disable_advanced()
 
-    def enable_advanced(self):
-        """ Enables advanced commands & changes software upgrades to 'Clean' upgrades. """
-        self.button_os_Upgrade.enable()
-        self.button_shutdown.enable()
-        self.button_update_datetime.enable()
-        self.button_reinstall_python_requirements.enable()
-        self.button_delete_primary_log.enable()
-        self.button_delete_network_log.enable()
-        self.button_delete_sensor_log.enable()
-        self.button_lan_Upgrade_dev.enable()
-        self.button_online_Upgrade_dev.enable()
-        self.button_lan_Upgrade.text = "Clean\nUpgrade\nOver SMB"
-        self.button_online_Upgrade.text = "Clean\nUpgrade\nOver HTTP"
-        self.button_online_Upgrade.update_command(self.send_commands, [network_commands.clean_upgrade_online])
-        self.button_lan_Upgrade.update_command(self.send_commands, [network_commands.clean_upgrade_smb])
+    def _proceed_upgrade(self):
+        if self.upgrade_dropdown_selection.value == self.text_upgrades_http:
+            self.send_commands(network_commands.upgrade_online)
+        elif self.upgrade_dropdown_selection.value == self.text_upgrades_http_dev:
+            self.send_commands(network_commands.upgrade_online_dev)
+        elif self.upgrade_dropdown_selection.value == self.text_upgrades_smb:
+            self.send_commands(network_commands.upgrade_smb)
+        elif self.upgrade_dropdown_selection.value == self.text_upgrades_smb_dev:
+            self.send_commands(network_commands.upgrade_smb_dev)
+        elif self.upgrade_dropdown_selection.value == self.text_upgrades_os:
+            self.send_commands(network_commands.upgrade_system_os)
 
-    def disable_advanced(self):
-        """ Disables advanced commands & changes software upgrades to normal upgrades. """
-        self.button_os_Upgrade.disable()
-        self.button_shutdown.disable()
-        self.button_update_datetime.disable()
-        self.button_reinstall_python_requirements.disable()
-        self.button_delete_primary_log.disable()
-        self.button_delete_network_log.disable()
-        self.button_delete_sensor_log.disable()
-        self.button_lan_Upgrade_dev.disable()
-        self.button_online_Upgrade_dev.disable()
-        self.button_lan_Upgrade.text = "Upgrade\nSoftware\nOver SMB"
-        self.button_online_Upgrade.text = "Upgrade\nSoftware\nOver HTTP"
-        self.button_online_Upgrade.update_command(self.send_commands, [network_commands.upgrade_online])
-        self.button_lan_Upgrade.update_command(self.send_commands, [network_commands.upgrade_smb])
+    def _proceed_power(self):
+        if self.power_dropdown_selection.value == self.text_power_restart_services:
+            self.send_commands(network_commands.restart_services)
+        elif self.power_dropdown_selection.value == self.text_power_reboot:
+            self.send_commands(network_commands.reboot_system)
+        elif self.power_dropdown_selection.value == self.text_power_shutdown:
+            self.send_commands(network_commands.shutdown_system)
+
+    def _proceed_system(self):
+        if self.system_dropdown_selection.value == self.text_system_change_name:
+            self.hostname_change()
+        elif self.system_dropdown_selection.value == self.text_system_check_dependencies:
+            self.send_commands(network_commands.reinstall_requirements)
+        elif self.system_dropdown_selection.value == self.text_system_sync_clock:
+            self.datetime_update()
+        elif self.system_dropdown_selection.value == self.text_system_clear_log_primary:
+            self.send_commands(network_commands.delete_primary_log)
+        elif self.system_dropdown_selection.value == self.text_system_clear_log_network:
+            self.send_commands(network_commands.delete_network_log)
+        elif self.system_dropdown_selection.value == self.text_system_clear_log_sensors:
+            self.send_commands(network_commands.delete_sensors_log)
 
     def send_commands(self, command):
         """ Sends provided command to the Sensor Units IP's. """

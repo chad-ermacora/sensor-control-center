@@ -54,15 +54,15 @@ def check_sensor_status(ip, network_timeout):
     return sensor_status
 
 
-def download_sensor_database(ip):
+def download_sensor_database(address_and_port):
     """ Returns requested sensor file (based on the provided command data). """
     network_commands = app_variables.CreateNetworkGetCommands()
-    url = "http://" + ip + ":10065/" + network_commands.sensor_sql_database
+    url = "http://" + address_and_port + "/" + network_commands.sensor_sql_database
 
     try:
         webbrowser.open_new_tab(url)
     except Exception as error:
-        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(ip))
+        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(address_and_port))
         app_logger.sensor_logger.debug(str(error))
 
 
