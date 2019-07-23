@@ -53,8 +53,8 @@ class CreateSensorCommandsWindow:
 
         self.window = guizero.Window(app,
                                      title="Sensor Commands",
-                                     width=295,
-                                     height=440,
+                                     width=280,
+                                     height=240,
                                      layout="grid",
                                      visible=False)
 
