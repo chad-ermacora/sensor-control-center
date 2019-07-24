@@ -36,10 +36,7 @@ def graph_host_name(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_generic_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_sensor_name = _add_scatter_gl(graph_data)
-    else:
-        trace_sensor_name = _add_scatter_cpu(graph_data)
+    trace_sensor_name = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_sensor_name, graph_data.row_count, 1])
     graph_data.sub_plots.append(tmp_sensor_name)
@@ -58,10 +55,7 @@ def graph_sql_uptime(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_generic_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_uptime = _add_scatter_gl(graph_data)
-    else:
-        trace_uptime = _add_scatter_cpu(graph_data)
+    trace_uptime = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_uptime, graph_data.row_count, 1])
     graph_data.sub_plots.append("Sensor Uptime")
@@ -80,10 +74,7 @@ def graph_sql_cpu_env_temperature(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_red_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_cpu_temp = _add_scatter_gl(graph_data)
-    else:
-        trace_cpu_temp = _add_scatter_cpu(graph_data)
+    trace_cpu_temp = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Environmental Temp"
     graph_data.temp_sql = graph_data.sql_hat_temp
@@ -93,10 +84,7 @@ def graph_sql_cpu_env_temperature(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_green_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_hat_temp = _add_scatter_gl(graph_data)
-    else:
-        trace_hat_temp = _add_scatter_cpu(graph_data)
+    trace_hat_temp = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_cpu_temp, graph_data.row_count, 1])
     graph_data.graph_collection.append([trace_hat_temp, graph_data.row_count, 1])
@@ -116,10 +104,7 @@ def graph_sql_pressure(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_generic_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_pressure = _add_scatter_gl(graph_data)
-    else:
-        trace_pressure = _add_scatter_cpu(graph_data)
+    trace_pressure = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_pressure, graph_data.row_count, 1])
     graph_data.sub_plots.append('Pressure hPa')
@@ -138,10 +123,7 @@ def graph_sql_altitude(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_generic_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_altitude = _add_scatter_gl(graph_data)
-    else:
-        trace_altitude = _add_scatter_cpu(graph_data)
+    trace_altitude = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_altitude, graph_data.row_count, 1])
     graph_data.sub_plots.append('Altitude meters')
@@ -160,10 +142,7 @@ def graph_sql_humidity(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_generic_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_humidity = _add_scatter_gl(graph_data)
-    else:
-        trace_humidity = _add_scatter_cpu(graph_data)
+    trace_humidity = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_humidity, graph_data.row_count, 1])
     graph_data.sub_plots.append('Humidity')
@@ -182,10 +161,7 @@ def graph_sql_distance(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_generic_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_distance = _add_scatter_gl(graph_data)
-    else:
-        trace_distance = _add_scatter_cpu(graph_data)
+    trace_distance = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_distance, graph_data.row_count, 1])
     graph_data.sub_plots.append('Distance meters?')
@@ -204,10 +180,7 @@ def graph_sql_gas(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_red_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_gas_resistance = _add_scatter_gl(graph_data)
-    else:
-        trace_gas_resistance = _add_scatter_cpu(graph_data)
+    trace_gas_resistance = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Gas Oxidising"
     graph_data.temp_sql = graph_data.sql_gas_oxidising
@@ -217,10 +190,7 @@ def graph_sql_gas(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_orange_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_gas_oxidising = _add_scatter_gl(graph_data)
-    else:
-        trace_gas_oxidising = _add_scatter_cpu(graph_data)
+    trace_gas_oxidising = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Gas Reducing"
     graph_data.temp_sql = graph_data.sql_gas_reducing
@@ -230,10 +200,7 @@ def graph_sql_gas(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_yellow_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_gas_reducing = _add_scatter_gl(graph_data)
-    else:
-        trace_gas_reducing = _add_scatter_cpu(graph_data)
+    trace_gas_reducing = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Gas NH3"
     graph_data.temp_sql = graph_data.sql_gas_nh3
@@ -243,10 +210,7 @@ def graph_sql_gas(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_green_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_gas_nh3 = _add_scatter_gl(graph_data)
-    else:
-        trace_gas_nh3 = _add_scatter_cpu(graph_data)
+    trace_gas_nh3 = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_gas_resistance, graph_data.row_count, 1])
     graph_data.graph_collection.append([trace_gas_oxidising, graph_data.row_count, 1])
@@ -268,10 +232,7 @@ def graph_sql_particulate_matter(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_red_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_pm_1 = _add_scatter_gl(graph_data)
-    else:
-        trace_pm_1 = _add_scatter_cpu(graph_data)
+    trace_pm_1 = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "PM2.5"
     graph_data.temp_sql = graph_data.sql_pm_2_5
@@ -281,10 +242,7 @@ def graph_sql_particulate_matter(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_orange_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_pm_2_5 = _add_scatter_gl(graph_data)
-    else:
-        trace_pm_2_5 = _add_scatter_cpu(graph_data)
+    trace_pm_2_5 = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "PM10"
     graph_data.temp_sql = graph_data.sql_pm_10
@@ -294,10 +252,7 @@ def graph_sql_particulate_matter(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_yellow_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_pm_10 = _add_scatter_gl(graph_data)
-    else:
-        trace_pm_10 = _add_scatter_cpu(graph_data)
+    trace_pm_10 = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_pm_1, graph_data.row_count, 1])
     graph_data.graph_collection.append([trace_pm_2_5, graph_data.row_count, 1])
@@ -318,10 +273,7 @@ def graph_sql_lumen(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_yellow_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_lumen = _add_scatter_gl(graph_data)
-    else:
-        trace_lumen = _add_scatter_cpu(graph_data)
+    trace_lumen = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_lumen, graph_data.row_count, 1])
     graph_data.sub_plots.append('Lumen')
@@ -340,10 +292,7 @@ def graph_sql_ems_colours(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_red_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_red = _add_scatter_gl(graph_data)
-    else:
-        trace_red = _add_scatter_cpu(graph_data)
+    trace_red = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Orange"
     graph_data.temp_sql = graph_data.sql_orange
@@ -353,10 +302,7 @@ def graph_sql_ems_colours(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_orange_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_orange = _add_scatter_gl(graph_data)
-    else:
-        trace_orange = _add_scatter_cpu(graph_data)
+    trace_orange = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Yellow"
     graph_data.temp_sql = graph_data.sql_yellow
@@ -366,10 +312,7 @@ def graph_sql_ems_colours(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_yellow_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_yellow = _add_scatter_gl(graph_data)
-    else:
-        trace_yellow = _add_scatter_cpu(graph_data)
+    trace_yellow = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Green"
     graph_data.temp_sql = graph_data.sql_green
@@ -379,10 +322,7 @@ def graph_sql_ems_colours(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_green_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_green = _add_scatter_gl(graph_data)
-    else:
-        trace_green = _add_scatter_cpu(graph_data)
+    trace_green = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Blue"
     graph_data.temp_sql = graph_data.sql_blue
@@ -392,10 +332,7 @@ def graph_sql_ems_colours(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_blue_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_blue = _add_scatter_gl(graph_data)
-    else:
-        trace_blue = _add_scatter_cpu(graph_data)
+    trace_blue = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Violet"
     graph_data.temp_sql = graph_data.sql_violet
@@ -405,10 +342,7 @@ def graph_sql_ems_colours(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_violet_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_violet = _add_scatter_gl(graph_data)
-    else:
-        trace_violet = _add_scatter_cpu(graph_data)
+    trace_violet = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_red, graph_data.row_count, 1])
     graph_data.graph_collection.append([trace_orange, graph_data.row_count, 1])
@@ -432,10 +366,7 @@ def graph_sql_ultra_violet(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_red_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_uv_index = _add_scatter_gl(graph_data)
-    else:
-        trace_uv_index = _add_scatter_cpu(graph_data)
+    trace_uv_index = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "UVA"
     graph_data.temp_sql = graph_data.sql_uv_a
@@ -445,10 +376,7 @@ def graph_sql_ultra_violet(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_orange_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_uva = _add_scatter_gl(graph_data)
-    else:
-        trace_uva = _add_scatter_cpu(graph_data)
+    trace_uva = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "UVB"
     graph_data.temp_sql = graph_data.sql_uv_b
@@ -458,10 +386,7 @@ def graph_sql_ultra_violet(graph_data):
     else:
         graph_data.set_marker = graphing_variables.mark_yellow_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_uvb = _add_scatter_gl(graph_data)
-    else:
-        trace_uvb = _add_scatter_cpu(graph_data)
+    trace_uvb = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_uv_index, graph_data.row_count, 1])
     graph_data.graph_collection.append([trace_uva, graph_data.row_count, 1])
@@ -479,30 +404,21 @@ def graph_sql_accelerometer(graph_data):
 
     graph_data.set_marker = graphing_variables.mark_x_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_acc_x = _add_scatter_gl(graph_data)
-    else:
-        trace_acc_x = _add_scatter_cpu(graph_data)
+    trace_acc_x = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Accelerometer Y"
     graph_data.temp_sql = graph_data.sql_acc_y
 
     graph_data.set_marker = graphing_variables.mark_y_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_acc_y = _add_scatter_gl(graph_data)
-    else:
-        trace_acc_y = _add_scatter_cpu(graph_data)
+    trace_acc_y = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Accelerometer Z"
     graph_data.temp_sql = graph_data.sql_acc_z
 
     graph_data.set_marker = graphing_variables.mark_z_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_acc_z = _add_scatter_gl(graph_data)
-    else:
-        trace_acc_z = _add_scatter_cpu(graph_data)
+    trace_acc_z = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_acc_x, graph_data.row_count, 1])
     graph_data.graph_collection.append([trace_acc_y, graph_data.row_count, 1])
@@ -520,30 +436,21 @@ def graph_sql_magnetometer(graph_data):
 
     graph_data.set_marker = graphing_variables.mark_x_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_mag_x = _add_scatter_gl(graph_data)
-    else:
-        trace_mag_x = _add_scatter_cpu(graph_data)
+    trace_mag_x = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Magnetic Y"
     graph_data.temp_sql = graph_data.sql_mg_y
 
     graph_data.set_marker = graphing_variables.mark_y_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_mag_y = _add_scatter_gl(graph_data)
-    else:
-        trace_mag_y = _add_scatter_cpu(graph_data)
+    trace_mag_y = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Magnetic Z"
     graph_data.temp_sql = graph_data.sql_mg_z
 
     graph_data.set_marker = graphing_variables.mark_z_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_mag_z = _add_scatter_gl(graph_data)
-    else:
-        trace_mag_z = _add_scatter_cpu(graph_data)
+    trace_mag_z = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_mag_x, graph_data.row_count, 1])
     graph_data.graph_collection.append([trace_mag_y, graph_data.row_count, 1])
@@ -561,30 +468,21 @@ def graph_sql_gyroscope(graph_data):
 
     graph_data.set_marker = graphing_variables.mark_x_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_gyro_x = _add_scatter_gl(graph_data)
-    else:
-        trace_gyro_x = _add_scatter_cpu(graph_data)
+    trace_gyro_x = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Gyroscopic Y"
     graph_data.temp_sql = graph_data.sql_gyro_y
 
     graph_data.set_marker = graphing_variables.mark_y_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_gyro_y = _add_scatter_gl(graph_data)
-    else:
-        trace_gyro_y = _add_scatter_cpu(graph_data)
+    trace_gyro_y = _add_scatter(graph_data)
 
     graph_data.temp_text_name = "Gyroscopic Z"
     graph_data.temp_sql = graph_data.sql_gyro_z
 
     graph_data.set_marker = graphing_variables.mark_z_dot
 
-    if graph_data.enable_plotly_webgl:
-        trace_gyro_z = _add_scatter_gl(graph_data)
-    else:
-        trace_gyro_z = _add_scatter_cpu(graph_data)
+    trace_gyro_z = _add_scatter(graph_data)
 
     graph_data.graph_collection.append([trace_gyro_x, graph_data.row_count, 1])
     graph_data.graph_collection.append([trace_gyro_y, graph_data.row_count, 1])
@@ -593,35 +491,34 @@ def graph_sql_gyroscope(graph_data):
     app_logger.app_logger.debug("Graph Gyroscopic XYZ Added")
 
 
-def _add_scatter_gl(graph_data):
-    """ Use line graph for Interval data and dot markers for Trigger data. Uses OpenGL Rendering """
-    if graph_data.graph_table is "IntervalData":
-        trace = go.Scattergl(x=graph_data.sql_time,
-                             y=graph_data.temp_sql,
-                             name=graph_data.temp_text_name,
-                             marker=graph_data.set_marker)
+def _add_scatter(graph_data):
+    """
+    Returns a OpenGL or CPU rendered trace based on configuration settings.
+
+    Uses line graph for Interval data and dot markers for Trigger data.
+    """
+    if graph_data.enable_plotly_webgl:
+        if graph_data.graph_table is "IntervalData":
+            trace = go.Scattergl(x=graph_data.sql_time,
+                                 y=graph_data.temp_sql,
+                                 name=graph_data.temp_text_name,
+                                 marker=graph_data.set_marker)
+        else:
+            trace = go.Scattergl(x=graph_data.sql_time,
+                                 y=graph_data.temp_sql,
+                                 name=graph_data.temp_text_name,
+                                 mode="markers",
+                                 marker=graph_data.set_marker)
     else:
-        trace = go.Scattergl(x=graph_data.sql_time,
-                             y=graph_data.temp_sql,
-                             name=graph_data.temp_text_name,
-                             mode="markers",
-                             marker=graph_data.set_marker)
-
-    return trace
-
-
-def _add_scatter_cpu(graph_data):
-    """ Use line graph for Interval data and dot markers for Trigger data. Uses CPU Rendering """
-    if graph_data.graph_table is "IntervalData":
-        trace = go.Scatter(x=graph_data.sql_time,
-                           y=graph_data.temp_sql,
-                           name=graph_data.temp_text_name,
-                           marker=graph_data.set_marker)
-    else:
-        trace = go.Scatter(x=graph_data.sql_time,
-                           y=graph_data.temp_sql,
-                           name=graph_data.temp_text_name,
-                           mode="markers",
-                           marker=graph_data.set_marker)
-
+        if graph_data.graph_table is "IntervalData":
+            trace = go.Scatter(x=graph_data.sql_time,
+                               y=graph_data.temp_sql,
+                               name=graph_data.temp_text_name,
+                               marker=graph_data.set_marker)
+        else:
+            trace = go.Scatter(x=graph_data.sql_time,
+                               y=graph_data.temp_sql,
+                               name=graph_data.temp_text_name,
+                               mode="markers",
+                               marker=graph_data.set_marker)
     return trace
