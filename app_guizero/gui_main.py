@@ -124,10 +124,10 @@ class CreateMainWindow:
                                                           align="left")
 
         self.combo_dropdown_selection = guizero.Combo(self.app,
-                                                      options=[self.text_download_db,
-                                                               self.text_system_report,
+                                                      options=[self.text_system_report,
                                                                self.text_configuration_report,
-                                                               self.text_test_sensors],
+                                                               self.text_test_sensors,
+                                                               self.text_download_db],
                                                       grid=[2, 15, 3, 1],
                                                       align="bottom")
 

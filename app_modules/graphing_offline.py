@@ -18,7 +18,7 @@
 """
 import guizero
 import sqlite3
-from plotly import tools, offline
+from plotly import subplots, offline
 from app_modules import app_logger
 from app_modules import app_variables
 from app_modules import app_useful_functions
@@ -264,7 +264,7 @@ def _plotly_graph(graph_data):
         if len(graph_data.sql_gyro_x) > 2:
             graphing_offline_extras.graph_sql_gyroscope(graph_data)
 
-        fig = tools.make_subplots(rows=graph_data.row_count, cols=1, subplot_titles=graph_data.sub_plots)
+        fig = subplots.make_subplots(rows=graph_data.row_count, cols=1, subplot_titles=graph_data.sub_plots)
 
         for graph in graph_data.graph_collection:
             fig.add_trace(graph[0], graph[1], graph[2])
