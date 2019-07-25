@@ -55,9 +55,9 @@ class CreateMainWindow:
 
         self.text_check_sensors = "Check Sensors Status"
         self.text_download_db = "Download Databases"
-        self.text_system_report = "Sensor Systems Report"
+        self.text_system_report = "Systems Report"
         self.text_configuration_report = "Configurations Report"
-        self.text_test_sensors = "Test Sensors"
+        self.text_test_sensors = "Sensors Test Report"
 
         self.ip_selection = CreateIPSelector(self.app, self.current_config)
         self._set_ip_list()
@@ -128,14 +128,15 @@ class CreateMainWindow:
                                                                self.text_configuration_report,
                                                                self.text_test_sensors,
                                                                self.text_download_db],
+                                                      command=self._app_dropdown_change,
                                                       grid=[2, 15, 3, 1],
                                                       align="bottom")
 
-        self.app_button_main_proceed = guizero.PushButton(self.app,
-                                                             text="Proceed",
-                                                             command=self._app_button_proceed,
-                                                             grid=[4, 15],
-                                                             align="right")
+        self.app_button_main_create = guizero.PushButton(self.app,
+                                                         text="Create",
+                                                         command=self._app_button_proceed,
+                                                         grid=[4, 15],
+                                                         align="right")
 
         # Window Tweaks
         self.app.tk.resizable(False, False)
@@ -154,6 +155,12 @@ class CreateMainWindow:
 
         pyplot.close()
         self.app.destroy()
+
+    def _app_dropdown_change(self):
+        if self.combo_dropdown_selection.value == self.text_download_db:
+            self.app_button_main_create.text = "Download"
+        else:
+            self.app_button_main_create.text = "Create"
 
     def _app_button_proceed(self):
         if self.combo_dropdown_selection.value == self.text_download_db:
