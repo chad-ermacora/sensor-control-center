@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
+if [[ "$1" == "dev" ]]
+then
+  HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian/dev"
+  printf '\n-- DEVELOPMENT UPGRADE --\n'
+else
+  HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
+fi
 # Upgrade from Online HTTP server
 HTTP_SERVER="http://kootenay-networks.com"
-HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
 HTTP_ZIP="/KootNetSensors.zip"
 # Make sure its running with root
 if [[ $EUID != 0 ]]
@@ -15,7 +21,7 @@ if [[ -f /opt/kootnet-control-center/installed_datetime.txt ]]
 then
   printf '\nStarting Kootnet Control Center Upgrade - Online HTTP\n'
 else
-  read -p "Enter the username you want a desktop shortcut on (Default is pi): " USER_NAME
+  read -r -p "Enter the username you want a desktop shortcut on (Default is pi): " USER_NAME
   printf '\nStarting Kootnet Control Center Install - Online HTTP\n'
 fi
 mkdir /opt/kootnet-control-center 2>/dev/null
@@ -36,9 +42,9 @@ else
   # Install needed programs and dependencies
   bash /opt/kootnet-control-center/scripts/install_dependencies.sh
   # Create user Shortcuts
-  bash /opt/kootnet-control-center/scripts/create_shortcuts.sh ${USER_NAME}
+  bash /opt/kootnet-control-center/scripts/create_shortcuts.sh "${USER_NAME}"
   # Create Custom Uninstaller
-  bash /opt/kootnet-control-center/scripts/create_custom_uninstall.sh ${USER_NAME}
+  bash /opt/kootnet-control-center/scripts/create_custom_uninstall.sh "${USER_NAME}"
   printf "\nInstall Complete\n"
 fi
 bash /opt/kootnet-control-center/scripts/set_permissions.sh

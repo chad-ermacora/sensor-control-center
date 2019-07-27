@@ -42,7 +42,6 @@ from app_guizero.remote_sensor_logs_window import CreateSensorLogsWindow
 
 class CreateMainWindow:
     """ Creates the main GUI window for the program. """
-
     def __init__(self):
         self.current_config = app_config.get_from_file()
 
@@ -53,7 +52,6 @@ class CreateMainWindow:
 
         self.app.on_close(self._app_exit)
 
-        self.text_check_sensors = "Check Sensors Status"
         self.text_download_db = "Download Databases"
         self.text_system_report = "Systems Report"
         self.text_configuration_report = "Configurations Report"
