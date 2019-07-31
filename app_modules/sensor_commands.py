@@ -23,13 +23,15 @@ from app_modules import app_logger
 from app_modules import app_variables
 from app_modules import app_config
 
+http_port = "10065"
+
 
 class CreateSensorNetworkCommand:
     """ Creates object instance of variables needed for network commands. """
 
     def __init__(self, ip, network_timeout, command):
         self.ip = ip
-        self.port = "10065"
+        self.port = http_port
         self.network_timeout = network_timeout
         self.command = command
         self.command_data = ""
@@ -78,31 +80,9 @@ def download_sensor_database(address_and_port):
         app_logger.sensor_logger.debug(str(error))
 
 
-def download_logs(sensor_command):
-    """ Download 3 log files. """
-    sensor_get_commands = app_variables.CreateNetworkGetCommands()
-
-    sensor_command.command = sensor_get_commands.download_primary_log
-    _get_logs(sensor_command, "PrimaryLog.txt")
-
-    sensor_command.command = sensor_get_commands.download_network_log
-    _get_logs(sensor_command, "NetworkLog.txt")
-
-    sensor_command.command = sensor_get_commands.download_sensors_log
-    _get_logs(sensor_command, "SensorsLog.txt")
-
-
-def _get_logs(sensor_command, log_name):
-    """ Download and save specified log file with given name. """
-    log_file_data = get_data(sensor_command)
-    log_file_location = sensor_command.save_to_location + "/" + sensor_command.ip[-3:].replace(".", "_") + log_name
-
-    try:
-        log_file = open(log_file_location, "w")
-        log_file.write(log_file_data)
-        log_file.close()
-    except Exception as error:
-        app_logger.sensor_logger.error("Log Save Failed: " + str(error))
+def download_zipped_logs(download_url):
+    """ Download zip file of all 3 logs. """
+    webbrowser.open(download_url)
 
 
 def get_validated_hostname(hostname):

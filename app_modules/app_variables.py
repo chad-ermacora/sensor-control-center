@@ -18,7 +18,7 @@
 """
 from sys import path
 
-software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.166"
+software_version = "Tested on Python 3.5 & 3.7 || Alpha.25.216"
 
 
 class CreateSQLColumnsReadable:
@@ -111,9 +111,7 @@ class CreateNetworkGetCommands:
         self.primary_log = "GetPrimaryLog"
         self.network_log = "GetNetworkLog"
         self.sensors_log = "GetSensorsLog"
-        self.download_primary_log = "DownloadPrimaryLog"
-        self.download_network_log = "DownloadNetworkLog"
-        self.download_sensors_log = "DownloadSensorsLog"
+        self.download_zipped_logs = "DownloadZippedLogs"
         self.sensor_readings = "GetSensorReadings"
         self.sensor_name = "GetHostName"
         self.system_uptime = "GetSystemUptime"
