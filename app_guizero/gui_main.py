@@ -52,7 +52,7 @@ class CreateMainWindow:
 
         self.app.on_close(self._app_exit)
 
-        self.text_download_db = "Download Databases"
+        self.text_download_db = "Download SQL Databases"
         self.text_system_report = "Systems Report"
         self.text_configuration_report = "Configurations Report"
         self.text_test_sensors = "Sensors Test Report"
