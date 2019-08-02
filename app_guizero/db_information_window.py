@@ -353,8 +353,10 @@ class CreateDataBaseInfoWindow:
         sql_query = "SELECT " + \
                     str(sql_column_names.system_uptime) + \
                     " FROM " + \
-                    str(sql_column_names.sql_interval_table)
-
+                    str(sql_column_names.sql_interval_table) + \
+                    " WHERE length(" + \
+                    str(sql_column_names.system_uptime) + \
+                    ") < 2"
         sql_column_data = self._get_sql_data(db_location, sql_query)
 
         reboot_count = 0
