@@ -105,3 +105,12 @@ venv.bak/
 
 # PyCharm
 .idea/
+/logs/KootNet_log.txt
+/logs/Sensor_Commands_log.txt
+/test_files/output/101NetworkLog.txt
+/test_files/output/101PrimaryLog.txt
+/test_files/output/101SensorsLog.txt
+/test_files/output/PlotlySensorGraph.html
+/test_files/output/SensorsConfigReport.html
+/test_files/output/SensorsReadingsReport.html
+/test_files/output/SensorsSystemReport.html
