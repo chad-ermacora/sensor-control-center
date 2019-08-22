@@ -14,5 +14,5 @@ touch /opt/kootnet-control-center/logs/KootNet_log.txt
 touch /opt/kootnet-control-center/logs/Sensor_Commands_log.txt
 chmod 777 ${CONFIG_DIR} -R
 chmod 775 /opt/kootnet-control-center -R
-chmod 766 /opt/kootnet-control-center/config.txt
+chmod 766 /opt/kootnet-control-center/config.txt 2>/dev/null
 chmod 766 /opt/kootnet-control-center/logs/*.txt

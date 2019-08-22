@@ -18,7 +18,7 @@ cd ${DATA_DIR} 2>/dev/null || exit
 # Install dependencies and upgrade pip
 printf '\nVerifying Dependencies\n'
 apt-get update
-apt-get -y install "${APT_GET_INSTALL}"
+apt-get -y install ${APT_GET_INSTALL}
 python3 -m venv --system-site-packages ${PYTHON_ENV_DIR}
 # shellcheck source=/dev/null
 source ${DATA_DIR}/${PYTHON_ENV_DIR}/bin/activate

@@ -71,7 +71,7 @@ def check_sensor_status(ip, network_timeout):
 def download_sensor_database(address_and_port):
     """ Returns requested sensor file (based on the provided command data). """
     network_commands = app_variables.CreateNetworkGetCommands()
-    url = "http://" + address_and_port + "/" + network_commands.sensor_sql_database
+    url = "https://" + address_and_port + "/" + network_commands.sensor_sql_database
 
     try:
         webbrowser.open_new_tab(url)
@@ -99,14 +99,15 @@ def get_validated_hostname(hostname):
 def send_command(sensor_command):
     """ Sends command to sensor (based on provided command data). """
     sensor_command.check_for_port_in_ip()
-    url = "http://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
+    url = "https://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
     sensor_command.update_http_authentication()
 
     try:
         requests.get(url=url,
                      auth=(sensor_command.http_user, sensor_command.http_password),
                      timeout=sensor_command.network_timeout,
-                     headers={'Connection': 'close'})
+                     headers={'Connection': 'close'},
+                     verify=False)
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
         app_logger.sensor_logger.debug(str(error))
@@ -115,14 +116,15 @@ def send_command(sensor_command):
 def put_command(sensor_command):
     """ Sends command to sensor (based on provided command data). """
     sensor_command.check_for_port_in_ip()
-    url = "http://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
+    url = "https://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
     sensor_command.update_http_authentication()
 
     try:
         requests.put(url=url,
                      auth=(sensor_command.http_user, sensor_command.http_password),
                      timeout=sensor_command.network_timeout,
-                     data={'command_data': sensor_command.command_data})
+                     data={'command_data': sensor_command.command_data},
+                     verify=False)
         app_logger.sensor_logger.info(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
         app_logger.sensor_logger.debug(str(error))
@@ -131,13 +133,14 @@ def put_command(sensor_command):
 def get_data(sensor_command):
     """ Returns requested sensor data (based on the provided command data). """
     sensor_command.check_for_port_in_ip()
-    url = "http://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
+    url = "https://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
     sensor_command.update_http_authentication()
 
     try:
         tmp_return_data = requests.get(url=url,
                                        auth=(sensor_command.http_user, sensor_command.http_password),
-                                       timeout=sensor_command.network_timeout)
+                                       timeout=sensor_command.network_timeout,
+                                       verify=False)
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
         return_data = tmp_return_data.text
     except Exception as error:

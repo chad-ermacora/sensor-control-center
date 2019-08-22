@@ -101,9 +101,7 @@ class CreateMainWindow:
                                                      ["DataBase Info",
                                                       self.window_db_info.window.show],
                                                      ["Offline Notes Editor",
-                                                      self.window_db_notes.window.show],
-                                                     ["DataBase Analyzer",
-                                                      self.window_about.window.show]],
+                                                      self.window_db_notes.window.show]],
                                                     [["KootNet Sensors - About",
                                                       self.window_about.window.show],
                                                      ["KootNet Sensors - Website",
@@ -112,8 +110,8 @@ class CreateMainWindow:
                                                       self._app_menu_open_build_sensor],
                                                      ["Sensor Units - Help",
                                                       self._app_menu_open_sensor_help],
-                                                     ["Control Center - Help *WIP",
-                                                      self.window_about.window.show]]])
+                                                     ["Control Center - Help",
+                                                      self._app_menu_open_control_center_help]]])
 
         self.app_button_check_sensor = guizero.PushButton(self.app,
                                                           text="Check Sensors\nStatus",
@@ -245,6 +243,11 @@ class CreateMainWindow:
     def _app_menu_open_sensor_help(self):
         """ Open the help file for Sensor Units. """
         help_file_location = self.current_config.additional_files_directory + "/SensorUnitHelp.html"
+        webbrowser.open_new_tab(help_file_location)
+
+    def _app_menu_open_control_center_help(self):
+        """ Open the help file for Kootnet Sensors - Control Center. """
+        help_file_location = self.current_config.additional_files_directory + "/SensorControlCenterHelp.html"
         webbrowser.open_new_tab(help_file_location)
 
     def _set_ip_list(self):
