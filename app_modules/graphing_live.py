@@ -90,26 +90,29 @@ class CreateLiveGraph:
     def _get_sensor_reading_name_unit(self, command_data):
         """ Returns the sensors reading(s), name and unit type based on the provided command_data object. """
         if self.sensor_type is self.sql_column_names.system_uptime:
+            sensor_type_name = self.readable_column_names.system_uptime
+            measurement_type = self.sensor_measurements.no_measurement
+
             command_data.command = self.get_commands.system_uptime
             try:
                 sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-
-            sensor_type_name = self.readable_column_names.system_uptime
-            measurement_type = self.sensor_measurements.no_measurement
         elif self.sensor_type is self.sql_column_names.cpu_temp:
+            sensor_type_name = self.readable_column_names.cpu_temp
+            measurement_type = self.sensor_measurements.celsius
+
             command_data.command = self.get_commands.cpu_temp
             try:
                 sensor_reading = round(float(sensor_commands.get_data(command_data)), 3)
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-
-            sensor_type_name = self.readable_column_names.cpu_temp
-            measurement_type = self.sensor_measurements.celsius
         elif self.sensor_type is self.sql_column_names.environmental_temp:
+            sensor_type_name = self.readable_column_names.environmental_temp
+            measurement_type = self.sensor_measurements.celsius
+
             try:
                 if self.current_config.enable_custom_temp_offset:
                     # Temp offset is set to programs when initiating Live Graph
@@ -132,43 +135,139 @@ class CreateLiveGraph:
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-
-            sensor_type_name = self.readable_column_names.environmental_temp
-            measurement_type = self.sensor_measurements.celsius
         elif self.sensor_type is self.sql_column_names.pressure:
+            sensor_type_name = self.readable_column_names.pressure
+            measurement_type = self.sensor_measurements.pressure
+
             command_data.command = self.get_commands.pressure
             try:
                 sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
+        elif self.sensor_type is self.sql_column_names.altitude:
+            sensor_type_name = self.readable_column_names.altitude
+            measurement_type = self.sensor_measurements.altitude
 
-            sensor_type_name = self.readable_column_names.pressure
-            measurement_type = self.sensor_measurements.pressure
-        elif self.sensor_type is self.sql_column_names.humidity:
-            command_data.command = self.get_commands.humidity
-
+            command_data.command = self.get_commands.altitude
             try:
                 sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-
+        elif self.sensor_type is self.sql_column_names.humidity:
             sensor_type_name = self.readable_column_names.humidity
             measurement_type = self.sensor_measurements.humidity
+
+            command_data.command = self.get_commands.humidity
+            try:
+                sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+        elif self.sensor_type is self.sql_column_names.distance:
+            sensor_type_name = self.readable_column_names.distance
+            measurement_type = self.sensor_measurements.distance
+
+            command_data.command = self.get_commands.distance
+            try:
+                sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+        elif self.sensor_type == self.sql_column_names.gas[0]:
+            sensor_type_name = self.readable_column_names.gas + " - "
+            measurement_type = self.sensor_measurements.gas
+
+            try:
+                command_data.command = self.get_commands.gas_index
+                gas_index_reading = sensor_commands.get_data(command_data)
+                command_data.command = self.get_commands.gas_oxidised
+                gas_oxidising_reading = sensor_commands.get_data(command_data)
+                command_data.command = self.get_commands.gas_reduced
+                gas_reducing_reading = sensor_commands.get_data(command_data)
+                command_data.command = self.get_commands.gas_nh3
+                gas_nh3_reading = sensor_commands.get_data(command_data)
+
+                sensor_reading = []
+                count = 0
+                if gas_index_reading != "NoSensor":
+                    sensor_reading.append(round(float(gas_index_reading), 3))
+                    sensor_type_name += "Resistance Index "
+                    count += 1
+                if gas_oxidising_reading != "NoSensor":
+                    sensor_reading.append(round(float(gas_oxidising_reading), 3))
+                    if count > 0:
+                        sensor_type_name += "||"
+                    sensor_type_name += " Oxidising "
+                    count += 1
+                if gas_reducing_reading != "NoSensor":
+                    sensor_reading.append(round(float(gas_reducing_reading), 3))
+                    if count > 0:
+                        sensor_type_name += "||"
+                    sensor_type_name += " Reducing "
+                    count += 1
+                if gas_nh3_reading != "NoSensor":
+                    sensor_reading.append(round(float(gas_nh3_reading), 3))
+                    if count > 0:
+                        sensor_type_name += "||"
+                    sensor_type_name += " NH3"
+                    count += 1
+                if count == 0:
+                    sensor_reading = self.readable_column_names.no_sensor
+            except Exception as error:
+                app_logger.app_logger.warning("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+        elif self.sensor_type == self.sql_column_names.particulate_matter[0]:
+            sensor_type_name = self.readable_column_names.particulate_matter
+            measurement_type = self.sensor_measurements.particulate_matter
+
+            try:
+                command_data.command = self.get_commands.pm_1
+                particulate_matter_1_reading = sensor_commands.get_data(command_data)
+                command_data.command = self.get_commands.pm_2_5
+                particulate_matter_2_5_reading = sensor_commands.get_data(command_data)
+                command_data.command = self.get_commands.pm_10
+                particulate_matter_10_reading = sensor_commands.get_data(command_data)
+
+                sensor_reading = []
+                count = 0
+                if particulate_matter_1_reading != "NoSensor":
+                    sensor_reading.append(round(float(particulate_matter_1_reading), 3))
+                    sensor_type_name += " PM1 "
+                    count += 1
+                if particulate_matter_2_5_reading != "NoSensor":
+                    sensor_reading.append(round(float(particulate_matter_2_5_reading), 3))
+                    if count > 0:
+                        sensor_type_name += "||"
+                    sensor_type_name += " PM2.5 "
+                    count += 1
+                if particulate_matter_10_reading != "NoSensor":
+                    sensor_reading.append(round(float(particulate_matter_10_reading), 3))
+                    if count > 0:
+                        sensor_type_name += "||"
+                    sensor_type_name += " PM10"
+                if count == 0:
+                    sensor_reading = self.readable_column_names.no_sensor
+            except Exception as error:
+                app_logger.app_logger.warning("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
         elif self.sensor_type is self.sql_column_names.lumen:
+            sensor_type_name = self.readable_column_names.lumen
+            measurement_type = self.sensor_measurements.lumen
+
             command_data.command = self.get_commands.lumen
             try:
                 sensor_reading = int(round(float(sensor_commands.get_data(command_data)), 0))
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-
-            sensor_type_name = self.readable_column_names.lumen
-            measurement_type = self.sensor_measurements.lumen
         elif self.sensor_type == self.sql_column_names.six_chan_color[0]:
+            sensor_type_name = self.readable_column_names.colours
+            measurement_type = self.sensor_measurements.rgb
+
+            command_data.command = self.get_commands.rgb
             try:
-                command_data.command = self.get_commands.rgb
                 ems_colors = sensor_commands.get_data(command_data)[1:-1].split(",")
 
                 colors = []
@@ -182,56 +281,73 @@ class CreateLiveGraph:
                                       round(float(colors[3]), 3),
                                       round(float(colors[4]), 3),
                                       round(float(colors[5]), 3)]
-                    sensor_type_name = self.readable_column_names.colours
                     measurement_type = self.sensor_measurements.six_chan_color
                 else:
                     sensor_reading = [round(float(colors[0]), 3),
                                       round(float(colors[1]), 3),
                                       round(float(colors[2]), 3)]
-                    sensor_type_name = self.readable_column_names.colours
-                    measurement_type = self.sensor_measurements.rgb
+            except Exception as error:
+                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                sensor_reading = self.readable_column_names.no_sensor
+        elif self.sensor_type == self.sql_column_names.ultra_violet[0]:
+            sensor_type_name = self.readable_column_names.ultra_violet
+            measurement_type = self.sensor_measurements.ultra_violet
 
+            try:
+                command_data.command = self.get_commands.ultra_violet_a
+                ultra_violet_a_reading = sensor_commands.get_data(command_data)
+                command_data.command = self.get_commands.ultra_violet_b
+                ultra_violet_b_reading = sensor_commands.get_data(command_data)
+
+                sensor_reading = []
+                count = 0
+                if ultra_violet_a_reading != "NoSensor":
+                    sensor_reading.append(round(float(ultra_violet_a_reading), 3))
+                    sensor_type_name += " UVA "
+                    count += 1
+                if ultra_violet_b_reading != "NoSensor":
+                    sensor_reading.append(round(float(ultra_violet_b_reading), 3))
+                    if count > 0:
+                        sensor_type_name += "||"
+                    sensor_type_name += " UVB"
+                if count == 0:
+                    sensor_reading = self.readable_column_names.no_sensor
             except Exception as error:
-                app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
+                app_logger.app_logger.warning("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-                sensor_type_name = self.readable_column_names.colours
-                measurement_type = self.sensor_measurements.rgb
         elif self.sensor_type == self.sql_column_names.accelerometer_xyz[0]:
+            sensor_type_name = self.readable_column_names.accelerometer_xyz
+            measurement_type = self.sensor_measurements.xyz
+
+            command_data.command = self.get_commands.accelerometer_xyz
             try:
-                command_data.command = self.get_commands.accelerometer_xyz
                 var_x, var_y, var_z = sensor_commands.get_data(command_data)[1:-1].split(",")
                 sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
-                sensor_type_name = self.readable_column_names.accelerometer_xyz
-                measurement_type = self.sensor_measurements.xyz
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-                sensor_type_name = self.readable_column_names.accelerometer_xyz
-                measurement_type = self.sensor_measurements.xyz
         elif self.sensor_type == self.sql_column_names.magnetometer_xyz[0]:
+            sensor_type_name = self.readable_column_names.magnetometer_xyz
+            measurement_type = self.sensor_measurements.xyz
+
+            command_data.command = self.get_commands.magnetometer_xyz
             try:
-                command_data.command = self.get_commands.magnetometer_xyz
                 var_x, var_y, var_z = sensor_commands.get_data(command_data)[1:-1].split(",")
                 sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
-                sensor_type_name = self.readable_column_names.magnetometer_xyz
-                measurement_type = self.sensor_measurements.xyz
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-                sensor_type_name = self.readable_column_names.magnetometer_xyz
-                measurement_type = self.sensor_measurements.xyz
         elif self.sensor_type == self.sql_column_names.gyroscope_xyz[0]:
+            sensor_type_name = self.readable_column_names.gyroscope_xyz
+            measurement_type = self.sensor_measurements.xyz
+
+            command_data.command = self.get_commands.gyroscope_xyz
             try:
-                command_data.command = self.get_commands.gyroscope_xyz
                 var_x, var_y, var_z = sensor_commands.get_data(command_data)[1:-1].split(",")
                 sensor_reading = [round(float(var_x), 3), round(float(var_y), 3), round(float(var_z), 3)]
-                sensor_type_name = self.readable_column_names.gyroscope_xyz
-                measurement_type = self.sensor_measurements.xyz
             except Exception as error:
                 app_logger.app_logger.debug("Live Graph - Invalid Sensor Data: " + str(error))
                 sensor_reading = self.readable_column_names.no_sensor
-                sensor_type_name = self.readable_column_names.gyroscope_xyz
-                measurement_type = self.sensor_measurements.xyz
         else:
             sensor_reading = "N/A"
             sensor_type_name = "Invalid Sensor"

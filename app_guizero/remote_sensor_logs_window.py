@@ -17,9 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import guizero
-from tkinter import filedialog
-from threading import Thread
 from app_modules import app_logger
+from app_modules import app_variables
 from app_modules import app_useful_functions
 from app_modules import sensor_commands
 
@@ -30,6 +29,7 @@ class CreateSensorLogsWindow:
     def __init__(self, app, ip_selection, current_config):
         self.ip_selection = ip_selection
         self.current_config = current_config
+        self.network_get_commands = app_variables.CreateNetworkGetCommands()
 
         self.window = guizero.Window(app,
                                      title="Sensor Logs",
@@ -110,24 +110,19 @@ class CreateSensorLogsWindow:
         """ Download all selected and online sensors logs. """
         ip_list = self.ip_selection.get_verified_ip_list()
         if len(ip_list) > 0:
-            threads = []
-            download_to_location = filedialog.askdirectory()
-            network_timeout = self.current_config.network_timeout_data
-
-            if download_to_location is not "" and download_to_location is not None:
-                for ip in ip_list:
-                    sensor_command = sensor_commands.CreateSensorNetworkCommand(ip, network_timeout, "")
-                    sensor_command.save_to_location = download_to_location
-                    threads.append(Thread(target=sensor_commands.download_logs, args=[sensor_command]))
-
-                for thread in threads:
-                    thread.start()
-
-                for thread in threads:
-                    thread.join()
-
-                guizero.info("Downloads", "Sensor Log Downloads Complete")
-            else:
-                guizero.warn("Warning", "User Cancelled Download Operation")
+            network_command_data = sensor_commands.CreateSensorNetworkCommand("",
+                                                                              self.current_config.network_timeout_data,
+                                                                              self.network_get_commands.download_zipped_logs)
+            for ip in ip_list:
+                network_command_data.ip = ip
+                network_command_data.check_for_port_in_ip()
+                download_url = "http://" + \
+                               network_command_data.ip + \
+                               ":" + \
+                               network_command_data.port + \
+                               "/" + \
+                               network_command_data.command
+                print(download_url)
+                sensor_commands.download_zipped_logs(download_url)
         else:
             app_useful_functions.no_ip_selected_message()

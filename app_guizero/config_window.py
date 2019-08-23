@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import guizero
-from tkinter import filedialog
+from tkinter import filedialog, simpledialog
 from app_modules import app_logger
 from app_modules import app_config
 
@@ -57,7 +57,7 @@ class CreateConfigWindow:
                                   text="Save files to",
                                   color='blue',
                                   grid=[1, 2],
-                                  align="top")
+                                  align="left")
 
         self.textbox_save_to = guizero.TextBox(self.window,
                                                text='',
@@ -69,7 +69,13 @@ class CreateConfigWindow:
                                                   text="Choose Folder",
                                                   command=self._button_save_to,
                                                   grid=[1, 4],
-                                                  align="bottom")
+                                                  align="left")
+
+        self.button_set_http_auth = guizero.PushButton(self.window,
+                                                       text="Set Sensors Authentication",
+                                                       command=self._update_http_authentication_credentials,
+                                                       grid=[1, 4],
+                                                       align="right")
 
         self.checkbox_enable_open_gl_plotly = guizero.CheckBox(self.window,
                                                                text="Render Plotly with OpenGL",
@@ -279,6 +285,23 @@ class CreateConfigWindow:
             app_logger.app_logger.debug("Changed Save to Directory")
         else:
             app_logger.app_logger.warning("Invalid Directory Chosen for Save to Directory")
+
+    def _update_http_authentication_credentials(self):
+        new_username = simpledialog.askstring("HTTP User Auth", "New Username: ")
+        new_password = simpledialog.askstring("HTTP User Auth", "New Password: ")
+
+        if new_username is not None and new_password is not None:
+            new_username = new_username.strip()
+            new_password = new_password.strip()
+            if new_username != "" and new_password != "":
+                self.current_config.http_user = new_username
+                self.current_config.http_password = new_password
+                self._button_save_apply()
+                guizero.info("Set HTTP Authentication", "Username & Password Set OK")
+            else:
+                guizero.warn("Unable to set HTTP Authentication", "Username & Password cannot be blank")
+        else:
+            guizero.warn("Unable to set HTTP Authentication", "Username & Password Cancelled")
 
     def _enable_config_reset(self):
         """ Enables disabled buttons in the Control Center application. """

@@ -1,105 +1,127 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<title></title>
-	<meta name="generator" content="LibreOffice 6.1.3.2 (Windows)"/>
+	<meta name="generator" content="LibreOffice 6.3.0.4 (Linux)"/>
 	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2018-12-14T22:04:56.353000000"/>
+	<meta name="changed" content="2019-08-22T09:43:45.531580524"/>
+	<meta name="created" content="00:00:00">
+	<meta name="created" content="00:00:00">
+	<meta name="created" content="00:00:00">
 	<style type="text/css">
-		h2.cjk { font-family: "NSimSun" }
-		h2.ctl { font-family: "Lucida Sans" }
-		h4.cjk { font-family: "NSimSun" }
-		h4.ctl { font-family: "Lucida Sans" }
+		@page { size: 21.59cm 27.94cm; margin-left: 2cm; margin-right: 1cm; margin-top: 1cm; margin-bottom: 1cm }
+		p { margin-bottom: 0.25cm; background: transparent; line-height: 115%; background: transparent }
+		h2 { margin-top: 0.35cm; margin-bottom: 0.21cm; background: transparent; background: transparent; page-break-after: avoid }
+		h2.western { font-family: "Liberation Serif", serif; font-size: 18pt; font-weight: bold }
+		h2.cjk { font-family: "NSimSun"; font-size: 18pt; font-weight: bold }
+		h2.ctl { font-family: "Lucida Sans"; font-size: 18pt; font-weight: bold }
+		strong { font-weight: bold }
+		em { font-style: italic }
+		a:link { color: #000080; so-language: zxx; text-decoration: underline }
+		a:visited { color: #800000; so-language: zxx; text-decoration: underline }
 	</style>
 </head>
-<body lang="en-US" dir="ltr"><h2 class="western" align="center"><strong><u>Build
-a Kootnet Sensor<br/>
+<body lang="en-US" link="#000080" vlink="#800000" dir="ltr"><h2 class="western" align="center">
+<strong><u>Build a Kootnet Sensor<br/>
 </u></strong><em><font size="3" style="font-size: 12pt"><span style="font-weight: normal">**
 WIP: This will be updated with better instructions as time goes on **</span></font></em></h2>
 <p align="left"><strong><font size="4" style="font-size: 14pt"><u>Currently
-Supported Add-On Sensor&rsquo;s<br/>
+Supported Add-On Sensor’s<br/>
 </u></font></strong><a href="https://www.raspberrypi.org/products/" target="_blank">Raspberry
 Pi products</a>: SenseHAT<br/>
-<a href="https://shop.pimoroni.com/" target="_blank">Pimoroni
-products</a>: BH1745, AS7262, LTR559, BME680, EnviroPHAT, LSM303D,
+<a href="https://shop.pimoroni.com/">Pimoroni
+Sensors</a>: BH1745, AS7262, LTR559, VEML6075, BME680,
+BMP280,EnviroPHAT, Enviro+, PMS5003, LSM303D, ICM20948,
 VL53L1X<br/>
+<a href="https://shop.pimoroni.com/">Pimoroni Displays</a>:
+0.96&quot; SPI Colour LCD, 1.12&quot; Mono OLED, 11x7 LED
+Matrix<br/>
 <br/>
-** <em>Note: You can send me a message to add new
-sensor support, so long as the sensor supports the Raspberry Pi and
-has a Python3 library **</em></p>
-<h4 class="western" align="left"><strong><font size="4" style="font-size: 14pt"><u>User
+<strong><font size="4" style="font-size: 14pt"><u>User
 Requirements<br/>
 </u></font></strong><span style="font-weight: normal">1.
 Basic TCP/IP Version 4 concepts<br/>
-- </span><em><span style="font-weight: normal">IP
+	- </span><em><span style="font-weight: normal">IP
 Address, Subnet, Gateway<br/>
 <br/>
 </span></em><span style="font-weight: normal">2.
-Basic operations of the Gnu/Linux terminal text editor &quot;nano&quot;<br/>
--
-</span><i><span style="font-weight: normal">Press </span></i>&ldquo;<em><i><span style="font-weight: normal">Ctrl
-+ x&quot; to quit</span></i></em><em><span style="font-weight: normal"><br/>
-<br/>
-</span></em><span style="font-weight: normal">3.
-How to accesses a terminal in Raspbian<br/>
-- </span><em><span style="font-weight: normal">Raspberry
-Pi Menu -&gt; Accessories -&gt; Terminal</span></em></h4>
-<h4 class="western" align="left"><strong><font size="4" style="font-size: 14pt"><u>Required
+Basic operations of the Gnu/Linux terminal<br/>
+	- </span><em><span style="font-weight: normal">Raspberry
+Pi Menu -&gt; Accessories -&gt; Terminal</span></em></p>
+<p align="left"><em><span style="font-weight: normal"><br/>
+</span></em><strong><font size="4" style="font-size: 14pt"><u>Required
 Hardware<br/>
 </u></font></strong><strong><a href="https://www.raspberrypi.org/products/" target="_blank"><span style="text-decoration: none"><b>Raspberry
-Pi</b></span></a></strong><strong> &ndash; </strong><strong><span style="font-weight: normal">The
+Pi</b></span></a></strong><strong> – </strong><strong><span style="font-weight: normal">The
 Raspberry Pi </span></strong><span style="font-weight: normal">3B+ &amp;
 Zero W have been tested, but it should also work on earlier
 models</span><br/>
-<strong><em>Optional &ndash; </em></strong><span style="font-weight: normal">additional
-sensors (See currently supported sensor&rsquo;s above)</span></h4>
+<strong><em>Optional – </em></strong><span style="font-weight: normal">additional
+sensors (See currently supported sensor’s above)</span></p>
 <p align="left"><strong><font size="4" style="font-size: 14pt"><u>Install
 Instructions</u></font></strong><strong><u><br/>
-</u></strong><em><span style="font-variant: normal"><span style="font-style: normal">The
-installer script will modify /etc/network/interfaces, replace the
-root users crontab &amp; reboot the Raspberry Pi. This installation
-also includes a copy of the Control Center program to manage up to 16</span></span></em><em><span style="font-variant: normal">
-</span></em><em><span style="font-variant: normal"><span style="font-style: normal">sensors.<br/>
-</span></span></em><em><span style="font-variant: normal"><i>**
-Note: The installer can take awhile, especially on the Raspberry Pi
-Zero models (60 minutes or more). This is due to a required numpy
-rebuild **</i></span></em></p>
+</u></strong><em><span style="font-variant: normal"><span style="font-style: normal">T</span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">he
+Installer script will automatically install and enable all required
+modules and settings.  It </span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">also
+includes an</span></span></em><em><span style="font-variant: normal">
+</span></em><em><span style="font-variant: normal"><span style="font-style: normal">optional
+install</span></span></em><em><span style="font-variant: normal"> </span></em><em><span style="font-variant: normal"><span style="font-style: normal">of
+the Control Center program to manage up to 16</span></span></em><em><span style="font-variant: normal">
+</span></em><em><span style="font-variant: normal"><span style="font-style: normal">sensors
+</span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">at
+a time</span></span></em><em><span style="font-variant: normal"><span style="font-style: normal">.</span></span></em></p>
 <p align="left"><strong>Step 1</strong>. Physically Install your
 Sensor(s) onto the Raspberry Pi<br/>
 <strong>Step 2</strong>. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/" target="_blank">Install
 Raspbian OS</a><br/>
-<strong>Step 3</strong>. Enable SPI and I2C in
-the Raspberry Pi Configuration window on the &quot;Interfaces&quot;
-tab<br/>
-<strong>Step 4</strong>. Make sure you are connected to the
-Internet with your Pi, then run the following command in a terminal
-to start the installer<br/>
+<strong>Step 3</strong>. Make sure you are
+connected to the Internet with your Pi, then run the following
+command in a terminal to start the installer<br/>
 <em><font size="2" style="font-size: 11pt"><br/>
 </font></em><span style="background: #dddddd">wget
-http://kootenay-networks.com/utils/koot_net_sensors/Installers/raspbian/update_programs_online.sh
-&amp;&amp; chmod +x update_programs_online.sh &amp;&amp; sudo bash
-update_programs_online.sh &amp;&amp; sudo reboot</span><br/>
+http://kootenay-networks.com/utils/koot_net_sensors/Installers/raspbian/install_update_kootnet-sensors_http.sh
+&amp;&amp; sudo bash install_update_kootnet-sensors_http.sh</span><br/>
 <br/>
-The
-installer will open default configuration files to be configured,
-after which it will continue to download program files, install
-necessary Python libraries, update Raspbian itself, and finally
-reboot the sensor.<br/>
-<br/>
-Once the Raspberry Pi comes back up,
-your sensor should be ready!<br/>
+Near
+the end of the installer, it will prompt for a username and password
+to secure the web portal, used for interacting with the sensor. On
+the sensor’s first launch, it will automatically create default
+configuration files and SSL key/certificate to use with the Web
+server. 
+</p>
+<p align="left">If you wish to use your own SSL key/certificate,
+replace the SSL files located in
+/opt/kootnet-sensors/http_server/ssl_files/ with your version, using
+the same file names. If you need to generate new self signed keys,
+simply delete the SSL files and reboot the sensor; New 5 year self
+signed SSL files will be generated when the sensor starts back up. 
+</p>
+<p align="left">It is recommended you login to the web portal and
+setup the configurations when the install script finishes, then
+reboot the sensor. 
+</p>
+<p align="left">The default URL to access the web portal from the
+local sensor is <a href="https://localhost:10065/">https://localhost:10065</a></p>
+<p align="left">If you wish to access the web portal from another
+device on the same local network, simply replace “localhost” from
+the above URL with the IP of the sensor, such as this
+<a href="https://192.168.10.11:10065/">https://192.168.10.11:10065</a>
+</p>
+<p align="left">The sensor’s IPs are shown in the terminal after
+the install script finishes. <br/>
 <br/>
 <font size="4" style="font-size: 14pt"><u><b>Uninstall
 Sensor Software<br/>
 </b></u></font><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">This
-will remove all sensor software including Kootnet Sensors &ndash;
-Control Center, after which it will restore /etc/network/interfaces &amp;
-/etc/wpa_supplicant/wpa_supplicant.conf. Sensor data, logs and
-configurations are untouched, with the exception of the Control
-Center configuration, which is removed.</span></span></span></font></span></span></em></p>
+will remove all sensor software and ask to remove</span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><span style="background: transparent">
+</span></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">Kootnet
+Sensors – Control Center </span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">(If
+installed)</span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">.
+Sensor data </span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">&amp;</span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">
+logs are untouched.</span></span></span></font></span></span></em></p>
 <p align="left"><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">sudo
-bash /home/kootnet_data/scripts/uninstall.sh</span></span></span></font></span></span></em></p>
+bash /home/kootnet_data/scripts/uninstall_kootnet-sensors.sh</span></span></span></font></span></span></em></p>
 <p align="left"><br/>
 <br/>
 

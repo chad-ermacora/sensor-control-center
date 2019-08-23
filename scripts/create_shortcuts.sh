@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
-USER_DIR="/home/oo-dragon/"
+if [[ "$1" != "" ]]
+then
+  USER_NAME=$1
+else
+  USER_NAME="pi"
+fi
 # Sensor Control Center shortcut
 printf "\nInstalling shortcuts\n"
-cat > ${USER_DIR}/Desktop/KootNet-Control-Center.desktop << "EOF"
+cat > /usr/share/applications/KootNet-Control-Center.desktop << "EOF"
 [Desktop Entry]
 Name=Kootnet Sensors - Control Center
 Comment=Monitor and Manage KootNet Sensors
@@ -13,4 +18,5 @@ Encoding=UTF-8
 Terminal=false
 Categories=Utility;Science;
 EOF
-cp -f ${USER_DIR}/Desktop/KootNet-Control-Center.desktop /usr/share/applications/KootNet-Control-Center.desktop
+cp -f /usr/share/applications/KootNet-Control-Center.desktop /home/${USER_NAME}/Desktop/KootNet-Control-Center.desktop
+chmod 777 /home/${USER_NAME}/Desktop/KootNet*.desktop

@@ -21,16 +21,37 @@ import webbrowser
 import requests
 from app_modules import app_logger
 from app_modules import app_variables
+from app_modules import app_config
+
+http_port = "10065"
 
 
 class CreateSensorNetworkCommand:
     """ Creates object instance of variables needed for network commands. """
+
     def __init__(self, ip, network_timeout, command):
         self.ip = ip
+        self.port = http_port
         self.network_timeout = network_timeout
         self.command = command
         self.command_data = ""
         self.save_to_location = "/home/pi/"
+
+        # Sensor Server HTTP Authentication settings
+
+        self.http_user = "Kootnet"
+        self.http_password = "sensors"
+
+    def check_for_port_in_ip(self):
+        ip_list = self.ip.split(":")
+        if len(ip_list) > 1:
+            self.ip = ip_list[0]
+            self.port = ip_list[1]
+
+    def update_http_authentication(self):
+        current_config = app_config.get_from_file()
+        self.http_user = current_config.http_user
+        self.http_password = current_config.http_password
 
 
 def check_sensor_status(ip, network_timeout):
@@ -47,43 +68,21 @@ def check_sensor_status(ip, network_timeout):
     return sensor_status
 
 
-def download_sensor_database(ip):
+def download_sensor_database(address_and_port):
     """ Returns requested sensor file (based on the provided command data). """
     network_commands = app_variables.CreateNetworkGetCommands()
-    url = "http://" + ip + ":10065/" + network_commands.sensor_sql_database
+    url = "https://" + address_and_port + "/" + network_commands.sensor_sql_database
 
     try:
         webbrowser.open_new_tab(url)
     except Exception as error:
-        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(ip))
+        app_logger.sensor_logger.warning("Download Sensor SQL Database Failed on " + str(address_and_port))
         app_logger.sensor_logger.debug(str(error))
 
 
-def download_logs(sensor_command):
-    """ Download 3 log files. """
-    sensor_get_commands = app_variables.CreateNetworkGetCommands()
-
-    sensor_command.command = sensor_get_commands.download_primary_log
-    _get_logs(sensor_command, "PrimaryLog.txt")
-
-    sensor_command.command = sensor_get_commands.download_network_log
-    _get_logs(sensor_command, "NetworkLog.txt")
-
-    sensor_command.command = sensor_get_commands.download_sensors_log
-    _get_logs(sensor_command, "SensorsLog.txt")
-
-
-def _get_logs(sensor_command, log_name):
-    """ Download and save specified log file with given name. """
-    log_file_data = get_data(sensor_command)
-    log_file_location = sensor_command.save_to_location + "/" + sensor_command.ip[-3:].replace(".", "_") + log_name
-
-    try:
-        log_file = open(log_file_location, "w")
-        log_file.write(log_file_data)
-        log_file.close()
-    except Exception as error:
-        app_logger.sensor_logger.error("Log Save Failed: " + str(error))
+def download_zipped_logs(download_url):
+    """ Download zip file of all 3 logs. """
+    webbrowser.open(download_url)
 
 
 def get_validated_hostname(hostname):
@@ -99,10 +98,16 @@ def get_validated_hostname(hostname):
 
 def send_command(sensor_command):
     """ Sends command to sensor (based on provided command data). """
-    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+    sensor_command.check_for_port_in_ip()
+    url = "https://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
+    sensor_command.update_http_authentication()
 
     try:
-        requests.get(url=url, timeout=sensor_command.network_timeout, headers={'Connection': 'close'})
+        requests.get(url=url,
+                     auth=(sensor_command.http_user, sensor_command.http_password),
+                     timeout=sensor_command.network_timeout,
+                     headers={'Connection': 'close'},
+                     verify=False)
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
         app_logger.sensor_logger.debug(str(error))
@@ -110,10 +115,16 @@ def send_command(sensor_command):
 
 def put_command(sensor_command):
     """ Sends command to sensor (based on provided command data). """
-    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+    sensor_command.check_for_port_in_ip()
+    url = "https://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
+    sensor_command.update_http_authentication()
 
     try:
-        requests.put(url=url, timeout=sensor_command.network_timeout, data={'command_data': sensor_command.command_data})
+        requests.put(url=url,
+                     auth=(sensor_command.http_user, sensor_command.http_password),
+                     timeout=sensor_command.network_timeout,
+                     data={'command_data': sensor_command.command_data},
+                     verify=False)
         app_logger.sensor_logger.info(sensor_command.command + " to " + sensor_command.ip + " - OK")
     except Exception as error:
         app_logger.sensor_logger.debug(str(error))
@@ -121,10 +132,15 @@ def put_command(sensor_command):
 
 def get_data(sensor_command):
     """ Returns requested sensor data (based on the provided command data). """
-    url = "http://" + sensor_command.ip + ":10065/" + sensor_command.command
+    sensor_command.check_for_port_in_ip()
+    url = "https://" + sensor_command.ip + ":" + sensor_command.port + "/" + sensor_command.command
+    sensor_command.update_http_authentication()
 
     try:
-        tmp_return_data = requests.get(url=url, timeout=sensor_command.network_timeout)
+        tmp_return_data = requests.get(url=url,
+                                       auth=(sensor_command.http_user, sensor_command.http_password),
+                                       timeout=sensor_command.network_timeout,
+                                       verify=False)
         app_logger.sensor_logger.debug(sensor_command.command + " to " + sensor_command.ip + " - OK")
         return_data = tmp_return_data.text
     except Exception as error:

@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 6.3.0.4 (Linux)"/>
+	<meta name="created" content="2019-02-08T08:42:40.340920614"/>
+	<meta name="changed" content="2019-08-22T10:17:30.036984372"/>
+	<style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin: 2cm }
+		p { margin-bottom: 0.25cm; background: transparent; line-height: 115%; background: transparent }
+		a:link { color: #000080; so-language: zxx; text-decoration: underline }
+		a:visited { color: #800000; so-language: zxx; text-decoration: underline }
+	</style>
+</head>
+<body lang="en-CA" link="#000080" vlink="#800000" dir="ltr"><p align="center" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; line-height: 100%; orphans: 2; widows: 2">
+<font color="#000000"><font face="Times New Roman"><font size="5" style="font-size: 18pt"><u><b>Help
+Document for KootNet Sensor – Control Center</b></u></font></font></font></p>
+<p align="center" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">Kootnet
+Sensors – Control Center is a Python 3 program used to control up
+to 16 Kootnet Sensors at a time. Kootnet Sensors are Raspberry Pis
+that record sensor data to a SQL database for later analysis, more
+information about KootNet Sensors can be found <a href="https://github.com/chad-ermacora/sensor-rp" target="_blank">here</a>.
+</span></span></span></font></font></span></font></span>
+</p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">This
+document will outline what each part of the program is used for.</font></font></font></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; line-height: 100%; orphans: 2; widows: 2">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 15pt"><u><b>The
+Main Window</b></u></font></font></font></p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">The
+first window that opens is used in almost all other windows as where
+you select one or more sensors to interact with. If the function can
+only deal with one sensor but you have selected multiple sensors,
+only the first checked and online sensor in the list will be used. **
+Note: If you use a DNS name instead of an IP, the list order may not
+be as expected. It is recommended to only select one sensor if you
+only want to interact with the first sensor while using DNS names. **</font></font></font></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<img src="SensorControlCenterHelp_html_ef0e7d9cc45a17f9.png" name="Image1" align="left" width="665" height="453">
+  <br clear="left"/>
+</img>
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><font size="4" style="font-size: 15pt"><b>Check
+Sensor Status: </b></font>Will verify online status for all checked
+Sensor IPs. If the sensor is online, it remains checked and the
+background for the IP is set to green. If the sensor is offline, the
+IP is automatically unchecked and the background for the IP is set to
+red. Unchecked IP backgrounds will be reset to white when checking
+other sensors online status. </font></font></font>
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 15pt"><b>Main
+Window Drop Down List</b></font></font></font></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 15pt"><span style="letter-spacing: normal"><span style="font-style: normal"><b>Systems
+Report:</b></span></span></font></font></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><span style="letter-spacing: normal">
+</span></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">Creates
+a Systems Report page with all selected sensors.</span></span></span></font></font></span></font></span></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 15pt"><span style="letter-spacing: normal"><span style="font-style: normal"><b>Configurations
+Report:</b></span></span></font></font></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">
+Creates a Configurations Report page with all selected sensors.</span></span></span></font></font></span></font></span></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 15pt"><span style="letter-spacing: normal"><span style="font-style: normal"><b>Sensors
+Test Report:</b></span></span></font></font></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">
+Creates a Sensors Test Report page with all selected sensors.</span></span></span></font></font></span></font></span></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 15pt"><span style="letter-spacing: normal"><span style="font-style: normal"><b>Download
+SQL Databases:</b></span></span></font></font></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">
+Downloads Databases from all selected sensors.</span></span></span></font></font></span></font></span></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><font size="4" style="font-size: 15pt"><b>File
+Menu:</b></font> </font></font></font>
+</p>
+<ol>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Control
+	Center Configuration: Set Control Center configuration options. </font></font></font>
+	</p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Open
+	Logs: Opens the folder containing logs in the default file browser. </font></font></font>
+	</p>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+	<span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">Save
+	IP List: Saves the currently set IP addresses </span></span></span></font></font></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">in
+	the main window. </span></span></span></font></font></span></font></span>
+	</p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Reset
+	IP List: Resets the IP list in the main window to its default state.</font></font></font></p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Quit:
+	Exit the program.</font></font></font></p>
+</ol>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><font size="4" style="font-size: 15pt"><b>Sensors</b></font>
+<font size="4" style="font-size: 15pt"><b>Menu:</b></font> </font></font></font>
+</p>
+<ol>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+	<span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">Remote
+	Display</span></span></span></font></font></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">:
+	</span></span></span></font></font></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">Sends
+	readings or a message to the sensors supported mini display (If
+	any)</span></span></span></font></font></span></font></span><span style="font-variant: normal"><font color="#000000"><span style="text-decoration: none"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><span style="letter-spacing: normal"><span style="font-style: normal"><span style="font-weight: normal">.
+	</span></span></span></font></font></span></font></span>
+	</p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">View
+	&amp; Download Logs: View or download sensor logs. </font></font></font>
+	</p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Add
+	Note to Database: Add notes into the selected sensors SQL Database
+	at a set Date &amp; Time. </font></font></font>
+	</p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Send
+	Commands: Send commands to one or more selected sensors.</font></font></font></p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Update
+	Configurations: Select and update one of 4 configuration files on
+	one or more sensors. View current configurations from one sensor at
+	a time. </font></font></font>
+	</p>
+</ol>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><font size="4" style="font-size: 15pt"><b>Graphing
+</b></font><font size="4" style="font-size: 15pt"><b>&amp; Databases
+</b></font><font size="4" style="font-size: 15pt"><b>Menu:</b></font>
+</font></font></font>
+</p>
+<ol>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Create
+	Graphs: Create Live and Offline graphs using Matplotlib (Live) &amp;
+	Plotly (Offline).</font></font></font></p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Database
+	Info: View information gathered from a sensor’s SQL database.</font></font></font></p>
+</ol>
+<ul>
+	<ul>
+		<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+		<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Database
+		Name and Location</font></font></font></p>
+		<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+		<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">First
+		and last Date &amp; Time in the SQL Database</font></font></font></p>
+		<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+		<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Database
+		Size, number of notes and number of reboots</font></font></font></p>
+		<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+		<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Current
+		and previous sensor names, including dates when they changed</font></font></font></p>
+		<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+		<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Current
+		and previous sensor IP’s, including dates when they changed</font></font></font></p>
+	</ul>
+</ul>
+<ol start="3">
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Offline
+	Notes Editor: View and edit notes from a local sensor SQL Database.</font></font></font></p>
+</ol>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt"><font size="4" style="font-size: 15pt"><b>Help</b></font>
+<font size="4" style="font-size: 15pt"><b>Menu:</b></font> </font></font></font>
+</p>
+<ol>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">KootNet
+	Sensors – About: Displays the program version and license. </font></font></font>
+	</p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">KootNet
+	Sensors – Website: Opens the programs website in the default web
+	browser.</font></font></font></p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Sensor
+	Units – Making a Sensor: Opens a HTML document for creating a
+	KootNet Sensor with a Raspberry Pi.</font></font></font></p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Sensor
+	Units – Help: Opens a HTML help file for the Raspberry Pi Sensor
+	software. </font></font></font>
+	</p>
+	<li><p align="left" style="margin-bottom: 0cm; font-variant: normal; letter-spacing: normal; font-style: normal; font-weight: normal; line-height: 100%; orphans: 2; widows: 2; text-decoration: none">
+	<font color="#000000"><font face="Times New Roman"><font size="4" style="font-size: 14pt">Control
+	Center – Help: Open this document. </font></font></font>
+	</p>
+</ol>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; orphans: 2; widows: 2">
+<br/>
+
+</p>
+</body>
+</html>

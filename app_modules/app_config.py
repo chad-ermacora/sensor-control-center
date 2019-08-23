@@ -27,6 +27,9 @@ class CreateDefaultConfigSettings:
     """ Creates a object holding all the Control Centers default configuration options. """
 
     def __init__(self):
+        # Sensor Server HTTP Authentication settings
+        self.http_user = "Kootnet"
+        self.http_password = "sensors"
         # Script location information
         self.script_directory = str(path[0]).replace("\\", "/")
         self.logs_directory = self.script_directory + "/logs"
@@ -77,6 +80,8 @@ class CreateDefaultConfigSettings:
         self.allow_config_reset = default_config.allow_config_reset
         self.ip_list = default_config.ip_list
         self.enable_plotly_webgl = self.detect_plotly_render_type()
+        self.http_user = default_config.http_user
+        self.http_password = default_config.http_password
 
     @staticmethod
     def get_str_datetime_now():
@@ -117,12 +122,7 @@ def get_from_file():
         config_settings.live_refresh = tmp_config_settings[7]
         config_settings.network_timeout_sensor_check = tmp_config_settings[8]
         config_settings.network_timeout_data = tmp_config_settings[9]
-
-        try:
-            config_settings.allow_config_reset = int(tmp_config_settings[10])
-        except Exception as error:
-            app_logger.app_logger.error("Setting 'Enable Sensor Shutdown/Reboot' Invalid - Using Default")
-            app_logger.app_logger.debug(str(error))
+        config_settings.allow_config_reset = int(tmp_config_settings[10])
 
         count = 0
         while count < 16:
@@ -135,6 +135,8 @@ def get_from_file():
                 count = count + 1
 
         config_settings.enable_plotly_webgl = tmp_config_settings[27]
+        config_settings.http_user = tmp_config_settings[28]
+        config_settings.http_password = tmp_config_settings[29]
 
         app_logger.app_logger.debug("Configuration File Load - OK")
 
@@ -244,22 +246,28 @@ def check_config(config_settings):
         config_settings.allow_config_reset = default_settings.allow_config_reset
         bad_settings = True
 
-    count = 0
-    while count < 16:
-        if 6 < len(config_settings.ip_list[count]) < 16:
-            count = count + 1
-        else:
-            app_logger.app_logger.error("Setting IP List - BAD - Using Default: Bad IP #" + str(count))
-            config_settings.ip_list[count] = default_settings.ip_list[count]
-            count = count + 1
-            bad_settings = True
-
     try:
         config_settings.enable_plotly_webgl = int(config_settings.enable_plotly_webgl)
         app_logger.app_logger.debug("Setting Enable Plotly WebGL - OK")
     except Exception as error:
         app_logger.app_logger.error("Setting Enable Plotly WebGL - BAD - Using Default: " + str(error))
         config_settings.enable_plotly_webgl = config_settings.detect_plotly_render_type()
+        bad_settings = True
+
+    try:
+        config_settings.http_user = config_settings.http_user.strip()
+        app_logger.app_logger.debug("Setting HTTP User - OK")
+    except Exception as error:
+        app_logger.app_logger.error("Setting HTTP User - BAD - Using Default: " + str(error))
+        config_settings.http_user = default_settings.http_user
+        bad_settings = True
+
+    try:
+        config_settings.http_password = config_settings.http_password.strip()
+        app_logger.app_logger.debug("Setting HTTP Password - OK")
+    except Exception as error:
+        app_logger.app_logger.error("Setting HTTP Password - BAD - Using Default: " + str(error))
+        config_settings.http_password = default_settings.http_password
         bad_settings = True
 
     if bad_settings:
@@ -286,6 +294,8 @@ def save_config_to_file(config_settings):
         var_final_write = var_final_write + "," + str(ip)
 
     var_final_write = var_final_write + "," + str(config_settings.enable_plotly_webgl)
+    var_final_write = var_final_write + "," + str(config_settings.http_user)
+    var_final_write = var_final_write + "," + str(config_settings.http_password)
 
     try:
         local_file = open(config_settings.config_file, "w")

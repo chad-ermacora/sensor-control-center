@@ -26,6 +26,7 @@ from threading import Thread
 from app_modules import app_logger
 from app_modules import app_useful_functions
 from app_modules import app_config
+from app_modules import reports
 from app_modules.sensor_commands import download_sensor_database
 from app_guizero.ip_selection import CreateIPSelector
 from app_guizero.about_window import CreateAboutWindow
@@ -33,7 +34,7 @@ from app_guizero.config_window import CreateConfigWindow
 from app_guizero.graphing_window import CreateGraphingWindow
 from app_guizero.db_information_window import CreateDataBaseInfoWindow
 from app_guizero.notes_window import CreateDataBaseNotesWindow
-from app_guizero.reports_window import CreateReportsWindow
+from app_guizero.remote_sensor_display_window import CreateSensorDisplayWindow
 from app_guizero.remote_sensor_commands_window import CreateSensorCommandsWindow
 from app_guizero.remote_sensor_config_window import CreateSensorConfigWindow
 from app_guizero.remote_sensor_logs_window import CreateSensorLogsWindow
@@ -41,7 +42,6 @@ from app_guizero.remote_sensor_logs_window import CreateSensorLogsWindow
 
 class CreateMainWindow:
     """ Creates the main GUI window for the program. """
-
     def __init__(self):
         self.current_config = app_config.get_from_file()
 
@@ -52,11 +52,16 @@ class CreateMainWindow:
 
         self.app.on_close(self._app_exit)
 
+        self.text_download_db = "Download SQL Databases"
+        self.text_system_report = "Systems Report"
+        self.text_configuration_report = "Configurations Report"
+        self.text_test_sensors = "Sensors Test Report"
+
         self.ip_selection = CreateIPSelector(self.app, self.current_config)
         self._set_ip_list()
 
         self.window_control_center_config = CreateConfigWindow(self.app, self.current_config, self.ip_selection)
-        self.window_reports = CreateReportsWindow(self.app, self.ip_selection, self.current_config)
+        self.window_sensor_display = CreateSensorDisplayWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_commands = CreateSensorCommandsWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_config = CreateSensorConfigWindow(self.app, self.ip_selection, self.current_config)
         self.window_sensor_logs = CreateSensorLogsWindow(self.app, self.ip_selection, self.current_config)
@@ -81,8 +86,8 @@ class CreateMainWindow:
                                                       self._reset_ip_list],
                                                      ["Quit",
                                                       self._app_exit]],
-                                                    [["Create Reports",
-                                                      self.window_reports.window.show],
+                                                    [["Remote Display",
+                                                      self.window_sensor_display.window.show],
                                                      ["View & Download Logs",
                                                       self.window_sensor_logs.window.show],
                                                      ["Online Notes Editor",
@@ -96,9 +101,7 @@ class CreateMainWindow:
                                                      ["DataBase Info",
                                                       self.window_db_info.window.show],
                                                      ["Offline Notes Editor",
-                                                      self.window_db_notes.window.show],
-                                                     ["DataBase Analyzer",
-                                                      self.window_about.window.show]],
+                                                      self.window_db_notes.window.show]],
                                                     [["KootNet Sensors - About",
                                                       self.window_about.window.show],
                                                      ["KootNet Sensors - Website",
@@ -107,8 +110,8 @@ class CreateMainWindow:
                                                       self._app_menu_open_build_sensor],
                                                      ["Sensor Units - Help",
                                                       self._app_menu_open_sensor_help],
-                                                     ["Control Center - Help *WIP",
-                                                      self.window_about.window.show]]])
+                                                     ["Control Center - Help",
+                                                      self._app_menu_open_control_center_help]]])
 
         self.app_button_check_sensor = guizero.PushButton(self.app,
                                                           text="Check Sensors\nStatus",
@@ -116,11 +119,21 @@ class CreateMainWindow:
                                                           grid=[1, 15, 2, 1],
                                                           align="left")
 
-        self.app_button_download_sql_db = guizero.PushButton(self.app,
-                                                             text="Download Sensors\nDatabase",
-                                                             command=self._app_menu_download_sql_db,
-                                                             grid=[4, 15],
-                                                             align="right")
+        self.combo_dropdown_selection = guizero.Combo(self.app,
+                                                      options=[self.text_system_report,
+                                                               self.text_configuration_report,
+                                                               self.text_test_sensors,
+                                                               self.text_download_db],
+                                                      command=self._app_dropdown_change,
+                                                      grid=[2, 15, 3, 1],
+                                                      align="bottom")
+
+        self.app_button_main_create = guizero.PushButton(self.app,
+                                                         text="Create",
+                                                         command=self._app_button_proceed,
+                                                         grid=[4, 15],
+                                                         align="right")
+
         # Window Tweaks
         self.app.tk.resizable(False, False)
 
@@ -139,6 +152,22 @@ class CreateMainWindow:
         pyplot.close()
         self.app.destroy()
 
+    def _app_dropdown_change(self):
+        if self.combo_dropdown_selection.value == self.text_download_db:
+            self.app_button_main_create.text = "Download"
+        else:
+            self.app_button_main_create.text = "Create"
+
+    def _app_button_proceed(self):
+        if self.combo_dropdown_selection.value == self.text_download_db:
+            self._app_download_sql_db()
+        elif self.combo_dropdown_selection.value == self.text_system_report:
+            self.app_sensor_system_report()
+        elif self.combo_dropdown_selection.value == self.text_configuration_report:
+            self.app_sensor_config_report()
+        elif self.combo_dropdown_selection.value == self.text_test_sensors:
+            self.app_sensor_test_readings()
+
     def _app_menu_open_logs(self):
         """ Opens the folder where the logs are kept. """
         if platform.system() == "Windows":
@@ -148,7 +177,7 @@ class CreateMainWindow:
         else:
             subprocess.Popen(["xdg-open", self.current_config.logs_directory])
 
-    def _app_menu_download_sql_db(self):
+    def _app_download_sql_db(self):
         """ Downloads the Interval SQLite3 database to the chosen location, from the selected sensors. """
         ip_list = self.ip_selection.get_verified_ip_list()
 
@@ -156,11 +185,48 @@ class CreateMainWindow:
             threads = []
 
             for ip in ip_list:
+                address_and_port = self._sql_download_check_ip_port(ip)
                 threads.append(Thread(target=download_sensor_database,
-                                      args=[ip]))
+                                      args=[address_and_port]))
 
             for thread in threads:
                 thread.start()
+        else:
+            app_useful_functions.no_ip_selected_message()
+
+    @staticmethod
+    def _sql_download_check_ip_port(address):
+        address_list = address.split(":")
+        if len(address_list) > 1:
+            return_address = address
+        else:
+            return_address = address + ":10065"
+        return return_address
+
+    def app_sensor_system_report(self):
+        """ Create a HTML sensor System Report containing each IP selected and online. """
+        sensor_system_report = reports.CreateHTMLSystemData(self.current_config)
+        ip_list = self.ip_selection.get_verified_ip_list()
+        if len(ip_list) > 0:
+            reports.sensor_html_report(sensor_system_report, ip_list)
+        else:
+            app_useful_functions.no_ip_selected_message()
+
+    def app_sensor_config_report(self):
+        """ Create a HTML sensor Configuration Report containing each IP selected and online. """
+        sensor_config_report = reports.CreateHTMLConfigData(self.current_config)
+        ip_list = self.ip_selection.get_verified_ip_list()
+        if len(ip_list) > 0:
+            reports.sensor_html_report(sensor_config_report, ip_list)
+        else:
+            app_useful_functions.no_ip_selected_message()
+
+    def app_sensor_test_readings(self):
+        """ Create a HTML sensor Readings Report containing each IP selected and online. """
+        sensor_readings_report = reports.CreateHTMLReadingsData(self.current_config)
+        ip_list = self.ip_selection.get_verified_ip_list()
+        if len(ip_list) > 0:
+            reports.sensor_html_report(sensor_readings_report, ip_list)
         else:
             app_useful_functions.no_ip_selected_message()
 
@@ -177,6 +243,11 @@ class CreateMainWindow:
     def _app_menu_open_sensor_help(self):
         """ Open the help file for Sensor Units. """
         help_file_location = self.current_config.additional_files_directory + "/SensorUnitHelp.html"
+        webbrowser.open_new_tab(help_file_location)
+
+    def _app_menu_open_control_center_help(self):
+        """ Open the help file for Kootnet Sensors - Control Center. """
+        help_file_location = self.current_config.additional_files_directory + "/SensorControlCenterHelp.html"
         webbrowser.open_new_tab(help_file_location)
 
     def _set_ip_list(self):
