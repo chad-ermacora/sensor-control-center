@@ -152,7 +152,7 @@ class TestApp(unittest.TestCase):
         sensor_command = sensor_commands.CreateSensorNetworkCommand(sensor_ip, network_timeout, "")
 
         log_download = sensor_commands.CreateSensorNetworkCommand(sensor_ip, 2, get_network_commands.download_zipped_logs)
-        zip_log_download_url = "http://" + log_download.ip + ":" + log_download.port + log_download.command
+        zip_log_download_url = "https://" + log_download.ip + ":" + log_download.port + log_download.command
         sensor_commands.download_zipped_logs(zip_log_download_url)
 
         sensor_status = sensor_commands.check_sensor_status(sensor_ip, network_timeout)

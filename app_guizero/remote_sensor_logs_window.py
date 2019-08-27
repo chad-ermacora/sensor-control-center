@@ -116,7 +116,7 @@ class CreateSensorLogsWindow:
             for ip in ip_list:
                 network_command_data.ip = ip
                 network_command_data.check_for_port_in_ip()
-                download_url = "http://" + \
+                download_url = "https://" + \
                                network_command_data.ip + \
                                ":" + \
                                network_command_data.port + \
