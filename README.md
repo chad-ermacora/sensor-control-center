@@ -1,4 +1,7 @@
 # KootNet Sensors - Control Center
+
+### Please note this software is now DEPRECIATED & INCOMPATIBLE
+
 KootNet Sensors - Control Center is a Python3 program made to interact with Raspberry Pi's running the KootNet Sensor Software.  
 More information about the Raspberry Pi Sensor Software can be found through the link below.
 
